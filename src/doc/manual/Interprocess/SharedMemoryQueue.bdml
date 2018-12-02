@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - SharedMemoryQueue" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="SharedMemoryQueue">
+		<h1>Overview</h1>
+
+		<para>A blocking, shared memory queue that uses the Boost Interprocess library.</para>
+
+		<para>This class provides a shared memory backed blocking queue and implements the <emph>BlockingQueue</emph> API. The class encapsulates calls to the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_66_0/doc/html/interprocess.html">Boost Interprocess library</ref>, which create, use, and delete a shared memory queue, and has additional sequencing and chunking management logic. The sequencing and chunking logic manages the enqueueing and dequeueing of oversize objects, which require multiple shared memory queue send and receive operations that may be out of order and/or interleaved with other enqueued buffers.</para>
+
+		<para>The implementation uses the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_66_0/libs/serialization/doc/index.html">Boost Serialization library</ref> for marshalling and unmarshalling of objects. In order to use the queue, the object type <emph>T</emph> must provide Boost <emph>serialize</emph> or <emph>save</emph>/<emph>load</emph> methods.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Interprocess/SharedMemoryQueue.hpp></strong></emph></para>
+
+		<para>The queue is used in the same way as any other <emph>BlockingQueue</emph> implementation.</para>
+
+		<para>The queue can be instantiated in three ways:</para>
+
+		<bullets>
+			<entry>as the creator of the shared memory objects in the queue;</entry>
+			<entry>as the creator or user of the shared memory objects in the queue;</entry>
+			<entry>as a user of the shared memory objects in the queue.</entry>
+		</bullets>
+
+		<h2>Create</h2>
+
+		<para>The most simple constructor used to create a queue is as follows.</para>
+
+		<code lang="C++">
+			// Create a shared memory queue for objects of type T and
+			// with a capacity of 100.
+			SharedMemoryQueue&lt;T&gt; queue(100);
+		</code>
+
+		<para>Such a queue is only useful if the application will share the queue by forking or if the automatically generated name prefix is obtained by calling <emph>getName</emph> on the resulting queue instance.</para>
+
+		<para>In order to create a queue with a known name prefix, use the constructor that takes a string argument in addition to the capacity.</para>
+
+		<code lang="C++">
+			// Get the queue's predefined name prefix from somewhere.
+			const std::string name = getQueueName();
+
+			// Create a shared memory queue with the predefined name prefix.
+			SharedMemoryQueue&lt;T&gt; queue(100, name);
+		</code>
+
+		<para><emph>SharedMemoryQueue</emph> has a number of other optional parameters. These are outlined below.</para>
+
+		<table class="bdml-table151515L55">
+			<head>
+				<cell>Parameter</cell>
+				<cell>Type</cell>
+				<cell>Default</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>capacity</cell>
+					<cell>unsigned int</cell>
+					<cell>No default</cell>
+					<cell>The number of items that the queue can hold.</cell>
+				</row>
+
+				<row>
+					<cell>buffer size</cell>
+					<cell>unsigned int</cell>
+					<cell>Marshal size of T() plus header</cell>
+					<cell>The size in bytes of each item in the queue. This size includes the header size.</cell>
+				</row>
+
+				<row>
+					<cell>name</cell>
+					<cell>std::string</cell>
+					<cell>UUID</cell>
+					<cell>The name of the queue.</cell>
+				</row>
+
+				<row>
+					<cell>throw on oversize</cell>
+					<cell>bool</cell>
+					<cell>false</cell>
+					<cell>Throw an exception if an attempt to enqueue an oversize object is made.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>If the queue is to be used with multiple dequeueing processes, the buffer size of the queue must be large enough to fit all serialised objects plus the queue header size of 16 bytes. For POD objects, which do not have any fields that allocate memory, the default buffer size calculated by the queue from a default constructed object is sufficient. For object types that do have fields that allocate memory, the default buffer size calculated by the queue is not sufficient and thus the buffer size must be supplied manually. Otherwise, the queue will be defective.</para>
+
+		<para>Note that manual specification of the buffer size is not required if dequeueing will occur in a single process and with synchronised access. In this case, the result of not specifying a sufficient buffer size will result in oversize serialisations being split into chunks which are then sent over the shared memory queue in turn. Then, the single process calling <emph>dequeue</emph>/<emph>tryDequeue</emph> with synchronised access will join these chunks together before deserialising.</para>
+
+		<h2>Open or create</h2>
+
+		<para>An equivalent pair of constructors are available that open the shared memory objects of a queue if they already exist, otherwise, they create the objects. In order to use these constructors, the <emph>OpenOrCreateSelector</emph> object must be passed as the first argument. Otherwise, these constructors are identical to their counterparts which only create the shared memory objects.</para>
+
+		<code lang="C++">
+			// Get the queue's predefined name prefix from somewhere.
+			const std::string name = getQueueName();
+
+			// Open or create a shared memory queue with the predefined name prefix.
+			SharedMemoryQueue&lt;T&gt; queue(OpenOrCreateSelector, 100, name);
+		</code>
+
+		<h2>Open</h2>
+
+		<para>There is a single constructor for instantiating a <emph>SharedMemoryQueue</emph> as a user of an existing queue. This constructor takes a <emph>std::string</emph> containing the name of the queue to open.</para>
+
+		<code lang="C++">
+			// Get the queue's predefined name prefix from somewhere.
+			const std::string name = getQueueName();
+
+			// Open a shared memory queue with the predefined name prefix.
+			SharedMemoryQueue&lt;T&gt; queue(name);
+		</code>
+
+		<h2>Usage</h2>
+
+		<para>Once the queue has been created or opened, it can be used in the same way as any other <emph>BlockingQueue</emph> implementation. See the <ref type="raw" new="true" url="../../api/classBalau_1_1Container_1_1BlockingQueue.html">BlockingQueue </ref> API documentation for information on the blocking queue interface.</para>
+
+		<h1>Concurrency</h1>
+
+		<para>This queue implementation has the following concurrency guarantees.</para>
+
+		<para>The queue can be used for concurrent enqueues and concurrent dequeues across processes/threads if the maximum enqueued serialised object size + queue header size is guaranteed to be smaller than the shared memory queue buffer size.</para>
+
+		<para>If the above guarantee cannot be met (due, for example, a non-deterministic serialised object size), the queue can be used for concurrent enqueues across processes/threads, but only synchronised dequeues in a single process. This is due to the dequeueing of partial objects occurring in one process, rendering the continuation of the dequeueing of that object impossible in other processes.</para>
+
+		<para>If this limitation is breached, the set of applications using the shared memory queue will be defective.</para>
+
+		<para>The dequeueing calls in such a scenario must also be protected by a mutex if multiple threads of the dequeueing application are concurrently dequeueing. No such mutex protection is required if oversize objects are not being enqueued.</para>
+
+		<para>In order to catch oversize message errors in a system that is not designed for oversize message dequeueing, all constructors of the <emph>SharedMemoryQueue</emph> accept an additional boolean argument. Setting this argument to true will cause an exception to be thrown if an attempt is made to enqueue an oversize message. This check can be switched on in order to catch early such errors during the development and testing phases.</para>
+
+		<h1>Use cases</h1>
+
+		<para>There are two ways to utilise a shared memory queue in multiple processes:</para>
+
+		<bullets>
+			<entry>by forking a parent process;</entry>
+
+			<entry>by communicating the queue name to other processes.</entry>
+		</bullets>
+
+		<h2>Forked processes</h2>
+
+		<para>Forking is a simple way to construct and use the share memory queue across processes, but it is only supported by Unix-like operating systems. In order to construct and use a shared memory queue in a parent process and a set of forked child processes, construct the queue in the parent and fork as normal. The Balau <ref url="Concurrent/Fork" >Fork</ref> class provides a convenient API for forking. The shared memory queue will be ready for use in the child processes without any further action. The first constructor is used for this.</para>
+
+		<code lang="C++">
+			// The type of object being sent across the queue.
+			struct A {
+				int i;
+				double d;
+
+				A() : i(0), d(0.0) {}
+				A(int i_, double d_) : i(i_), d(d_) {}
+
+				// The serialize method, used by the queue to marshal and unmarshal the object.
+				template &lt;typename Archive&gt; void serialize(Archive &amp; archive, unsigned int ) {
+					archive &amp; BoostSerialization(d) &amp; BoostSerialization(i);
+				}
+			};
+
+			// Construct the shared memory queue before forking.
+			SharedMemoryQueue&lt;A&gt; queue(100);
+
+			// Perform the fork. The child will not return.
+			Fork::performFork([&amp;queue] () { return runChildLogic(queue); }, true)
+		</code>
+
+		<h2>Independent processes</h2>
+
+		<para>Processes that are not related by forking may access the same shared memory queue by communicating the name to each process.</para>
+
+		<para>There are two possibilities for communicating the name:</para>
+
+		<bullets>
+			<entry>pre-share the name between the processes;</entry>
+
+			<entry>create the queue in one process and communicate its name to the other processes in some way.</entry>
+		</bullets>
+
+		<para>With the first solution, a name is decided upon in advance or is algorithmically generated by the application. One solution to this when sharing a queue between multiple instances of the same application is to construct a name prefix via the application's executable path. A helper function namePrefixFromAppPath() is available for this in the <emph>SharedMemoryUtils</emph> class. Using this solution, a set of shared memory queue names can be created by appending predefined strings to the name generated from the helper function.</para>
+
+		<para>Another solution is to pre-share a name that can be guaranteed not to be used by other processes, either hard wired in the application (not recommended) or via the application's configuration/options.</para>
+
+		<para>In order to use a peer-to-peer approach, the <emph>create-or-open</emph> constructors can be used.</para>
+
+		<code lang="C++">
+			// Create the name for the shared memory queue.
+			const std::string name = SharedMemoryUtils::namePrefixFromAppPath() + "_myQueue";
+
+			// Create or open the shared memory queue with the name prefix.
+			SharedMemoryQueue&lt;A&gt; object(OpenOrCreate, 100, name);
+		</code>
+
+		<para>In order to use a manager-worker approach, one of the constructors which creates the shared memory objects can be used in the manager process and the queue open constructor can be used in the worker processes. Due to the necessity of the queue existing for the worker processes, the manager process will need to create the queue before the workers attempt to open it.</para>
+
+		<code lang="C++">
+			// Manager process..
+
+			// Create the name prefix for the shared memory queue.
+			const std::string name = SharedMemoryUtils::namePrefixFromAppPath() + "_myQueue";
+
+			// Create the shared memory queue.
+			SharedMemoryQueue&lt;A&gt; queue(100, name);
+
+			///////////////////////////////////////////////////////////////////
+
+			// Worker process..
+
+			// Create the name prefix for the shared memory queue.
+			const std::string name = SharedMemoryUtils::namePrefixFromAppPath() + "_myQueue";
+
+			// Open the shared memory queue.
+			SharedMemoryQueue&lt;A&gt; queue(name);
+		</code>
+	</chapter>
+</document>

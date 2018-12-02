@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - miscellaneous utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Miscellaneous utilities">
+		<h1>Introduction</h1>
+
+		<para>This chapter documents small, miscellaneous types and utilities that are provided in Balau.</para>
+
+		<h1>Assert</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Dev/Assert.hpp></strong></emph></para>
+
+		<para>The <emph>Assert</emph> namespace class contains a set of runtime assertions used for development purposes. The assertions use the standard <emph>assert()</emph> call.</para>
+
+		<h1>Enums</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Enums.hpp></strong></emph></para>
+
+		<para>The <emph>Enums</emph> namespace class currently contains a single static method:</para>
+
+		<code lang="C++">
+			///
+			/// Convert the strongly typed enum to its underlying integer.
+			///
+			template &lt;typename E&gt;
+			static auto toUnderlying(E e) noexcept -&gt; typename std::underlying_type&lt;E&gt;::type {
+				return static_cast&lt;typename std::underlying_type&lt;E&gt;::type&gt;(e);
+			}
+		</code>
+
+		<para>The <emph>toUnderlying</emph> method provides a clear indication in source code that the underlying integer value of the enum class is being obtained.</para>
+
+		<h1>Hashing</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Hashing.hpp></strong></emph></para>
+
+		<para>The <emph>Hashing</emph> class is a namespace class used to hold hashing functions. There are three versions of each function, one accepting a <emph>File</emph>, another accepting a <emph>string</emph>, and a third accepting an <emph>istream</emph>.</para>
+
+		<para>The following hash algorithms are supported:</para>
+
+		<bullets>
+			<entry>SHA-256;</entry>
+			<entry>SHA-3;</entry>
+			<entry>Keccak;</entry>
+			<entry>SHA-1;</entry>
+			<entry>MD5;</entry>
+			<entry>CRC32.</entry>
+		</bullets>
+
+		<h1>Macros</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Macros.hpp></strong></emph></para>
+
+		<para>The <emph>Macros.hpp</emph> header file contains some low level macros used in Balau.</para>
+
+		<h1>OnScopeExit</h1>
+
+		<para class="cpp-define-statement">
+			<emph><strong>#include &lt;Balau/Type/OnScropeExit.hpp></strong></emph><newline />
+			<emph><strong>#include &lt;Balau/Type/MoveableOnScropeExit.hpp></strong></emph>
+		</para>
+
+		<para>The two classes <emph>OnScopeExit</emph> and <emph>MovableOnScopeExit</emph> provide <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization">RAII</ref> style management containers. The <emph>MovableOnScopeExit</emph> version is movable out of a scope without triggering the stored function.</para>
+
+		<para>An instance of <emph>OnScopeExit</emph> is created by supplying a function or lambda expression to the constructor. This function will be run from the destructor of the stack based object when the enclosing scope exits.</para>
+
+		<code lang="C++">
+			// Example usage of OnScopeExit class.
+
+			{
+				Balau::OnScopeExit cleanUp([this] () { runCleanup(); })
+
+				// ... more code ...
+
+			} // runCleanup() will be run here.
+		</code>
+
+		<para>One interesting property of the <emph>MovableOnScopeExit</emph> implementation is that instances may be moved out of the scope via the move constructor. This allows a <emph>MovableOnScopeExit</emph> instance to be created inside a function and then returned to the caller on the stack, ready for destruction when the caller's scope exits.</para>
+
+		<para>The <emph>OnScopeExit</emph> and <emph>MovableOnScopeExit</emph> implementations are small classes, each class consisting of approximately 20 lines of code. Internally, the <emph>OnScopeExit</emph> implementation is based on a <emph>std::function</emph> stack based internal object and the <emph>MovableOnScopeExit</emph> implementation is based on a heap based internal object, managed inside a <emph>std::unique_ptr</emph>.</para>
+
+		<h1>UUID</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Type/UUID.hpp></strong></emph></para>
+
+		<para>The <emph>UUID</emph> class provides a convenient API for generating and manipulating UUIDs.</para>
+
+		<h1>User</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/User.hpp></strong></emph></para>
+
+		<para>The <emph>User</emph> class is a namespace class destined for functions that provide information on operating system users.</para>
+
+		<para>Currently, the <emph>User</emph> class contains a single <emph>getHomeDirectory</emph> function that makes a best effort attempt at returning the user's home directory for each supported platform.</para>
+	</chapter>
+</document>

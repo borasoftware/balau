@@ -1,0 +1,1526 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  -
+  - BDML http://boradoc.org/1.0 XML Schema.
+  -
+  - Copyright 2007 Bora Software (contact@borasoftware.com)
+  - https://borasoftware.com/specifications/bdml.html
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU Affero General Public License as published
+  - by the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU Affero General Public License for more details.
+  -
+  - You should have received a copy of the GNU Affero General Public License
+  - along with this program. If not, see https://www.gnu.org/licenses/.
+  -
+ -->
+
+<xs:schema xmlns="http://boradoc.org/1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+           elementFormDefault="qualified"
+           targetNamespace="http://boradoc.org/1.0"
+           vc:minVersion="1.1">
+
+	<!-- Simple types -->
+
+	<xs:simpleType name="ChapterType">
+		<xs:annotation>
+			<xs:documentation>
+				main (default) or appendix.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="main" />
+			<xs:enumeration value="appendix" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="CommentState">
+		<xs:annotation>
+			<xs:documentation>
+				Open or Closed.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="open" />
+			<xs:enumeration value="closed" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="HighlighterLanguage">
+		<xs:annotation>
+			<xs:documentation>
+				List of highlighter languages.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="C" />
+			<xs:enumeration value="C++" />
+			<xs:enumeration value="C#" />
+			<xs:enumeration value="Java" />
+			<xs:enumeration value="Javascript" />
+			<xs:enumeration value="Properties" />
+			<xs:enumeration value="Python" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="Position">
+		<xs:annotation>
+			<xs:documentation>
+				The position of a graphical image.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="left" />
+			<xs:enumeration value="right" />
+			<xs:enumeration value="center" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ReferenceType">
+		<xs:annotation>
+			<xs:documentation>
+				Raw or not present.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="raw" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ReferenceNumberingType">
+		<xs:annotation>
+			<xs:documentation>
+				TYpe of reference numbering.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="simple" />
+			<xs:enumeration value="square" />
+			<xs:enumeration value="curly" />
+			<xs:enumeration value="section" />
+			<xs:enumeration value="paren" />
+			<xs:enumeration value="paren-section" />
+			<xs:enumeration value="square-section" />
+			<xs:enumeration value="curly-section" />
+			<xs:enumeration value="custom" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="Target">
+		<xs:annotation>
+			<xs:documentation>
+				One or more translation targets.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]+[a-zA-Z0-9]*( [a-zA-Z]+[a-zA-Z0-9]*)?" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="Variant">
+		<xs:annotation>
+			<xs:documentation>
+				One or more translation variants.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z]+[a-zA-Z0-9-]*( [a-zA-Z]+[a-zA-Z0-9-]*)?" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!-- Abstract complex types -->
+
+	<xs:complexType name="abstractWithStandardAttributes" abstract="true">
+		<xs:annotation>
+			<xs:documentation>
+				Abstract base type for types with standard attributes.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:attribute name="class" type="xs:NMTOKENS" />
+		<xs:attribute name="id" type="xs:ID" />
+	</xs:complexType>
+
+	<xs:complexType name="abstractWithTargetAndVariant" abstract="true">
+		<xs:annotation>
+			<xs:documentation>
+				Abstract base type for types with the target attribute.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:attribute name="target" type="Target" />
+		<xs:attribute name="variant" type="Variant" />
+	</xs:complexType>
+
+	<xs:complexType name="abstractHeading" abstract="true" mixed="true">
+		<xs:annotation>
+			<xs:documentation>
+				Abstract base type for headings.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexContent>
+			<xs:extension base="abstractWithStandardAttributes">
+				<xs:attribute name="toc" type="xs:boolean" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- Group declarations -->
+
+	<xs:group name="metadata-elements">
+		<xs:choice>
+			<xs:element ref="author" />
+			<xs:element ref="copyright" />
+			<xs:element ref="index-entries" />
+			<xs:element ref="relative-root" />
+			<xs:element ref="trademark" />
+
+			<xs:element ref="back-matter" />
+			<xs:element ref="cover" />
+			<xs:element ref="footer" />
+			<xs:element ref="front-matter" />
+			<xs:element ref="header" />
+			<xs:element ref="index-page" />
+			<xs:element ref="link" />
+			<xs:element ref="meta" />
+			<xs:element ref="numbering" />
+			<xs:element ref="script" />
+			<xs:element ref="stylesheet" />
+			<xs:element ref="title" />
+			<xs:element ref="toc" />
+			<xs:element ref="css" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="para-child-elements">
+		<xs:choice>
+			<xs:element ref="emph" />
+			<xs:element ref="graphic" />
+			<xs:element ref="newline" />
+			<xs:element ref="page-number" />
+			<xs:element ref="page-count" />
+			<xs:element ref="ref" />
+			<xs:element ref="span" />
+			<xs:element ref="strong" />
+			<xs:element ref="sub" />
+			<xs:element ref="sup" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="cell-and-entry-child-elements">
+		<xs:choice>
+			<xs:group ref="para-child-elements" />
+			<xs:element ref="bullets" />
+			<xs:element ref="list" />
+			<xs:element ref="lorem" />
+			<xs:element ref="para" />
+			<xs:element ref="table" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="section-child-elements">
+		<xs:choice>
+			<xs:element ref="bullets" />
+			<xs:element ref="code" />
+			<xs:element ref="comment" />
+			<xs:element ref="grammar" />
+			<xs:element ref="graphic" />
+			<xs:element ref="h1" />
+			<xs:element ref="h2" />
+			<xs:element ref="h3" />
+			<xs:element ref="h4" />
+			<xs:element ref="h5" />
+			<xs:element ref="list" />
+			<xs:element ref="lorem" />
+			<xs:element ref="para" />
+			<xs:element ref="table" />
+			<xs:element ref="verbatim" />
+			<xs:element ref="xml" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="chapter-child-elements">
+		<xs:choice>
+			<xs:group ref="section-child-elements" />
+			<xs:element ref="section" />
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="part-child-elements">
+		<xs:choice>
+			<xs:element ref="chapter" />
+			<xs:element ref="include" />
+		</xs:choice>
+	</xs:group>
+
+	<!-- Concrete element types -->
+
+	<xs:element name="author">
+		<xs:annotation>
+			<xs:documentation>
+				The author of the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="text" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="back-matter">
+		<xs:annotation>
+			<xs:documentation>
+				A back-matter metadata entry specifying back matter to be included in the book.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="body">
+		<xs:annotation>
+			<xs:documentation>
+				The body section of a table.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="row" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="bullets">
+		<xs:annotation>
+			<xs:documentation>
+				An unordered or 'bullet' list.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="cell">
+		<xs:annotation>
+			<xs:documentation>
+				A cell of a table header or row.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="cell-and-entry-child-elements" />
+					</xs:choice>
+
+					<xs:attribute name="span" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="chapter">
+		<xs:annotation>
+			<xs:documentation>
+				Represents a chapter in the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="chapter-child-elements" />
+					</xs:choice>
+
+					<xs:attribute name="title" type="xs:string" />
+					<xs:attribute name="type" type="ChapterType" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="comment">
+		<xs:annotation>
+			<xs:documentation>
+				A developer comment.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element ref="question" />
+						<xs:element ref="remark" />
+					</xs:choice>
+
+					<xs:attribute name="creator" type="xs:string" />
+					<xs:attribute name="state" type="CommentState" />
+					<xs:attribute name="title" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="code">
+		<xs:annotation>
+			<xs:documentation>
+				Preformed source code.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<!-- Allow for arbitrarily defined code elements. -->
+						<xs:any />
+					</xs:choice>
+
+					<xs:attribute name="lang" type="HighlighterLanguage" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="copyright">
+		<xs:annotation>
+			<xs:documentation>
+				A container for a copyright declaration.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="cover">
+		<xs:annotation>
+			<xs:documentation>
+				The cover of a document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="height" type="xs:string" />
+					<xs:attribute name="url" type="xs:anyURI" />
+					<xs:attribute name="width" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="document">
+		<xs:annotation>
+			<xs:documentation>
+				The root element in BDML files.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="metadata" minOccurs="0" />
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element ref="part" minOccurs="0" maxOccurs="unbounded" />
+
+							<xs:choice minOccurs="0" maxOccurs="unbounded">
+								<xs:element ref="chapter" minOccurs="0" maxOccurs="unbounded" />
+								<xs:element ref="include" minOccurs="0" maxOccurs="unbounded" />
+							</xs:choice>
+						</xs:choice>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="emph">
+		<xs:annotation>
+			<xs:documentation>
+				A highlighted piece of text within a paragraph.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="para-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="entry">
+		<xs:annotation>
+			<xs:documentation>
+				Entries in unordered or enumerated lists.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="cell-and-entry-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="footer">
+		<xs:annotation>
+			<xs:documentation>
+				A footer to be included on each page of the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+					<xs:attribute name="page" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="front-matter">
+		<xs:annotation>
+			<xs:documentation>
+				A front-matter metadata entry specifying front matter to be included in the book.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="graphic">
+		<xs:annotation>
+			<xs:documentation>
+				A graphical image rendered in the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="target" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+
+					<xs:attribute name="url" type="xs:anyURI" />
+					<xs:attribute name="position" type="Position" />
+					<xs:attribute name="width" type="xs:string" />
+					<xs:attribute name="height" type="xs:string" />
+					<xs:attribute name="dpc" type="xs:unsignedInt" />
+					<xs:attribute name="dpi" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="h1">
+		<xs:annotation>
+			<xs:documentation>
+				A level 1 heading.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractHeading" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="h2">
+		<xs:annotation>
+			<xs:documentation>
+				A level 2 heading.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractHeading" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="h3">
+		<xs:annotation>
+			<xs:documentation>
+				A level 3 heading.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractHeading" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="h4">
+		<xs:annotation>
+			<xs:documentation>
+				A level 4 heading.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractHeading" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="h5">
+		<xs:annotation>
+			<xs:documentation>
+				A level 5 heading.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractHeading" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="head">
+		<xs:annotation>
+			<xs:documentation>
+				The header section of a table.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="cell" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="header">
+		<xs:annotation>
+			<xs:documentation>
+				A header to be included on each page of the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+					<xs:attribute name="page" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="include">
+		<xs:annotation>
+			<xs:documentation>
+				Permits the use of multiple BDML file documents via inclusion of parts or chapters.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="index-entries">
+		<xs:annotation>
+			<xs:documentation>
+				The index-entries BDML metadata element serves two purposes:
+				- a collection of book index metadata items;
+				- a URL to another BDML document containing index metadata.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:sequence>
+						<xs:element ref="item" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+
+					<xs:attribute name="url" type="xs:anyURI" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="index-page">
+		<xs:annotation>
+			<xs:documentation>
+				The index-page BDML metadata element is an instruction on where the index appears
+				in the document's back matter.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="item">
+		<xs:annotation>
+			<xs:documentation>
+				Items in index metadata.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="match" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+
+			<xs:attribute name="entry" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="list">
+		<xs:annotation>
+			<xs:documentation>
+				An ordered or 'enumerated' list.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="entry" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+
+					<xs:attribute name="start" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="lorem">
+		<xs:annotation>
+			<xs:documentation>
+				An element which renders standard filler text.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:attribute name="repeat" type="xs:unsignedInt" />
+					<xs:attribute name="length" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="match">
+		<xs:annotation>
+			<xs:documentation>
+				A match specification in an index item.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:attribute name="search" type="xs:string" />
+			<xs:attribute name="entry" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="metadata">
+		<xs:annotation>
+			<xs:documentation>
+				The non-renderable metadata section of a BDML document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:group ref="metadata-elements" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="newline">
+		<xs:annotation>
+			<xs:documentation>
+				A newline in a paragraph.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="numbering">
+		<xs:annotation>
+			<xs:documentation>
+				Configure automatic chapter and heading numbering.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="chapters" type="xs:boolean" />
+					<xs:attribute name="finish" type="xs:unsignedInt" />
+					<xs:attribute name="root" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="page-number">
+		<xs:annotation>
+			<xs:documentation>
+				A page number placeholder.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="page-count">
+		<xs:annotation>
+			<xs:documentation>
+				A page count placeholder.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="para">
+		<xs:annotation>
+			<xs:documentation>
+				A paragraph of text.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="para-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="part">
+		<xs:annotation>
+			<xs:documentation>
+				Represents a part in a part based document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:group ref="chapter-child-elements" minOccurs="0" maxOccurs="unbounded" />
+						<xs:group ref="part-child-elements" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+
+					<xs:attribute name="title" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="question">
+		<xs:annotation>
+			<xs:documentation>
+				A question entry in a developer comment.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="cell-and-entry-child-elements" />
+						<xs:element ref="code" />
+						<xs:element ref="xml" />
+					</xs:choice>
+
+					<xs:attribute name="creator" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="ref">
+		<xs:annotation>
+			<xs:documentation>
+				A hyperlink to another BDML document, an identifying reference in the current document,
+				or a raw URI, or an HTML metadata entry to be placed in the HTML header section.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:group ref="para-child-elements" />
+			</xs:choice>
+
+			<xs:attribute name="disable-repl" type="xs:boolean" />
+			<xs:attribute name="new" type="xs:boolean" />
+			<xs:attribute name="type" type="ReferenceType" />
+			<xs:attribute name="numbering" type="ReferenceNumberingType" />
+			<xs:attribute name="prefix" type="xs:string" />
+			<xs:attribute name="suffix" type="xs:string" />
+			<xs:attribute name="url" type="xs:anyURI" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="relative-root">
+		<xs:annotation>
+			<xs:documentation>
+				Metadata element specifying the relative root from which relative paths should be resolved.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:attribute name="url" type="xs:anyURI" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="remark">
+		<xs:annotation>
+			<xs:documentation>
+				A remark entry in a developer comment.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="cell-and-entry-child-elements" />
+						<xs:element ref="code" />
+						<xs:element ref="xml" />
+					</xs:choice>
+
+					<xs:attribute name="creator" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="row">
+		<xs:annotation>
+			<xs:documentation>
+				A row of cells in a table's body.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="cell" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="section">
+		<xs:annotation>
+			<xs:documentation>
+				Represents a section of a chapter in the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="section-child-elements" />
+					</xs:choice>
+
+					<xs:attribute name="title" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="span">
+		<xs:annotation>
+			<xs:documentation>
+				A span of text within a paragraph.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="para-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="strong">
+		<xs:annotation>
+			<xs:documentation>
+				A highlighted piece of text within a paragraph.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="para-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="stylesheet">
+		<xs:annotation>
+			<xs:documentation>
+				Specify a CSS stylesheet to style the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sub">
+		<xs:annotation>
+			<xs:documentation>
+				A subscript span of text within a paragraph.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="para-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sup">
+		<xs:annotation>
+			<xs:documentation>
+				A superscript span of text within a paragraph.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:group ref="para-child-elements" />
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="table">
+		<xs:annotation>
+			<xs:documentation>
+				A tabular based structure containing cells.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:sequence>
+						<xs:element ref="head" />
+						<xs:element ref="body" />
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="target">
+		<xs:annotation>
+			<xs:documentation>
+				Target specific graphical element entry.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="url" type="xs:anyURI" />
+					<xs:attribute name="position" type="Position" />
+					<xs:attribute name="width" type="xs:string" />
+					<xs:attribute name="height" type="xs:string" />
+					<xs:attribute name="dpc" type="xs:unsignedInt" />
+					<xs:attribute name="dpi" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="title">
+		<xs:annotation>
+			<xs:documentation>
+				The title of the document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="text" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="toc">
+		<xs:annotation>
+			<xs:documentation>
+				Configure the automatic generation of a table of contents.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:attribute name="enabled" type="xs:boolean" />
+					<xs:attribute name="finish" type="xs:unsignedInt" />
+					<xs:attribute name="start" type="xs:unsignedInt" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="css" >
+		<xs:annotation>
+			<xs:documentation>
+				Define inline document css styles.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:simpleContent >
+				<xs:extension base="abstractWithTargetAndVariant">
+				</xs:extension>
+			</xs:simpleContent >
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="trademark">
+		<xs:annotation>
+			<xs:documentation>
+				A container for a trademark declaration.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="verbatim">
+		<xs:annotation>
+			<xs:documentation>
+				A container for unspecified XML. This will be copied verbatim into the output XML document.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithTargetAndVariant">
+					<xs:all>
+						<xs:any minOccurs="0" />
+					</xs:all>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="xml">
+		<xs:annotation>
+			<xs:documentation>
+				A container for unspecified XML. This will be converted to verbatim XML by the translator.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:any minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- Grammar elements -->
+
+	<xs:element name="grammar">
+		<xs:annotation>
+			<xs:documentation>
+				Convenience elements for grammar definitions.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:complexContent>
+				<xs:extension base="abstractWithStandardAttributes">
+					<xs:all>
+						<xs:element ref="grCmt" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="grNTL" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="grNTR" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="grRegEx" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="grTL" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="grTR" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="grStr" minOccurs="0" maxOccurs="unbounded" />
+					</xs:all>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="grCmt">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:all>
+				<xs:element ref="grEx" minOccurs="0" maxOccurs="unbounded" />
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="grEx">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="grNTL">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="grNTR">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="grRegEx">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="grTL">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="grTR">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="grStr">
+		<xs:annotation>
+			<xs:documentation>Grammar element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<!-- XHTML elements -->
+
+	<xs:simpleType name="StyleSheet">
+		<xs:annotation>
+			<xs:documentation>
+				style sheet data
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:simpleType name="Text">
+		<xs:annotation>
+			<xs:documentation>
+				used for titles etc.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:attributeGroup name="coreattrs">
+		<xs:annotation>
+			<xs:documentation>
+				core attributes common to most elements
+				id document-wide unique id
+				class space separated list of classes
+				style associated style info
+				title advisory title/amplification
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="xs:ID" />
+		<xs:attribute name="class" type="xs:NMTOKENS" />
+		<xs:attribute name="style" type="StyleSheet" />
+		<xs:attribute name="title" type="Text" />
+	</xs:attributeGroup>
+
+	<xs:simpleType name="Script">
+		<xs:annotation>
+			<xs:documentation>
+				script expression
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:attributeGroup name="events">
+		<xs:annotation>
+			<xs:documentation>
+				attributes for common UI events
+				onclick a pointer button was clicked
+				ondblclick a pointer button was double clicked
+				onmousedown a pointer button was pressed down
+				onmouseup a pointer button was released
+				onmousemove a pointer was moved onto the element
+				onmouseout a pointer was moved away from the element
+				onkeypress a key was pressed and released
+				onkeydown a key was pressed down
+				onkeyup a key was released
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="onclick" type="Script" />
+		<xs:attribute name="ondblclick" type="Script" />
+		<xs:attribute name="onmousedown" type="Script" />
+		<xs:attribute name="onmouseup" type="Script" />
+		<xs:attribute name="onmouseover" type="Script" />
+		<xs:attribute name="onmousemove" type="Script" />
+		<xs:attribute name="onmouseout" type="Script" />
+		<xs:attribute name="onkeypress" type="Script" />
+		<xs:attribute name="onkeydown" type="Script" />
+		<xs:attribute name="onkeyup" type="Script" />
+	</xs:attributeGroup>
+
+	<xs:attributeGroup name="attrs">
+		<xs:attributeGroup ref="coreattrs" />
+		<xs:attributeGroup ref="i18n" />
+		<xs:attributeGroup ref="events" />
+	</xs:attributeGroup>
+
+	<xs:simpleType name="LinkTypes">
+		<xs:annotation>
+			<xs:documentation>
+				space-separated list of link types
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKENS" />
+	</xs:simpleType>
+
+	<xs:simpleType name="MediaDesc">
+		<xs:annotation>
+			<xs:documentation>
+				single or comma-separated list of media descriptors
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[^,]+(,\s*[^,]+)*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="link">
+		<xs:annotation>
+			<xs:documentation>
+				Relationship values can be used in principle:
+
+				a) for document specific toolbars/menus when used
+				with the link element in document head e.g.
+				start, contents, previous, next, index, end, help
+				b) to link to a separate style sheet (rel="stylesheet")
+				c) to make a link to a script (rel="script")
+				d) by stylesheets to control how collections of
+				html nodes are rendered into printed documents
+				e) to make a link to a printable version of this document
+				e.g. a PostScript or PDF version (rel="alternate" media="print")
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attributeGroup ref="attrs" />
+			<xs:attribute name="charset" type="Charset" />
+			<xs:attribute name="href" type="URI" />
+			<xs:attribute name="hreflang" type="LanguageCode" />
+			<xs:attribute name="type" type="ContentType" />
+			<xs:attribute name="rel" type="LinkTypes" />
+			<xs:attribute name="rev" type="LinkTypes" />
+			<xs:attribute name="media" type="MediaDesc" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:simpleType name="LanguageCode">
+		<xs:annotation>
+			<xs:documentation>
+				A language code, as per [RFC3066].
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:language" />
+	</xs:simpleType>
+
+	<xs:attributeGroup name="i18n">
+		<xs:annotation>
+			<xs:documentation>
+				Internationalization attributes:
+				- lang language code (backwards compatible)
+				- xml:lang language code (as per XML 1.0 spec)
+				- dir direction for weak/neutral text
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:attribute name="lang" type="LanguageCode" />
+		<xs:attribute ref="xml:lang" />
+
+		<xs:attribute name="dir">
+			<xs:simpleType>
+				<xs:restriction base="xs:token">
+					<xs:enumeration value="ltr" />
+					<xs:enumeration value="rtl" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:element name="meta">
+		<xs:annotation>
+			<xs:documentation>
+				generic meta-information.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:attributeGroup ref="i18n" />
+			<xs:attribute name="id" type="xs:ID" />
+			<xs:attribute name="http-equiv" />
+			<xs:attribute name="name" />
+			<xs:attribute name="content" use="required" />
+			<xs:attribute name="scheme" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:simpleType name="ContentType">
+		<xs:annotation>
+			<xs:documentation>
+				Media type, as per [RFC2045].
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:simpleType name="Charset">
+		<xs:annotation>
+			<xs:documentation>
+				A character encoding, as per [RFC2045].
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:simpleType name="URI">
+		<xs:annotation>
+			<xs:documentation>
+				A Uniform Resource Identifier, see [RFC2396].
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:anyURI" />
+	</xs:simpleType>
+
+	<xs:element name="script">
+		<xs:annotation>
+			<xs:documentation>
+				Script statements, which may include CDATA sections.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType mixed="true">
+			<xs:attribute name="id" type="xs:ID" />
+			<xs:attribute name="charset" type="Charset" />
+			<xs:attribute name="type" use="required" type="ContentType" />
+			<xs:attribute name="src" type="URI" />
+			<xs:attribute name="defer">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:enumeration value="defer" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute ref="xml:space" fixed="preserve" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

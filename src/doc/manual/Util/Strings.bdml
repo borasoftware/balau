@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - string utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="String Utilities">
+		<h1>Overview</h1>
+
+		<para>This header provides user friendly UTF-8 and UTF-32 string utility functions, defined within the <emph>Balau::Util::Strings</emph> namespace.</para>
+
+		<para>UTF-16 versions of the utilities are not current implemented. Pull requests with such new functionality are welcome.</para>
+
+		<para>These utility functions provide more coarse grained functionality compared to that provided by ICU, Boost, and the C++ standard library string manipulation calls.</para>
+
+		<para>The utilities use and return <emph>std::string_view</emph> objects where possible. In order to support multiple string types, a two stage typename deduction / type conversion approach is used for many of the functions.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Strings.hpp></strong></emph></para>
+
+		<para>The following utilities are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1Strings.html">API documentation</ref> page.</para>
+
+		<para>Each function covers UTF-8 and UTF-32 encodings and is available in several forms.</para>
+
+		<h2>Examination</h2>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>startsWith</cell>
+					<cell>Does the first string start with the second string/character/code point?</cell>
+				</row>
+
+				<row>
+					<cell>endsWith</cell>
+					<cell>Does the first string end with the second string/character/code point?</cell>
+				</row>
+
+				<row>
+					<cell>contains</cell>
+					<cell>Does the first string contain the second string/character/code point?</cell>
+				</row>
+
+				<row>
+					<cell>occurrences</cell>
+					<cell>How many non-overlapping occurrences of the second string/regular expression are found in the first string?</cell>
+				</row>
+
+				<row>
+					<cell>equalsIgnoreCase</cell>
+					<cell>Ignoring case, is the first string equal to the second string?</cell>
+				</row>
+
+				<row>
+					<cell>lineLengths</cell>
+					<cell>Given the supplied multi-line text string and an optional line break regular expression, determine the lengths of the lines in bytes.</cell>
+				</row>
+
+				<row>
+					<cell>lastIndexOf</cell>
+					<cell>Get the character/code point position in the first string of the last index of the second string.</cell>
+				</row>
+
+				<row>
+					<cell>codePointCount</cell>
+					<cell>Count the number of code points in the supplied string.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Mutation</h2>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+
+				<row>
+					<cell>toUpper</cell>
+					<cell>Convert the string to uppercase.</cell>
+				</row>
+
+				<row>
+					<cell>toLower</cell>
+					<cell>Convert the string to lowercase.</cell>
+				</row>
+
+				<row>
+					<cell>append</cell>
+					<cell>Appends count times the supplied character/code point to the supplied string.</cell>
+				</row>
+
+				<row>
+					<cell>padLeft</cell>
+					<cell>Left pad the string up to the specified width in code points, using the supplied character/code point.</cell>
+				</row>
+
+				<row>
+					<cell>padRight</cell>
+					<cell>Right pad the string up to the specified width in code points, using the supplied character/code point.</cell>
+				</row>
+
+				<row>
+					<cell>trim</cell>
+					<cell>Trim whitespace from the beginning and end of the string.</cell>
+				</row>
+
+				<row>
+					<cell>trimLeft</cell>
+					<cell>Trim whitespace from the beginning of the string.</cell>
+				</row>
+
+				<row>
+					<cell>trimRight</cell>
+					<cell>Trim whitespace from the end of the string.</cell>
+				</row>
+
+				<row>
+					<cell>replaceAll</cell>
+					<cell>Replace all occurrences of the specified string/regular expression with the specified replacement.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Manipulation</h2>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>join</cell>
+					<cell>Join the strings together, separated by the supplied delimiter.</cell>
+				</row>
+
+				<row>
+					<cell>prefixSuffixJoin</cell>
+					<cell>Join the strings together, prefixing each string with the prefix and suffixing each string with the suffix.</cell>
+				</row>
+
+				<row>
+					<cell>split</cell>
+					<cell>Split the string on each of the occurrences of the specified string/regular expression delimiter.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

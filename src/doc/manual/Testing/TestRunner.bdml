@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - test runner" />
+		<toc start="1" finish="3" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Test runner">
+		<h1>Overview</h1>
+
+		<para>A unit testing framework, allowing tests to be defined as member functions in test group classes. The test runner contains four different execution models, allowing single threaded and concurrent runs, in and out of process.</para>
+
+		<para>Unlike many other C++ unit test frameworks, the Balau unit test framework does not use preprocessor macros. Instead, tests are defined as parameterless instance methods of test group classes, and assertions are <ref type="raw" new="true" url="http://hamcrest.org/">Hamcrest</ref> inspired template functions. A complete test class forms a test group in the resulting run.</para>
+
+		<para>The Balau unit test framework does not use any external code generation tool to simulate the effects of the Java annotations in Java based unit test frameworks such as <ref type="raw" new="true" url="https://junit.org">JUnit</ref> and <ref type="raw" new="true" url="https://testng.org">TestNG</ref>, from which many C++ unit test frameworks are inspired. Instead, the test methods of a class are simply added to the class' test run by specifying them within the constructor.</para>
+
+		<para>Test classes typically mirror the production code classes. Using a friend class declaration in a production class allows the test class' methods to test private functions if this is required.</para>
+
+		<para>The Balau test runner has four execution models. The models are:</para>
+
+		<bullets>
+			<entry>single process, single threaded;</entry>
+			<entry>single process, multi-threaded;</entry>
+			<entry>multiple worker process;</entry>
+			<entry>separate process per test.</entry>
+		</bullets>
+
+		<para>The execution model can be selected by passing the relevant execution model enum value to the test runner constructor in the test application main function.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Testing/TestRunner.hpp></strong></emph></para>
+
+		<h2>Test groups</h2>
+
+		<para>Tests are defined within test groups. Each test group is defined as a class.</para>
+
+		<para>Test group classes inherit from the <emph>Testing::TestGroup</emph> test runner base template class, using <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</ref>. Each test is an instance method of the test class, which takes zero parameters and returns void. The constructor body of a test class registers test methods via calls to the registerTest method.</para>
+
+		<code lang="C++">
+			// Example test group from the Balau unit tests.
+
+			class CommandLineTest : public Testing::TestGroup&lt;CommandLineTest&gt; {
+				public: explicit CommandLineTest(Testing::TestRunner &amp; runner) : Test(runner) {
+					registerTest(&amp;CommandLineTest::basicTest,        "basicTest");
+					registerTest(&amp;CommandLineTest::failingTest,      "failingTest");
+					registerTest(&amp;CommandLineTest::finalValueTest,   "finalValueTest");
+					registerTest(&amp;CommandLineTest::numericValueTest, "numericValueTest");
+				}
+
+				void basicTest();
+				void failingTest();
+				void finalValueTest();
+				void numericValueTest();
+			};
+		</code>
+
+		<h2>Test main</h2>
+
+		<para>Tests are run from the test application main function. Within the main function, the test runner is instantiated and the test run execution model is specified as a constructor parameter. The tests are added to the test runer via fluent calls, with the last call being the instruction to run the tests.</para>
+
+		<para>Example <emph>main</emph> function:</para>
+
+		<code lang="C++">
+			#include &lt;Balau/Character/CharacterTest.hpp&gt;
+			#include &lt;Balau/Util/CommandLineTest.hpp&gt;
+
+			int main() {
+				// Run the tests with the worker processes execution model.
+				return Testing::TestRunner(Testing::WorkerProcesses)
+					.registerGroup&lt;Balau::Character::CharacterTest&gt;()
+					.registerGroup&lt;Balau::Util::CommandLineTest&gt;()
+					.run();
+			}
+		</code>
+
+		<para>Currently, test groups may be disabled by commenting them out in the test application <emph>main</emph> function.</para>
+
+		<h3>Execution models</h3>
+
+		<para>The test runner has four execution models. The models are:</para>
+
+		<bullets>
+			<entry>single process, single threaded;</entry>
+			<entry>single process, multi-threaded;</entry>
+			<entry>worker process;</entry>
+			<entry>process per test.</entry>
+		</bullets>
+
+		<para>The execution model can be selected by passing the execution model enum token to the test runner constructor, as illustrated in the previous example. If no execution model is specified, the default worker process execution model is used.</para>
+
+		<para>For the multi-threaded and worker process execution models, the concurrency level (the number of threads or processes) can also be specified as an argument to the test runner constructor. The concurrency level is also used to specify the number of simultaneous processes to spawn in the process per test execution model.</para>
+
+		<para>If the concurrency level is not specified, the default value equal to the number of CPU cores is used.</para>
+
+		<h1>Defining tests</h1>
+
+		<h2>Test groups</h2>
+
+		<para>Tests are grouped inside test classes.</para>
+
+		<para>Test classes derive from the <emph>Testing::TestGroup</emph> base class template, using <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</ref>. Each test is an instance method of the test class, which takes zero parameters and returns void. The constructor body of a test class registers test methods via calls to the registerTest method.</para>
+
+		<para>Test classes may be defined as a header only, or may be split over a header/body file pair.</para>
+
+		<para>The following is the header of a test class which has four test methods.</para>
+
+		<code lang="C++">
+			class CommandLineTest : public Testing::TestGroup&lt;CommandLineTest&gt; {
+				public: explicit CommandLineTest(Testing::TestRunner &amp; runner) : Test(runner) {
+					registerTest(&amp;CommandLineTest::basicTest,        "basicTest");
+					registerTest(&amp;CommandLineTest::failingTest,      "failingTest");
+					registerTest(&amp;CommandLineTest::finalValueTest,   "finalValueTest");
+					registerTest(&amp;CommandLineTest::numericValueTest, "numericValueTest");
+				}
+
+				void basicTest();
+				void failingTest();
+				void finalValueTest();
+				void numericValueTest();
+			};
+		</code>
+
+		<para>The result of running the above test class follows. One of the tests is failing.</para>
+
+		<code>
+			------------------------- STARTING TESTS -------------------------
+
+			Run type = single process, multi-threaded (2 threads)
+
+			++ Running test group CommandLineTest
+
+			 - Running test CommandLineTest::basicTest         - passed. Duration = 174μs
+			 - Running test CommandLineTest::failingTest       - FAILED!
+
+			Assertion failed:
+			true != false
+
+			 Duration = 140us
+
+			 - Running test CommandLineTest::finalValueTest    - passed. Duration = 147μs
+			 - Running test CommandLineTest::numericValueTest  - passed. Duration = 354μs
+
+			== CommandLineTest group completed. Group duration (core clock time) = 675μs
+
+			------------------------- COMPLETED TESTS ------------------------
+
+			Total duration   (test run clock time)    = 675μs
+			Average duration (test run clock time)    = 225μs
+			Total duration   (application clock time) = 696μs
+
+			THERE WERE TEST FAILURES.
+
+			Total tests run: 4
+
+			  3 tests passed
+			  1 test failed
+
+			Failed tests:
+			    CommandLineTest::failingTest
+
+			Test application process with pid 13090 finished execution.
+			Process finished with exit code 0
+		</code>
+
+		<h2>Setup and teardown</h2>
+
+		<para>Test classes may include setup and teardown methods. Due to the multi-process design of the test runner, only test setup/teardown methods are supported (i.e. there are no class setup/teardown methods included).</para>
+
+		<para>The following is a test class which has test setup and teardown methods defined:</para>
+
+		<code lang="C++">
+			class CommandLineTest : public Testing::TestGroup&lt;CommandLineTest&gt; {
+				public: explicit CommandLineTest(Testing::TestRunner &amp; runner) : Test(runner) {
+					registerTest(&amp;CommandLineTest::basicTest,        "basicTest");
+					registerTest(&amp;CommandLineTest::finalValueTest,   "finalValueTest");
+					registerTest(&amp;CommandLineTest::numericValueTest, "numericValueTest");
+				}
+
+				void basicTest();
+				void finalValueTest();
+				void numericValueTest();
+
+				private: void setup() override {
+					log("      CommandLineTest::setup() called.\n");
+				}
+
+				private: void teardown() override {
+					log("      CommandLineTest::teardown() called.\n");
+				}
+			};
+		</code>
+
+		<para>The result of running the above test class follows.</para>
+
+		<code>
+			------------------------- STARTING TESTS -------------------------
+
+			Run type = single process, single threaded
+
+			++ Running test group CommandLineTest
+
+			 - Running test CommandLineTest::basicTest         - passed. Duration = 65μs
+			      CommandLineTest::setup() called.
+			      CommandLineTest::teardown() called.
+			 - Running test CommandLineTest::finalValueTest    - passed. Duration = 47μs
+			      CommandLineTest::setup() called.
+			      CommandLineTest::teardown() called.
+			 - Running test CommandLineTest::numericValueTest  - passed. Duration = 191μs
+
+			== CommandLineTest group completed. Group duration (core clock time) = 303μs
+
+			------------------------- COMPLETED TESTS ------------------------
+
+			Total duration   (test run clock time)    = 303μs
+			Average duration (test run clock time)    = 101μs
+			Total duration   (application clock time) = 393μs
+
+			ALL TESTS PASSED: 3 tests executed
+			Test application process with pid 13431 finished execution.
+			Process finished with exit code 0
+		</code>
+
+		<h1>Assertions</h1>
+
+		<para>The test runner contains simple <ref type="raw" new="true" url="http://hamcrest.org/">Hamcrest</ref> inspired assertion utilities that are available for use in test methods and setup/teardown methods.</para>
+
+		<para>In order to use the assertions, suitable <emph><strong>operator ==</strong></emph> functions/methods will need to exist for the types of the objects specified in the assertion statements. In addition, each type will require a <emph>toString</emph> function to be defined. These are used by the assertion render functions. Refer to the documentation on the <ref url="Application/ToString">universal to-string function</ref> for more information.</para>
+
+		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> and <emph>operator ==</emph> functions, the header file(s) containing the functions must be included before the <emph>TestRunner.hpp</emph> header is included.</strong></para>
+
+		<para>When writing tests in a <emph>.cpp</emph> file, it is convenient to import the used assertion symbols via using directives:</para>
+
+		<code lang="C++">
+			// Import the main assertion function and the 'is' function.
+			using Balau::Testing::assertThat;
+			using Balau::Testing::is;
+		</code>
+
+		<para>Examples of assertions can be found in the <emph>AssertionsTestData.hpp</emph> test file.</para>
+
+		<h2>Comparisons</h2>
+
+		<para>Assertions for equality and other standard comparisons are available:</para>
+
+		<code lang="C++">
+			assertThat(actual, is(expected));
+			assertThat(actual, isNot(expected));
+			assertThat(actual, isGreaterThan(expected));
+			assertThat(actual, isLessThan(expected));
+			assertThat(actual, isGreaterThanOrEqual(expected));
+			assertThat(actual, isLessThanOrEqual(expected));
+			assertThat(actual, isAlmostEqual(expected, errorLimit));
+		</code>
+
+		<para>These comparison assertions require that the implicated types have corresponding comparison functions defined. For the <emph>isAlmostEqual</emph> assertion, both <emph>&lt;=</emph> and <emph>&gt;=</emph> are required.</para>
+
+		<para>Other types of comparison such as startsWith, endsWith, etc. are also available:</para>
+
+		<code lang="C++">
+			assertThat(actual, startsWith(expected));
+			assertThat(actual, endsWith(expected));
+			assertThat(actual, contains(expected));
+			assertThat(actual, doesNotContain(expected));
+		</code>
+
+		<para>However, these assertions require that the type implicated in the call have a <emph>std::basic_string</emph> type API (length, substr, begin, end) and require the <emph>Balau::contains(actual, expected)</emph> function to be defined for the actual and expected types, so unless you define such an API and helper function for your types, their use is limited to <emph>std::basic_string&lt;T&gt;</emph>.</para>
+
+		<h2>Exceptions</h2>
+
+		<para>Assertions for expected thrown exceptions are available with a similar Hamcrest like API:</para>
+
+		<code lang="C++">
+			assertThat(function, throws&lt;T&gt;());
+			assertThat(function, throws(expectedException));
+			assertThat(function, throws(expectedException, comparisonFunction));
+		</code>
+
+		<para>The usage of these assertions differs from the comparison assertions. The first argument passed to the <emph>assertThat</emph> call is a function, typically supplied as a lambda:</para>
+
+		<code lang="C++">
+			assertThat([&amp;] () { foo(); }, throws&lt;T&gt;());
+			assertThat([&amp;] () { foo(); }, throws(expectedException));
+			assertThat([&amp;] () { foo(); }, throws(expectedException, comparisonFunction));
+		</code>
+
+		<para>The function is called during the assertion call, and any exception thrown is then examined. The first call verifies that the expected type of exception is thrown. The second and third calls examine the contents of the thrown exception, compared to the supplied exception. In order to use the second call, the exception type must have an equality operator function defined for it in order for the code to compile. The third call allows a comparison function to be passed to the call, which will be used instead of the equality operator.</para>
+
+		<para>In order to use the exception instance assertion versions, a suitable <emph>operator ==</emph> function must be defined for the exception, in order that the test framework may compare the actual and expected exceptions. No such function is required in order to use the exception type assertion version. A suitable <emph>toString</emph> function will also be required for the exception class, in order for the test runner to print the exception contents during assertion failures.</para>
+
+		<para>Examples of the use of the first and third exception assertion calls can be seen in the <emph>CommandLineTest</emph> class:</para>
+
+		<code lang="C++">
+			// Exception type assertion.
+			assertThat([&amp;] () { commandLine.getOption(KEY9); }, throws&lt;OptionValueException&gt;());
+
+			// Exception contents assertion.
+			auto comp = [] (auto &amp; a, auto &amp; e) { return std::string(a.what()) == std::string(e.what()); };
+			assertThat([&amp;] () { commandLine.getOption(KEY9); }, throws(OptionValueException("key9"), comp));
+		</code>
+
+		<h2>Renderers</h2>
+
+		<para>The assertion methods call the following function to print the content of the actual and expected values in the case of an assertion failure:</para>
+
+		<code lang="C++">
+			namespace Balau {
+
+			namespace Renderers {
+
+			template &lt;typename A, typename E&gt;
+			std::string render(const A &amp; actual, const E &amp; expected);
+
+			} // namespace Renderers
+
+			} // namespace Balau
+		</code>
+
+		<para>The standard renderer calls the Balau <emph>toString</emph> functions for the inputs and prints each resulting line side by side, along with an infix <emph><strong>==</strong></emph> or <emph><strong>!=</strong></emph> according to line equality.</para>
+
+		<para>Custom failure message renderers may be added by specialising the above template function (within the Balau namespace):</para>
+
+		<h1>Logging</h1>
+
+		<h2>Test output</h2>
+
+		<para>The test runner has configurable test logging, allowing the test log to be written to a variety of outputs. This is achieved by passing one or more <emph>TestWriter</emph> derived classes to the test runner constructor. The following test writers are defined in the <emph>TestRunner.hpp</emph> header:</para>
+
+		<table class="bdml-table30L70w80">
+			<head> <cell>Class name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row> <cell>StdOutTestWriter</cell>  <cell>Write to stdout.</cell> </row>
+				<row> <cell>FileTestWriter</cell>    <cell>Write to the specified file.</cell> </row>
+				<row> <cell>OStreamTestWriter</cell> <cell>Write to the previously constructed output stream.</cell> </row>
+				<row> <cell>LoggerTestWriter</cell>  <cell>Write to the specified Balau logger.</cell> </row>
+			</body>
+		</table>
+
+		<para>Other test writers may be created if required, by deriving from the <emph>TestWriter</emph> base class.</para>
+
+		<para>In order to register test writers, they are specified as test runner constructor arguments in the test application main function:</para>
+
+		<code lang="C++">
+			int main() {
+				// Create test runner with two writers.
+				TestRunner runner(
+					  LoggerTestWriter("balau.test.output")
+					, FileTestWriter(Resource::File("testOutput.log"))
+				);
+
+				// ... register test groups ...
+
+				return runner.run();
+			}
+		</code>
+
+		<para>If no test writers are specified, the test runner will log to stdout by default.</para>
+
+		<h2>Test logging</h2>
+
+		<para>The <emph>TestGroup</emph> base class contains two logging methods that can be used to log output to the test runner writers:</para>
+
+		<code lang="C++">
+			///
+			/// Write additional logging to the test writers.
+			///
+			protected: void log(const std::string &amp; string);
+
+			///
+			/// Write additional logging to the test writers.
+			/// A line break is written after the string.
+			///
+			protected: void logLine(const std::string &amp; string = "");
+		</code>
+
+		<para>These methods can be used anywhere in a test class to log additional test messages.</para>
+
+		<para>An alternative technique of logging test messages is to use the Balau <ref url="Logging/Logger">logging framework</ref> and construct the test runner to log test results to a Balau logger. This allows the full parameter parsing of the logging framework to be used within the test class log messages. There are two ways of configuring the logging system for the test application.</para>
+
+		<list>
+			<entry>Implicitly configure the logging system with a <emph>balau-logging.conf</emph> file in the test application binary directory (a CMake custom command will be required to copy the logging configuration file to the build folder - see the Balau CMakeLists.txt for an example).</entry>
+
+			<entry>Explicitly configure the logging system by calling <emph>Logger::configure(std::string)</emph> from within the test application main function, before running the tests.</entry>
+		</list>
+
+		<para>More information on logging system configuration is available in the <ref url="Logging/Logger">Logging</ref> documentation.</para>
+
+		<h1>Test utilities</h1>
+
+		<para>The test framework utilities are designed to provide domain specific help in accomplishing certain management tasks required during testing. The test framework utilities are in an early stage of development, and currently only a pair of network related test utility functions are defined.</para>
+
+		<h2>Network</h2>
+
+		<para>The test framework network utilities provide a way of getting a free TCP ports for tests. There are two functions defined:</para>
+
+		<bullets>
+			<entry>initialiseWithFreeTcpPort;</entry>
+			<entry>getFreeTcpPort.</entry>
+		</bullets>
+
+		<para>These two functions are normally used together. The <emph>initialiseWithFreeTcpPort</emph> function takes some code to execute. This code is part of the test and should initialise the network state that requires the port.</para>
+
+		<para>From within the code supplied to the <emph>initialiseWithFreeTcpPort</emph> function, the <emph>getFreeTcpPort</emph> function should be called in order to obtain a free port that will be used to initialise the network state.</para>
+
+		<para>There are two possible failures that may occur when attempting to obtain a free port. The first is that the specified port is not available. This issue is mitigated with the call to <emph>getFreeTcpPort</emph>. This function takes start port and port count arguments, and tests for the availability of a free port between the specified port range.</para>
+
+		<para>Once a free port has been obtained, an attempt to bind to it can be made by the test code. However, there is an inherent race condition present. If another process binds to the port between the call to <emph>getFreeTcpPort</emph> and the subsequent attempt to bind, the binding will fail.</para>
+
+		<para>In order to mitigate this race condition, the <emph>initialiseWithFreeTcpPort</emph> function will repeatedly run the initialisation code until a successful binding has been achieved. Each time the initialisation code is run, a new free port is obtained via the <emph>getFreeTcpPort</emph> call.</para>
+
+		<para>Examples of this pattern being used can be seen in the HTTP network tests in the Balau test suite. The following is an extract from one of the tests in the <emph>FileServingHttpWebAppTest</emph> class.</para>
+
+		<code lang="C++">
+			const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
+				[&amp;server, documentRoot, testPortStart] () {
+					auto endpoint = makeEndpoint(
+						"127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
+					);
+
+					auto clock = std::shared_ptr&lt;System::Clock>(new System::SystemClock());
+
+					server = std::make_shared&lt;HttpServer>(
+						clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot
+					);
+
+					server->start();
+					return server->getPort();
+				}
+			);
+		</code>
+
+		<para>In the above code, the race condition occurs between the call to <emph>getFreeTcpPort</emph> and the call to construct the HTTP server.</para>
+
+		<h1>Test application</h1>
+
+		<h2>Main function</h2>
+
+		<para>The <emph>main</emph> function of the test application should contain a test runner instance, statements which register the test classes to the runner, and a call to the test runner to run the tests.</para>
+
+		<para>Example <emph>main</emph> function:</para>
+
+		<code lang="C++">
+			#include &lt;Balau/Character/CharacterTest.hpp&gt;
+			#include &lt;Balau/Util/CommandLineTest.hpp&gt;
+
+			int main() {
+				return Testing::TestRunner(WorkerProcesses)
+					.registerGroup&lt;Balau::Character::CharacterTest&gt;()
+					.registerGroup&lt;Balau::Util::CommandLineTest&gt;()
+					.run();
+			}
+		</code>
+
+		<para>Currently, test groups may be disabled by commenting them out in the test application <emph>main</emph> function.</para>
+
+		<h2>Model selection</h2>
+
+		<para>The test execution model to run is specified in the test runner constructor. This can be hard wired into the test application, or it can be derived from the input arguments supplied to the main function.</para>
+
+		<para>The test runner <emph>ExecutionModel.hpp</emph> header contains a helper function <emph>executionModelFromString</emph> that parses a case insensitive string representation of the execution model and returns the matching execution model enum value. This can be used to parse a program argument that specifies the execution model.</para>
+
+		<code lang="C++">
+			#include &lt;Balau/Character/CharacterTest.hpp&gt;
+			#include &lt;Balau/Util/CommandLineTest.hpp&gt;
+
+			int main(int argc, char * argv[]) {
+				auto model = argc > 1
+					? Testing::executionModelFromString(argv[1])
+					: WorkerProcesses;
+
+				return Testing::TestRunner(model)
+					.registerGroup&lt;Balau::Character::CharacterTest&gt;()
+					.registerGroup&lt;Balau::Util::CommandLineTest&gt;()
+					.run();
+			}
+		</code>
+
+		<para>This approach can be useful for teams that run a continuous integration server that requires a <emph>WorkerProcesses</emph> or <emph>ProcessPerTest</emph> execution model, whilst allowing developers to set a <emph>SingleThreaded</emph> or <emph>WorkerThreads</emph> execution model in their run configurations.</para>
+
+		<h2>Execution models</h2>
+
+		<para>The test runner has four execution models. The models are:</para>
+
+		<bullets>
+			<entry>single process, single threaded;</entry>
+			<entry>single process, multi-threaded;</entry>
+			<entry>worker process;</entry>
+			<entry>process per test.</entry>
+		</bullets>
+
+		<para>The execution model can be selected by passing the execution model enum token to the test runner constructor, as illustrated in the previous example. If no execution model is specified, the default <emph>WorkerProcesses</emph> execution model is used.</para>
+
+		<para>Each execution model has advantages and disadvantages. Typically, the single process execution models would be used whilst running tests on the developer's workstation, and one of the multiple process execution models would be used when running on a continuous integration server.</para>
+
+		<h3>Single threaded</h3>
+
+		<para>The single threaded execution model executes each test in turn, within the test application main thread. This is the simplest of the execution models. If a test causes a segmentation fault, the test application will terminate.</para>
+
+		<para>Reasons to use the single threaded execution model include:</para>
+
+		<bullets>
+			<entry>ensures any possible complexity introduced by the test framework is eliminated;</entry>
+
+			<entry>an in-process execution model allows direct debugging.</entry>
+		</bullets>
+
+		<para>The disadvantages of the single threaded execution model are:</para>
+
+		<bullets>
+			<entry>if a test causes a segmentation fault, the test application will terminate;</entry>
+
+			<entry>due to the single threaded nature of this execution model, test runs will take longer than with the other execution models.</entry>
+		</bullets>
+
+		<h3>Multi-threaded</h3>
+
+		<para>The multi-threaded execution model executes tests in parallel, in a fixed number of worker threads in the test application. Each worker thread executes by claiming the next available test and running it. As this execution model is also single process, the test application will terminate if a test causes a segmentation fault.</para>
+
+		<para>Reasons to use the multi-threaded execution model include:</para>
+
+		<bullets>
+			<entry>an in-process execution model allows direct debugging;</entry>
+
+			<entry>running tests in parallel uses all CPU cores and ensures a faster test run.</entry>
+		</bullets>
+
+		<para>The disadvantage of the multi-threaded execution model is that if a test causes a segmentation fault, the test application will terminate.</para>
+
+		<h3>Worker process</h3>
+
+		<para>The worker process execution model executes tests in parallel, in a fixed number of child processes spawned by the test application. Each worker process executes by claiming the next available test and running it.</para>
+
+		<para>As this execution model is multiple process, the test application will not terminate if a test causes a segmentation fault. Instead, the child process will terminate and the parent process will spawn a replacement child process to continue testing.</para>
+
+		<para>Reasons to use the worker process execution model include:</para>
+
+		<bullets>
+			<entry>tests that cause segmentation faults will not result in test application termination;</entry>
+
+			<entry>running tests in parallel uses all CPU cores and ensures a faster test run.</entry>
+		</bullets>
+
+		<para>The disadvantage of the worker process execution model is that breakpoints will not be hit in the child processes.</para>
+
+		<h3>Process per test</h3>
+
+		<para>The process per test execution model executes tests in parallel, by forking a new child process for each test.</para>
+
+		<para>As this execution model is multiple process, the test application will not terminate if a test causes a segmentation fault. Instead, only the child process for the test causing the segmentation fault will terminate.</para>
+
+		<para>Reasons to use the process per test execution model include:</para>
+
+		<bullets>
+			<entry>the entire process' state is reset for each test;</entry>
+
+			<entry>tests that cause segmentation faults will not result in test application termination;</entry>
+
+			<entry>running tests in parallel uses all CPU cores and ensures a faster test run.</entry>
+		</bullets>
+
+		<para>The disadvantages of the process per test execution model are:</para>
+
+		<bullets>
+			<entry>breakpoints will not be hit in the child processes;</entry>
+
+			<entry>the forking of a new child process for each test may cause a reduction in performance compared to the worker process execution model (this does not appear to be the case on x86-64 Linux).</entry>
+		</bullets>
+
+		<h3>Performance</h3>
+
+		<para>The following test run timing information was obtained by running the Balau unit tests for each execution model. The CPU used in the test was an Intel i7-8550U (4 core with hyper-threading), with turbo turned off. The default concurrency of 8 threads/processes was used for the multi-threaded, worker process, and process per test execution models.</para>
+
+		<para>The best result of 10 runs was taken for each execution model. The timing values indicate clock time, thus they do not take into account context switches where a CPU core is executing other application's background code. The total duration (test run clock time) is the sum of all the test's execution times. For concurrent execution models, this is spread across the allocated cores. The average duration is the test run clock time total duration divided by the number of tests run. The total duration (application clock time) is the duration of the test application's main process.</para>
+
+		<para>In the Balau test suite, the logger tests are automatically disabled during multi-threaded and worker process runs. Consequently, these test groups were manually disabled for all the the runs in this performance evaluation. In addition, all test groups that involve network functionality were also disabled in order to avoid network latency issues skewing results.</para>
+
+		<code>
+			----------------- SINGLE THREADED ------------------
+
+			Total duration   (test run clock time)    = 1.1s
+			Average duration (test run clock time)    = 4.2ms
+			Total duration   (application clock time) = 1.1s
+
+			***** ALL TESTS PASSED - 262 tests executed *****
+
+			------------------ MULTI-THREADED ------------------
+
+			Total duration   (test run clock time)    = 1.5s
+			Average duration (test run clock time)    = 5.6ms
+			Total duration   (application clock time) = 345.8ms
+
+			***** ALL TESTS PASSED - 262 tests executed *****
+
+			----------------- WORKER PROCESSES -----------------
+
+			Total duration   (test run clock time)    = 1.5s
+			Average duration (test run clock time)    = 5.8ms
+			Total duration   (application clock time) = 384.0ms
+
+			***** ALL TESTS PASSED - 262 tests executed *****
+
+			----------------- PROCESS PER TEST -----------------
+
+			Total duration   (test run clock time)    = 1.2s
+			Average duration (test run clock time)    = 4.7ms
+			Total duration   (application clock time) = 382.7ms
+
+			***** ALL TESTS PASSED - 262 tests executed *****
+		</code>
+
+		<para>It can be seen that the single threaded executor has the lower overhead per test, but the other executors nevertheless reduce the execution time significantly when run on a multi-core CPU. If an appreciable amount of tests with significant I/O waits were present, the speed up would approach the number of allocated cores.</para>
+
+		<para>The Balau unit test execution times range from microseconds to tens of milliseconds, and there were 262 tests run in the above timing runs. A complex C++ application could have one or two orders of magnitude more tests than this, and it is likely that the average execution time of the tests would be greater on average. Thus the overall execution times presented above could thus be multiplied by a factor of several orders of magnitude in order to represent a real world scenario.</para>
+
+		<h2>CI configuration</h2>
+
+		<para>This section only discusses coninuous integration via a CMake target.</para>
+
+		<para>In order to create CI jobs in tools such as <ref type="raw" new="true" url="https://jenkins.io/">Jenkins</ref>, the test application will require a CMake target to run. This can be achieved with the following configuration in the CMakeLists.txt file.</para>
+
+		<code lang="C++">
+			##################### TEST RUNNER #####################
+
+			add_custom_target(
+				RunTests
+				ALL
+				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+				COMMAND TestApp
+			)
+
+			add_dependencies(RunTests TestApp)
+		</code>
+
+		<para>This custom target can also be used directly from the command line if required, by typing <emph>make RunTests</emph>.</para>
+
+		<para>In the CMake custom target definition, <emph>RunTests</emph> is the name of the target that will be specified in the CI jobs, and <emph>TestApp</emph> is the test application executable target. After adding the dependency declaration, running the <emph>RunTests</emph> target will first build the test application, then will execute it.</para>
+
+		<para>The test application will return 0 on success and 1 on failure. This will be picked up by the CI job runner in order to determine test run success.</para>
+	</chapter>
+</document>

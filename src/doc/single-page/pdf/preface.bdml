@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  - Bora-Doc help file
+  -
+  - Copyright 2009 Nicholas Smethurst (contact@borasoftware.com)
+  -
+  - Use of this file is subject to the Bora End User License Agreement, a copy
+  - of which can be seen at https://borasoftware.com/eula.html.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<chapter title="Preface">
+		<para>Balau preface</para>
+	</chapter>
+</document>

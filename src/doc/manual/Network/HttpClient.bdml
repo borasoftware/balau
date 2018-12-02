@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - HTTP client" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="HTTP client">
+		<h1>Overview</h1>
+
+		<para>HTTP and HTTPS clients that use the Boost Asio and Beast libraries.</para>
+
+		<para>The clients currently provide synchronous GET, HEAD, and POST calls.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement">
+			<emph><strong>#include &lt;Balau/Network/Http/Client/HttpClient.hpp></strong></emph><newline />
+			<emph><strong>#include &lt;Balau/Network/Http/Client/HttpsClient.hpp></strong></emph>
+		</para>
+
+		<h2>Construction</h2>
+
+		<para>In order to create a client, specify the host to the client constructor.</para>
+
+		<code lang="C++">
+			// Create an HTTPS client with default SSL port 443.
+			HttpsClient client("borasoftware.com");
+		</code>
+
+		<para>The default user agent used in the client is "<emph>Balau 2018.9.1</emph>", where <emph>2018.9.1</emph> is the version of the Balau library. The HTTP version in the above client is version 1.1.</para>
+
+		<para>If the required port, user agent and/or HTTP version are different to the default values, they can be specified in the constructor</para>
+
+		<code lang="C++">
+			// Create an HTTP client with port 12345.
+			HttpClient client1("example.com", 12345);
+
+			// Create an HTTP client with port 12345 and user agent "Anon".
+			HttpClient client2("example.com", 12345, "Anon");
+
+			// Create an HTTP client with port 12345, user agent "Anon", and HTTP version 1.0.
+			HttpClient client3("example.com", 12345, "Anon", "1.0");
+		</code>
+
+		<para>If the scheme in the URL should determine whether an HTTP or HTTPS client should be created, the <emph>HttpClient::newClient</emph> static method can be used. In this API, the optional port number should also be included in the URL.</para>
+
+		<code lang="C++">
+			// Create HTTP or HTTPS clients, according to the supplied URL.
+			auto client4 = HttpClient::makeClient("https://borasoftware.com");
+			auto client5 = HttpClient::makeClient("http://example.com:12345");
+		</code>
+
+		<para>The <emph>HttpClient::newClient</emph> static method also accepts an optional user agent and HTTP version.</para>
+
+		<code lang="C++">
+			// Create a client with a custom user agent.
+			auto client6 = HttpClient::makeClient("https://borasoftware.com", "Anon");
+
+			// Create a client with a custom user agent and HTTP version 1.0.
+			auto client7 = HttpClient::makeClient("http://example.com:12345", "Anon", "1.0");
+		</code>
+
+		<h2>Usage</h2>
+
+		<para>In order to perform synchronous GET, HEAD, and POST calls, the <emph>get</emph>, <emph>head</emph>, and <emph>post</emph> methods can be used.</para>
+
+		<code lang="C++">
+			// Perform a GET request.
+			CharVectorResponse response1 = client.get("/");
+
+			// Perform a HEAD request.
+			EmptyResponse response2 = client.head("/");
+
+			// Perform a POST request.
+			const std::string body = generateBody();
+			CharVectorResponse response3 = client.post("/api/execute", body);
+		</code>
+
+		<para>The GET and POST requests return a <emph>CharVectorResponse</emph>, which contains response headers and a character vector body. The HEAD request returns an <emph>EmptyResponse</emph>, which only contains response headers.</para>
+	</chapter>
+</document>

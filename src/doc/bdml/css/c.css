@@ -1,0 +1,189 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* C syntax highlighting colours. */
+
+.bdml-c .bdml-keyword {
+	color: #227;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-type-identifier {
+	color: #800;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-operator {
+	color: #000;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-define {
+	color: #880;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-comment {
+	color: #080;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-comment-todo {
+	color: #821222;
+	font-style: italic;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-placeholder {
+	color: #480;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-continuation {
+	color: #22c;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-number {
+	color: #00d;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-hex-oct-number {
+	color: #077;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-suf-num {
+	color: #07f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-suf-nho {
+	color: #777;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-mod {
+	color: #b22;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-typ {
+	color: #722;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-directive {
+	color: #880;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-api-doc {
+	color: #088;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-api-doc-todo {
+	color: #821222;
+	font-style: italic;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-opt {
+	color: #f22;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-sym {
+	color: #22f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-string {
+	color: #c22;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-str-sp {
+	color: #f2f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-str-fc {
+	color: #f52;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-cont {
+	color: #22f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-dir {
+	color: #292;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-dir-name {
+	color: #bb2;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-disp {
+	color: #227;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-c .bdml-ln {
+	color: #999;
+	margin: 0;
+	padding: 0;
+}

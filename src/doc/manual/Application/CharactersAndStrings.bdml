@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - characters and strings" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Characters and strings">
+		<h1>Overview</h1>
+
+		<para>The Balau library has been designed primarily to work with external character data encoded in UTF-8 and internal character data encoded in UTF-8 and UTF-32. UTF-8 is used for persisted strings, data transfer, and in-memory strings. UTF-32 is used in code point processing algorithms that require a fixed size code point type.  This allows a normally compact representation in memory, in transit, and in storage, but provides a fixed width character type for processing when required.</para>
+
+		<para>The C++ language <emph>char</emph> character type is used for UTF-8 data and the <emph>char32_t</emph> character type is used for UTF-32 data. As the size of the C++ language <emph>wchar_t</emph> character type is not defined in the specification, the <emph>wchar_t</emph> character type and associated <emph>std::wstring</emph> string type are not used in Balau.</para>
+
+		<para>The <emph>char16_t</emph> character type is not used in Balau components. A set of universal to-string and from-string function overloads is however included for UTF-16 string generation and conversion. These functions provide to-string and from-string conversions when another library works with UTF-16 strings or when application code requires UTF-16 encoded strings.</para>
+
+		<para>Balau uses the ICU library for unicode support. Unlike ICU, Balau uses the standard <emph>char32_t</emph> primitive type for representing UTF-32 characters. This is implicitly cast to and from ICU's <emph>UChar32</emph> (which is a <emph>signed int</emph>) within the <ref url="Util/Character">Character</ref> functions.</para>
+
+		<para>The primary character and string related functionality that Balau provides is:</para>
+
+		<bullets>
+			<entry>UTF-8 and UTF-32 character utilities;</entry>
+
+			<entry>universal to-string functions for UTF-8, UTF-16, and UTF-32 string conversion;</entry>
+
+			<entry>universal from-string functions for UTF-8, UTF-16, and UTF-32 string conversion;</entry>
+
+			<entry>various UTF-8 and UTF-32 string utilities;</entry>
+
+			<entry>byte based resource classes for reading and writing UTF-8 data;</entry>
+
+			<entry>UTF-8 to UTF-32 converting resource classes for reading UTF-32 data;</entry>
+
+			<entry>UTF-32 to UTF-8 converting resource classes for writing UTF-32 data.</entry>
+		</bullets>
+
+		<para>The character utilities, universal to-string and universal from-string functions are discussed in this section. The <ref url="Util/Strings">string utilities</ref> section discusses the string utilities. The <ref url="Application/Resources">resources</ref> section discusses the various resource classes.</para>
+
+		<h1>String types</h1>
+
+		<para>The Balau C++ library uses the following character and string types:</para>
+
+		<table class="bdml-table202060">
+			<head> <cell>Char type</cell> <cell>String type</cell> <cell>Usage</cell> </head>
+
+			<body>
+				<row>
+					<cell>char</cell>
+					<cell>std::string</cell>
+					<cell>UTF-8 string or undefined array of bytes</cell>
+				</row>
+
+				<row>
+					<cell>char16_t</cell>
+					<cell>std::u16string</cell>
+					<cell>UTF-16 string</cell>
+				</row>
+
+				<row>
+					<cell>char32_t</cell>
+					<cell>std::u32string</cell>
+					<cell>UTF-32 string</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1>Character utilities</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Type/Character.hpp></strong></emph></para>
+
+		<para>Character utility functions for the following themes are provided:</para>
+
+		<bullets>
+			<entry>classification (UTF-32);</entry>
+
+			<entry>iteration (UTF-8);</entry>
+
+			<entry>mutation (UTF-8 / UTF-32).</entry>
+		</bullets>
+
+		<para>Many of the character utility functions are proxies to corresponding ICU functions.</para>
+
+		<h2>Classification</h2>
+
+		<para>The classification functions each accept a <emph>char32_t</emph> character. Most of the classification functions act as predicates.</para>
+
+		<para>The following predicate classification functions are available.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>isLower</cell>
+					<cell>Does the specified code point have the general category <emph>Ll</emph> (lowercase letter).</cell>
+				</row>
+
+				<row>
+					<cell>isUpper</cell>
+					<cell>Does the specified code point have the general category <emph>Lu</emph> (uppercase letter).</cell>
+				</row>
+
+				<row>
+					<cell>isDigit</cell>
+					<cell>Does the specified code point have the general category <emph>Nd</emph> (decimal digit numbers).</cell>
+				</row>
+
+				<row>
+					<cell>isHexDigit</cell>
+					<cell>Does the specified code point have the general category <emph>Nd</emph> (decimal digit numbers) or is one of the ASCII latin letters a-f or A-F.</cell>
+				</row>
+
+				<row>
+					<cell>isOctalDigit</cell>
+					<cell>Is the specified code point one of the ASCII characters 0-7.</cell>
+				</row>
+
+				<row>
+					<cell>isBinaryDigit</cell>
+					<cell>Is the specified code point one of the ASCII characters 0-1.</cell>
+				</row>
+
+				<row>
+					<cell>isAlpha</cell>
+					<cell>Does the specified code point have the general category <emph>L</emph> (letters).</cell>
+				</row>
+
+				<row>
+					<cell>isAlphaOrDecimal</cell>
+					<cell>Does the specified code point have the general category <emph>L</emph> (letters) or <emph>Nd</emph> (decimal digit numbers).</cell>
+				</row>
+
+				<row>
+					<cell>isControlCharacter</cell>
+					<cell>Is the specified code point a control character.</cell>
+				</row>
+
+				<row>
+					<cell>isSpace</cell>
+					<cell>Is the specified code point a space character (excluding CR / LF).</cell>
+				</row>
+
+				<row>
+					<cell>isWhitespace</cell>
+					<cell>Is the specified code point a whitespace character.</cell>
+				</row>
+
+				<row>
+					<cell>isBlank</cell>
+					<cell>Is the specified code point a character that visibly separates words on a line.</cell>
+				</row>
+
+				<row>
+					<cell>isPrintable</cell>
+					<cell>Is the specified code point a printable character.</cell>
+				</row>
+
+				<row>
+					<cell>isPunctuation</cell>
+					<cell>Does the specified code point have the general category <emph>P</emph> (punctuation).</cell>
+				</row>
+
+				<row>
+					<cell>isIdStart</cell>
+					<cell>Does the specified code point have the general category <emph>L</emph> (letters) or <emph>Nl</emph> (letter numbers).</cell>
+				</row>
+
+				<row>
+					<cell>isIdPart</cell>
+					<cell>Is the specified code point valid as part of an Id.</cell>
+				</row>
+
+				<row>
+					<cell>isBreakableCharacter</cell>
+					<cell>Is the specified code point a breakable character for line endings.</cell>
+				</row>
+
+				<row>
+					<cell>isInclusiveBreakableCharacter</cell>
+					<cell>Is the specified code point a breakable character for line endings that should be printed.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>The following non-predicate classification functions are available.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>utf8ByteCount</cell>
+					<cell>Returns the number of bytes that the character occupies when UTF-8 encoded.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Iteration</h2>
+
+		<para>Iteration functions are defined for UTF-8 string views. These functions advance or retreat an integer offset to the next or previous UTF-8 character. Two of the functions also return the resulting character.</para>
+
+		<para>The following iteration functions are currrently available.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>getNextUtf8</cell>
+					<cell>Get the next code point from the UTF-8 string view.</cell>
+				</row>
+
+				<row>
+					<cell>getPreviousUtf8</cell>
+					<cell>Get the previous code point from the UTF-8 string view.</cell>
+				</row>
+
+				<row>
+					<cell>advanceUtf8</cell>
+					<cell>Advance the supplied offset from one code point boundary to the next one.</cell>
+				</row>
+
+				<row>
+					<cell>retreatUtf8</cell>
+					<cell>Retreat the supplied offset from one code point boundary to the previous one.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Mutation</h2>
+
+		<para>Mutation functions are available for <emph>char32_t</emph> characters and for UTF-8 <emph>char</emph> characters at offsets inside <emph>std::string</emph> strings.</para>
+
+		<para>The following mutating functions are currrently available.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>toUpper(char32_t)</cell>
+					<cell>Convert the supplied code point to uppercase.</cell>
+				</row>
+
+				<row>
+					<cell>toLower(char32_t)</cell>
+					<cell>Convert the supplied code point to lowercase.</cell>
+				</row>
+
+				<row>
+					<cell>setUtf8AndAdvanceOffset(<newline />std::string &amp; destination,<newline />int &amp; offset,<newline />char32_t c)</cell>
+					<cell>Write a code point into the supplied UTF-8 string.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1>Universal to-string</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Type/ToString.hpp></strong></emph></para>
+
+		<para>This section outlines a development approach and supporting code in the Balau library for a universal to-string function for each of the supported unicode encoding string types. These functions are used throughout the Balau library and will propagate to application code through the Balau header files. The implementation allows application developers to define additional to-string function overloads for their own types and any other types for which they require custom to-string function implementations.</para>
+
+		<h2>Overview</h2>
+
+		<para>The C++ standard library provides a <emph>to_string</emph> function for several primitive types, defined within the <emph>std</emph> namespace. Whilst the C++ specification forbids the overloading of functions in the <emph>std</emph> namespace, the <emph>to_string</emph> function can be overloaded in the namespaces of user defined classes and the compiler will resolve them by examining the parameter type of the function call.</para>
+
+		<para>The Boost library also provides a <emph>boost:lexical_cast&lt;std::string&gt;</emph> function which relies on user defined <emph>operator &lt;&lt;</emph> functions to perform the to-string conversion.</para>
+
+		<para>The output of each of the above to-string implementations may differ.</para>
+
+		<para>In addition,</para>
+
+		<bullets>
+			<entry>calling the <emph>to_string</emph> function in a template class/function requires the systematic use of <emph>using std::to_string</emph> in order to resolve the built-in <emph>to_string</emph> overloads for the set of primitive types defined in the standard library <emph>&lt;string&gt;</emph> header,</entry>
+
+			<entry>the definition of additional <emph>to_string</emph> function overloads for primitive types not included in the set of <emph>to_string</emph> overloads in the <emph>&lt;string&gt;</emph> header requires placing them outside of any namespace.</entry>
+		</bullets>
+
+		<para>Unlike standard to-string functions or methods in other programming languages such as the <emph>toString</emph> method in Java, C++ does not have a unified standard for a to-string function, nor can it have a standard to-string method as there is no common base class to declare one in. Due to this and the complications described above, the Balau library standardises on the use of a single to-string function for each of the Unicode character encodings.</para>
+
+		<para>One possible solution to this requirement was to promote the primitive type <emph>to_string</emph> functions to the global namespace. This solution was decided against, in order to avoid using a token defined in the <emph>std</emph> namespace. In addition, three to-string functions (one per Unicode encoding) are required. Consequently, the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> tokens were chosen instead.</para>
+
+		<para>Users of the Balau library may define <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> function overloads for their own custom types. Wrappers for the primitive type <emph>std::to_string</emph> functions defined in the standard library <emph>&lt;string&gt;</emph> header are also provided in the <emph>&lt;ToString.hpp&gt;</emph> header file. Additional overloads for common primitive types and standard containers are also supplied in <emph>&lt;ToString.hpp&gt;</emph>.</para>
+
+		<h2>Signatures</h2>
+
+		<para>The signatures of the universal UTF-8, UTF-16, and UTF-32 to-string functions are:</para>
+
+		<code lang="C++">
+			std::string toString(const T &amp; value);
+			std::u16string toString16(const T &amp; value);
+			std::u32string toString32(const T &amp; value);
+		</code>
+
+		<para>where <emph>T</emph> is the parameter type.</para>
+
+		<h2>Usage</h2>
+
+		<para>To use any of the Balau universal to-string functions, include the <emph>&lt;ToString.hpp&gt;</emph> header file in your code. As this header is already included in the <emph>&lt;BalauException.hpp&gt;</emph> header which is subsequently included in the <emph>&lt;Logger.hpp&gt;</emph> header, use of the logger or features that throw Balau exceptions will automatically include the <emph>&lt;ToString.hpp&gt;</emph> header file.</para>
+
+		<para>In order to provide universal to-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>toString</emph>, <emph>toString16</emph>, or <emph>toString32</emph> function overload in the same namespace as your custom type. The C++ name resolution system will resolve the function overload via the parameter type of the call.</para>
+
+		<para>When calling the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> functions from a namespace that contains to-string function definitions, it may be necessary to call the functions with the global namespace prefix (<emph>::toString</emph>, <emph>::toString16</emph>, and <emph>::toString32</emph>), in order to ensure the correct overload is picked up from the local context.</para>
+
+		<h2>Container to-string</h2>
+
+		<para>The <emph>ToString.hpp</emph> header contains a template function <emph>toStringHelper</emph>. This helper function provides a convenient parameter pack template template parameter to-string implementation that can be selectively used for container types.</para>
+
+		<para>The declaration of the UTF-8 version of the helper function is as follows.</para>
+
+		<code lang="C++">
+			///
+			/// Helper for container to UTF-8 string functions.
+			///
+			/// This helper function can be used for custom container types if required.
+			///
+			template &lt;typename ... T, template &lt;typename ...&gt; class C>
+			inline std::string toStringHelper(const C&lt;T ...&gt; &amp; c)  {
+		</code>
+
+		<para>In order to use these container to-string helper functions, it is sufficient to define a new to-string function that calls the helper function. This can be done manually or via the <emph>BALAU_CONTAINER<strong>x</strong>_TO_STRING<strong>y</strong></emph> macros, where <emph><strong>x</strong></emph> is the number of template parameters that the container accepts (1-5), and <emph><strong>y</strong></emph> is the unicode encoding (none for UTF-8, "16" for UTF-16, and "32" for UTF-32). These macros are also provided in the <emph>ToString.hpp</emph> header.</para>
+
+		<para>In order to use these macros, the container must implement <emph><strong>begin() const</strong></emph> and <emph><strong>end() const</strong></emph> iterator methods.</para>
+
+		<para>The <emph>ToString.hpp</emph> header contains a set of such functions for each of the standard library containers.</para>
+
+		<h2>Parameter pack to-string</h2>
+
+		<para>These versions of the to-string functions allow two or more input arguments to be converted to strings and concatenated together in a single function call. They are templated parameter pack versions of the universal to-string functions. They each contain a fold expression in order to concatenate string versions of the input arguments.</para>
+
+		<para>As with the other predefined universal to-string functions, there are UTF-8, UTF-16, and UTF-32 versions of the parameter pack to-string function.</para>
+
+		<para>The complete UTF-8 version of the parameter pack universal to-string function is as follows.</para>
+
+		<code lang="C++">
+			///
+			/// Calls toString on each input argument and concatenates them together to
+			/// form a single UTF-8 string.
+			///
+			template &lt;typename P1, typename P2, typename ... P&gt;
+			inline std::string toString(const P1 &amp; p1, const P2 &amp; p2, const P &amp; ... p) {
+				return toString(p1) + toString(p2) + (std::string() + ... + toString(p));
+			}
+		</code>
+
+		<h2>To-string template class</h2>
+
+		<para>The <emph>ToString.hpp</emph> header also contains an additional template class based version of the universal to-string functions. This version consists of a class template declaration plus three specialisations, one for each character type. These classes are useful when the universal to-string function needs to be called from within a class or function template and when the string type is provided by a template argument.</para>
+
+		<para>The three specialisations are proxies to the previous sets of <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> function overloads.</para>
+
+		<para>The complete UTF-8 version of the templated universal to-string class is as follows.</para>
+
+		<code lang="C++">
+			///
+			/// Convert the supplied object to a std::string by calling toString.
+			///
+			template &lt;&gt; struct ToString&lt;char&gt; {
+				template &lt;typename T&gt; std::string operator () (const T &amp; object) const {
+					return toString(object);
+				}
+			};
+		</code>
+
+		<h1>Universal from-string</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Type/FromString.hpp></strong></emph></para>
+
+		<para>This section outlines a development approach and supporting code in the Balau library for a universal from-string function for each of the supported unicode encoding string types. The universal <emph>from-string</emph> functions provide a standard way to define string to object type conversions that can be used within library components. Similarly to the universal to-string functions, these functions are used throughout the Balau library, will propagate to application code, and application developers can define additional to-string function overloads for their own types.</para>
+
+		<h2>Signatures</h2>
+
+		<para>The signatures of the universal UTF-8, UTF-16, and UTF-32 from-string functions are:</para>
+
+		<code lang="C++">
+			void fromString(T &amp; destination, const std::string &amp; value);
+			void fromString16(T &amp; destination, const std::u16string &amp; value);
+			void fromString32(T &amp; destination, const std::u32string &amp; value);
+		</code>
+
+		<para>where <emph>T</emph> is the parameter type.</para>
+
+		<para>The type <emph>T</emph> must be copy assignable, move assignable, have public mutable fields, or must provide suitable setter methods in order to be used in a <emph>from-string</emph> function overload. If this is not the case, the type is unsuitable to have a universal from-string function overload and a custom named from-string function (with a different signature) should be created instead.</para>
+
+		<h2>Usage</h2>
+
+		<para>To use any of the Balau universal from-string functions, include the <emph>&lt;FromString.hpp&gt;</emph> header file in your code.</para>
+
+		<para>In order to provide universal from-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>fromString</emph>, <emph>fromString16</emph>, or <emph>fromString32</emph> function overload in the same namespace as your custom type. The C++ name resolution system will resolve the function overload via the parameter type of the call.</para>
+
+		<para>When calling the <emph>fromString</emph>, <emph>fromString16</emph>, and <emph>fromString32</emph> functions from a namespace that contains from-string function definitions, it may be necessary to call the functions with the global namespace prefix (<emph>::fromString</emph>, <emph>::fromString16</emph>, and <emph>::fromString32</emph>), in order to ensure the correct overload is picked up from the local context.</para>
+
+		<h2>From-string template class</h2>
+
+		<para>The <emph>FromString.hpp</emph> header also contains an additional template class based version of the universal from-string functions. This version consists of a class template declaration plus three specialisations, one for each character type. These classes are useful when the universal from-string function needs to be called from within a class or function template and when the string type is provided by a template argument.</para>
+
+		<para>The three specialisations are proxies to the previous sets of <emph>fromString</emph>, <emph>fromString16</emph>, and <emph>fromString32</emph> function overloads.</para>
+
+		<para>The complete UTF-8 version of the templated universal from-string class is as follows.</para>
+
+		<code lang="C++">
+			///
+			/// UTF-8 specialisation of FromString&lt;T>.
+			///
+			/// Converts the supplied std::string to an object of type T by calling fromString.
+			///
+			template &lt;> struct FromString&lt;char> {
+				///
+				/// @param destination the destination value that is set via assignment
+				/// @param value the string input
+				/// @throw ConversionException when the conversion fails
+				///
+				template &lt;typename T>
+				void operator () (T &amp; destination, const std::string &amp; value) const {
+					fromString(destination, value);
+				}
+			};
+		</code>
+	</chapter>
+</document>

@@ -1,0 +1,284 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* Base CSS definitions (inherited by bdml-html.css. */
+
+@import url("c.css");
+@import url("c++.css");
+@import url("java.css");
+@import url("javascript.css");
+@import url("properties.css");
+@import url("python.css");
+@import url("sql.css");
+@import url("xml.css");
+@import url("grammar.css");
+@import url("fonts.css");
+@import url("bdml-tables.css");
+
+body {
+	background: #fff;
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
+	text-align: justify;
+	padding: 0;
+	margin: auto;
+	overflow-x: hidden;
+	line-height: 1.7em;
+	tab-size: 4;
+	-moz-tab-size: 4;
+}
+
+p {
+	margin-top: 0.75em;
+	margin-bottom: 0.75em;
+}
+
+table p {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+
+h1, h2, h3, h4, h5 {
+	text-align: left;
+	margin-bottom: 0.75em;
+}
+
+.bdml-part-title {
+	font-size: 2em;
+	font-weight: bold;
+}
+
+.bdml-chapter-title {
+	font-size: 1.80em;
+	font-weight: bold;
+}
+
+h1 {
+	font-size: 1.50em;
+}
+
+h2 {
+	font-size: 1.30em;
+}
+
+h3 {
+	font-size: 1.20em;
+}
+
+h4 {
+	font-size: 1.10em;
+}
+
+h5 {
+	font-size: 1.00em;
+}
+
+ul li, ol li {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+ul.bdml-tight li, ol.bdml-tight li {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+a {
+	color: #008;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #aaa;
+}
+
+sup {
+	font-size: 0.7em;
+}
+
+img {
+	border: none;
+}
+
+#bdml-header {
+	clear: both;
+}
+
+pre, .bdml-code, .bdml-grammar {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	font-family: "Courier New", monospace;
+	font-size: 0.95em;
+	padding: 1em;
+	line-height: 1.3em;
+	border: 1px solid #d9d9d9;
+	white-space: pre;
+	overflow: auto;
+}
+
+.bdml-code .line {
+	white-space: pre;
+	height: 18px;
+}
+
+.bdml-comment {
+	position: relative;
+	margin-left: 1em;
+	margin-right: 0;
+}
+
+.bdml-comment-arrow {
+	width: 14px;
+	height: 14px;
+}
+
+.bdml-comment .bdml-title {
+	font-size: 0.9em;
+	font-weight: bold;
+	font-style: italic;
+	color: #700;
+	position: relative;
+}
+
+.bdml-comment-question-creator, .bdml-comment-remark-creator {
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+.bdml-comment ul, .bdml-comment ol {
+	list-style-type: none;
+	padding-left: 0;
+}
+
+.bdml-comment ul li, .bdml-comment ol li {
+	border: 1px solid #d9d9d9;
+	color: #007;
+	overflow: auto;
+	padding: 0.5em;
+}
+
+.bdml-comment .bdml-popup-hidden, .bdml-comment .bdml-popup-shown {
+	padding: 0.25em 0 0.25em 0.5em;
+	background: white;
+}
+
+.bdml-comment .bdml-popup-hidden {
+	display: none;
+}
+
+.bdml-comment:hover .bdml-popup-hidden {
+	display: block;
+	position: absolute;
+	top: 30px;
+	background: white;
+}
+
+.bdml-comment .bdml-popup-shown {
+	display: block;
+	background: none;
+}
+
+.bdml-comment-question, .bdml-comment-remark {
+	margin-left: 2em;
+	margin-bottom: 1em;
+}
+
+.bdml-comment-question {
+	color: #060;
+}
+
+.bdml-comment-remark {
+	color: #007;
+}
+
+.bdml-graphic-left {
+	float: left;
+	padding: 0.5em 1em 0.5em 0;
+	margin: 0;
+}
+
+.bdml-graphic-right {
+	float: right;
+	padding: 0.5em 0 0.5em 1em;
+	margin: 0;
+}
+
+.bdml-graphic-center {
+	float: none;
+	text-align: center;
+	padding: 0.5em 0;
+	margin: 0 auto;
+	display: block;
+}
+
+.bdml-graphic-inline {
+	float: none;
+}
+
+.bdml-centered {
+	text-align: center;
+}
+
+.bdml-clear {
+	clear: both;
+}
+
+.bdml-strong {
+	font-weight: bold;
+}
+
+.bdml-emph {
+	font-style: italic;
+}
+
+#bdml-toc {
+	margin: 2em;
+}
+
+#bdml-toc-title {
+	font-weight: bold;
+	font-size: 1.4em;
+	font-variant: small-caps;
+}
+
+.bdml-toc-part-title {
+	font-weight: bold;
+	padding: 0;
+	margin: 0;
+}
+
+#bdml-toc ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#bdml-toc li {
+	padding: 0;
+}
+
+#bdml-toc li a {
+	text-align: left;
+	color: #444;
+}
+
+#bdml-toc li a:hover {
+	color: #999;
+}

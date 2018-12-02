@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  - Bora-Doc help file
+  -
+  - Copyright 2009 Nicholas Smethurst (contact@borasoftware.com)
+  -
+  - Use of this file is subject to the Bora End User License Agreement, a copy
+  - of which can be seen at https://borasoftware.com/eula.html.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<copyright>Copyright 2008 Bora Software (contact@borasoftware.com)</copyright>
+	</metadata>
+
+	<chapter>
+		<para>PDF HEADER PDF HEADER</para>
+	</chapter>
+</document>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - parsing utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+<chapter title="Parsing utilities">
+	<h1>Overview</h1>
+
+	<para>Balau includes a set of classes which can help in the construction of language scanners and parsers. The aim of these classes is to facilitate the creation of hand written language scanners and recursive descent parsers written in pure C++.</para>
+
+	<para>Given that there are many mature scanner/parser generator tools available, one pertinent question to ask may be: why write a scanner and parser in pure C++?</para>
+
+	<para>Firstly, there is no right or wrong approach to writing a scanner/parser pair. If a generator tool works well for a particular use case, then such an approach is admirable. However, given that the parsers of prominent mainstream compilers are hand written (<ref type="raw" new="true" url="http://clang.llvm.org/features.html#unifiedparser">Clang - unified parser</ref>, <ref type="raw" new="true" url="https://gcc.gnu.org/wiki/New_C_Parser">GCC - new C parser</ref>), perhaps there are valid reasons for doing so.</para>
+
+	<para>One anecdotal reason often quoted is performance, that is to say that a hand written parser will supposedly be much faster than a generated one. The evidence does not appear to back this up (the GCC <ref type="raw" new="true" url="https://gcc.gnu.org/wiki/New_C_Parser">wiki</ref> indicates a negligible 1.5% speed increase). There may thus be a small percentage speed up, but it is unlikely that a speed up measured in orders of magnitude will occur.</para>
+
+	<para>So removing performance from the argument, some benefits are proposed below.</para>
+
+	<bullets>
+		<entry><strong>Fine tuning of semantics</strong> - Language definitions of any complexity will often require additional semantic rules that are expressed separately from the language's grammar specfication. These additional semantic rules may not fit naturally into the language definition processed by a parser generator tool.</entry>
+
+		<entry><strong>Debuggability</strong> - The code is hand written pure C++ and thus can be structured for readability and easy debugging.</entry>
+
+		<entry><strong>Error reporting, diagnostics, recovery</strong> - Precise error reporting, diagnostics, and recovery are easier to achieve when the complete and final scanner/parser source code is available to edit directly.</entry>
+
+		<entry><strong>Elegance</strong> - A hand written recursive descent parser is an elegant solution to a complex requirement.</entry>
+
+		<entry><strong>Simple toolchain</strong> - No additional tools are required for parser source code generation.</entry>
+	</bullets>
+
+	<para>The overriding reason to use scanner/parser generator tools is that the amount of code you need to write is much less than the code required for a hand written scanner and parser. This is most likely true. However, a language specification is typically created once and then subsequently modified over time with only small incremental improvements. The overhead of creating the larger code base of a hand written scanner and parser is thus likely to be less than the benefits reaped during fine tuning of the initial implementation and the ease of adding incremental improvements later on.</para>
+
+	<h1>Approach</h1>
+
+	<para>Having read the introductory words in the overview section of this page, it could be natural to imagine that the parsing utilties in the Balau library are large and complex. This is actually not the case. The parsing utilities total less than 1000 lines of code and a handful of classes.</para>
+
+	<para>As the aim is to hand write a scanner and parser implementation pair, the value of the utilities lies in the approach rather than the amount of code provided. The parser tools do not actually provide any classes for parsing at all. The code only provides an abstract scanner base class and a common contract between the scanner and the to be written parser.</para>
+
+	<para>The overall approach to the creation of a new pure C++ based language parser using the Balau parsing utilities classes is to:</para>
+
+	<bullets>
+		<entry>define a token enum that contains the terminals of the language;</entry>
+
+		<entry>create a scanner class that derives from <emph>AbstractScanner</emph> and produces a <emph>ScannedTokens&lt;TokenT&gt;</emph> data structure;</entry>
+
+		<entry>create a set of abstract syntax tree node classes which represent the non-terminals of the language;</entry>
+
+		<entry>create a recursive descent parser class which generates the AST by consuming the <emph>ScannedTokens&lt;TokenT&gt;</emph> data structure via the <emph>ScannerApiScannedTokens</emph> token adaptor.</entry>
+	</bullets>
+
+	<para>There are currently two language parser implementations in the Balau library that follow this approach:</para>
+
+	<bullets>
+		<entry>the logging configuration parser in the logging framework;</entry>
+
+		<entry>the hierarchical property parser.</entry>
+	</bullets>
+
+	<para>Before embarking on the creation of a language parser based on the Balau parser utility classes, it could be useful to take a look at these parser implementations.</para>
+
+	<h1>Architecture</h1>
+
+	<para>The overall architecture supported by the Balau parser utilities is one where:</para>
+
+	<bullets>
+		<entry>there is complete separation between scanning and parsing stages;</entry>
+
+		<entry>the scanning stage scans the entire text stream ahead of parsing;</entry>
+
+		<entry>the resulting scanned tokens data structure offers infinite look-ahead and look-back;</entry>
+
+		<entry>the whitespace policy during parsing may be dynamically modified via the whitespace mode stack in the scanner API scanned tokens data structure.</entry>
+	</bullets>
+
+	<para>The advantages of such an approach are the separation of concerns between the scanning and parsing stages, the infinite look-ahead and look-back, and the ease of dynamically changing the whitespace handling strategy during parsing.</para>
+
+	<para>The disadvantage of such an approach is the necessity of specifying a single token set which covers all possible tokens of the language, i.e. it is not possible to define multiple token sets, the active set then being selected according to context during the parsing stage.</para>
+
+	<para>There are a number of ways of mitigating this disadvantage when a parser cannot be trivially implemented with a complete separation between scanner and parser for a particular language grammar. One solution could be to define a single token for the contextual part of the language and then define a second scanner which is triggered separately from within the parser. Another solution could be to define a set of tokens that represent the input text and then, under certain exceptional code paths in the parser, translate subsets of the input tokens on the fly into a modified set of tokens for further parsing.</para>
+
+	<h1>Scanned tokens</h1>
+
+	<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Lang/Common/ScannedTokens.hpp></strong></emph></para>
+
+	<para>An instance of the <emph>ScannedTokens&lt;TokenT&gt;</emph> class is generated by the scanner and consumed by the parser. This class is an efficient data structure which contains the input text as a UTF-8 string and two additional arrays:</para>
+
+	<bullets>
+		<entry>an array that contains the tokens, which are typically specified as an 8 bit unsigned char typed enum;</entry>
+
+		<entry>a second array that contains the start offsets into the input text.</entry>
+	</bullets>
+
+	<para>In order to use the scanned tokens data, instantiation of an adaptor class is required. There are three adaptor classes, destined for different functionalities:</para>
+
+	<bullets>
+		<entry>ScannerApiScannedTokens;</entry>
+		<entry>RandomAccessScannedTokens;</entry>
+		<entry>IterativeScannedTokens.</entry>
+	</bullets>
+
+	<h2>Scanner Api</h2>
+
+	<para>With the <emph>ScannerApiScannedTokens</emph> adaptor class, a standard scanner API is provided for use by a traditional downstream parsing stage. This is the adaptor that is used if traditional parsing is required.</para>
+
+	<para>The <emph>ScannerApiScannedTokens</emph> adaptor class provides the following methods.</para>
+
+	<table class="bdml-table2080">
+		<head>
+			<cell>Method</cell> <cell>Description</cell>
+		</head>
+
+		<body>
+			<row>
+				<cell>get</cell>
+				<cell>Get the current scanned token, optionally consuming blanks, line breaks, and/or comments as determined by the current whitespace mode.</cell>
+			</row>
+
+			<row>
+				<cell>consume</cell>
+				<cell>Consume the current token.</cell>
+			</row>
+
+			<row>
+				<cell>expect(token)</cell>
+				<cell>Consume the current token if it is equal to the supplied token, otherwise throw an exception.</cell>
+			</row>
+
+			<row>
+				<cell>expect(tokens)</cell>
+				<cell>Consume the current token if it is equal one of the supplied tokens, otherwise throw an exception</cell>
+				</row>
+
+			<row>
+				<cell>putBack</cell>
+				<cell>Put back the current token, optionally restoring blanks, line breaks, and/or comments as determined by the current whitespace mode.</cell>
+			</row>
+		</body>
+	</table>
+
+	<para>Due to the compact representation of the scanned token data, obtaining the code span of a token's text must be performed by iterating from the start of the arrays. When using the <emph>ScannerApiScannedTokens</emph> adaptor class, the current code span is maintained for immediate use. Due to this, the current code span may be accessed without any performance penalty.</para>
+
+	<h2>Random access</h2>
+
+	<para>If random access to the scanned token data and code spans is required for other uses, the <emph>RandomAccessScannedTokens</emph> adaptor class may be used to pre-calculate the code spans. When instantiated, this class iterates over the token set and calculates all the code spans. Due to this, the <emph>RandomAccessScannedTokens</emph> class has a higher memory overhead than the <emph>ScannerApiScannedTokens</emph> class.</para>
+
+	<h2>Iteration</h2>
+
+	<para>When iteration is required over the scanned tokens, this third adaptor class is provided for such applications. The <emph>IterativeScannedTokens</emph> adaptor class provides standard C++ iterators onto the scanned tokens.</para>
+
+	<h1>Scanning</h1>
+
+	<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Lang/Common/AbstractScanner.hpp></strong></emph></para>
+
+	<para>In order to create a <emph>ScannedTokens</emph> data structure from some input source code text, a scanner implementation is required. Balau provides an <emph>AbstractScanner</emph> base class. Concrete implementations of this class implement the <emph>getNextToken</emph> abstract method in order to provide the scanning logic.</para>
+
+	<para>The <emph>AbstractScanner</emph> class provides the public scanner api, consisting of the single <emph>scan</emph> method, and a set of protected utility methods used by implementing classes.</para>
+
+	<para>The fundamental utility methods used by implementing classes are the <emph>readNextChar</emph> and <emph>putBackCurrentChar</emph> methods. These manage character reading and end of file handling.</para>
+
+	<para>Other utility methods including string and whitespace extraction. Also included is a <emph>calculateCurrentCodeSpan</emph> method which can be used for error reporting.</para>
+
+	<h1>Parsing</h1>
+
+	<para>To create a recursive descent parser in pure C++ using the Balau parser utility classes, it is sufficient to pass in an instance of the <emph>ScannerApiScannedTokens</emph> class into the parser constructor and access the scanner API from within the production methods.</para>
+
+	<para>The <emph>PropertyParser</emph> class is an example of a parser in the Balau library. A single public method <emph>parse</emph> is provided in each class. This method calls the root production methods in order to initiate the recursive descent parsing.</para>
+
+	<h1>Classes</h1>
+
+	<para>The following classes are defined in the parsing utilties.</para>
+
+	<table class="bdml-table40L60">
+		<head>
+			<cell>Class name</cell> <cell>Description</cell>
+		</head>
+
+		<body>
+			<row>
+				<cell>ScannedTokens&lt;TokenT&gt;</cell>
+
+				<cell>The data structure produced by scanners. Contains the input source text, the scanned tokens, and the start offsets.</cell>
+			</row>
+
+			<row>
+				<cell>ScannerApiScannedTokens&lt;TokenT&gt;</cell>
+
+				<cell>A scanner API adaptor over the <emph>ScannedTokens</emph> data structure.</cell>
+			</row>
+
+			<row>
+				<cell>RandomAccessScannedTokens&lt;TokenT&gt;</cell>
+
+				<cell>A random access adaptor over the <emph>ScannedTokens</emph> data structure.</cell>
+			</row>
+
+			<row>
+				<cell>IterativeScannedTokens&lt;TokenT&gt;</cell>
+
+				<cell>An iterative adaptor over the <emph>ScannedTokens</emph> data structure.</cell>
+			</row>
+
+			<row>
+				<cell>AbstractScanner&lt;TokenT&gt;</cell>
+
+				<cell>The base class of scanner implementations.</cell>
+			</row>
+
+			<row>
+				<cell>ScannedToken&lt;TokenT&gt;</cell>
+
+				<cell>A single scanned token returned from the scanner API, containing the token, the text, and the code span.</cell>
+			</row>
+
+			<row>
+				<cell>CodeSpan</cell>
+
+				<cell>Contains two code positions which together indicate a span of code.</cell>
+			</row>
+
+			<row>
+				<cell>CodePosition</cell>
+
+				<cell>Represents a line/column position in the source code text.</cell>
+			</row>
+		</body>
+	</table>
+</chapter>
+
+</document>

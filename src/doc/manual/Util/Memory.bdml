@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - memory utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Memory utilities">
+		<h1>Overview</h1>
+
+		<para>This header provides memory utility functions, defined within the <emph>Balau::Util::Memory</emph> namespace.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Memory.hpp></strong></emph></para>
+
+		<para>The following utilities are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1Memory.html">API documentation</ref> page.</para>
+
+		<h2>Pointer containers</h2>
+
+		<para>These functions provide variadic conversions from a set of input arguments to a vector of pointer containers, via a supplied transform function. Functions are available for shared and unique pointer containers.</para>
+
+		<para>There are two versions of the functions. The first version works with a transform function that transforms an argument into a single pointer. The second version works with a transform function that transforms an argument into a vector or pointers.</para>
+
+		<para>These functions are quite specialised and specific to the Balau library's internal implementation. For example, the <emph>makeSharedV</emph> function is used in the injector implementation in order to create the binding builders from each supplied configuration object in the variadic <emph>createBindings</emph> call.</para>
+
+		<code lang="C++">
+			auto builders = Memory::makeSharedV&lt;ApplicationConfiguration, Impl::BindingBuilderBase>(
+				[] (const ApplicationConfiguration &amp; conf) { return conf.createBuilders(); }
+				, conf ...
+			);
+		</code>
+
+		<para>These functions may however be useful when a similar variadic transform functionality is required in application code.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>makeShared</cell>
+					<cell>Create a vector of shared pointers after transforming the arguments (scalar transform version).</cell>
+				</row>
+
+				<row>
+					<cell>makeSharedV</cell>
+					<cell>Create a vector of shared pointers after transforming the arguments (vector transform version).</cell>
+				</row>
+
+				<row>
+					<cell>makeUnique</cell>
+					<cell>Create a vector of unique pointers after transforming the arguments (scalar transform version).</cell>
+				</row>
+
+				<row>
+					<cell>makeUniqueV</cell>
+					<cell>Create a vector of unique pointers after transforming the arguments (vector transform version).</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

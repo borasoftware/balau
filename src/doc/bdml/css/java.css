@@ -1,0 +1,143 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* Java syntax highlighting colours. */
+
+.bdml-java .bdml-whitespace {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-api-doc-todo {
+	color: #927;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-api-doc {
+	color: #279;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-comment-todo {
+	color: #722;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-comment {
+	color: #292;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-annotation {
+	color: #077;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-keyword {
+	color: #227;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-type-identifier {
+	color: #700;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-identifier {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-string {
+	color: #e00;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-directive {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-angle-brackets {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-square-brackets {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-dot {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-colon {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-parentheses {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-curly-brackets {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-hex-oct-number {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-number {
+	color: #4747ff;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-placeholder {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-plain {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-java .bdml-output {
+	margin: 0;
+	padding: 0;
+}

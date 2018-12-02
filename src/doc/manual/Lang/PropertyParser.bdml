@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - hierarchical properties" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+<chapter title="Hierarchical properties">
+	<h1>Overview</h1>
+
+	<para>This chapter describes a hierarchical property file format and associated C++ parser. The format has been conceived principally for describing application and environment configuration. The format is based upon a hierarchical extension to the Java <emph>.properties</emph> file format. Composite properties are defined via <emph>"{"</emph> and <emph>"}"</emph> delimited blocks.</para>
+
+	<para>In addition to providing composite properties, the hierarchical property format provides an <emph>include</emph> feature. This allows property files to be spread over multiple files and compiled via inclusion. Includes are specified via the <emph>"@"</emph> directive.</para>
+
+	<para>The hierarchical properties parser and scanner are written in pure C++, using the Balau parser utility classes.</para>
+
+	<para>The hierarchical properties parser can also parse non-hierarchical Java properties files. The exception that cannot be parsed is when a non-hierarchical properties file contains one or more names and/or values that contain unescaped special hierarchical characters. As the <emph>"{"</emph>, <emph>"}"</emph> and <emph>"@"</emph> characters are used to indicate hierarchical blocks and include directives, parsing will fail if names and/or values are defined with these characters in them. Property names and values that contain these character can nevertheless be defined by escaping the special characters with a <emph>"\"</emph>.</para>
+
+	<para>No file extension has been explicitly denoted to indicate hierarchical properties files. Given that the hierarchical property file format is effectively just a text serialisation format, files themselves do not have any intrinsic semantics. It is thus proposed that users should define their own file extensions which attach semantic value to file contents. The Balau library thus uses the <emph>.properties</emph> extension for hierarchical properties files without specific semantics, the <emph>.thconf</emph> extension for environment configuration type specification files, and the <emph>.hconf</emph> extension for environment configuration value files. The <ref url="Application/Environment">environment configuration</ref> chapter discusses this in more detail.</para>
+
+	<h1>Quick start</h1>
+
+	<h2>Format</h2>
+
+	<para>The following is a simple example of a hierarchical property file. In the example file, the "=" separator is used for simple (non-hierarchical) properties and the " " separator is used for complex (hierarchical) properties. As with the non-hierarchical properties format, any of the "=", ":", or " " separators can be used for both simple and composite properties.</para>
+
+	<code lang="Properties">
+		http.server.worker.count = 8
+
+		file.serve {
+			location      = /
+			document.root = file:src/doc
+			cache.ttl     = 3600
+		}
+	</code>
+
+	<para>The hierarchical property format includes the same set of features as the non-hierarchical property format, including comments, escape codes and line continuation.</para>
+
+	<code lang="Properties">
+		# A hierarchical property file that has comments,
+		# escaped characters, and line continuation.
+
+		\#a\ complexly\ named\ property\# = \{ a value with curly brackets \}
+
+		prop = a value with ## hash !! and excl
+
+		group.config {
+			# Use of line continuation.
+			files = file1.txt \
+			      , file2.txt \
+			      , file3.txt
+		}
+	</code>
+
+	<para>Included files can be specified via the <emph>"@"</emph> directive. This directive takes an absolute URI, an absolute path, or a relative path.</para>
+
+	<code lang="Properties">
+		# An HTTPS include directive.
+		@https://borasoftware.com/doc/examples/hprops.properties
+
+		# An absolute path include directive.
+		@/etc/balau/default-sites/default.site
+
+		# A relative path include directive.
+		@extra-sites/special.site
+	</code>
+
+	<para>When an absolute or relative path is specified as in the second and third examples above, the URI type resolved should be the same as the URI of the property file that contains the include directive (this is performed by the implementation consuming the parsed file contents). For example, if the above example property file was supplied as a file URI, the absolute and relative path include directives would resolve to file URIs.</para>
+
+	<para>Include directives may also contain glob patterns.</para>
+
+	<code lang="Properties">
+		# A globbed, relative path include directive.
+		@sites-enabled/*.site
+	</code>
+
+	<para>Glob patterns are only supported by certain URI types (e.g. files and zip archives). It is the reponsibility of the property file writer/consumer to ensure that globbed includes are only used for URI types that support them.</para>
+
+	<h2>Parsing</h2>
+
+	<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Lang/Property/PropertyParsingService.hpp></strong></emph></para>
+
+	<para>Creating a hierarchical properties parser and parsing some input text involves a single line of code.</para>
+
+	<code lang="C++">
+		// The input URI that represents the source properties text (normally sourced elsewhere).
+		Resource::File input("somePropertyFile.properties");
+
+		// Call the parsing service.
+		Properties properties = PropertyParsingService::parse(input);
+	</code>
+
+	<para>Printing the parsed properties AST back into text can be achieved via the <emph>PropertyAstToString</emph> visitor class. This is normally performed via the <emph>PropertyNode</emph> <emph>toString</emph> function.</para>
+
+	<code lang="C++">
+		// Pretty print the hierarchical properties AST back out to a string.
+		std::string propertiesText = toString(items);
+	</code>
+
+	<h2>Visiting</h2>
+
+	<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Lang/Property/Util/PropertyVisitor.hpp></strong></emph></para>
+
+	<para>Once the input properties text has been parsed into an AST, it can be visited by implementing the <emph>PropertyVisitor</emph> interface.</para>
+
+	<para>As an example, an extract from the <emph>PropertyAstToString</emph> class provided in the Balau library is given below.</para>
+
+	<code lang="C++">
+		class PropertyAstToString : public PropertyVisitor {
+			public: void visit(Payload &amp; payload, const Properties &amp; object) override {
+				for (auto &amp; node : object.getNodes()) {
+					node->visit(payload, *this);
+				}
+			}
+
+			public: void visit(Payload &amp; payload, const ValueProperty &amp; object) override {
+				auto &amp; pl = static_cast&lt;PropertyAstToStringPayload &amp;>(payload);
+				pl.writeIndent();
+				pl.write(object.getName());
+				pl.write(" = ");
+				pl.write(object.getValue());
+				pl.write("\n");
+			}
+
+			public: void visit(Payload &amp; payload, const CompositeProperty &amp; object) override {
+				auto &amp; pl = static_cast&lt;PropertyAstToStringPayload &amp;>(payload);
+				pl.writeIndent();
+				pl.write(object.getName());
+				pl.write(" {\n");
+				pl.incrementIndent();
+
+				for (const auto &amp; node : object.getNodes()) {
+					node->visit(payload, *this);
+				}
+
+				pl.decrementIndent();
+				pl.writeIndent();
+				pl.write("}\n");
+			}
+
+			// ... more visitor methods ...
+		};
+	</code>
+
+	<para>When creating a custom properties AST visitor implementation, a quick way of achieving this is to copy the <emph>PropertyAstToString</emph> class and modify it to meet the requirements of the new visitor implementation.</para>
+
+	<h1>Hierarchical format</h1>
+
+	<para>The basic format of the file is the same as that of Java <emph>.properties</emph> files.</para>
+
+	<bullets>
+		<entry>Leading blanks of each line are stripped.</entry>
+
+		<entry>Resulting lines that do not begin with a '#' or '!' character and that end with the '\' character are concatenated with the next line.</entry>
+
+		<entry>Resulting lines that begin with a '#' or '!' character are comments.</entry>
+
+		<entry>Property lines have a key and an optional value, separated by a key value separator.</entry>
+
+		<entry>Key-value separators are ':', '=', or blanks.</entry>
+
+		<entry>Blanks can surround ':' and '=' separators; these do not form part of the key and value.</entry>
+
+		<entry>The entire remaining line after the separator and optional blanks is the value, including any trailing blanks.</entry>
+
+		<entry>Special characters (blank, ':', '=', '#', '!', '\') can be used in keys by escaping them with a '\' prefix.</entry>
+
+		<entry>Unrecognised escaped characters result in the '\' prefix being silently dropped.</entry>
+	</bullets>
+
+	<para>The following additional rules add the hierarchical extension to the Java <emph>.properties</emph> file format.</para>
+
+	<bullets>
+		<entry>The '{', '}', and '@' characters must be escaped when used in property names and values.</entry>
+
+		<entry>A non-escaped '{' character that follows a property separator denotes the start of a hierarchical property block.</entry>
+
+		<entry>The '{' character of a hierarchical property block must immediately be followed by a line break.</entry>
+
+		<entry>A matching '}' character must exist that denotes the block end. The '}' block end character must be placed on a line of its own.</entry>
+
+		<entry>In between the '{' and '}' property block delimiters, zero or more child properties may be defined, including more hierarchical properties.</entry>
+
+		<entry>A non-escaped '@' character at the start of a line denotes the start of an include directive. The URI (full, partial absolute path, or partial relative path) following the '@' character represents the include URI.</entry>
+
+		<entry>Indentation of block closing '}' characters and include directive '@' characters is not relevant and is stripped during parsing.</entry>
+	</bullets>
+
+	<h1>Classes</h1>
+
+	<para>All the classes are found in the <emph>Balau::Lang::Property</emph> namespace.</para>
+
+	<table class="bdml-table30L70">
+		<head>
+			<cell>Class/enum</cell>           <cell>Description</cell>
+		</head>
+
+		<body>
+			<row> <cell>PropertyToken</cell>         <cell>Language terminals enum</cell> </row>
+			<row> <cell>PropertyNode</cell>          <cell>Abstract base class of the language non-terminal AST nodes</cell> </row>
+			<row> <cell>PropertyScanner</cell>       <cell>The property scanner implementation</cell> </row>
+			<row> <cell>PropertyParser</cell>        <cell>The property parser implementation</cell> </row>
+			<row> <cell>PropertyParserService</cell> <cell>Convenience class providing single function parsing.</cell> </row>
+			<row> <cell>PropertyVisitor</cell>       <cell>The tightly coupled AST visitor interface</cell> </row>
+			<row> <cell>PropertyAstToString</cell>   <cell>Property AST pretty printer</cell> </row>
+		</body>
+	</table>
+
+	<h1>Data structures</h1>
+
+	<para>The data structures used to hold the data generated from the Balau hierarchical properties parser are as follows.</para>
+
+	<para>Node classes can only exist within the context of an owning <emph>Properties</emph> instance that owns the parsed string.</para>
+
+	<code lang="C++">
+		///
+		/// Partial base class of nodes.
+		///
+		struct PropertyNode {
+		};
+
+		///
+		/// The outer structure. A single instance of this
+		/// struct represents the entire parsed properties text.
+		///
+		struct Properties : public PropertyNode {
+			std::string text;
+			std::vector&lt;std::unique_ptr&lt;PropertyNode>> nodes;
+		};
+
+		///
+		/// Partial implementation of a key-value node.
+		///
+		struct ValueProperty : public PropertyNode {
+			std::string_view key;
+			std::string_view value;
+		};
+
+		///
+		/// Partial implementation of a hierarchical node.
+		///
+		struct CompositeProperty : public PropertyNode {
+			std::string_view key;
+			std::vector&lt;std::unique_ptr&lt;PropertyNode>> nodes;
+		};
+
+		///
+		/// Partial implementation of an include node.
+		///
+		struct IncludePropertyNode : public PropertyNode {
+			std::string_view text;
+		};
+
+		///
+		/// Partial implementation of a comment line node.
+		///
+		struct CommentPropertyNode : public PropertyNode {
+			std::string_view text;
+		};
+	</code>
+
+	<para>As the AST classes are views onto the original input text, the names and values of properties are string views onto the original text, including any line continuation / leading blank combinations. In addition, escaped characters are in their escaped form.</para>
+
+	<para>In order to obtain final name and value text, the <emph>ValueProperty</emph> AST class has <emph>getName</emph> and <emph>getValue</emph> methods, and the <emph>CompositeProperty</emph> AST class has a <emph>getName</emph> method. These methods will process name and value text into the final form.</para>
+
+	<h1>Grammar</h1>
+
+	<h2>Notation</h2>
+
+	<para>The following notation is used in the grammar.</para>
+
+	<table class="bdml-table4060w70">
+		<head> <cell>Symbol</cell> <cell>Meaning</cell> </head>
+
+	    <body>
+	        <row> <cell>=</cell>           <cell>definition of rule</cell> </row>
+	        <row> <cell>()</cell>          <cell>grouping for precedence creation</cell> </row>
+	        <row> <cell>*</cell>           <cell>zero or more repetitions</cell> </row>
+	        <row> <cell>+</cell>           <cell>one or more repetitions</cell> </row>
+	        <row> <cell>?</cell>           <cell>optional</cell> </row>
+	        <row> <cell>|</cell>           <cell>choice separator</cell> </row>
+	        <row> <cell>(^ .. | ..)</cell> <cell>any except the content choice</cell> </row>
+	        <row> <cell>"text"</cell>      <cell>literal string in terminal</cell> </row>
+	        <row> <cell>// ..</cell>       <cell>comment</cell> </row>
+	    </body>
+	</table>
+
+	<para>The choice separator has lowest notation precedence. All other notational entities have equal precedence.</para>
+
+	<h2>Whitespace</h2>
+
+	<para>A "\" character placed at the end of a line indicates line continuation. All non-escaped blanks (space/tab) occurring at the start of a line are semantically removed from property names/values that are broken up by line continuation. This is not represented in the grammar and thus occurs after parsing.</para>
+
+<h2>Explicit non-terminals</h2>
+
+<grammar><grCmt>// Explicit non-terminals are the produced AST nodes.</grCmt>
+
+<grNTL>S</grNTL>               = <grNTR>Properties</grNTR>
+
+<grNTL>Properties</grNTL>      = <grNTR>Property</grNTR>*
+
+<grNTL>Property</grNTL>        = <grTR>Blank</grTR>* (<grNTR>ValueProperty</grNTR> | <grNTR>ComplexProperty</grNTR> | <grNTR>Include</grNTR> | <grNTR>Comment</grNTR>)
+                  (<grTR>LineBreak</grTR> | <grTR>LineBreak</grTR>? <grTR>EndOfFile</grTR>)
+
+<grNTL>ValueProperty</grNTL>  = <grNTR>Key</grNTR> (<grNTR>Assignment</grNTR> <grNTR>Value</grNTR>?)?
+
+<grNTL>ComplexProperty</grNTL> = <grNTR>Key</grNTR> <grNTR>Assignment</grNTR> <grTR>OpenCurly</grTR> <grTR>LineBreak</grTR> <grNTR>Property</grNTR>* <grTR>CloseCurly</grTR>
+
+<grNTL>Include</grNTL>         = <grTR>Arobase</grTR>
+                  ( <grTR>OpenCurly</grTR> | <grTR>CloseCurly</grTR> | <grTR>Arobase</grTR>     | <grTR>Colon</grTR> | <grTR>Equals</grTR>
+                  | <grTR>Blank</grTR>     | <grTR>Hash</grTR>       | <grTR>Exclamation</grTR> | <grTR>Text</grTR>  | <grTR>BackSlash</grTR> )+
+
+<grNTL>Comment</grNTL>         = (<grTR>Hash</grTR> | <grTR>Exclamation</grTR>)
+                  ( <grTR>OpenCurly</grTR> | <grTR>CloseCurly</grTR> | <grTR>Arobase</grTR>     | <grTR>Colon</grTR> | <grTR>Equals</grTR>
+                  | <grTR>Blank</grTR>     | <grTR>Hash</grTR>       | <grTR>Exclamation</grTR> | <grTR>Text</grTR>  | <grTR>BackSlash</grTR> )*
+</grammar>
+
+<h2>Implicit non-terminals</h2>
+
+<grammar><grCmt>// Implicit non-terminals are assimilated into produced AST nodes.</grCmt>
+
+<grNTL>Assignment</grNTL>      = ((<grTR>Blank</grTR>? (<grTR>Equals</grTR> | <grTR>Colon</grTR>) <grTR>Blank</grTR>?) | <grTR>Blank</grTR>)
+
+<grNTL>Key</grNTL>             = <grNTR>KeyStart</grNTR> <grNTR>KeyCont</grNTR>
+
+<grNTL>KeyStart</grNTL>        = <grTR>Text</grTR>           | <grTR>EscapedOpenCurly</grTR> | <grTR>EscapedCloseCurly</grTR>
+                | <grTR>EscapedArobase</grTR> | <grTR>EscapedColon</grTR>     | <grTR>EscapedEquals</grTR>
+                | <grTR>EscapedHash</grTR>    | <grTR>EscapedExcl</grTR>      | <grTR>EscapedBackSlash</grTR>
+                | <grTR>EscapedBlank</grTR>   | <grTR>EscapedChar</grTR>      | (<grNTR>LineCont</grNTR> <grNTR>KeyCont</grNTR>)
+
+<grNTL>KeyCont</grNTL>         = ( <grTR>Text</grTR>           | <grTR>EscapedOpenCurly</grTR> | <grTR>EscapedCloseCurly</grTR>
+                  | <grTR>EscapedArobase</grTR> | <grTR>EscapedColon</grTR>     | <grTR>EscapedEquals</grTR>
+                  | <grTR>EscapedHash</grTR>    | <grTR>EscapedExcl</grTR>      | <grTR>EscapedBackSlash</grTR>
+                  | <grTR>EscapedBlank</grTR>   | <grTR>EscapedChar</grTR>      | <grTR>Hash</grTR>
+                  | <grTR>Exclamation</grTR>    | (<grNTR>LineCont</grNTR> <grNTR>KeyCont</grNTR>)
+                  )*
+
+<grNTL>Value</grNTL>           = <grNTR>ValueStart</grNTR> <grNTR>ValueCont</grNTR>
+
+<grNTL>ValueStart</grNTL>      = <grTR>Text</grTR>           | <grTR>EscapedOpenCurly</grTR> | <grTR>EscapedCloseCurly</grTR>
+                | <grTR>EscapedArobase</grTR> | <grTR>EscapedColon</grTR>     | <grTR>EscapedEquals</grTR>
+                | <grTR>EscapedHash</grTR>    | <grTR>EscapedExcl</grTR>      | <grTR>EscapedBackSlash</grTR>
+                | <grTR>EscapedBlank</grTR>   | <grTR>EscapedChar</grTR>      | <grTR>Hash</grTR>
+                | <grTR>Exclamation</grTR>    | <grTR>CloseCurly</grTR>       | <grTR>Colon</grTR>
+                | <grTR>Equals</grTR>         | <grTR>Blank</grTR>            | (<grNTR>LineCont</grNTR> <grNTR>ValueCont</grNTR>)
+
+<grNTL>ValueCont</grNTL>       = ( <grTR>Text</grTR>           | <grTR>EscapedOpenCurly</grTR> | <grTR>EscapedCloseCurly</grTR>
+                  | <grTR>EscapedArobase</grTR> | <grTR>EscapedColon</grTR>     | <grTR>EscapedEquals</grTR>
+                  | <grTR>EscapedHash</grTR>    | <grTR>EscapedExcl</grTR>      | <grTR>EscapedBackSlash</grTR>
+                  | <grTR>EscapedBlank</grTR>   | <grTR>EscapedChar</grTR>      | <grTR>Hash</grTR>
+                  | <grTR>Exclamation</grTR>    | <grTR>CloseCurly</grTR>       | <grTR>Colon</grTR>
+                  | <grTR>Equals</grTR>         | <grTR>Blank</grTR>            | <grTR>OpenCurly</grTR>
+                  | (<grNTR>LineCont</grNTR> <grNTR>ValueCont</grNTR>)
+                  )*
+
+<grNTL>LineCont</grNTL>        = <grTR>EscapedLineBreak</grTR> <grTR>Blank</grTR>*
+</grammar>
+
+<h2>Terminals</h2>
+
+<grammar><grCmt>// The terminal strings in the definitions use \t, \r, \n, and \\</grCmt>
+<grCmt>// placeholders in regular expressions (purple strings) to denote</grCmt>
+<grCmt>// tab, carriage return, line feed, and BackSlash characters.</grCmt>
+
+<grTL>OpenCurly</grTL>         = <grStr>{</grStr>
+<grTL>CloseCurly</grTL>        = <grStr>}</grStr>
+<grTL>Arobase</grTL>           = <grStr>@</grStr>
+<grTL>Colon</grTL>             = <grStr>:</grStr>
+<grTL>Equals</grTL>            = <grStr>=</grStr>
+<grTL>Blank</grTL>             = space | <grRegEx>\t</grRegEx>
+<grTL>LineBreak</grTL>         = <grRegEx>\r\n|\n\r|\n|\r</grRegEx>
+<grTL>Hash</grTL>              = <grStr>#</grStr>
+<grTL>Exclamation</grTL>       = <grStr>!</grStr>
+<grTL>EndOfFile</grTL>         = no further input available
+<grTL>Text</grTL>              = <grRegEx>[^{}@:= \t\r\n#!\\]+</grRegEx>
+<grTL>BackSlash</grTL>         = <grStr>\</grStr>
+
+<grTL>EscapedOpenCurly</grTL>  = <grStr>\{</grStr>
+<grTL>EscapedCloseCurly</grTL> = <grStr>\}</grStr>
+<grTL>EscapedArobase</grTL>    = <grStr>\@</grStr>
+<grTL>EscapedColon</grTL>      = <grStr>\:</grStr>
+<grTL>EscapedEquals</grTL>     = <grStr>\=</grStr>
+<grTL>EscapedHash</grTL>       = <grStr>\#</grStr>
+<grTL>EscapedExcl</grTL>       = <grStr>\!</grStr>
+<grTL>EscapedBackSlash</grTL>  = <grStr>\\</grStr>
+<grTL>EscapedBlank</grTL>      = <grStr>\ </grStr> | <grRegEx>\\\t</grRegEx>
+<grTL>EscapedChar</grTL>       = <grRegEx>\\[^{}:=#!\\ \t\r\n]</grRegEx>
+<grTL>EscapedLineBreak</grTL>  = <grRegEx>\\(\r\n|\n\r|\r|\n)</grRegEx>
+</grammar>
+</chapter>
+
+</document>

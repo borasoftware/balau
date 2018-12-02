@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - clock" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Clock">
+		<h1>Overview</h1>
+
+		<para>The Balau clock infrastructure consists of a base <emph>Clock</emph> interface and a single <emph>SystemClock</emph> implementation.</para>
+
+		<para>The <emph>Clock</emph> interface is both a convenient API for clock functions, but more importantly is a way to allow the injection of a test clock implementation into production code. This allows the manipulation of the clock from within test methods in order to simulate changes in time.</para>
+
+		<para>The clock API uses both std::chrono and the embedded <ref type="raw" new="true" url="https://github.com/HowardHinnant/date">Hinnant date</ref> library in the <emph>ThirdParty</emph> folder.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement">
+			<emph><strong>#include &lt;Balau/System/Clock.hpp></strong></emph><newline />
+			<emph><strong>#include &lt;Balau/System/SystemClock.hpp></strong></emph>
+		</para>
+
+		<h2>Clock binding</h2>
+
+		<para>When developing an application, a <emph>Clock</emph> binding should be added to the application's main injector configuration. Then classes that require the clock API can have the clock injected into them via their injectable constructor.</para>
+
+		<code lang="C++">
+			// The application's main injector configuration.
+			class Configuration : public ApplicationConfiguration {
+				public: void configure() const override {
+					// The production clock implementation.
+					bind&lt;Clock>().toSingleton&lt;SystemClock>();
+
+					// ... more binding declarations ...
+				}
+			};
+
+			// An injector aware class that requires the clock API.
+			class AService {
+				std::shared_ptr&lt;Clock> clock;
+				// ... more dependencies ...
+
+				BalauInjectConstruct(
+					  AService
+					, clock
+					// ... more injectables ...
+				);
+			};
+		</code>
+
+		<para>In order to test the class, a test clock may be created by deriving from either the <emph>Clock</emph> interface directly or extending the <emph>SystemClock</emph> class and reimplementing one or more of the methods. An instance of this test clock can then be injected (manually or via a test injector) into the class to be tested.</para>
+
+		<h2>Clock API</h2>
+
+		<para>The clock API is currently quite brief. More features will be added in future releases.</para>
+
+		<para>The following methods are declared.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Method name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>now</cell>
+					<cell>Get the current time point.</cell>
+				</row>
+
+				<row>
+					<cell>today</cell>
+					<cell>Get the current date.</cell>
+				</row>
+
+				<row>
+					<cell>nanotime</cell>
+					<cell>Get the current time in nanoseconds since the unix epoch.</cell>
+				</row>
+
+				<row>
+					<cell>millitime</cell>
+					<cell>Get the current time in milliseconds since the unix epoch.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

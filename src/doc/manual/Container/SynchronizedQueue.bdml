@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - SynchronizedQueue" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="SynchronizedQueue">
+		<h1>Overview</h1>
+
+		<para>A simple non-blocking queue that uses a std::list and a mutex to provide a thread safe queue.</para>
+
+		<para><emph>SynchronizedQueue</emph> implements the <emph>Queue</emph> API and provides a simple (and ineffIcient) thread safe queue.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Container/SynchronizedQueue.hpp></strong></emph></para>
+
+		<para>The construction of a synchronised queue is made by the default constructor.</para>
+
+		<code lang="C++">
+			// Create a synchronised queue.
+			SynchronizedQueue&lt;T&gt; queue;
+		</code>
+
+		<para>The queue is used in the same way as any other <emph>Queue</emph> implementation. See the <ref type="raw" new="true" url="../../api/classBalau_1_1Container_1_1Queue.html">Queue </ref> API documentation for information on the queue interface.</para>
+
+		<h1>Concurrency</h1>
+
+		<para>This queue implementation is thread safe but is not lock free.</para>
+	</chapter>
+</document>

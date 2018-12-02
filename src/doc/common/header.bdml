@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<copyright>Copyright 2009 Nicholas Smethurst (contact@borasoftware.com)</copyright>
+	</metadata>
+
+	<chapter>
+		<para id="balau-logo">
+			<ref url="index">
+				<graphic url="../resources/images/BalauLogoWhite.png" width="40mm" />
+			</ref>
+		</para>
+
+		<bullets id="bdml-top-menu-ul" class="bdml-horizontal-dropdown-menu">
+			<entry>
+				<para>APPLICATION</para>
+
+				<bullets>
+					<entry><ref url="Application/Injector">Injector</ref></entry>
+					<entry><ref url="Application/Environment">Environment</ref></entry>
+					<entry><ref url="Logging/Logger">Logger</ref></entry>
+					<entry><ref url="Testing/TestRunner">Test runner</ref></entry>
+					<entry><ref url="Application/CharactersAndStrings">Characters and strings</ref></entry>
+					<entry><ref url="Application/CommandLine">Command line parser</ref></entry>
+					<entry><ref url="Application/Resources">Resource hierarchy</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>CONTAINERS</para>
+
+				<bullets>
+					<entry><ref url="Container/ArrayBlockingQueue">ArrayBlockingQueue</ref></entry>
+					<entry><ref url="Container/DependencyGraph">DependencyGraph</ref></entry>
+					<entry><ref url="Container/ObjectTrie">ObjectTrie</ref></entry>
+					<entry><ref url="Interprocess/SharedMemoryQueue">SharedMemoryQueue</ref></entry>
+					<entry><ref url="Container/SynchronizedQueue">SynchronizedQueue</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>CONCURRENT</para>
+
+				<bullets>
+					<entry><ref url="Concurrent/CyclicBarrier">CyclicBarrier</ref></entry>
+					<entry><ref url="Concurrent/Fork">Fork</ref></entry>
+					<entry><ref url="Concurrent/Semaphore">Semaphore</ref></entry>
+					<entry><ref url="Interprocess/SharedMemoryObject">SharedMemoryObject</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>LANG</para>
+
+				<bullets>
+					<entry><ref url="Lang/Parsing">Parsing utilities</ref></entry>
+					<entry><ref url="Lang/PropertyParser">Property parser</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>NETWORK</para>
+
+				<bullets>
+					<entry><ref url="Network/HttpClient">HTTP client</ref></entry>
+					<entry><ref url="Network/HttpServer">HTTP server</ref></entry>
+					<entry><ref url="Network/HttpWebApp">HTTP web apps</ref></entry>
+					<entry><ref url="Network/WsWebApp">WebSockets web apps</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>SYSTEM</para>
+
+				<bullets>
+					<entry><ref url="System/Clock">Clock</ref></entry>
+					<entry><ref url="System/Sleep">Sleep</ref></entry>
+					<entry><ref url="System/ThreadName">ThreadName</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>UTIL</para>
+
+				<bullets>
+					<entry><ref url="Util/Compression">Compression</ref></entry>
+					<entry><ref url="Util/DateTime">DateTime</ref></entry>
+					<entry><ref url="Util/Files">Files</ref></entry>
+					<entry><ref url="Util/Memory">Memory</ref></entry>
+					<entry><ref url="Util/PrettyPrint">PrettyPrint</ref></entry>
+					<entry><ref url="Util/Random">Random</ref></entry>
+					<entry><ref url="Util/Streams">Streams</ref></entry>
+					<entry><ref url="Util/Strings">Strings</ref></entry>
+					<entry><ref url="Util/Vectors">Vectors</ref></entry>
+					<entry><ref url="Util/Miscellaneous">Miscellaneous</ref></entry>
+				</bullets>
+			</entry>
+
+			<entry>
+				<para>COMMUNITY</para>
+
+				<bullets>
+					<entry><ref url="NonCode/Building">Building</ref></entry>
+					<entry><ref url="NonCode/Contributing">Contributing</ref></entry>
+					<entry><ref url="NonCode/KnownIssues">Known issues</ref></entry>
+					<entry><ref url="NonCode/PlannedFeatures">Planned features</ref></entry>
+					<entry><ref url="NonCode/ReportingBugs">Reporting bugs</ref></entry>
+				</bullets>
+			</entry>
+		</bullets>
+
+		<para id="balau-logo-after" />
+	</chapter>
+</document>

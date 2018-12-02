@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - Semaphore" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Semaphore">
+		<h1>Overview</h1>
+
+		<para>A traditional semaphore synchronisation object.</para>
+
+		<para>The semaphore maintains a set of permits that are created via <emph>increment</emph> calls on the semaphore, and consumed by <emph>decrement</emph> calls.</para>
+
+		<para>If there is no permit available when a <emph>decrement</emph> call is made, the calling thread blocks until a permit is created via an <emph>increment</emph> call.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Concurrent/Semaphore.hpp></strong></emph></para>
+
+		<para>Using the semaphore is simple.</para>
+
+		<code lang="C++">
+			// Create a semaphore.
+			Semaphore semaphore;
+		</code>
+
+		<para>An initial permit count can be specified at construction time if desired.</para>
+
+		<code lang="C++">
+			// Create a semaphore with an initial permit count of 4.
+			Semaphore semaphore(4);
+		</code>
+
+		<para>Then each participating thread may call <emph>increment</emph> and/or <emph>decrement</emph> accordingly.</para>
+
+		<code lang="C++">
+			///// Thread A /////
+
+			/// Decrement the semaphore, blocking if the count is 0.
+			semaphore.decrement();
+		</code>
+
+		<code lang="C++">
+			///// Thread B /////
+
+			/// Increment the semaphore, adding a permit.
+			semaphore.increment();
+		</code>
+	</chapter>
+</document>

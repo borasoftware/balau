@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - resources" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Resources">
+		<h1>Overview</h1>
+
+		<para>The resource classes provide a unified approach to specifying, sourcing and obtaining resource streams via URIs.</para>
+
+		<para>There are two groups of classes defined in the <emph>Balau::Resource</emph> namespace:</para>
+
+		<bullets>
+			<entry>URIs;</entry>
+			<entry>resources.</entry>
+		</bullets>
+
+		<para>URIs specify resources and provide functionality specific to each URI type. Resources are a convenient way of obtaining read and (for certain resource types) write streams on the resources specified by the URIs.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Resource/*.hpp></strong></emph></para>
+
+		<h2>URIs</h2>
+
+		<para>URI classes each specify a different type of URI. All URI classes are derived from the common <emph>Uri</emph> base class. The currently available URI classes are:</para>
+
+		<bullets>
+			<entry>File;</entry>
+			<entry>Http;</entry>
+			<entry>Https;</entry>
+			<entry>ZipFile;</entry>
+			<entry>ZipEntry.</entry>
+		</bullets>
+
+		<para>The <emph>Http</emph> and <emph>Https</emph> URI classes derive from the abstract <emph>Url</emph> class.</para>
+
+		<para>URI classes may be used as stack based objects or on the heap in standard pointer containers.</para>
+
+		<code lang="C++">
+			// Stack based URI objects.
+			File file { "text.txt" };
+			Http wiki { "http://wikipedia.org" };
+
+			// Heap based URI objects.
+			auto src1 = std::unique_ptr&lt;URI>(new File("text.txt"));
+			auto src2 = std::unique_ptr&lt;URI>(new Https("https://en.wikipedia.org/wiki/B"));
+		</code>
+
+		<para>Heap based URI objects allow different types of URI to provide abstract functionality, such as providing resources.</para>
+
+		<h2>Resources</h2>
+
+		<para>Each URI class is accompanied by two or four resource classes. The abstract resource classes are:</para>
+
+		<bullets>
+			<entry>ByteReadResource;</entry>
+			<entry>ByteWriteResource;</entry>
+			<entry>Utf8To32ReadResource;</entry>
+			<entry>Utf32To8WriteResource.</entry>
+		</bullets>
+
+		<para>The first pair of abstract resource classes provide byte based resource reading and writing.</para>
+
+		<para>The second pair of abstract resource classes provide UTF-8 to UTF-32 resource reading and UTF-32 to UTF-8 resource writing. These resource types allow reading from UTF-8 streams and consuming in UTF-32, and producing in UTF-32 and writing as UTF-8.</para>
+
+		<para>Resource objects must be obtained from URIs, either in heap based, abstract form contained within <emph>std::unique_ptr</emph> containers, or in stack based, concrete form directly from concrete URI types.</para>
+
+		<code lang="C++">
+			// An abstract URI.
+			std::unique_ptr&lt;URI> uri = getUri();
+
+			// Get an abstract byte read resource from the URI.
+			std::unique_ptr&lt;ByteReadResource> readResource = uri->byteReadResource();
+		</code>
+
+		<para>Once a read / write resource has been obtained from a URI, the input / output stream (UTF-8 or UTF-32) may be obtained by calling <emph>readStream</emph> or <emph>writeStream</emph>.</para>
+
+		<code lang="C++">
+			// Get an input stream from the resource.
+			std::istream &amp; stream = readResource->readStream();
+		</code>
+
+		<para></para>
+
+		<h1>URI classes</h1>
+
+		<para>There are two ways to use the URI classes. The first way is to use instances of the URI classes directly as stack based objects. Balau components make extensive use of URI classes in this way, predominantly the <emph>File</emph> class. Each URI class provides an API that is specialised for URIs of the type provided by the class. For example, the <emph>File</emph> class provides the usual file manipulation functions such as checking for file existence and type, delete the file, etc.</para>
+
+		<para>The second way to use the URI classes is on the heap inside a pointer container. Some Balau components accept a <emph>std::unique_ptr&lt;Uri&gt;</emph> argument, allowing any type of URI to be supplied.</para>
+
+		<para>The most useful use cases for supplying <emph>std::unique_ptr&lt;Uri&gt;</emph> arguments to a component is:</para>
+
+		<bullets>
+			<entry>to obtain abstract read and/or write resources;</entry>
+			<entry>to obtain an abstract recursive iterator.</entry>
+		</bullets>
+
+		<para>The methods in the base <emph>Uri</emph> class that obtain read and write resources are as follows.</para>
+
+		<code lang="C++">
+			///
+			/// Get a byte read resource for the URI.
+			///
+			/// This will throw a NotImplementedException if the URI does not support reading.
+
+			///
+			public: virtual std::unique_ptr&lt;ByteReadResource> byteReadResource() = 0;
+
+			///
+			/// Get a UTF-8 to UTF-32 read resource for the URI.
+			///
+			/// This will throw a NotImplementedException if the URI does not support reading.
+			///
+			public: virtual std::unique_ptr&lt;Utf8To32ReadResource> utf8To32ReadResource() = 0;
+
+			///
+			/// Get a byte write resource for the URI.
+			///
+			/// This will throw a NotImplementedException if the URI does not support writing.
+			///
+			public: virtual std::unique_ptr&lt;ByteWriteResource> byteWriteResource() = 0;
+
+			///
+			/// Get a UTF-32 to UTF-8 write resource for the URI.
+			///
+			/// This will throw a NotImplementedException if the URI does not support writing.
+			///
+			public: virtual std::unique_ptr&lt;Utf32To8WriteResource> utf32To8WriteResource() = 0;
+		</code>
+
+		<para>In order to determine whether a URI supports reading and writing, the <emph>canReadFrom</emph> and <emph>canWriteTo</emph> methods can be called.</para>
+
+		<code lang="C++">
+			///
+			/// Can data be read from the URI via a read resource.
+			///
+			public: virtual bool canReadFrom() const = 0;
+
+			///
+			/// Can data be written to the URI via a write resource.
+			///
+			public: virtual bool canWriteTo() const = 0;
+		</code>
+
+		<para>The method in the base <emph>Uri</emph> class that obtains a recursive iterator is as follows.</para>
+
+		<code lang="C++">
+			///
+			/// Get a recursive iterator.
+			///
+			/// This will throw a NotImplementedException if the URI does not have a recursive iterator.
+			///
+			public: virtual std::unique_ptr&lt;RecursiveUriIterator> recursiveIterator() = 0;
+		</code>
+
+		<para>In order to determine whether a URI supports recursive iteration, the <emph>isRecursivelyIterable</emph> method can be called.</para>
+
+		<code lang="C++">
+			///
+			/// Does the URI have a recursive iterator (e.g. file and zip archive URIs).
+			///
+			public: virtual bool isRecursivelyIterable() const = 0;
+		</code>
+
+		<h1>Resource classes</h1>
+
+		<para>As discussed in the previous section, the abstract resource classes are:</para>
+
+		<bullets>
+			<entry>ByteReadResource;</entry>
+			<entry>ByteWriteResource;</entry>
+			<entry>Utf8To32ReadResource;</entry>
+			<entry>Utf32To8WriteResource.</entry>
+		</bullets>
+
+		<para>Byte based <emph>ByteReadResource</emph> and <emph>ByteWriteResource</emph> derived resources provide input and output streams that read/write as bytes. These can be used for any byte oriented purpose, including UTF-8 strings.</para>
+
+		<para>Unicode based <emph>Utf8To32ReadResource</emph> and <emph>Utf32To8WriteResource</emph> derived resources provide input and output streams that provide an internal format of <emph>char32_t</emph>, despite reading or writing the external resource data as a UTF-8 byte stream. These can be used when a stream of Unicode characters needs to be read or written.</para>
+
+		<para>Each concrete URI type provides at least one set of read or write resource classes. Some URI classes provide both sets of resource classes.</para>
+
+		<h1>Recursive iterators</h1>
+
+		<para>In addition to the resource readers and writers, some of the URI classes provide recursive iterators. These iterators supply a stream of new URIs, either of the same URI type (in the case of the <emph>File</emph> URI), or a different type (<emph>ZipFile</emph>). Resource readers/writers may be obtained from each of the URIs obtained during iteration.</para>
+
+		<para>The two types of recursive iterator currently defined in the library allow iteration over:</para>
+
+		<bullets>
+			<entry>the set of files and directories within a file system directory (<emph>File</emph>);</entry>
+			<entry>the set of files and directories within a zip archive (<emph>ZipFile</emph>).</entry>
+		</bullets>
+
+		<para>As the recursive iterators may be obtained from a pointer of type <emph>Uri</emph>, components may be written that consume input and/or output streams for sets of resources on the local file system or from within zip archives.</para>
+
+		<h1>Custom resources</h1>
+
+		<para>As the <emph>Uri</emph> and resource readers/writers are abstract classes, custom URIs and associated resources may be created easily and used within components that consume abstract resources. In order to do this, the <emph>Uri</emph> class should be implemented, along with associated implementations of <emph>ByteReadResource</emph> / <emph>Utf8To32ReadResource</emph> if the resource may be read, and <emph>ByteWriteResource</emph> / <emph>Utf32To8WriteResource</emph> if the resource may be written.</para>
+	</chapter>
+</document>

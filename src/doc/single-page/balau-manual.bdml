@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<copyright>Copyright 2008 Bora Software (contact@borasoftware.com)</copyright>
+		<trademark>Bora® and the Bora logo are registered trademarks in the European Community, the United States of America, and other countries.</trademark>
+		<relative-root url="../manual" />
+
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<title text="Balau core C++ library - user manual" />
+
+		<cover url="images/SingleCover.png" target="epub" />
+		<cover url="images/SingleCover.png" target="mobi" />
+		<cover url="images/SingleCoverA4.png" target="pdf" variant="A4" width="210mm" />
+
+		<!-- front matter -->
+		<front-matter url="../single-page/pdf/title-page.bdml" target="pdf"/>
+		<front-matter url="../single-page/pdf/legal-notices.bdml" target="pdf"/>
+		<toc />
+
+		<!-- back matter -->
+		<index-page/>
+
+		<!-- header/footer -->
+		<header url="../single-page/pdf/header-pdf.bdml"  target="pdf" />
+		<footer url="../single-page/pdf/footer-right-pdf.bdml" page="right" target="pdf" />
+		<footer url="../single-page/pdf/footer-left-pdf.bdml" page="left" target="pdf" />
+
+		<header url="../single-page/html/header-html.bdml" target="html" />
+		<footer url="../single-page/html/footer-html.bdml" target="html" />
+
+		<!-- style -->
+		<stylesheet url="../bdml/css/bora-doc-pdf.css"    target="pdf" />
+		<stylesheet url="../bdml/css/bora-doc-epub.css"   target="epub" />
+		<stylesheet url="../bdml/css/bora-doc-pdf-A4.css" target="pdf" variant="A4" />
+		<stylesheet url="../resources/css/balau.css"      target="html" />
+
+		<!-- HTML scripts -->
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<include url="index.bdml" />
+
+	<part title="APPLICATION">
+		<include url="Application/Injector.bdml" />
+		<include url="Application/Environment.bdml" />
+		<include url="Logging/Logger.bdml" />
+		<include url="Testing/TestRunner.bdml" />
+		<include url="Application/CharactersAndStrings.bdml" />
+		<include url="Application/CommandLine.bdml" />
+		<include url="Application/Resources.bdml" />
+	</part>
+
+	<part title="CONTAINERS">
+		<include url="Container/ArrayBlockingQueue.bdml" />
+		<include url="Container/DependencyGraph.bdml" />
+		<include url="Container/ObjectTrie.bdml" />
+		<include url="Interprocess/SharedMemoryQueue.bdml" />
+		<include url="Container/SynchronizedQueue.bdml" />
+	</part>
+
+	<part title="CONCURRENT">
+		<include url="Concurrent/CyclicBarrier.bdml" />
+		<include url="Concurrent/Fork.bdml" />
+		<include url="Concurrent/Semaphore.bdml" />
+		<include url="Interprocess/SharedMemoryObject.bdml" />
+	</part>
+
+	<part title="LANG">
+		<include url="Lang/Parsing.bdml" />
+		<include url="Lang/PropertyParser.bdml" />
+	</part>
+
+	<part title="NETWORK">
+		<include url="Network/HttpClient.bdml" />
+		<include url="Network/HttpServer.bdml" />
+		<include url="Network/HttpWebApp.bdml" />
+		<include url="Network/WsWebApp.bdml" />
+	</part>
+
+	<part title="SYSTEM">
+		<include url="System/Clock.bdml" />
+		<include url="System/Sleep.bdml" />
+		<include url="System/ThreadName.bdml" />
+	</part>
+
+	<part title="UTIL">
+		<include url="Util/Compression.bdml" />
+		<include url="Util/DateTime.bdml" />
+		<include url="Util/Files.bdml" />
+		<include url="Util/Memory.bdml" />
+		<include url="Util/PrettyPrint.bdml" />
+		<include url="Util/Random.bdml" />
+		<include url="Util/Streams.bdml" />
+		<include url="Util/Strings.bdml" />
+		<include url="Util/Vectors.bdml" />
+		<include url="Util/Miscellaneous.bdml" />
+	</part>
+
+	<part title="COMMUNITY">
+		<include url="NonCode/Building.bdml" />
+		<include url="NonCode/Contributing.bdml" />
+		<include url="NonCode/KnownIssues.bdml" />
+		<include url="NonCode/PlannedFeatures.bdml" />
+		<include url="NonCode/ReportingBugs.bdml" />
+	</part>
+</document>

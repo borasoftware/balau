@@ -1,0 +1,145 @@
+// @formatter:off
+//
+// Balau core C++ library
+//
+// Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+//
+// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+// See the LICENSE file for the full license text.
+//
+
+///
+/// @file Matchers.hpp
+///
+/// Matcher functions for test assertions.
+///
+
+#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__MATCHERS
+#define COM_BORA_SOFTWARE__BALAU_TESTING__MATCHERS
+
+#include <Balau/Testing/Impl/MatcherClasses.hpp>
+
+namespace Balau::Testing {
+
+///
+/// Is the actual value equal to the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareEquals, EvNotUsed, EvNotUsed> is(const E & expected) {
+	return ExpectedValue<E, MatcherCompareEquals, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Is the actual value not equal to the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareNotEqual, EvNotUsed, EvNotUsed> isNot(const E & expected) {
+	return ExpectedValue<E, MatcherCompareNotEqual, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Is the actual value not equal to the supplied expected value?
+///
+inline ExpectedValue<void *, MatcherCompareNotEqual, EvNotUsed, EvNotUsed> isNotNull() {
+	return ExpectedValue<void *, MatcherCompareNotEqual, EvNotUsed, EvNotUsed>(nullptr);
+}
+
+///
+/// Is the actual value greater than the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareGreaterThan, EvNotUsed, EvNotUsed> isGreaterThan(const E & expected) {
+	return ExpectedValue<E, MatcherCompareGreaterThan, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Is the actual value greater than or equal to the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareGreaterThanOrEqualTo, EvNotUsed, EvNotUsed> isGreaterThanOrEqualTo(const E & expected) {
+	return ExpectedValue<E, MatcherCompareGreaterThanOrEqualTo, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Is the actual value less than the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareLessThan, EvNotUsed, EvNotUsed> isLessThan(const E & expected) {
+	return ExpectedValue<E, MatcherCompareLessThan, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Is the actual value less than or equal to the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareLessThanOrEqualTo, EvNotUsed, EvNotUsed> isLessThanOrEqualTo(const E & expected) {
+	return ExpectedValue<E, MatcherCompareLessThanOrEqualTo, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Is the actual value equal to within the specified error limit to the supplied expected value?
+///
+template <typename E, typename V>
+inline ExpectedValue<E, MatcherCompareAlmostEqual, V, EvNotUsed>  isAlmostEqual(const E & expected, const V & errorDelta) {
+	return ExpectedValue<E, MatcherCompareAlmostEqual, V, EvNotUsed>(expected, errorDelta);
+}
+
+///
+/// Does the actual value start with the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareStartsWith, EvNotUsed, EvNotUsed> startsWith(const E & expected) {
+	return ExpectedValue<E, MatcherCompareStartsWith, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Does the actual value end with the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareEndsWith, EvNotUsed, EvNotUsed> endsWith(const E & expected) {
+	return ExpectedValue<E, MatcherCompareEndsWith, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Does the actual value contains the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareContains, EvNotUsed, EvNotUsed> contains(const E & expected) {
+	return ExpectedValue<E, MatcherCompareContains, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Does the actual value not contain the supplied expected value?
+///
+template <typename E>
+inline ExpectedValue<E, MatcherCompareDoesNotContain, EvNotUsed, EvNotUsed> doesNotContain(const E & expected) {
+	return ExpectedValue<E, MatcherCompareDoesNotContain, EvNotUsed, EvNotUsed>(expected);
+}
+
+///
+/// Does the code block throw the supplied expected exception type?
+///
+template <typename E> inline const ThrowTypeExpectation<E> throws() {
+	return ThrowTypeExpectation<E>();
+}
+
+///
+/// Does the code block throw the supplied exception (including the exception's data)?
+///
+template <typename E> inline const ThrowExpectation<E> throws(const E & expected) {
+	return ThrowExpectation<E>(expected);
+}
+
+///
+/// Does the code block throw the supplied exception (including the exception's data)?
+///
+/// Perform the comparison with the supplied function.
+///
+template <typename E, typename C>
+inline const ThrowExpectationWithFunction<E, C> throws(const E & expected, C comparisonFunction) {
+	return ThrowExpectationWithFunction<E, C>(expected, comparisonFunction);
+}
+
+} // namespace Balau::Testing
+
+#endif // COM_BORA_SOFTWARE__BALAU_TESTING__MATCHERS

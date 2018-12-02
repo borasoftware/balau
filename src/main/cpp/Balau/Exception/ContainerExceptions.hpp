@@ -1,0 +1,103 @@
+// @formatter:off
+//
+// Balau core C++ library
+//
+// Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+//
+// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+// See the LICENSE file for the full license text.
+//
+
+///
+/// @file ContainerExceptions.hpp
+///
+/// %Balau exceptions for containers.
+///
+
+#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS
+#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS
+
+#include <Balau/Exception/BalauException.hpp>
+
+namespace Balau::Exception {
+
+///
+/// Thrown when a specified index is not in the valid range.
+///
+class IndexOutOfRangeException : public BalauException {
+	public: const size_t index;
+
+	public: IndexOutOfRangeException(const char * file, int line, size_t index_)
+		: BalauException(file, line, "IndexOutOfRange", ::toString(index_))
+		, index(index_) {}
+
+	public: IndexOutOfRangeException(const char * file, int line, const std::string & text, size_t index_)
+		: BalauException(file, line, "IndexOutOfRange", text + " - " + ::toString(index_))
+		, index(index_) {}
+};
+
+inline bool operator == (const IndexOutOfRangeException & lhs, const IndexOutOfRangeException & rhs) {
+	return lhs.message == rhs.message && lhs.index == rhs.index;
+}
+
+///
+/// Thrown when a request is made for an element but no elements are available.
+///
+class EmptyException : public BalauException {
+	public: EmptyException(const char * file, int line, const std::string & text)
+		: BalauException(file, line, "Empty", text) {}
+};
+
+///
+/// Thrown when an invalid size is supplied or detected.
+///
+class SizeException : public BalauException {
+	public: SizeException(const char * file, int line, const std::string & text)
+		: BalauException(file, line, "Size", text) {}
+};
+
+///
+/// Thrown when an attempt is made to add an existing item to a container.
+///
+template <typename T> class ItemExistsException : public BalauException {
+	public: const T item;
+
+	public: ItemExistsException(const char * file, int line, T item_, const std::string & text)
+		: BalauException(file, line, "ItemExists", text)
+		, item(item_) {}
+};
+
+///
+/// Thrown when an attempt is made to remove a non-existing item in a container.
+///
+template <typename T> class ItemDoesNotExistException : public BalauException {
+	public: const T item;
+
+	public: ItemDoesNotExistException(const char * file, int line, T item_, const std::string & text)
+		: BalauException(file, line, "ItemDoesNotExist", text)
+		, item(item_) {}
+};
+
+} // namespace Balau::Exception
+
+inline std::string toString(const Balau::Exception::IndexOutOfRangeException & e) {
+	return e.what();
+}
+
+inline std::string toString(const Balau::Exception::EmptyException & e) {
+	return e.what();
+}
+
+inline std::string toString(const Balau::Exception::SizeException & e) {
+	return e.what();
+}
+
+template <typename T> inline std::string toString(const Balau::Exception::ItemExistsException<T> & e) {
+	return e.what();
+}
+
+template <typename T> inline std::string toString(const Balau::Exception::ItemDoesNotExistException<T> & e) {
+	return e.what();
+}
+
+#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS

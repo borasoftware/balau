@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - environment configuration" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Environment configuration">
+		<h1>Overview</h1>
+
+		<h2>Introduction</h2>
+
+		<para>The <emph>EnvironmentConfiguration</emph> class provides injectable environment configuration from programming language agnostic hierarchical property files.</para>
+
+		<para>Typically, a server application will be run as one or more separate processes spread across a group of machines. Each running process will be configured according to a specified environment. In order to configure the application differently for each environment, the <emph>EnvironmentConfiguration</emph> class provides a convenient way of binding externally sourced hierarchical environment properties into the injector, ready for injection into dependent classes as typed named values and named composite <emph>EnvironmentProperties</emph> instances.</para>
+
+		<para>The <emph>EnvironmentConfiguration</emph> class works with hierarchical property files (see the <ref url="Lang/PropertyParser">property parser</ref> chapter for more information on defining hierarchical property files). A URI referencing a properties file is specified as a constructor argument of the <emph>EnvironmentConfiguration</emph> class or an implementing class of the <emph>EnvironmentConfiguration</emph> class. The referenced properties file is parsed and appropriate bindings are created when the environment configuration instance is called by the instantiating injector.</para>
+
+		<para>In addition to string value properties, the environment configuration framework supports typed configuration properties via type specifications. The use of type specification files allows a single set of hierarchical environment configuration type specification files to be used across multiple applications written in multiple programming languages.</para>
+
+		<para>Type specifications can also have default values attached to them. This allows sensible defaults that apply to all environments to be specified in a single location, preventing the need for complex environment configuration property files and consequential logical coupling across multiple environments and applications.</para>
+
+		<para>Type specification files and property value files are conceptually similar to classes and instances. A type specification file provides a hierarchical typed contract. A property value file provides hierarchical instance values that fulfill a type specification contract. This analogy is not exact, as type specification files can provide default values for instantiation and property value files can provide values that default to string types when no matching type specification is provided. The hierarchical configuration design thus provides a looser contract than the class-instance contract.</para>
+
+		<para>The Balau library provides a C++ implementation of the environment configuration and environment properties support classes. Java based environment configuration classes are also planned to support <emph>Guice</emph> and <emph>Spring</emph> based applications.</para>
+
+		<h2>Usage patterns</h2>
+
+		<para>There are three ways to use the environment configuration class:</para>
+
+		<bullets>
+			<entry>derive from the <emph>EnvironmentConfiguration</emph> class and hard wire hierarchical property type specifications inside the configure() method of the derived class;</entry>
+
+			<entry>instantiate an <emph>EnvironmentConfiguration</emph> instance directly, by specifying one or more hierarchical property type specification sources in addition to the input environment properties source.</entry>
+
+			<entry>derive from the <emph>EnvironmentConfiguration</emph> class, hard wire hierarchical property type specification declarations inside the configure() method of the derived class, and specify one or more hierarchical property type specification sources in addition to the input environment properties source.</entry>
+		</bullets>
+
+		<para>The first approach places the hierarchical property type specifications directly within the C++ code. An advantage of this approach is that any type that has a corresponding <emph>fromString</emph> function can be used for value property types parsed by the environment configuration, without the need for explicit registration before injector creation.</para>
+
+		<para>The second approach places the hierarchical type specifications within type specification definition files. The advantage of the second approach is that the environment configuration type specifications are defined within an IDL (which is itself also in the hierarchical property format). Environment configuration type specification files may thus be defined once and used for multiple software applications written in multiple languages, without needing to redefine the type specifications or the environment configuration files.</para>
+
+		<para>The disadvantage of the second approach is that all custom types (i.e. types not pre-registered in the Balau library) referenced in the type specification files must be registered with the consuming C++ applications before creating the injector. This can be achieved via the following function calls.</para>
+
+		<bullets>
+			<entry><emph>EnvironmentConfiguration::registerValueType&lt;T></emph></entry>
+			<entry><emph>EnvironmentConfiguration::registerUniqueType&lt;T></emph></entry>
+		</bullets>
+
+		<para>Such registration of custom property types will not be necessary in other languages such as Java, where reflection can be used to resolve string to type mappings.</para>
+
+		<para>The third approach mixes the first two approaches together. This involves deriving from the <emph>EnvironmentConfiguration</emph> class and also passing one or more type specification properties files to the base class constructor, in addition to implementing the <emph>configure</emph> method.</para>
+
+		<para>With the first and third approaches, additional validation logic can be placed in the <emph>configure</emph> method if required. This places validation logic specific to specific environment configuration inside the same class that generates the injector bindings for it.</para>
+
+		<para>With all three approaches, type specifications are optional. If a value property is present in a specified property file and there is no corresponding type specification, a <emph>std::string</emph> property will be created (<emph>std::string</emph> being the default property value type).</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Application/EnvironmentConfiguration.hpp></strong></emph></para>
+
+		<h2>Properties</h2>
+
+		<para>An example hierarchical property file used for environment configuration looks similar to the following.</para>
+
+		<code lang="Properties">
+			http.server.worker.count = 8
+
+			file.serve {
+				location      = /
+				document.root = file:src/doc
+				cache.ttl     = 3600
+			}
+		</code>
+
+		<para>The above is an example from the Balau HTTP server tests.</para>
+
+		<h2>Hard wired specifications</h2>
+
+		<para>Hard wiring the environment configuration type specifications is best limited to applications that either:</para>
+
+		<bullets>
+			<entry>do not share their environment configuration with other applications; or</entry>
+
+			<entry>share their environment configuration with other C++ applications via a shared C++ library.</entry>
+		</bullets>
+
+		<para>The creation of an environment configuration class with hard wired type specifications consists of deriving from the <emph>EnvironmentConfiguration</emph> base class, and implementing the <emph>configure</emph> method. Environment configuration type specifications that correspond to the properties in the referenced property file are placed within the <emph>configure</emph> method.</para>
+
+		<para>The following is an example environment configuration class implementation for the above example property file.</para>
+
+		<code lang="C++">
+			// Environment configuration for the example HTTP file server.
+			class EnvConfig : public EnvironmentConfiguration {
+				public: EnvConfig(const Resource::Uri &amp; input) : EnvironmentConfiguration(input) {}
+
+				public: void configure() const override {
+					value&lt;int>("http.server.worker.count");
+
+					group("file.serve"
+						, value&lt;std::string>("location")
+						, unique&lt;Resource::Uri>("document.root")
+						, value&lt;int>("cache.ttl")
+					);
+				}
+			};
+		</code>
+
+		<h2>IDL based specifications</h2>
+
+		<para>IDL based environment configuration type specifications are best used for applications that:</para>
+
+		<bullets>
+			<entry>are written in multiple programming languages (and thus require language agnostic type specifications;</entry>
+
+			<entry>are maintained by multiple teams each with a different release schedule.</entry>
+		</bullets>
+
+		<para>The IDL based method for specifying environment configuration involves the external creation of environment configuration type specification files, referenced via URI.</para>
+
+		<para>The creation of a type specification file consists of creating a hierarchical property file that is similar to the environment configuration property file. Instead of specifying property data values, the type annotations are specified.</para>
+
+		<para>Direct instantiation of the <emph>EnvironmentConfiguration</emph> class involves passing one or more environment configuration type specification files, referenced via URI to the constructor of the <emph>EnvironmentConfiguration</emph> class. The type specification files are cascaded together, and the resulting hierarchical type specifications are used as if they were specified within the <emph>configure</emph> method.</para>
+
+		<para>The following properties file is an example environment configuration type specification for the previous properties data file.</para>
+
+		<code lang="Properties">
+			http.server.worker.count : int
+
+			file.serve {
+				location      : string
+				document.root : uri
+				cache.ttl     : int
+			}
+		</code>
+
+		<para>In this example, the <emph>:</emph> separator has been used in order to accentuate that the property values are type annotations. Alternative <emph>=</emph> or whitespace separators can also be used if preferred.</para>
+
+		<para>Property type specification files look very similar to property data files, as they have a similar hierarchical structure.</para>
+
+		<para>In order to use the type specification file, the <emph>EnvironmentConfiguration</emph> class is instantiated, specifying the type specification file and the property data file to the constructor.</para>
+
+		<code lang="C++">
+			// Direct instantiation of the EnvironmentConfiguration class.
+
+			auto envProps = Resource::File("path/to/env/env1.hconf");
+
+			auto specs1 = Resource::File("path/to/type/specs1.thconf");
+			auto specs2 = Resource::File("path/to/type/specs2.thconf");
+
+			auto envConf = EnvironmentConfiguration(envProps, specs1, specs2);
+		</code>
+
+		<para>The <emph>EnvironmentConfiguration</emph> class' constructor is variadic, thus multiple type specification URIs may be specified.</para>
+
+		<h2>Mixed specifications</h2>
+
+		<para>Hard wired and IDL based environment configuration type specifications can be mixed in an environment configuration derived class.</para>
+
+		<para>If a mixed type specification is used in an environment configuration, it is possible that duplicate type specifications are provided for a property (one in the hard wired configuration and another in the type specification file). When this occurs, the hard wired type specification / default value takes precedence over the file based one. It is thus possible to override a file base type specification by adding a hard wired type specification with an identical name and hierarchy position in the derived class configuration method.</para>
+
+		<h2>Default values</h2>
+
+		<para>Both hard wired and IDL environment configuration type specifications may have default values attached to them. This allows concise environment configuration data files to be created, by specifying only the differences between the defaults and the required values for that environment.</para>
+
+		<para>The following example is a copy of the previous hard wired example environment configuration class, with default values attached to the properties that can have sensible defaults.</para>
+
+		<code lang="C++">
+			// Example environment configuration with sensible defaults.
+			class EnvConfig : public EnvironmentConfiguration {
+				public: EnvConfig(const Resource::Uri &amp; input) : EnvironmentConfiguration(input) {}
+
+				public: void configure() const override {
+					value&lt;int>("http.server.worker.count", 8);
+
+					group("file.serve"
+						, value&lt;std::string>("location")
+						, unique&lt;Resource::Uri>("document.root")
+						, value&lt;int>("cache.ttl", 3600)
+					);
+				}
+			};
+		</code>
+
+		<para>The following example is a copy of the previous IDL example environment configuration type specifications file, with default values attached to the properties that can have sensible defaults.</para>
+
+		<code lang="Properties">
+			http.server.worker.count : int = 8
+
+			file.serve {
+				location      : string
+				document.root : uri
+				cache.ttl     : int = 3600
+			}
+		</code>
+
+		<h2>Application creation</h2>
+
+		<h3>Injector</h3>
+
+		<para>In order to create an injector with both application and environment configuration, the environment configuration instance(s) are passed to the injector's create function in the same way as is done with the application configuration instance(s).</para>
+
+		<code lang="C++">
+			// Create an injector from a single application configuration
+			// and a single environment configuration.
+			auto injector = Injector::create(AppConfig(), EnvConfig(envProps));
+		</code>
+
+		<para>The above code will parse the contents of the properties file and will build a corresponding set of bindings in the injector that correspond to the root properties (simple and composite) within. Simple properties become named value bindings of the type specified in the environment configuration declaration, or <emph>std::string</emph> if no type specification was made for that property. Composite properties become named shared bindings of type <emph>EnvironmentProperties</emph>.</para>
+
+		<para>Any issues encountered during the build will be flagged via an <emph>EnvironmentPropertiesException</emph>.</para>
+
+		<para>All properties contained within a composite property become bindings within the resulting <emph>EnvironmentProperties</emph> instance. This may include other composite properties that themselves may contain their own bindings. <emph>EnvironmentProperties</emph> instances have a similar public API to part of the injector's API. Three get-instance calls are available:</para>
+
+		<table class="bdml-table4060w70">
+			<head> <cell>Get-instance call</cell> <cell>Instances obtained</cell> </head>
+
+			<body>
+				<row>
+					<cell>getValue</cell>
+					<cell>Value property non-polymorphic values</cell>
+				</row>
+
+				<row>
+					<cell>getUnique</cell>
+					<cell>Value property polymorphic values</cell>
+				</row>
+
+				<row>
+					<cell>getShared</cell>
+					<cell>Composite properties</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Unlike the bindings of the injector class (which may include bindings of type <emph>EnvironmentProperties</emph>), the bindings contained within <emph>EnvironmentProperties</emph> instances are not automatically injected into other dependencies. Due to this, the <emph>EnvironmentProperties</emph> class does not have <emph>getInstance</emph> methods (which are used in the automatic injection functions of injectable classes).</para>
+
+		<para>The string to object conversion mechanism used for value property non-polymorphic and polymorphic values is Balau's universal <emph>from-string</emph> function. More information on the universal <emph>from-string</emph> function is available in the <ref url="Application/CharactersAndStrings">characters and strings</ref> chapter. For non-polymorphic value types, a from-string function should be defined with a reference to the destination object. For polymorphic value types, a from-string function should be defined with a reference to a <emph>std::shared_ptr&lt;T></emph> destination object.</para>
+
+		<para>Once the environment property bindings have been created, the root set of simple and composite properties can be used in the same way as all other bindings in the injector, including automatic injection into other dependencies.</para>
+
+		<h3>Application</h3>
+
+		<para>In order to use an environment's properties file(s), the C++ application's main function must provide a path to the environment's home directory / property file location(s). This can be achieved by various methods, a couple of simple ones being:</para>
+
+		<bullets>
+			<entry>passing the environment's home directory via a command line argument;</entry>
+
+			<entry>passing an environment identifier via a command line argument and resolving the environment's home directory via a simple mapping.</entry>
+		</bullets>
+
+		<para>The <emph>EnvironmentConfiguration</emph> class is designed to fail immediately if an environment configuration property file is not well formed, thereby preventing the application from starting up with an invalid configuration.</para>
+
+		<h1>Property type IDL</h1>
+
+		<para>Property type specifications are defined in the hierarchical property format. In the IDL, the physical structure of the type specification hierarchy is similar to the hierarchy of corresponding environment configuration data files.</para>
+
+		<para>The following type strings are currently pre-registered for the environment configuration framework:</para>
+
+		<bullets class="bdml-tight">
+			<entry>byte;</entry>
+			<entry>short;</entry>
+			<entry>int;</entry>
+			<entry>long;</entry>
+			<entry>float;</entry>
+			<entry>double;</entry>
+			<entry>string;</entry>
+			<entry>char;</entry>
+			<entry>uri.</entry>
+		</bullets>
+
+		<para>All the pre-registered types apart from the <emph>uri</emph> type are non-polymorphic value types (values obtained via subsequent <emph>getValue</emph> calls). The <emph>uri</emph> type is a polymorphic <emph>unique</emph> value type (<emph>std::unique_ptr</emph> values obtained via subsequent <emph>getUnique</emph> calls).</para>
+
+		<para>The environment configuration types map to the following C++ types.</para>
+
+		<table class="bdml-table4060w70">
+			<head> <cell>type string</cell> <cell>C++ type</cell> </head>
+
+			<body>
+				<row>
+					<cell>byte</cell>
+					<cell>signed char</cell>
+				</row>
+
+				<row>
+					<cell>short</cell>
+					<cell>short</cell>
+				</row>
+
+				<row>
+					<cell>int</cell>
+					<cell>int</cell>
+				</row>
+
+				<row>
+					<cell>long</cell>
+					<cell>long long</cell>
+				</row>
+
+				<row>
+					<cell>float</cell>
+					<cell>float</cell>
+				</row>
+
+				<row>
+					<cell>double</cell>
+					<cell>double</cell>
+				</row>
+
+				<row>
+					<cell>string</cell>
+					<cell>std::string</cell>
+				</row>
+
+				<row>
+					<cell>char</cell>
+					<cell>char</cell>
+				</row>
+
+				<row>
+					<cell>uri</cell>
+					<cell>std::unique_ptr&lt;Resource::Uri></cell>
+				</row>
+			</body>
+		</table>
+
+		<para>As environment configuration type specifications have been designed to be programming language independent, unsigned integer types are not included as pre-registered types. If unsigned integer type specifications are required for a Balau based C++ application, they can be manually registered by calling the <emph>EnvironmentConfiguration::registerUnsignedTypes</emph> function. Calling this function before creating the injector will register the following types:</para>
+
+		<table class="bdml-table4060w70">
+			<head> <cell>type string</cell> <cell>C++ type</cell> </head>
+
+			<body>
+				<row>
+					<cell>unsigned byte</cell>
+					<cell>unsigned char</cell>
+				</row>
+
+				<row>
+					<cell>unsigned short</cell>
+					<cell>unsigned short</cell>
+				</row>
+
+				<row>
+					<cell>unsigned int</cell>
+					<cell>unsigned int</cell>
+				</row>
+
+				<row>
+					<cell>unsigned long</cell>
+					<cell>unsigned long long</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Other non-standard types may also be manually registered by calling one of the following functions for each custom type, before creating the injector.</para>
+
+		<bullets class="bdml-tight">
+			<entry>EnvironmentConfiguration::registerValueType&lt;T></entry> <entry>EnvironmentConfiguration::registerUniqueType&lt;T></entry>
+		</bullets>
+
+		<para>The first function should be used to register non-polymorphic value types (for values obtained via subsequent <emph>getValue</emph> calls). The second function should be used to register polymorphic <emph>unique</emph> value types (for <emph>std::unique_ptr</emph> values obtained via subsequent <emph>getUnique</emph> calls).</para>
+
+		<para>In addition to the type string used in type specification files, the polymorphic function takes a cloner function. This function will be used to clone the <emph>std::unique_ptr</emph> prototype value on each subsequent call to <emph>getUnique</emph>.</para>
+
+		<para>The full signatures of the two functions are as follows.</para>
+
+		<code lang="C++">
+			///
+			/// Add a non-polymorphic type custom property binding builder
+			/// factory to the global property binding builder factory map.
+			///
+			template &lt;typename ValueT>
+			void registerValueType(const std::string &amp; typeString);
+
+			template &lt;typename BaseT>
+			using UniquePropertyCloner = std::function&lt;
+				std::unique_ptr&lt;BaseT> (const std::unique_ptr&lt;const BaseT> &amp;)
+			>;
+
+			///
+			/// Add a polymorphic type custom property binding builder
+			/// factory to the global property binding builder factory map.
+			///
+			template &lt;typename BaseT>
+			void registerUniqueType(const std::string &amp; typeString,
+			                        const UniquePropertyCloner&lt;BaseT> &amp; cloner);
+		</code>
+
+		<para>An example of a hierarchical property type specification file follows.</para>
+
+		<code lang="Properties">
+			http.server.worker.count : int
+
+			file.serve {
+				location      : string
+				document.root : uri
+				cache.ttl     : int
+			}
+		</code>
+
+		<para>In the above example, the <emph>:</emph> separator has been used in order to accentuate that the property values are type annotations. Alternative <emph>=</emph> or whitespace separators can also be used if preferred, athough the visual representation of default values will look less attractive if an <emph>=</emph> token is used for both the property delimiter and the devault value.</para>
+
+		<para>Property type specification files look very similar to property files, as they have a similar hierarchical structure.</para>
+
+		<para>As discussed previously, if a type specification is absent for a particular property, a binding for the property will be created with type <emph>std::string</emph>. Type specification files may thus only include type specifications for properties that have types other than the default <emph>std::string</emph>.</para>
+
+		<para>Regardless of type, it can be useful to include type specifications for certain <emph>std::string</emph> properties, in order to specify default values for those properties. The following type specification file is the same as the previous one, but with default values for worker count and cache TTL.</para>
+
+		<code lang="Properties">
+			http.server.worker.count : int = 8
+
+			file.serve {
+				location      : string
+				document.root : uri
+				cache.ttl     : int = 3600
+			}
+		</code>
+
+		<h1>Configuration cascading</h1>
+
+		<para>An application that uses the environment configuration framework will consume the following information:</para>
+
+		<list class="bdml-tight">
+			<entry>file based type specifications and default values;</entry>
+			<entry>class based type specifications and default values;</entry>
+			<entry>file based property values.</entry>
+		</list>
+
+		<para>The information from these three sources is merged together to form a hierarchical set of <emph>value</emph>, <emph>unique</emph>, and <emph>shared</emph> bindings in the injector.</para>
+
+		<para>There are thus two merges that occur during the configuration of the injector:</para>
+
+		<bullets class="bdml-tight">
+			<entry>merging of type specification / default value hierarchies;</entry>
+			<entry>merging of default values from the previous merge and property values.</entry>
+		</bullets>
+
+		<para>The first type of cascade consists of the priority merging of type information and associated default values, sourced from potentially multiple configuration producing applications. Type specification / default value overrides can thus be specified, either in additional type specification files or hard coded in an <emph>EnvironmentConfiguration</emph> derived configuration class.</para>
+
+		<para>The second type of cascade consists of the merging of the environment's property values with the default values resulting from the type specification priority merge. Unlike the restrictions on the main property values, this value merge allows duplicate values to be specified. The default values in the merged type specifications are overridden by the environment's property values.</para>
+
+		<h1>Example configuration</h1>
+
+		<para>A full example is presented here (taken from the Balau tests). The example has a single type specification file, a single derived environment configuration class with hard wired type specifications, and a property value file.</para>
+
+		<para>The specification file contents is as follows.</para>
+
+		<code lang="Properties">
+			http.server.worker.count : int = 6
+			value.multiplier         : double = 123.456
+
+			file.serve {
+				location      : string
+				document.root : uri
+				cache.ttl     : int = 10000
+
+				options {
+					identity : string = Balau Server
+					404      : uri    = file:404.html
+				}
+			}
+		</code>
+
+		<para>The hard wired type specification class is as follows.</para>
+
+		<code lang="C++">
+			struct EnvConfig : public EnvironmentConfiguration {
+				EnvConfig(const File &amp; env, const File &amp; spec)
+					: EnvironmentConfiguration(env, spec) {}
+
+				void configure() const override {
+					value&lt;int>("http.server.worker.count", 16);
+					value&lt;double>("value.multiplier", 12.55e-3);
+
+					group("file.serve"
+						, value&lt;std::string>("location", "/")
+						, value&lt;int>("cache.ttl", 3600)
+						, group("options"
+							, value&lt;std::string>("identity", "My Server")
+						);
+					);
+
+					value&lt;double>("value.fraction", 0.432);
+				}
+			};
+		</code>
+
+		<para>The environment's property value file is as follows.</para>
+
+		<code lang="Properties">
+			file.serve {
+				location      = /doc
+				document.root = file:doc
+			}
+		</code>
+
+		<para>The intermediate trees generated from the three sources are illustrated in the following diagrams.</para>
+
+		<graphic position="center" url="../resources/images/BindingBuilderHierarchy_FileBasedTypeSpecificationTree.png">
+			<target target="html" width="100%" />
+			<target target="pdf" width="120mm" />
+		</graphic>
+
+		<graphic position="center" url="../resources/images/BindingBuilderHierarchy_ClassBasedTypeSpecificationTree.png">
+			<target target="html" width="100%" />
+			<target target="pdf" width="120mm" />
+		</graphic>
+
+		<graphic position="center" url="../resources/images/BindingBuilderHierarchy_PropertyValues.png">
+			<target target="html" width="50%" />
+			<target target="pdf" width="60mm" />
+		</graphic>
+
+		<para>Once merged, the resulting hierarchical bindings defined in the injector are illustrated in the following diagram.</para>
+
+		<graphic position="center" url="../resources/images/BindingBuilderHierarchy_ResultingBindings.png">
+			<target target="html" width="100%" />
+			<target target="pdf" width="120mm" />
+		</graphic>
+
+
+		<h1>Design</h1>
+
+		<para>This section provides a summary of some aspects of the philosophy and design of the hierarchical environment configuration framework. It is not necessary to read this section in order to use the framework.</para>
+
+		<h2>Overview</h2>
+
+		<para>The aim of the Balau environment configuration framework is to provide a way to specify environment specific, injectable configuration that:</para>
+
+		<bullets>
+			<entry>is type safe, via inter-environment type specifications;</entry>
+
+			<entry>provides the possibility of specifying sensible, inter-environment defaults for properties;</entry>
+
+			<entry>allows hierarchical property data to be specified;</entry>
+
+			<entry>provides a hierarchical format that facilitates the specification of independent, composite hierarchical property subsets;</entry>
+
+			<entry>has a familiar syntax;</entry>
+
+			<entry>is programming language independent.</entry>
+		</bullets>
+
+		<h2>Background</h2>
+
+		<para>Environment configuration in enterprise applications has been achieved in a variety of ways. One common technique is to supply environment configuration as a flat file containing key-value pairs. These key-value pairs are then loaded into the application injector to form injectable named string values. One common format for this approach is the <emph>.properties</emph> format often used in Java applications.</para>
+
+		<para>Other bespoke approaches to environment configuration include hierarchical configuration formats. Examples of these include XML based configuration (such as the format used in the <ref type="raw" new="true" url="https://httpd.apache.org/docs/2.4/configuring.html">configuration files</ref> of the Apache HTTP server), and curly bracket based hierarchical configuration blocks (the <ref type="raw" new="true" url="https://www.nginx.com/resources/wiki/start/topics/examples/full/">configuration files</ref> of the Nginx server being an example).</para>
+
+		<para>More recently, an elaboration on the traditional key-value approach has been to use <ref type="raw" new="true" url="http://yaml.org/">YAML</ref> as a more visually informative format for key-value properties. This approach also allows string representations of complex values to be represented within the same physical structure as the key-value property structure (i.e. value lists defined in the standard YAML format).</para>
+
+		<h2>Requirements</h2>
+
+		<para>The key requirements determined during the design phase of the environment configuration framework were:</para>
+
+		<list>
+			<entry>provide a mechanism for composite properties, which represent standalone environment configuration property subsets, injectable as a single <emph>EnvironmentProperties</emph> class instance;</entry>
+
+			<entry>allow types to be optionally specified for key-value properties;</entry>
+
+			<entry>provide a mechanism for specifying sensible property defaults;</entry>
+
+			<entry>separate configuration data into inter-environment data (property types, default property values) and intra-environment data (environment specific property values);</entry>
+
+			<entry>provide an <emph>include</emph> mechanism, which allows a hierarchical property file to be split across multiple physical files;</entry>
+
+			<entry>do not mix hierarchical structure with string representations of typed values (i.e. string representations of a complex data structure assigned to a value property);</entry>
+
+			<entry>do not implement required/optional specifications for properties;</entry>
+
+			<entry>base the hierarchical property format on a well known non-hierarchical property format, with minimal differences to the original format;</entry>
+
+			<entry>do not infer the hierarchical structure from indentation, use the well known "{" and "}" block delimiter token pair instead;</entry>
+
+			<entry>use the standard string type of the implementing programming language (e.g. <emph>std::string</emph> for C++) for value properties that do not have a corresponding type specification.</entry>
+		</list>
+
+		<h2>File format</h2>
+
+		<para>The resulting format chosen for both hierarchical environment configuration data files and type specification files is described in detail in the <ref url="Lang/PropertyParser">property parser</ref> chapter. The format is based upon a hierarchical extension to the <emph>.properties</emph> file format. Composite properties are defined via "{" and "}" delimited blocks. The <emph>include</emph> mechanism uses the "@" token to specify a URI to be included.</para>
+
+		<para>Other than the addition of the special "{", "}" and "@" characters and the corresponding non-special, escaped "\{", "\}" and "\@" character pairs, the hierarchical property format is identical to the original non-hierarchical property format.</para>
+
+		<h3>Specification files</h3>
+
+		<para>Environment configuration type specification files represent inter-environment configuration data. This data is defined by an owning application and is shared across multiple environments and consuming applications. The two pieces of information provided for each value property are:</para>
+
+		<bullets>
+			<entry>the property's value type;</entry>
+			<entry>the property's optional default value.</entry>
+		</bullets>
+
+		<h3>Value files</h3>
+
+		<para>Environment configuration value files represent intra-environment configuration data. This data is unique to an environment, but can be shared across multiple applications for that environment. Environment configuration data files contain string representations of each value property contained in the configuration hierarchy.</para>
+
+		<para>If a type specification for a value property is specified in the cascade of the supplied type specification files, the value property will be typed. Otherwise, the property will be bound as a string.</para>
+
+		<h2>Configuration cascading</h2>
+
+		<para>An important part of the environment configuration design was getting the semantics of merging multiple type specification / default value and property value sources together. This involves the merging of information of the following types:</para>
+
+		<list class="bdml-tight">
+			<entry>file based type specifications and default values;</entry>
+			<entry>class based type specifications and default values;</entry>
+			<entry>file based property values.</entry>
+		</list>
+
+		<para>There are three consequential information merges that could possibly occur:</para>
+
+		<bullets class="bdml-tight">
+			<entry>merging type specification / default values;</entry>
+			<entry>merging property values;</entry>
+			<entry>merging default values and property values;</entry>
+		</bullets>
+
+		<para>Finalising the exact semantics of each type of information cascade was a major part of the design process of the environment configuration framework.</para>
+
+		<para>The first type of cascade consists of the priority merging of type information and associated default values, sourced from potentially multiple configuration producing applications. During the design analysis phase, it was concluded that duplicate type specification / default values should be allowed. This allows type specification / default value overrides to be specified, either in additional type specification files or hard coded in an <emph>EnvironmentConfiguration</emph> derived configuration class.</para>
+
+		<para>The second type of cascade would consist of the priority merging of the property values of the environment from multiple property value sources. This type of merging is not supported in the environment configuration framework. Taking into account that each property value becomes an injector binding, the presence of duplicate property values is effectively the same as the presence of duplicate <emph>value</emph> or <emph>unique</emph> application configuration bindings. As the injector does not allow such duplicate bindings, this restriction is carried through to property values. This is the case both within a single property value file processed by an <emph>EnvironmentConfiguration</emph> instance (property value duplication), and across multiple application and environment configuration instances (binding duplication) potentially specified to the injector.</para>
+
+		<para>The third type of cascade consists of the merging of the environment's property values with the default values resulting from the type specification priority merge. Unlike the restrictions on the main property values, this value merge does allow duplicate values to be specified. The default values in the merged type specifications are overridden by the environment's property values.</para>
+
+		<para>Consequently, there are only two types of information merge that occur in the environment configuration framework:</para>
+
+		<bullets class="bdml-tight">
+			<entry>merging type specification / default values;</entry>
+			<entry>merging default values and property values;</entry>
+		</bullets>
+
+		<h2>No required properties</h2>
+
+		<para>One aspect of the design that matured during the development of the environment configuration property framework was whether type specification files should have provision for required/optional property annotations.</para>
+
+		<h3>Overview</h3>
+
+		<para>When considering this proposal, the first impressions of all involved developers were that the capability of specifying which environment properties are required would improve the correctness and safety of consuming applications. This however changed after a more deep consideration of the implications of such a feature, including when taking into account the releases cycles of multiple applications in an enterprise. It was subsequently concluded that required/optional annotations would have a net negative effect on the development and release process.</para>
+
+		<para>When a single version of a consuming application is made in isolation, required/optional property annotations are clearly an advantage. Such annotations would provide both a visual indication for developers and a validation mechanism at application startup.</para>
+
+		<para>However, when a more global consideration is made which takes into account multiple environments, multiple applications, and multiple application versions, the required/optional annotation feature forms a likeness to the abandoned required/optional designs of wire data formats such as <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Protocol_Buffers">Protocol Buffers</ref> and <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Apache_Thrift">Apache Thrift</ref>.</para>
+
+		<h3>Analysis</h3>
+
+		<para>The stated advantages of required/optional annotations in the environment configuration framework were:</para>
+
+		<bullets>
+			<entry>a validation mechanism run during application startup;</entry>
+
+			<entry>a clear visual indication for developers that are creating or modifying environment configurations.</entry>
+		</bullets>
+
+		<para>The primary disadvantage of required/optional annotations in the environment configuration framework is that once a property is marked as required in a producing application's type specification declarations, the release cycles of the suite of consuming applications in an enterprise would be constrained to be synchronised. Such a release cycle synchronisation is extremely inefficient in an enterprise of any complexity, and in the worst case would result in breakages in the contracts between applications.</para>
+
+		<para>This disadvantage is exactly the same disadvantage which led to the abandonment of required/optional annotations in wire data formats such as <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Protocol_Buffers">Protocol Buffers</ref> and <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Apache_Thrift">Apache Thrift</ref>.</para>
+
+		<h3>Alternatives</h3>
+
+		<para>When examining in more detail the overall design, the stated advantages of required/optional annotations can be achieved via other means.</para>
+
+		<h4>Validation</h4>
+
+		<para>Modern enterprise software development is performed in the context of test driven development. When using a dependency injection framework, development should include testing of the application configuration. Such configuration testing is described in the <ref url="Application/Injector">injector</ref> chapter for the Balau injector.</para>
+
+		<para>When the injector configuration is tested, the validation mechanism provided via required/optional annotations is rendered unnecessary.</para>
+
+		<para>If, in exceptional circumstances, additional runtime validation is required, this additional validation can be placed within the <emph>configure</emph> method(s) of the <emph>EnvironmentConfiguration</emph> derived classes of the application.</para>
+
+		<h4>Visual indications</h4>
+
+		<para>Whilst visual indications of required properties for developers would be useful, the lack of required/optional annotations in type specification files can be mostly mitigated by prioritising the use of sensible property value defaults. The design of the hierarchical environment configuration framework includes provision for inter-environment property defaults, specified within the type specification files of producing applications.</para>
+
+		<para>If use of the default values feature is made a primary part of the development process, new properties that are introduced into the release of a component will not require the developers of consuming applications to "mend" their applications when upgrading to new versions of the consumed type specification files. Instead, the default values of new properties will be picked up automatically. Subsequent overriding of the new properties' default values can then be made if necessary at a later date.</para>
+	</chapter>
+</document>

@@ -1,0 +1,65 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* CSS for the horizontal dropdown menu. */
+
+.bdml-horizontal-dropdown-menu {
+	position: relative;
+}
+
+.bdml-horizontal-dropdown-menu > li, .bdml-horizontal-dropdown-menu > li > p {
+	position: relative;
+	display: inline-block;
+}
+
+.bdml-horizontal-dropdown-menu > li:focus ul,
+.bdml-horizontal-dropdown-menu > li:focus-within ul,
+.bdml-horizontal-dropdown-menu > li:hover ul {
+	visibility: visible;
+	opacity: 1;
+	z-index: 1;
+	transform: translateY(0%);
+	transition-delay: 0s, 0s, 0.3s;
+}
+
+.bdml-horizontal-dropdown-menu > li > p, .bdml-horizontal-dropdown-menu li > a {
+	font-size: 0.9em;
+}
+
+.bdml-horizontal-dropdown-menu > li > ul {
+	visibility: hidden;
+	opacity: 0;
+	position: absolute;
+	left: 0;
+	transition: all 0.4s ease-in-out 0s, visibility 0.4s linear 0.4s, z-index 0.4s linear 0.4s;
+	margin-left: 0;
+	padding-left: 0;
+	background-color: #144075;
+	border: 1px solid #144075;
+	border-radius: 8px;
+}
+
+.bdml-horizontal-dropdown-menu > li > ul > li {
+	display: inline-block;
+	padding-right: 0.6em !important;
+	padding-left: 1em !important;
+	width: 170px;
+}

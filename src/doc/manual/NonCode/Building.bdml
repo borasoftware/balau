@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - building Balau" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Building Balau">
+		<para>Perform the following steps to build the Balau library and link it into your CMake project.</para>
+
+		<h1>Dependencies</h1>
+
+		<para>In addition to the C++ standard library, Balau relies on two third party libraries and three utility libraries.</para>
+
+		<para>The first dependency is <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref>, which provides Unicode support. ICU version <strong>60.2</strong> is the currently specified version in the CMakeLists.txt file.</para>
+
+		<para>The second dependency is the <ref type="raw" new="true" url="http://www.boost.org">Boost library</ref>. Boost version <strong>1.68.0</strong> is the currently specified version in the CMakeLists.txt file.</para>
+
+		<para>The three utility libraries are .</para>
+
+		<para>The three utility library dependencies are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. These libraries should be installed via your distribution's standard packaging system.</para>
+
+		<para>The only other dependencies used are standard dependencies on each supported platform.</para>
+
+		<h2>ICU</h2>
+
+		<h3>Linux</h3>
+
+		<para>To configure the ICU sources on Linux, open a command prompt and run the following commands. Replace <emph>/path/to/icu/code</emph> with the source code path and <emph>/path/to/icu/install/dir</emph> with the path where you wish to install the library. For example, this could be <emph>/home/&lt;user&gt;/usr</emph> for an installation in your home directory.</para>
+
+		<code>
+			cd /path/to/icu/code
+			cd source
+			./runConfigureICU Linux --enable-static    \
+			                        --disable-shared   \
+			                        --disable-renaming \
+			                        --prefix=/path/to/icu/install/dir
+		</code>
+
+		<para>Then add the necessary ICU defines in the <emph>source/common/unicode/uconfig.h</emph> file. These additionally configure ICU's build.</para>
+
+		<code lang="C++">
+			#define U_USING_ICU_NAMESPACE            1
+			#define UNISTR_FROM_CHAR_EXPLICIT        explicit
+			#define UNISTR_FROM_STRING_EXPLICIT      explicit
+			#define U_NO_DEFAULT_INCLUDE_UTF_HEADERS 1
+			#define U_HIDE_OBSOLETE_UTF_OLD_H        1
+			#define ICU_NO_USER_DATA_OVERRIDE        1
+			#define U_DISABLE_RENAMING               1
+			// Linux/OSx platforms also use:
+			#define U_CHARSET_IS_UTF8                1
+		</code>
+
+		<para>Then build and install ICU.</para>
+
+		<code>
+			make CXXFLAGS='-std=c++17 -g -o2 -fPIC' -j4
+			make install
+		</code>
+
+		<h3>Windows</h3>
+
+		<para>This section will be filled in when the Windows port has been completed.</para>
+
+		<h2>Boost</h2>
+
+		<h3>Linux</h3>
+
+		<para>To configure the Boost sources on Linux, open a command prompt and run the following commands. Replace <emph>/path/to/boost_1_66_0</emph> with the source code path, <emph>/path/to/icu/install/dir</emph> with the path where you installed the ICU library, and <emph>/path/to/boost/install/dir</emph> with the path where you wish to install the library. For example, this could be <emph>$HOME/usr</emph> for an installation in your home directory.</para>
+
+		<code>
+			cd path/to/boost_1_68_0
+			./bootstrap.sh --with-icu=/path/to/icu/install/dir \
+			               --prefix=/path/to/boost/install/dir
+		</code>
+
+		<para>Then build and install Boost.</para>
+
+		<code>
+			./b2 -j4
+			./b2 install
+		</code>
+
+		<h3>Windows</h3>
+
+		<para>This section will be filled in when the Windows port has been completed.</para>
+
+		<h2>Utility libraries</h2>
+
+		<h3>Debian/Ubuntu</h3>
+
+		<para>The following command is for Ubuntu 18.04 and OpenSSL.</para>
+
+		<code>
+			sudo apt install zlib1g-dev libzip-dev libcurl4-openssl-dev libssl-dev
+		</code>
+
+		<h1>CMake variables</h1>
+
+		<para>Balau relies on two CMake variables in order to find its dependencies and to specify where to install itself. These two variables must be set before building the library.</para>
+
+		<para>The exact method for specifying these CMake variables depends on whether you use the command line or an IDE. Only the command line technique is covered in the build steps here. For IDEs that support CMake, these are typically set from within the settings/preferences of the IDE. Refer to the specific IDE's documentation for information.</para>
+
+		<h2>CMAKE_PREFIX_PATH</h2>
+
+		<para>This CMake variable specifies a list of directories where dependencies may be found. More information is available on the CMake documentation <ref type="raw" new="true" url="https://cmake.org/cmake/help/v3.6/variable/CMAKE_PREFIX_PATH.html">here</ref>.</para>
+
+		<h2>CMAKE_INSTALL_PREFIX</h2>
+
+		<para>This CMake variable specifies the installation prefix into which the Balau library will be installed. More information is available on the CMake documentation <ref type="raw" new="true" url="https://cmake.org/cmake/help/v3.6/variable/CMAKE_INSTALL_PREFIX.html">here</ref>.</para>
+
+		<h1>Environment variables</h1>
+
+		<para>The Balau test application uses a number of environment variables, imported via the CMakeLists.txt file. These environment variables are optional. If they are not defined, certain tests will be disabled.</para>
+
+		<para>Refer to the CMakeLists.txt file for details on each environment variables.</para>
+
+		<h1>Building Balau</h1>
+
+		<para>Building can be achieved either via the command line or from within an IDE that supports the CMake build system. Building and installing via the command line is covered in this document.</para>
+
+		<h2>Linux</h2>
+
+		<para>Open a command prompt and run the following commands. Replace <emph>${DEPS}</emph> with the installation locations of the dependencies you configured in the previous steps, and <emph>${BALAU_PREFIX}</emph> with the installation prefix where you wish to install the Balau library. These are often the same location, for example <emph>/home/&lt;user&gt;/usr</emph>.</para>
+
+		<code>
+			cd path/to/balau/code
+			mkdir build-debug
+			cd build-debug
+
+			cmake -DCMAKE_PREFIX_PATH=${DEPS}            \
+			      -DCMAKE_INSTALL_PREFIX=${BALAU_PREFIX} \
+			      -DCMAKE_BUILD_TYPE=Debug               \
+			      ..
+
+			make -j 4
+			make install
+		</code>
+
+		<para>This set of commands:</para>
+
+		<bullets>
+			<entry>creates an out of source build directory <emph>build-debug</emph>;</entry>
+			<entry>configures CMake;</entry>
+			<entry>builds the library;</entry>
+			<entry>installs the library to ${BALAU_PREFIX}.</entry>
+		</bullets>
+
+		<para>If you wish to have a release build, the following commands perform the same steps but with a release build installed.</para>
+
+		<code>
+			cd path/to/balau/code
+			mkdir build-release
+			cd build-release
+
+			cmake -DCMAKE_PREFIX_PATH=${DEPS}            \
+			      -DCMAKE_INSTALL_PREFIX=${BALAU_PREFIX} \
+			      -DCMAKE_BUILD_TYPE=Release             \
+			      ..
+
+			make -j 4
+			make install
+		</code>
+
+		<h2>Windows</h2>
+
+		<para>This section will be filled in when the Windows port has been completed.</para>
+
+		<h1>Linking</h1>
+
+		<para>In order to link to the Balau library, your <emph>CMakeLists.txt</emph> file needs to be modified with the Balau library and its dependencies.</para>
+
+		<para>These instructions have been written in order to use statically linked libraries. On some platforms, the ordering of the entries in the <emph>CMakeLists.txt</emph> file is important, in order that the linker may resolve the dependencies correctly.</para>
+
+		<para>The following CMake commands will ensure all libraries are found and linked correctly.</para>
+
+		<code lang="C++">
+			######################## BALAU ########################
+
+			find_package(Balau 2018.9.1 REQUIRED)
+			message(STATUS "Balau include dirs: ${Balau_INCLUDE_DIRS}")
+			message(STATUS "Balau library:      ${Balau_LIBRARY}")
+			include_directories(BEFORE ${Balau_INCLUDE_DIRS})
+			set(ALL_LIBS ${ALL_LIBS} ${Balau_LIBRARY})
+
+			################### BOOST LIBRARIES ###################
+
+			set(Boost_DETAILED_FAILURE_MSG ON)
+			set(Boost_USE_STATIC_LIBS ON)
+			set(Boost_USE_MULTITHREADED ON)
+			set(Boost_USE_STATIC_RUNTIME OFF)
+			# Add any other Boost libraries that you may require.
+			find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+			include_directories(${Boost_INCLUDE_DIRS})
+			set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
+
+			message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
+
+			######################### ICU #########################
+
+			find_package(ICU 60.2 REQUIRED COMPONENTS i18n uc data)
+			include_directories(${ICU_INCLUDE_DIRS})
+			set(ALL_LIBS ${ALL_LIBS} ${ICU_LIBRARIES})
+			message(STATUS "ICU include dirs: ${ICU_INCLUDE_DIRS}")
+		</code>
+	</chapter>
+</document>

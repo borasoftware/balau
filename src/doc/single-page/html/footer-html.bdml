@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  - Bora-Doc help file
+  -
+  - Copyright 2009 Nicholas Smethurst (contact@borasoftware.com)
+  -
+  - Use of this file is subject to the Bora End User License Agreement, a copy
+  - of which can be seen at https://borasoftware.com/eula.html.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<copyright>Copyright 2008 Bora Software (contact@borasoftware.com)</copyright>
+		<trademark>Bora® and the Bora logo are registered trademarks in the European Community, the United States of America, and other countries.</trademark>
+		<relative-root url="../../manual" />
+	</metadata>
+
+	<chapter>
+		<para class="notice-dark">Copyright &#169; 2008 Bora Software</para>
+
+		<para class="notice-dark last-notice">Bora&#174; and the Bora logo are registered trademarks in the European Community, the United States of America, and other countries.</para>
+	</chapter>
+</document>

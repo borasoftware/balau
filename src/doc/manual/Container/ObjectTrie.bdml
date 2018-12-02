@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - ObjectTrie" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="ObjectTrie">
+		<h1>Overview</h1>
+
+		<para>An object based trie used for parent-child hierarchies.</para>
+
+		<para>This data structure is useful when the parent-child relationships between nodes are semantically important and must not be changed via tree balancing. If this is not the case, a B-tree or red–black tree would most likely be more appropriate.</para>
+
+		<para>Each node in the trie contains an object of type T plus a vector of child nodes. A node's children are ordered in the order of appending.</para>
+
+		<para>In addition to depth first and breadth first iteration, the object trie contains search and cascade algorithms. The object type T is thus effectively a combination of primary key and value. The type T normally provides a key type field that is compared within the <emph>operator ==</emph> function/method, and one or more value fields that are not part of the equality evaluation.</para>
+
+		<para>When using the search algorithms of the object trie, the standard operator == function / method is used for the object type T. Alternative methods are also provided that accept a custom compare function/lambda, allowing value types that do not have a suitable <emph>operator ==</emph> function/method to be used in the object trie search and cascade algorithms.</para>
+
+		<para>This trie implementation is not optimised or compressed. Use cases requiring an optimised trie representation would most likely be better using a non-object based trie implementation.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Container/ObjectTrie.hpp></strong></emph></para>
+
+		<h2>Construction</h2>
+
+		<para>An object trie can be constructed either by constructing a trie with a root node containing a default constructed value, or by copying/moving a value into the trie to form the root node.</para>
+
+		<code lang="C++">
+			// Construct an object trie with a default root value.
+			// The int type is used as the value type.
+			ObjectTrie&lt;int&gt; trie1;
+
+			// Construct an object trie with a specified root value.
+			ObjectTrie&lt;int&gt; trie2(123);
+		</code>
+
+		<para>When a class type is used as the object trie type, a suitable <emph>operator ==</emph> function/method should be defined if the object trie's algorithms are to be used.</para>
+
+		<code lang="C++">
+			// A class used in the object trie.
+			// The primary key of the class is the integer.
+			struct A {
+				int k;
+				double v;
+
+				// Implicit construction for key only objects.
+				A(int k_) : k(k_) {}
+
+				// Explicit construction for full objects.
+				A(int k_, double v_) : v(v_) {}
+			};
+
+			inline bool operator == (const A &amp; lhs, const A &amp; rhs) {
+				return lhs.k == rhs.k;
+			}
+
+			ObjectTrie&lt;A&gt; trie({ 0, 123.45 });
+		</code>
+
+		<para>The nodes of the trie are represented by <emph>ObjectTrieNode</emph> objects. These contain the value T, and a vector of child nodes.</para>
+
+		<h2>Trie nodes</h2>
+
+		<para>The root node of the trie may be obtained via the <emph>root</emph> method.</para>
+
+		<code lang="C++">
+			ObjectTrieNode&lt;A&gt; &amp; rootNode = trie.root();
+		</code>
+
+		<para>To obtain child nodes, the trie has <emph>count</emph> and <emph>get</emph> methods that provide the number of children of the root and references to the child nodes. Similarly, the <emph>ObjectTrieNode</emph> has equivalent <emph>count</emph> and <emph>get</emph> methods that provide the number of children of the node and references to the children of the node.</para>
+
+		<code lang="C++">
+			// Get the second child of the root node.
+			ObjectTrieNode&lt;A&gt; &amp; c = trie.get(1);
+
+			// Get the first child of the second child.
+			ObjectTrieNode&lt;A&gt; &amp; c = c.get(0);
+		</code>
+
+		<para>New child nodes of the root node or child nodes may be added via the <emph>add</emph> and <emph>addAndReturnChild</emph> methods. The <emph>add</emph> method adds the new child node and returns the current node. The <emph>addAndReturnChild</emph> method adds the new child node and returns the new child.</para>
+
+		<code lang="C++">
+			// Add a new node to the root of the trie.
+			trie.add(2);
+
+			// Add a new node to the first child of the root node.
+			c.get(0).add(7);
+		</code>
+
+		<h2>Searching</h2>
+
+		<para>The <emph>find</emph> and <emph>findNearest</emph> methods perform hierarchical exact and nearest searching.</para>
+
+		<h3>Find</h3>
+
+		<para>To use the <emph>find</emph> methods, call one of the methods with a vector of values to compare. The find method will descend into the trie, comparing each supplied value in turn with the current set of childen. If a match is not found in one of levels, <emph>nullptr</emph> is returned.</para>
+
+		<para>There are two <emph>find</emph> method overloads. The first overload uses the default <emph>operator ==</emph> function/method for the type <emph>T</emph> and the second overload allows a custom comparator to be specified.</para>
+
+		<code lang="C++">
+			// Perform an exact search with the default comparator.
+			auto * n = trie.find({ 1 });
+		</code>
+
+		<para>By default, the root node is not included in the search, thus the first object in the supplied vector is compared with the child nodes of the root node.</para>
+
+		<para>If the root node should be included in the search, <emph>true</emph> should be passed as the second argument in the method call.</para>
+
+		<code lang="C++">
+			// Perform an exact search with the default comparator.
+			// Include the root node in the search.
+			auto * n = trie.find({ 0, 1 }, true);
+		</code>
+
+		<para>In order to use a custom comparator, a lambda function can be specified in the call.</para>
+
+		<code lang="C++">
+			// Perform an exact search with a custom comparator.
+			auto * n = trie.find(
+				  { 0, 1 }
+				, [] (auto &amp; lhs, auto &amp; rhs) { return lhs.k == rhs.k; }
+			);
+		</code>
+
+		<h3>FindNearest</h3>
+
+		<para>The <emph>findNearest</emph> methods work in the same way as the <emph>find</emph> methods, with the exception that if a match is not found in one of levels, the current match is returned. If no matches are found at all, then <emph>nullptr</emph> is returned.</para>
+
+		<code lang="C++">
+			// Perform a nearest search with the default comparator.
+			auto * n = trie.findNearest({ 1, 2, 3 });
+		</code>
+
+		<h2>Iteration</h2>
+
+		<para>Standard library compatible iterators are provided in the object trie implementation. There are two types of iterator available:</para>
+
+		<bullets>
+			<entry>depth first;</entry>
+			<entry>breadth first.</entry>
+		</bullets>
+
+		<para>The <emph>iterator</emph> and <emph>const_iterator</emph> iterators are typedefs to the <emph>DepthIterator</emph> and <emph>ConstDepthIterator</emph> object trie iterators.</para>
+
+		<h3>Depth first</h3>
+
+		<para>Depth first iteration is performed in the same way as iteration in any standard library container.</para>
+
+		<code lang="C++">
+			ObjectTrie&lt;int> trie(0);
+			populateUIntTrie(trie);
+
+			// Traditional iteration.
+			while (ObjectTrie&lt;int>::iterator i = trie.begin(); i != trie.end(); ++i) {
+				auto &amp; object = i->value;
+
+				// ... use the object ...
+			}
+
+			// Range-based iteration.
+			for (auto &amp; node : trie) {
+				auto &amp; object = node.value;
+
+				// ... use the object ...
+			}
+		</code>
+
+		<para>If the depth first iteration should be explicitly mentioned in code, the <emph>depthBegin</emph> and <emph>depthEnd</emph> calls can be specified instead of <emph>begin</emph> and <emph>end</emph>.</para>
+
+		<code lang="C++">
+			while (auto i = trie.depthBegin(); i != trie.depthEnd(); ++i) {
+				auto &amp; object = i->value;
+
+				// ... use the object ...
+			}
+		</code>
+
+		<h3>Breadth first</h3>
+
+		<para>As the range-based loop defaults to depth first iteration, breadth first iteration must be performed via traditional iteration.</para>
+
+		<code lang="C++">
+			// Perform a breadth first iteration on the same trie.
+			while (auto i = trie.breadthBegin(); i != trie.breadthEnd(); ++i) {
+				auto &amp; object = i->value;
+
+				// ... use the object ...
+			}
+		</code>
+
+		<h2>Cascading</h2>
+
+		<para>Object trie cascading involves copying or moving one object trie onto another object trie with the following rules.</para>
+
+		<bullets>
+			<entry>Each node in the source trie that matches a node in the destination trie for equality and position is (copy or move) assigned to the node in the source trie.</entry>
+
+			<entry>Each node in the source trie that does not match a node in the destination trie for equality and position is (copy or move) added to the destination trie.</entry>
+		</bullets>
+
+		<code lang="C++">
+			// Perform an object trie cascade.
+			ObjectTrie&lt;int> trie1(0);
+			populateUIntTrie1(trie1);
+
+			ObjectTrie&lt;int> trie2(0);
+			populateUIntTrie2(trie2);
+
+			trie1.cascade(trie2);
+		</code>
+
+		<para>The above code performs copy cascading. This results in the source trie maintaining validity after the cascade operation. If move cascading is required instead, the <emph>std::move</emph> cast may be used to move the source trie into the cascade call.</para>
+
+		<code lang="C++">
+			// Perform an object trie cascade via moving.
+			trie1.cascade(std::move(trie2));
+		</code>
+
+		<para>The third and fourth <emph>cascade</emph> methods overloads accept a copy or move function in addition to the source trie. This allows the source node's value to be modified during copying / moving. Otherwise, the cascade semantics are identical to the first two method overloads.</para>
+
+		<h1>Fluent build API</h1>
+
+		<para>In order to provide a visual representation of an object trie in code, a variadic fluent build API is provided in the object trie implementation. This build API can be most useful in test code, where canned tries need to be constructed.</para>
+
+		<para>The <emph>ObjectTrieTest::fluentBuild</emph> test case provides a usage example of the fluent build API.</para>
+
+		<code lang="C++">
+			using Trie = ObjectTrie&lt;Value>;
+			using Node = ObjectTrieNode&lt;Value>;
+
+			Trie trie;
+
+			trie.add({ 'a', 1 }
+				, Node::child({ 'a', 11 })
+				, Node::child({ 'b', 12 })
+				, Node::child({ 'c', 13 })
+				, Node::child({ 'd', 14 })
+			).add({ 'b', 2 }
+				, Node::child({ 'a', 21 })
+				, Node::child({ 'b', 22 }
+					, Node::child({ 'a', 221 })
+					, Node::child({ 'b', 222 })
+					, Node::child({ 'c', 223 })
+				)
+			).add({ 'c', 3 }
+				, Node::child({ 'a', 31 })
+				, Node::child({ 'b', 32 })
+				, Node::child({ 'c', 33 })
+				, Node::child({ 'd', 34 })
+				, Node::child({ 'e', 35 })
+			);
+		</code>
+	</chapter>
+</document>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - Fork" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Fork">
+		<h1>Overview</h1>
+
+		<para>A wrapper around the <emph>fork</emph> and <emph>waitid</emph> functions.</para>
+
+		<para>The wrapper has two fork related functions and a set of functions used to manage child process termination.</para>
+
+		<para>The fork related functions are:</para>
+
+		<bullets>
+			<entry>a function to determine whether forking is supported for the platform;</entry>
+
+			<entry>a function to perform the fork and run the supplied function in the child.</entry>
+		</bullets>
+
+		<para>The child process termination management functions are:</para>
+
+		<bullets>
+			<entry>a function to wait on a child process;</entry>
+
+			<entry>a set of functions to check for a terminated child process.</entry>
+		</bullets>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Concurrent/Fork.hpp></strong></emph></para>
+
+		<h2>Forking</h2>
+
+		<para>The <emph>forkSupported</emph> function can be used to verify that the platform has fork support.</para>
+
+		<para>The <emph>performFork</emph> function overloads take a function object (pointer, lambda) which will be run in the child process after forking. There are two types of overload.</para>
+
+		<para>The first overload requires a function that returns an exit status. This exit status in the child process will be returned from the function if the <emph>exitChild</emph> boolean is set to false. Otherwise, the child process will exit at the end of the call to <emph>performFork</emph> with the exit status given by the supplied function. The parent process will return the PID of the child process from the <emph>performFork</emph> function.</para>
+
+		<code lang="C++">
+			/// /// Create a set of worker processes. /// ///
+
+			// The worker state to be shared across processes.
+			class WorkerState {
+				// ... worker state fields ... //
+			}
+
+			using WorkerStateObject = MSharedMemoryObject&lt;WorkerState&gt;;
+			using WorkerStatePtr = std::shared_ptr&lt;WorkerStateObject&gt;;
+
+			// The worker implementation.
+			class Worker {
+				private: WorkerStatePtr state;
+
+				public: Worker(WorkerStatePtr state_) : state(std::move(state_)) {}
+
+				public: int run() {
+
+					// ... worker loop ... //
+
+					return 0;
+				}
+			};
+
+			// Create the shared state and workers.
+			WorkerStatePtr createWorkers() {
+				// Create the shared state.
+				auto workerState = std::make_shared&lt;WorkerStateObject&gt;();
+
+				// Create the worker.
+				Worker worker(sharedShared);
+
+				std::vector&lt;int&gt; childProcessPids;
+
+				// Create the child processes and run the workers within.
+				for (unsigned int m = 0; m &lt; WorkerCount; m++) {
+					childProcessPids.push_back(
+						Fork::performFork([&amp;worker] () { return worker.run(); }, true)
+					);
+				}
+
+				// ... Parent process continues with access to shared state ... //
+				return workerState
+			}
+
+		</code>
+
+		<para>The second overload in the <emph>Fork</emph> class does not require a function/lambda that returns any particular type. This overload will return 0 on successful completion of the supplied function in the child process and will return zero. The parent process will again return the PID of the child process from the <emph>performFork</emph> function. It is then the responsibility of the caller to handle the continuing execution of the child process.</para>
+
+		<h2>Termination</h2>
+
+		<para>There are three functions available for managing child process termination.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>waitOnProcess</cell>
+					<cell>Wait on a process until the process terminates.</cell>
+				</row>
+
+				<row>
+					<cell>checkForTermination</cell>
+					<cell>Check the process or processes for termination without blocking.</cell>
+				</row>
+
+				<row>
+					<cell>terminateProcess</cell>
+					<cell>Terminate the child process if it is running.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>See the <ref type="raw" new="true" url="../../api/classBalau_1_1Concurrent_1_1Fork.html">Fork </ref> API documentation for more information.</para>
+	</chapter>
+</document>

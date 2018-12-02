@@ -1,0 +1,336 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* This file contains a range of tables with defined widths. */
+
+table p {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+
+.bdml-table {
+	margin: 1em auto;
+	table-layout: fixed;
+	width: 100%;
+	text-align: center;
+	border-collapse: collapse;
+	line-height: 1.5em;
+}
+
+.bdml-table th, .bdml-table td {
+	border: solid 1px #bbb;
+	padding: 0.2em 0.4em;
+}
+
+.bdml-table th {
+	font-weight: bold;
+}
+
+.bdml-table50L50 {
+	width: 100%;
+}
+
+.bdml-table50L50 .bdml-col1 {
+	width: 50%;
+}
+
+.bdml-table50L50 .bdml-col2 {
+	width: 50%;
+}
+
+.bdml-table50L50 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table5050w70 {
+	width: 70%;
+}
+
+.bdml-table5050w70 .bdml-col1 {
+	width: 50%;
+}
+
+.bdml-table5050w70 .bdml-col2 {
+	width: 50%;
+}
+
+.bdml-table4060w70 {
+	width: 70%;
+}
+
+.bdml-table4060w70 .bdml-col1 {
+	width: 40%;
+}
+
+.bdml-table4060w70 .bdml-col2 {
+	width: 60%;
+}
+
+.bdml-table5050w60 .bdml-col1 {
+	width: 50%;
+}
+
+.bdml-table5050w60 .bdml-col2 {
+	width: 50%;
+}
+
+.bdml-table2575w60 {
+	width: 60%;
+}
+
+.bdml-table2575w60 .bdml-col1 {
+	width: 25%;
+}
+
+.bdml-table2575w60 .bdml-col2 {
+	width: 75%;
+}
+
+.bdml-table25L75w60 {
+	width: 60%;
+}
+
+.bdml-table25L75w60 .bdml-col1 {
+	width: 25%;
+}
+
+.bdml-table25L75w60 .bdml-col2 {
+	width: 75%;
+}
+
+.bdml-table25L75w60 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table20L4535 .bdml-col1 {
+	width: 20%;
+}
+
+.bdml-table20L4535 .bdml-col2 {
+	width: 45%;
+}
+
+.bdml-table20L4535 .bdml-col3 {
+	width: 35%;
+}
+
+.bdml-table20L4535 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table204535 .bdml-col1 {
+	width: 20%;
+}
+
+.bdml-table204535 .bdml-col2 {
+	width: 45%;
+}
+
+.bdml-table204535 .bdml-col3 {
+	width: 35%;
+}
+
+.bdml-table2517L58 .bdml-col1 {
+	width: 25%;
+}
+
+.bdml-table2517L58 .bdml-col2 {
+	width: 17%;
+}
+
+.bdml-table2517L58 .bdml-col3 {
+	width: 58%;
+}
+
+.bdml-table2517L58 td:first-child + td + td {
+	text-align: left;
+}
+
+.bdml-table202060 .bdml-col1 {
+	width: 20%;
+}
+
+.bdml-table202060 .bdml-col2 {
+	width: 20%;
+}
+
+.bdml-table202060 .bdml-col3 {
+	width: 60%;
+}
+
+.bdml-table202060 td:first-child + td + td {
+	text-align: left;
+}
+
+.bdml-table2020c60 .bdml-col1 {
+	width: 20%;
+}
+
+.bdml-table2020c60 .bdml-col2 {
+	width: 20%;
+}
+
+.bdml-table2020c60 .bdml-col3 {
+	width: 60%;
+}
+
+.bdml-table2020c60 td:first-child + td + td {
+	text-align: left;
+}
+
+.bdml-table333333 .bdml-col1 {
+	width: 33%;
+}
+
+.bdml-table333333 .bdml-col2 {
+	width: 33%;
+}
+
+.bdml-table333333 .bdml-col3 {
+	width: 33%;
+}
+
+.bdml-table2080 .bdml-col1 {
+	width: 20%;
+}
+
+.bdml-table2080 .bdml-col2 {
+	width: 80%;
+}
+
+.bdml-table2080 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table3070 .bdml-col1 {
+	width: 30%;
+}
+
+.bdml-table3070 .bdml-col2 {
+	width: 70%;
+}
+
+.bdml-table30L70 .bdml-col1 {
+	width: 30%;
+}
+
+.bdml-table30L70 .bdml-col2 {
+	width: 70%;
+}
+
+.bdml-table30L70 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table30L70L .bdml-col1 {
+	width: 30%;
+}
+
+.bdml-table30L70L .bdml-col2 {
+	width: 70%;
+}
+
+.bdml-table30L70L td {
+	text-align: left;
+}
+
+.bdml-table20L80 .bdml-col1 {
+	width: 20%;
+}
+
+.bdml-table20L80 .bdml-col2 {
+	width: 80%;
+}
+
+.bdml-table20L80 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table40L60 .bdml-col1 {
+	width: 40%;
+}
+
+.bdml-table40L60 .bdml-col2 {
+	width: 60%;
+}
+
+.bdml-table40L60 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table30L70w80 {
+	width: 80%;
+}
+
+.bdml-table30L70w80 .bdml-col1 {
+	width: 30%;
+}
+
+.bdml-table30L70w80 .bdml-col2 {
+	width: 70%;
+}
+
+.bdml-table30L70w80 td:first-child + td {
+	text-align: left;
+}
+
+.bdml-table161612L56 .bdml-col1 {
+	width: 16%;
+}
+
+.bdml-table161612L56 .bdml-col2 {
+	width: 16%;
+}
+
+.bdml-table161612L56 .bdml-col3 {
+	width: 12%;
+}
+
+.bdml-table161612L56 .bdml-col4 {
+	width: 56%;
+}
+
+.bdml-table161612L56 td:first-child + td + td + td {
+	text-align: left;
+}
+
+
+.bdml-table151515L55 .bdml-col1 {
+	width: 15%;
+}
+
+.bdml-table151515L55 .bdml-col2 {
+	width: 15%;
+}
+
+.bdml-table151515L55 .bdml-col3 {
+	width: 15%;
+}
+
+.bdml-table151515L55 .bdml-col4 {
+	width: 55%;
+}
+
+.bdml-table151515L55 td:first-child + td + td + td {
+	text-align: left;
+}
+
+

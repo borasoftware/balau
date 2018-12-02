@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - thread naming" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Thread naming">
+		<h1>Overview</h1>
+
+		<para>The <emph>ThreadName</emph> namespace class provides a way to set a thread local string that is used by the logging system for the name of the current thread.</para>
+
+		<para>The implementation is very simple and only allows access to the thread name from the thread itself. <emph>ThreadName</emph> exists mainly to support logging, but may be used for other applications that do not need to access the names of other threads.</para>
+
+		<para>It is the responsibility of the end developer to ensure the same name is not used for multiple threads.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/System/ThreadName.hpp></strong></emph></para>
+
+		<para>The <emph>ThreadName</emph> namespace class provides two static methods, one for setting the current thread's name and another to get the current thread's name.</para>
+
+		<code lang="C++">
+			// Set the current thread's name.
+			ThreadName::setName("Main");
+
+			// Get the current thread's name.
+			const auto &amp; name = ThreadName::getName();
+		</code>
+
+		<para>Once a thread's namehas been set, the logging system's <emph>%thread</emph> format specifier will print the thread name instead of the native platform's thread id.</para>
+	</chapter>
+</document>

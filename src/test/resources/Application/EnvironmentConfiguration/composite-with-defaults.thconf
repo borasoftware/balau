@@ -1,0 +1,27 @@
+# @formatter:off
+#
+# Balau core C++ library
+#
+# Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+#
+# Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+# See the LICENSE file for the full license text.
+#
+
+#
+# Example composite type specification file with defaults.
+#
+
+http.server.worker.count : int = 6
+value.multiplier         : double = 123.456
+
+file.serve {
+	location      : string
+	document.root : uri
+	cache.ttl     : int = 10000
+
+	options {
+		identity : string = Balau Server
+		404      : uri    = file:404.html
+	}
+}

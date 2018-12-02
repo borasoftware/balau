@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - DependencyGraph" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="DependencyGraph">
+		<h1>Overview</h1>
+
+		<para>A mutable graph structure that models dependency relationships in a dependency graph.</para>
+
+		<para><emph>DependencyGraph</emph> uses the Boost graph library, and is inspired by the Boost graph library dependency example.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Container/DependencyGraph.hpp></strong></emph></para>
+
+		<h2>Construction</h2>
+
+		<para>The construction of a dependency graph is made by the default constructor.</para>
+
+		<code lang="C++">
+			// Create a dependency graph (T is the value type stored in each graph node).
+			DependencyGraph&lt;T> graph;
+		</code>
+
+		<h2>Population</h2>
+
+		<para>Population of the graph is performed with two main actions:</para>
+
+		<bullets>
+			<entry>adding dependency instances;</entry>
+			<entry>creating dependency relationships.</entry>
+		</bullets>
+
+		<para>These two actions correspond to the addition of graph nodes and graph edges.</para>
+
+		<para>To add a node, call the <emph>addDependency</emph> method.</para>
+
+		<code lang="C++">
+			// Add a dependency instance to the graph.
+
+			// The instance (normally sourced elsewhere).
+			T value;
+
+			graph.addDependency(value);
+		</code>
+
+		<para>To add a dependency relationship, call the <emph>addRelationship</emph> method.</para>
+
+		<code lang="C++">
+			// Add a relationship between two dependencies.
+
+			// The instances (normally sourced elsewhere).
+			T independent;
+			T dependent;
+
+			graph.addRelationship(independent, dependent);
+		</code>
+
+		<para>The dependency graph is designed to use small values that are used as keys. The types used in the dependency graph must therefore have a valid equals method for use in a map based structure. If a large amount of data needs to be stored in each value, one suitable approach would be to add a <emph>std::shared_ptr</emph> field to the value and exclude it from the comparison method logic.</para>
+
+		<h2>Querying</h2>
+
+		<para>In addition to standard iterators, the dependency graph has a set of query methods.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>hasDependency</cell>
+					<cell>Does the graph have the specified dependency?</cell>
+				</row>
+
+				<row>
+					<cell>directDependenciesOf</cell>
+					<cell>What are the direct dependencies of the specified dependency.</cell>
+				</row>
+
+				<row>
+					<cell>dependencyOrder</cell>
+					<cell>Calculate the dependency order of the dependencies.</cell>
+				</row>
+
+				<row>
+					<cell>parallelDependencyOrder</cell>
+					<cell>Calculate the parallel dependency order of the dependencies.</cell>
+				</row>
+
+				<row>
+					<cell>hasCycles</cell>
+					<cell>Does the dependency graph have any cycles?</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>In addition to the query methods, the <emph>logGraph</emph> method logs the contents of the dependency graph to the logging system.</para>
+
+		<para>See the <ref type="raw" new="true" url="../../api/classBalau_1_1Container_1_1DependencyGraph.html">DependencyGraph</ref> API documentation for information on the API for these methods.</para>
+
+		<h1>Concurrency</h1>
+
+		<para>The dependency graph is not thread safe.</para>
+	</chapter>
+</document>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - compression utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Compression utilities">
+		<h1>Overview</h1>
+
+		<para>This header provides user friendly compression utility functions defined within the <emph>Balau::Util::Compression</emph> namespace, and the <emph>Unzipper</emph> / <emph>Zipper</emph> class pair for zip file access and mutation.</para>
+
+		<h1>Quick start</h1>
+
+		<h2>Gzip utilities</h2>
+
+		<para>The <emph>Gzip</emph> class is a namespace class that contains functions to deflate and inflate data between files, strings, and streams.</para>
+
+		<para>The following static methods are currently defined.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>gzip</cell>
+					<cell>Gzip the input file/string/ostream to the specified output file.</cell>
+				</row>
+
+				<row>
+					<cell>gunzip</cell>
+					<cell>Gunzip the input file to the specified output file/string/istream.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Each method is overloaded to allow file, string, and stream input/output.</para>
+
+		<h2>Zipper and Unzipper</h2>
+
+		<para>These classes provide reading and writing functionality for zip files. <emph>Unzipper</emph> provides a reading API for immutable zip files. <emph>Zipper</emph> extends the reading API <emph>Unzipper</emph> with mutation functionality.</para>
+
+		<para>The implementation uses <ref type="raw" new="true" url="https://libzip.org">LibZip</ref> as the backend implementation. Consequently, the read and write APIs reflect the functionality of the backend library. Refer to the Balau <ref type="raw" new="true" url="../../api/classBalau_1_1Util_1_1Unzipper.html">Unzipper</ref> and <ref type="raw" new="true" url="../../api/classBalau_1_1Util_1_1Zipper.html">Zipper</ref> API documentation for more information on these classes.</para>
+
+		<para>In addition to the <emph>Zipper</emph> and <emph>Unzipper</emph> classes, the <emph>ZipFile</emph> and associated <emph>ZipEntry</emph> resource classes use the <emph>Unzipper</emph> class to provide a recursive iterator into zip archives. For more information, refer to the <ref url="Application/Resources">ZipFile</ref> and <ref url="Application/Resources">ZipEntry</ref> documentation.</para>
+	</chapter>
+</document>

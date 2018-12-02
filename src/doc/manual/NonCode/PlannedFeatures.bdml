@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - planned features" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Planned features">
+		<para>The following features and enhancements are currently planned.</para>
+
+		<h1>Platforms</h1>
+
+		<para>Port Balau to platforms other than GNU/Linux, initially Windows 7/10.</para>
+
+		<h1>General</h1>
+
+		<h2>File system</h2>
+
+		<para>Migrate from <emph>&lt;boost/filesystem.hpp></emph> to the standard library replacement <emph>&lt;filesystem></emph> once there is widespread support.</para>
+
+		<h2>Testing</h2>
+
+		<para>Improve test coverage and increase use case tests on each component (explicitly test functionality that is used elsewhere but not directly tested).</para>
+
+		<h2>Error reporting</h2>
+
+		<para>Improve exception messages and information provided at exception throwing sites.</para>
+
+		<h1>Components</h1>
+
+		<h2>Application</h2>
+
+		<h3>Injector</h3>
+
+		<bullets>
+			<entry>Investigate the viability of implementing automatic constructor selection, allowing injectable implementation classes to be written without the need for an injector macro.</entry>
+
+			<entry>Improve dependency tree cycle error reporting.</entry>
+
+			<entry>Improve dependency tree pretty printing.</entry>
+
+			<entry>Improve the injector unit tests.</entry>
+
+			<entry>Implement parallel construction of eager singletons, based on the dependency tree created during the validation phase of injector construction.</entry>
+
+			<entry><emph>[non functional]</emph> Consider the possibility of compacting the injector macro implementations via some macro twiddling.</entry>
+		</bullets>
+
+		<h3>Environment</h3>
+
+		<bullets>
+			<entry><emph>[high priority]</emph> Implement composite property arrays via multiple specification of the same composite property.</entry>
+
+			<entry><emph>[high priority]</emph> Allow duplicate environment properties to be specified within an environment properties file and across multiple bound environment properties files.</entry>
+
+			<entry>Create a web application that serves environment configuration property specifications, given a list of type specification source files.</entry>
+		</bullets>
+
+		<h3>Command line parser</h3>
+
+		<bullets>
+			<entry>Improve the help text printer.</entry>
+		</bullets>
+
+		<h2>Test runner</h2>
+
+		<bullets>
+			<entry>Add test case serialisation via dependency keys.</entry>
+		</bullets>
+
+		<h2>Concurrent</h2>
+
+		<bullets>
+			<entry>Determine how to add processing forking simulation for the Windows 7/10 platform and add the functionality to the <emph>Fork</emph> class.</entry>
+
+			<entry>Determine which other useful (high level API) concurrent data structures are not available from the standard library / Boost libraries and implement.</entry>
+		</bullets>
+
+		<h2>Container</h2>
+
+		<bullets>
+			<entry>Add more search algorithms to <emph>ObjectTrie</emph>.</entry>
+
+			<entry>Add an efficient single process blocking queue implementation.</entry>
+
+			<entry>Determine which other useful (high level API) containers are not available from the standard library / Boost libraries and implement.</entry>
+		</bullets>
+
+		<h2>Lang</h2>
+
+		<bullets>
+			<entry>Extend the parser utilities classes to support incremental parsing.</entry>
+		</bullets>
+
+		<h2>Logging</h2>
+
+		<bullets>
+			<entry>Create a threaded writer in order to offload writing to another thread.</entry>
+
+			<entry>Make quoting unnecessary for URIs.</entry>
+
+			<entry>Improve the validation in the parser (space handling).</entry>
+		</bullets>
+
+		<h2>Network</h2>
+
+		<bullets>
+			<entry><emph>[non functional]</emph> Consider whether to migrate away from libcurl (i.e. write C++ SMTP handling and other handlers).</entry>
+
+			<entry>Add features to the HTTP and HTTPS clients (start with chunked transfer and asynchronous API, redirects).</entry>
+
+			<entry>Add keep alive support to the HTTP server.</entry>
+
+			<entry>Extend the HTTP server to include TLS support.</entry>
+
+			<entry>Improve/add other features to the HTTP server (chunked transfer, etc.).</entry>
+
+			<entry>Consider which other web application handlers would be useful.</entry>
+
+			<entry>Improve the default mime type map.</entry>
+
+			<entry>Analyse the performance of the HTTP server and determine how to improve performance.</entry>
+		</bullets>
+
+		<h2>Resource</h2>
+
+		<bullets>
+			<entry>Add more resource types.</entry>
+
+			<entry><emph>[non functional]</emph> Improve the resource documentation in the developer manual.</entry>
+		</bullets>
+
+		<h2>System</h2>
+
+		<bullets>
+			<entry>Add more features to the clock API and the system clock implementation.</entry>
+		</bullets>
+
+		<h2>Util</h2>
+
+		<h3>Compression</h3>
+
+		<h4>GZip</h4>
+
+		<bullets>
+			<entry>Add functions that compress to <emph>std::vector&lt;char&gt;</emph>.</entry>
+
+			<entry>Add functions that compress to <emph>std::ostream</emph>.</entry>
+
+			<entry>Add functions that uncompress from a <emph>std::vector&lt;char&gt;</emph>.</entry>
+
+			<entry>Add functions that uncompress from a <emph>std::istream</emph>.</entry>
+		</bullets>
+
+		<h4>Zipper/Unzipper</h4>
+
+		<bullets>
+			<entry>Make the zip classes more feature complete.</entry>
+		</bullets>
+	</chapter>
+</document>

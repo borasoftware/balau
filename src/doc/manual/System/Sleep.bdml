@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - sleep utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Sleep utilities">
+		<h1>Overview</h1>
+
+		<para>The <emph>Sleep</emph> namespace class contains static methods that cause the current thread to sleep for the specified duration.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/System/Sleep.hpp></strong></emph></para>
+
+		<para>The following static methods are declared.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Method name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>sleep</cell>
+					<cell>Sleep for the indicated number of seconds.</cell>
+				</row>
+
+				<row>
+					<cell>milliSleep</cell>
+					<cell>Sleep for the indicated number of milli-seconds.</cell>
+				</row>
+
+				<row>
+					<cell>microSleep</cell>
+					<cell>Sleep for the indicated number of micro-seconds.</cell>
+				</row>
+
+				<row>
+					<cell>nanoSleep</cell>
+					<cell>Sleep for the indicated number of nano-seconds.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

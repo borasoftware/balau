@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - CyclicBarrier" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="CyclicBarrier">
+		<h1>Overview</h1>
+
+		<para>A synchronising barrier that can be configured for an arbitrary number of threads.</para>
+
+		<para>The barrier automatically resets after releasing the threads.</para>
+
+		<para>The barrier can be reconfigured for a different number of threads. It is the responsibility of the using code to ensure that the barrier is not being used when reconfigured.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Concurrent/CyclicBarrier.hpp></strong></emph></para>
+
+		<para>Using the cyclic barrier is simple. The barrier is constructed or reconfigured with the number of threads that will wait before the barrier will release the threads and reset.</para>
+
+		<code lang="C++">
+			// Create a cyclic barrier.
+			CyclicBarrier barrier(4);
+
+			// Reconfigure the cyclic barrier.
+			barrier.reconfigure(2);
+		</code>
+
+		<para>Then each participating thread calls the barrier.</para>
+
+		<code lang="C++">
+			/// Count down the barrier, blocking if the count has not reached 0.
+			barrier.countdown();
+		</code>
+	</chapter>
+</document>

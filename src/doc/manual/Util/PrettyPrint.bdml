@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - pretty printing" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Pretty printing">
+		<h1>Overview</h1>
+
+		<para>This header provides utilities for printing numeric values in different formats, defined within the <emph>Balau::Util::PrettyPrint</emph> namespace.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/PrettyPrint.hpp></strong></emph></para>
+
+		<para>The following pretty print functions are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1PrettyPrint.html">API documentation</ref> page.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>fixed</cell>
+					<cell>Print the value in fixed notation.</cell>
+				</row>
+				<row>
+					<cell>scientific</cell>
+					<cell>Print the value in scientific notation.</cell>
+				</row>
+				<row>
+					<cell>metricPrefix</cell>
+					<cell>Print the value with a metric prefix.</cell>
+				</row>
+				<row>
+					<cell>binaryPrefix</cell>
+					<cell>Print the value with a binary prefix. This is similar to a metric prefix, but uses 2^10 (1024) as the divisor.</cell>
+				</row>
+				<row>
+					<cell>byteValue</cell>
+					<cell>Returns a string containing the supplied byte value in terms of B/KB/MB/GB etc.</cell>
+				</row>
+				<row>
+					<cell>duration</cell>
+					<cell>Pretty print the duration.</cell>
+				</row>
+				<row>
+					<cell>printHexBytes</cell>
+					<cell>Print the value as bytes in hexadecimal.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

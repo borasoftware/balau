@@ -1,0 +1,104 @@
+/**
+ * Balau BDML CSS file
+ *
+ * Copyright 2008 Nicholas Smethurst (contact@borasoftware.com)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This file is subject to the combining exception, the text of which
+ * can be seen at https://borasoftware.com/licenses/bdml-license.
+**/
+
+@import url("../../bdml/css/bdml-html.css");
+@import url("../../bdml/css/bdml-drop-down-menu.css");
+
+.cpp-define-statement {
+	color: #880;
+}
+
+h3 {
+	color: #043065;
+}
+
+.bdml-chapter-title {
+	color: #043065;
+	border-top: solid 1px #999;
+}
+
+#single-page-user-manual-title {
+	line-height: 1.7em;
+	color: white;
+	font-size: 1.7em;
+	padding: 0.75em 0 0 0 !important;
+	margin: 0 0 0 7.5em !important;
+}
+
+#balau-logo {
+	padding: 1em 0;
+	margin: 0 24px !important;
+	float: left;
+}
+
+#balau-logo > a {
+	position: relative;
+	left: 0;
+	z-index: 1;
+}
+
+#balau-logo img {
+	padding: 16px 0;
+}
+
+#balau-logo-after {
+	clear: both;
+}
+
+.notice {
+	padding-top: 1em;
+	margin: 0;
+}
+
+.notice + .notice {
+	padding-top: 0.5em;
+	padding-bottom: 1em;
+}
+
+.last-notice {
+	padding-top: 0.5em !important;
+	padding-bottom: 1em !important;
+}
+
+.notice-dark {
+	padding: 1em 0 0 0;
+	margin: 0;
+	background-color: #144075;
+}
+
+.notices {
+	margin-top: 2.5em;
+	padding: 1em 0;
+	border-top: 1px solid #a9a9a9;
+	font-size: 0.88em;
+	text-align: left;
+}
+
+.notices .notice-head {
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+.bdml-horizontal-dropdown-menu > li > ul > li {
+	width: 190px;
+}

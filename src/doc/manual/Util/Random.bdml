@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - random number generators" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Random number generators">
+		<h1>Overview</h1>
+
+		<para>Convenience wrappers around the C++11 random number generator library.</para>
+
+		<para>The implementation is based around a single <emph>RandomNumberGenerator</emph> template class. A set of aliases are provided for each of the random number generator configurations.</para>
+
+		<para>The defined random number configurations are given in the table towards the end of this chapter.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Random.hpp></strong></emph></para>
+
+		<h2>Construction</h2>
+
+		<para>To create a <emph>RandomNumberGenerator</emph>, choose the configuration you require and supply the boundaries within which the generator will generate numbers.</para>
+
+		<code lang="C++">
+			// Create a uniform double random number generator that will generate
+			// double precision floating point numbers between 0 and 10.
+			UniformDouble random(0, 10);
+		</code>
+
+		<para>There is a second constructor available that takes an integer seed value in order to allow for repeatability (useful for testing).</para>
+
+		<code lang="C++">
+			// Create a uniform double random number generator with a seed.
+			UniformDouble random(0, 10, 12345);
+		</code>
+
+		<h2>Usage</h2>
+
+		<para>Once constructed, random numbers can be obtained from the generator by calling its <emph>operator ()</emph>.</para>
+
+		<code lang="C++">
+			// Generate some random numbers.
+			double a = random();
+			double b = random();
+			double c = random();
+		</code>
+
+		<h1>Generator types</h1>
+
+		<para>This section lists the different types of generated that are defined.</para>
+
+		<h2>Uniform distribution</h2>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>UniformDouble</cell>
+					<cell>A uniform distribution, double precision floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>UniformFloat</cell>
+					<cell>A uniform distribution, single precision floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>UniformInt32</cell>
+					<cell>A uniform distribution, 32 bit signed integer floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>UniformInt64</cell>
+					<cell>A uniform distribution, 64 bit signed integer floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>UniformUInt32</cell>
+					<cell>A uniform distribution, 32 bit signed integer floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>UniformUInt64</cell>
+					<cell>A uniform distribution, 64 bit signed integer floating point random number generator.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Normal distribution</h2>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>NormalDouble</cell>
+					<cell>A normal distribution, double precision floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>NormalFloat</cell>
+					<cell>A normal distribution, single precision floating point random number generator.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Templated types</h2>
+
+		<para>These templated aliases require the type <emph>T</emph> to be specified. Most developers will not require these.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>UniformReal</cell>
+					<cell>A uniform distribution, floating point random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>UniformInt</cell>
+					<cell>A uniform distribution, integer random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Normal</cell>
+					<cell>A normal distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>LogNormal</cell>
+					<cell>A log normal distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Gamma</cell>
+					<cell>A gamma distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>ChiSquared</cell>
+					<cell>A chi squared distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Cauchy</cell>
+					<cell>A Cauchy distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>FisherF</cell>
+					<cell>A Fisher F distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>StudentT</cell>
+					<cell>A Student T distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Binomial</cell>
+					<cell>A discrete binomial distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Geometric</cell>
+					<cell>A geometric distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>NegativeBinomial</cell>
+					<cell>A negative binomial distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Poisson</cell>
+					<cell>A Poisson distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Exponential</cell>
+					<cell>An exponential distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Weibull</cell>
+					<cell>A Weibull distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>ExtremeValue</cell>
+					<cell>An extreme value distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>Discrete</cell>
+					<cell>A discrete distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>PiecewiseConstant</cell>
+					<cell>A piecewise constant distribution random number generator.</cell>
+				</row>
+
+				<row>
+					<cell>PiecewiseLinear</cell>
+					<cell>A piecewise linear distribution random number generator.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Apart from the numeric template type, the use of the templated generators is the same as the fully typed generators.</para>
+
+		<code lang="C++">
+			// Create a double precision Poisson random number generator.
+			Poisson&lt;double> random(0, 10);
+
+			double a = random();
+			double b = random();
+			double c = random();
+		</code>
+	</chapter>
+</document>

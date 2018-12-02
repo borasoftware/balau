@@ -1,0 +1,1567 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - injector" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Injector">
+		<h1>Overview</h1>
+
+		<h2>Introduction</h2>
+
+		<para>A C++ dependency injection framework, with templated binding configuration and get-instance methods. The injector framework provides a code based application configuration mechanism via implementations of the <emph>ApplicationConfiguration</emph> class. Declaration calls within application configuration classes define non-polymophic value (termed <emph>value</emph>), polymophic value (termed <emph>unique</emph>), reference, and singleton bindings.</para>
+
+		<para>The dependency injector framework also integrates with the <ref url="Lang/PropertyParser">hierarchical property framework</ref>. This allows typed and untyped (<emph>std::string</emph>) environment properties (simple and composite) to be created in the injector via implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
+
+		<para>Using this approach, multiple application processes (one set of processes per application environment) may be run from the same injector configuration. Each environment is configured according to the environment's property file(s) and the environment configuration is validated and loaded into the injector by the meta-configuration contained in the implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
+
+		<h2>Dependency injection</h2>
+
+		<para>Using a dependency injection approach for the structural wiring of a software application is useful when the complexity of the application reaches a certain threshold. As an application's source code becomes larger and more complex, manual management of dependencies becomes overly complicated and error prone.</para>
+
+		<para>In this respect, using one or more injectors in the design of a software application reduces complexity, concentrates structural wiring into a concise set of declarations, and delegates object lifetime management of long lived objects to the injector framework. The dependency injection paradigm also facilitates isolating a class for unit testing, by allowing mocked or stubbed dependencies to be supplied to an instance of the class being tested.</para>
+
+		<h2>Balau injector</h2>
+
+		<para>The Balau injector provides a constructor injection paradigm, where the constructors of injectable classes are the populating mechanism of injected instances. Configuration of the injector dependency graph is performed within one or more configuration classes that are specified during injector instantiation. Configuration of each injectable class is achieved via an injector macro that specifies the dependencies that the injector will provide during instantiation of the class.</para>
+
+		<para>Templated binding calls are used to provide type information at configuration time. Binding calls are available for the specification of values, prototypes, instances, references, providers, thread-local singletons, singletons, and provided singletons.</para>
+
+		<para>In addition to providing configured dependencies, the injector can provide itself as a dependency when the shared <emph>Injector</emph> class is requested. This allows complex injectable classes to use the injector directly, in addition to their standard dependencies. Differently configured injectors can also be injected into a service at runtime, by using injector hierarchies.</para>
+
+		<para>There are four types of instance provided by the injector:</para>
+
+		<bullets>
+			<entry>non-polymorphic <strong>value</strong> instances, provided directly as type <emph>ValueT</emph>;</entry>
+
+			<entry>polymorphic <strong>unique</strong> value instances, provided inside <emph>std::unique_ptr&lt;BaseT&gt;</emph> containers;</entry>
+
+			<entry>polymorphic non-const and const <strong>reference</strong> instances, provided directly as types <emph>BaseT &amp;</emph> and <emph>const BaseT &amp;</emph>;</entry>
+
+			<entry>polymorphic non-const and const <strong>shared</strong> instances, provided inside <emph>std::shared_ptr&lt;BaseT&gt;</emph> and <emph>std::shared_ptr&lt;const BaseT&gt;</emph> containers.</entry>
+		</bullets>
+
+		<para>Each meta-type has its own instantiation semantics:</para>
+
+		<bullets>
+			<entry><strong>value</strong> instances are stack based non-polymorphic instances created via copy construction or copy elision;</entry>
+
+			<entry><strong>unique</strong> instances are new heap based polymorphic instances;</entry>
+
+			<entry><strong>reference</strong> instances are const or non-const references provided to the injector via the application configuration;</entry>
+
+			<entry><strong>shared</strong> instances are singletons or thread local singletons, either instantiated by the injector or provided to the injector via the application configuration.</entry>
+		</bullets>
+
+		<para>The Balau injector is designed to allow arbitrary injector hierarchies to be arranged at runtime and obtained via an instance of the simple (non-template) <emph>Injector</emph> class. This includes injection of the injector into complex injectable classes that require direct access to it. Bindings may also be named, allowing identically typed but differently named bindings to be created and looked up dynamically.</para>
+
+		<para>In order to ensure that binding issues are caught before injectors are used, each constructed injector runs a dependency validation phase during instantiation. During this validation phase, the injector constructs a dependency graph of all registered interfaces, classes, providers, and relationships. The required bindings of each dependency are verified. Dependency cycle analysis is also performed. This validation ensures that binding issues are exposed during injector instantiation, allowing simple unit tests to be constructed to test the structural wiring of each the application injector configuration.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Application/Injector.hpp></strong></emph></para>
+
+		<para>The steps involved in creating a software application based on the Balau injector are:</para>
+
+		<list>
+			<entry>create one or more injector configuration classes;</entry>
+
+			<entry>annotate injector aware classes with injection macros that define the constructor injection semantics.</entry>
+		</list>
+
+		<para>When creating an injector, the injector factory function takes one or more injector configuration classes. There are two types of injector configuration:</para>
+
+		<bullets>
+			<entry>application configuration;</entry>
+
+			<entry>environment configuration.</entry>
+		</bullets>
+
+		<para>Application configuration defines the fixed application binding definitions for values, instance creation, references, thread-local singletons, and singletons. Environment configuration defines requirements and type information for envrionment specific value bindings (simple and composite), created from environment specific properties files.</para>
+
+		<para>Both types of configuration are defined by creating a class containing an implementation of the <emph>configure</emph> method. The code contained within the <emph>configure</emph> method is different for the two types of configuration.</para>
+
+		<h2>Application configuration</h2>
+
+		<para>Application configuration is defined by inheriting from the <emph>ApplicationConfiguration</emph> class and implementing the <emph>configure</emph> method with binding calls.</para>
+
+		<para>Each binding is specified by a two part fluent call chain, defined within the <emph>configure</emph> method. The first call in a binding call chain provides the binding's instance type and optional UTF-8 string name. The second call in the chain defines the binding meta-type and any additional type, object, or provider information required.</para>
+
+		<code lang="C++">
+			// An example injector configuration class.
+			class Configuration : public ApplicationConfiguration {
+				public: void configure() const override {
+					bind&lt;Base&gt;().toSingleton&lt;Derived&gt;();
+					bind&lt;Base2&gt;().toUnique&lt;Derived2&gt;();
+					bind&lt;Base2&gt;("alternative").toUnique&lt;Derived3&gt;();
+				}
+			};
+		</code>
+
+		<para>There following binding calls are available.</para>
+
+		<table class="bdml-table40L60">
+			<head> <cell>Binding type</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>toValue()</cell>
+					<cell>Bind a concrete class.</cell>
+				</row>
+
+				<row>
+					<cell>toValue(ValueT)</cell>
+					<cell>Bind a prototype value.</cell>
+				</row>
+
+				<row>
+					<cell>toValueProvider(std::function)</cell>
+					<cell>Bind a value provider function.</cell>
+				</row>
+
+				<row>
+					<cell>toValueProvider&lt;ProviderT>()</cell>
+					<cell>Bind an injectable value provider class.</cell>
+				</row>
+
+				<row>
+					<cell>toValueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
+					<cell>Bind an injectable value provider class instance.</cell>
+				</row>
+
+				<row>
+					<cell>toUnique&lt;DerivedT>()</cell>
+					<cell>Bind an interface to a concrete class.</cell>
+				</row>
+
+				<row>
+					<cell>toUniqueProvider(std::function)</cell>
+					<cell>Bind an interface to a polymorphic provider function.</cell>
+				</row>
+
+				<row>
+					<cell>toUniqueProvider&lt;ProviderT>()</cell>
+					<cell>Bind an interface to an injectable polymorphic provider class.</cell>
+				</row>
+
+				<row>
+					<cell>toUniqueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
+					<cell>Bind an interface to an injectable polymorphic provider class instance.</cell>
+				</row>
+
+				<row>
+					<cell>toReference(BaseT &amp;)</cell>
+					<cell>Bind a reference type to the supplied reference object.</cell>
+				</row>
+
+				<row>
+					<cell>toThreadLocal&lt;DerivedT>()</cell>
+					<cell>Bind an interface to a thread-local, lazy concrete singleton class.</cell>
+				</row>
+
+				<row>
+					<cell>toThreadLocal()</cell>
+					<cell>Bind a thread-local, lazy concrete singleton class.</cell>
+				</row>
+
+				<row>
+					<cell>toSingleton&lt;DerivedT>()</cell>
+					<cell>Bind an interface to a lazy concrete singleton class.</cell>
+				</row>
+
+				<row>
+					<cell>toSingleton()</cell>
+					<cell>Bind a lazy concrete singleton class.</cell>
+				</row>
+
+				<row>
+					<cell>toSingleton(std::shared_ptr&lt;BaseT>)</cell>
+					<cell>Bind an interface to the supplied singleton object.</cell>
+				</row>
+
+				<row>
+					<cell>toSingleton(BaseT *)</cell>
+					<cell>Bind an interface to the supplied singleton object via pointer container initialisation style syntax.</cell>
+				</row>
+
+				<row>
+					<cell>toEagerSingleton&lt;DerivedT>()</cell>
+					<cell>Bind an interface to a concrete eager singleton class.</cell>
+				</row>
+
+				<row>
+					<cell>toEagerSingleton()</cell>
+					<cell>Bind a concrete eager singleton class.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Each of the binding types belongs to one or two of six meta-types. The meta-types are:</para>
+
+		<bullets>
+			<entry><emph><strong>value</strong></emph> - non-polymorphic, stack based, instantiated instances;</entry>
+
+			<entry><emph><strong>unique</strong></emph> - polymorphic, heap based, instantiated instances;</entry>
+
+			<entry><emph><strong>reference</strong></emph> - polymorphic, provided reference objects;</entry>
+
+			<entry><emph><strong>const reference</strong></emph> - polymorphic, provided const reference objects;</entry>
+
+			<entry><emph><strong>shared</strong></emph> - polymorphic, heap based shared objects (thread-local and singleton).</entry>
+
+			<entry><emph><strong>const shared</strong></emph> - polymorphic, heap based shared const objects (thread-local and singleton).</entry>
+		</bullets>
+
+		<para>Bindings that provide references or shared instances can be non-const or const. The meta-type is determined via the presence or absence of a const qualifier in the specified type in the binding call.</para>
+
+		<para>The polymorphic, heap based, instantiated instance meta-type is termed <emph>unique</emph> instead of <emph>instance</emph> in order to avoid confusion with the universal <emph>getInstance</emph> methods that access instances from all meta-types according to the full specified type. These calls are discussed later in the <ref url="#injector-usage">Injector usage</ref> section.</para>
+
+		<h2>Environment configuration</h2>
+
+		<para>Environment configuration is defined by one or two methods:</para>
+
+		<bullets>
+			<entry>inheriting from the <emph>EnvironmentConfiguration</emph> class and implementing the <emph>configure</emph> method with environment property type and requirements declaration calls;</entry>
+
+			<entry>instantiating the <emph>EnvironmentConfiguration</emph> class directly and by supplying one or more type specification source files.</entry>
+		</bullets>
+
+		<para>For more information on defining environment configurations via environment properties within an injector based application, refer to the <ref url="Application/Environment">Environment</ref> chapter.</para>
+
+		<h2>Injection macros</h2>
+
+		<para>In order that classes take part in dependency injection, an injector macro needs to be added to each of their declarations. There are three types of injector macro available.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>Macro</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>BalauInjectConstruct<newline />BalauInjectConstructNamed</cell>
+
+					<cell>Specify the class' direct dependency fields and implicitly create an injectable constructor.</cell>
+				</row>
+
+				<row>
+					<cell>BalauInject<newline />BalauInjectNamed</cell>
+
+					<cell>Specify the class' direct or indirect dependency fields. Do not implicitly create an injectable constructor.</cell>
+				</row>
+
+				<row>
+					<cell>BalauInjectTypes<newline />BalauInjectNamedTypes</cell>
+
+					<cell>Specify the types of the class' dependencies to be injected. Do not implicitly create an injectable constructor.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>All macros take an initial parameter which is the class name. The named versions of the macros take the names of the dependencies in addition to the field names or types.</para>
+
+		<para>The choice of which macro to use depends on whether the injectable class' dependencies correspond to direct / indirect fields, or whether one or more of the dependencies will be used in some temporary way instead of being assigned to a field. If the former is the case, then the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> or <emph>BalauInject</emph> / <emph>BalauInjectNamed</emph> macros can be used. If the latter is the case, then the <emph>BalauInjectTypes</emph> / <emph>BalauInjectNamedTypes</emph> macro should be used, as it will not be possible to automatically determine the types of the dependencies.</para>
+
+		<para>The choice of whether to use the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> or the <emph>BalauInject</emph> / <emph>BalauInjectNamed</emph> macros when all dependencies are being assigned to fields depends on whether all the dependencies are direct or not, and whether all assignments in the constructor initialisation list are simple or not. If they are direct and simple, then one of the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros can be used. Otherwise, the injectable constructor should be manually written and one of the <emph>BalauInject</emph> / <emph>BalauInjectNamed</emph> macros used.</para>
+
+		<para>The chosen injector macro should be placed within the injectable class' declaration.</para>
+
+		<code lang="C++">
+			//
+			// ////// BalauInjectConstruct macro //////
+			//
+			// Specify the injected dependencies via the class fields
+			// and implicitly create an injectable constructor.
+			//
+			class Derived2 : public Base2 {
+				private: std::shared_ptr&lt;Base&gt; dependency;
+
+				BalauInjectConstruct(Derived2, dependency)
+
+				public: void foo() override;
+			};
+
+			//
+			// ////////// BalauInject macro ///////////
+			//
+			// Specify the injected dependencies via the class fields.
+			//
+			class Derived2 : public Base2 {
+				private: std::shared_ptr&lt;Base&gt; dependency;
+
+				BalauInject(Derived2, dependency)
+
+				// Explicitly created injectable constructor.
+				public: Derived2(std::shared_ptr&lt;Base&gt; dependency_)
+					: (std::move(dependency_)) {}
+
+				public: void foo() override;
+			};
+
+			//
+			// //////// BalauInjectTypes macro ////////
+			//
+			// Specify the injected dependencies' types.
+			//
+			class Derived2 : public Base {
+				private: std::shared_ptr&lt;Base&gt; dependency;
+
+				BalauInjectTypes(Derived2, std::shared_ptr&lt;Base&gt;)
+
+				// Explicitly created injectable constructor.
+				public: Derived2(std::shared_ptr&lt;Base&gt; dependency_)
+					: (std::move(dependency_)) {}
+
+				public: void foo() override;
+			};
+		</code>
+
+		<para>The alternative <emph>Named</emph> macros take dependency names. When these macros are used, all dependency names must be specified. Empty names must be specified with empty string literals <emph>""</emph>.</para>
+
+		<code lang="C++">
+			//
+			// Example with a dependency name.
+			//
+			class Derived2 : public Base {
+				private: std::shared_ptr&lt;Base&gt; dependency;
+
+				BalauInjectConstructNamed(Derived2, dependency, "myDependency")
+
+				public: void foo() override;
+			};
+		</code>
+
+		<h2 id="injector-usage">Injector usage</h2>
+
+		<para>The injector is created by calling the <emph>Injector::create(Conf(), ...)</emph> function.</para>
+
+		<code lang="C++">
+			auto injector = Injector::create(Configuration(), ExtraConfiguration());
+		</code>
+
+		<para>An alternative create function is also available, which takes the configuration instances in a <emph>std::vector</emph>.</para>
+
+		<code lang="C++">
+			std::vector&lt;std::shared_ptr&lt;InjectorConfiguration>> conf;
+			conf.emplace_back(new Configuration());
+			conf.emplace_back(new ExtraConfiguration());
+
+			auto injector = Injector::create(conf);
+		</code>
+
+		<para>The alternative create function can be useful for defining the configuration in a single place and using it in the main application and in a configuration validation test. Validation of injector configuration is discussed later in this chapter.</para>
+
+		<para>Instances can be obtained directly from the injector via the <emph>getValue&lt;ValueT></emph> call for non-polymorphic new instances, <emph>getUnique&lt;BaseT></emph> for polymorphic new instances, <emph>getReference&lt;BaseT></emph> for polymorphic referenced objects, and <emph>getShared&lt;BaseT></emph> for polymorphic shared values.</para>
+
+		<code lang="C++">
+			auto value  = injector->getValue&lt;MyValueCls>();
+			auto unique = injector->getUnique&lt;MyBaseCls>();
+			auto &amp; ref  = injector->getReference&lt;MyReferencedCls>();
+			auto shared = injector->getShared&lt;MySharedBaseCls>();
+		</code>
+
+		<para>Alternatively, the unified <emph>getInstance&lt;T></emph> method may be used to determine which of the four <emph>getValue&lt;ValueT></emph>, <emph>getUnique&lt;BaseT></emph>, <emph>getReference&lt;BaseT></emph>, or <emph>getShared&lt;BaseT></emph> methods should be called, via compile time examination of the type parameter.</para>
+
+		<code lang="C++">
+			// Calls getValue&lt;MyValueCls>()
+			auto value = injector->getInstance&lt;MyValueCls>();
+
+			// Calls getUnique&lt;MyBaseCls>()
+			auto unique = injector->getInstance&lt;std::unique_ptr&lt;MyBaseCls>>();
+
+			// Calls getReference&lt;MyReferencedCls>()
+			auto &amp; ref = injector->getInstance&lt;MyReferencedCls &amp;>();
+
+			// Calls getReference&lt;const MyReferencedCls>()
+			auto &amp; ref = injector->getInstance&lt;const MyReferencedCls &amp;>();
+
+			// Calls getShared&lt;MySharedBaseCls>()
+			auto shared = injector->getInstance&lt;std::shared_ptr&lt;MySharedBaseCls>>>();
+
+			// Calls getShared&lt;const MySharedBaseCls>()
+			auto shared = injector->getInstance&lt;std::shared_ptr&lt;const MySharedBaseCls>>>();
+		</code>
+
+		<para>In this documentation, when it is not important to differentiate between the above methods, the expression <emph>get-instance</emph> is used.</para>
+
+		<h2>Child injectors</h2>
+
+		<para>Child injectors may be created by calling the <emph>createChild(Conf(), ...)</emph> method. These instance methods take one or more configuration class template parameters and instantiates a child injector with the current injector as the parent.</para>
+
+		<code lang="C++">
+			// Create child injector with the specified configuration.
+			auto c = injector->createChild(ChildConf());
+		</code>
+
+		<para>The alternative create method is also available for child injector creation. This create method takes the configuration instances in a <emph>std::vector</emph>.</para>
+
+		<code lang="C++">
+			std::vector&lt;std::shared_ptr&lt;InjectorConfiguration>> conf;
+			conf.emplace_back(new ChildConfiguration());
+			conf.emplace_back(new ExtraChildConfiguration());
+
+			auto c = injector->createChild(conf);
+		</code>
+
+		<para>Alternatively, child injectors may be created by first creating a prototype child injector as above, then repeatedly calling the <emph>createChild(prototype)</emph> method each time a new child injector is required.</para>
+
+		<code lang="C++">
+			// Create child injector with the specified configuration.
+			auto prototype = injector->createChild(ChildConf());
+
+			// Create child injector from the prototype.
+			auto c = injector->createChild(prototype);
+		</code>
+
+		<para>Using prototype child injectors avoids the build and validation phases of injector construction each time a new child injector is required. The total overhead of creating a child injector from a prototype is limited to the copying of two shared pointers.</para>
+
+		<para>It is important to note that the instances of singleton and thread-local singleton bindings of the prototype will be shared between all child injectors created from the prototype. If this is not desired behaviour, then a new child injector must be created via the other <emph>createChild</emph> factory functions that instantiate their own bindings.</para>
+
+		<h1>Configuration</h1>
+
+		<para>There are two places where injector configuration is located. The first is within the application's injector configuration. This configuration is the internal wiring of the application. The configuration takes the form of one or more injector configuration classes, instances of which are passed to the injector at construction time. Configuration classes provide the binding information that is used to create the dependency graph.</para>
+
+		<para>The second place where injector configuration is located is within participating classes. These are typically each defined with a Balau injector macro in the class declaration. These macros provide information (normally via the <emph>decltype</emph> of direct or indirect class member variables) on the injected dependency types and optionally dependency names that the injector will use during instantiation.</para>
+
+		<para>An injector aware class only identifies the injected objects to deliver to the class' injectable constructor, and is independent to the main dependency wiring configuration of a developed software application. Injectable classes may thus be developed independently of the main application, with the application's configuration subsequently wiring them into the dependency graph.</para>
+
+		<para>Non-injector aware types and primitive types used for prototype based instance provision do not have any injector macro applied to them. Instances that are constructed manually and passed to a binding call as prototypes, references, or singletons do not require an injector macro, as they are not instantiated by the injector. Similarly, instances that are constructed within a provider function or class that is passed to a binding call do not require an injector macro, as they are not instantiated by the injector either.</para>
+
+		<h2>Injector configuration</h2>
+
+		<para>The injector is configured via one or more configuration classes, instances of which are passed to the injector's constructor. An example of an application configuration class is:</para>
+
+		<code lang="C++">
+			class Configuration : public ApplicationConfiguration {
+				public: void configure() const override {
+					bind&lt;Base&gt;().toSingleton&lt;DerivedA&gt;();
+					bind&lt;Base2&gt;().toUnique&lt;Derived2&gt;();
+				}
+			};
+		</code>
+
+		<para>Each configuration class must implement the <emph>configure</emph> method. Binding statements are placed inside application configuration implementation <emph>configure</emph> methods. Environment property name/type declarations are placed inside environment configuration implementation <emph>configure</emph> methods. This documentation chapter discusses application configuration in detail. For more information about environment configuration, see the <ref url="Application/Environment">Environment</ref> chapter.</para>
+
+		<para>Each binding command in an application configuration class implicates a particular type of binding. In the above example, polymorphic singleton and polymorphic new instance bindings are configured.</para>
+
+		<para>Each binding command consists of a two part fluent call. The first <emph>bind</emph> call specifies the interface class as the function template parameter and an optional binding name as a call argument.</para>
+
+		<para>The second call specifies the binding type via the function name, along with implementation or provider type as the template parameter for binding types that require one. Bindings that require an object receive the object as a call argument.</para>
+
+		<para>The available binding calls are as follows.</para>
+
+		<table class="bdml-table40L60">
+			<head> <cell>Binding type</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>toValue()</cell>
+
+					<cell><para>Bind a concrete class. A new instance of the class will be stack created each time an instance is requested, and returned via copy elision. The object will be supplied as <emph>ValueT</emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toValue(ValueT)</cell>
+
+					<cell><para>Bind a prototype value. A new instance of the value will be created each time an instance is requested via copy semantics. The value will be supplied as <emph>ValueT</emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toValueProvider(std::function&lt;ValueT ()>)</cell>
+
+					<cell><para>Bind a concrete class to a provider function. A new instance of the class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toValueProvider&lt;ProviderT>()</cell>
+
+					<cell><para>Bind a concrete class to an injectable provider class. A new instance of the value class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+				</row>
+
+				<row>
+					<cell>toValueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
+
+					<cell><para>Bind a concrete class to an injectable provider class instance. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance of the value class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+				</row>
+
+				<row>
+					<cell>toUnique&lt;DerivedT>()</cell>
+
+					<cell><para>Bind an interface to an implementing class. A new instance of the class will be heap constructed each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toUniqueProvider(<newline />
+						std::function&lt;std::unique_ptr&lt;BaseT> ()><newline />
+					)</cell>
+
+					<cell><para>Bind an interface to a provider function. A new instance deriving from the base type will be heap constructed by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toUniqueProvider&lt;ProviderT>()</cell>
+
+					<cell><para>Bind an interface to an injectable provider class. A new instance deriving from the base type will be heap constructed by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+				</row>
+
+				<row>
+					<cell>toUniqueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
+
+					<cell><para>Bind an interface to an injectable provider class. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance deriving from the base type will be heap constructed by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+				</row>
+
+				<row>
+					<cell>toReference(BaseT &amp;)</cell>
+
+					<cell><para>Bind a reference type to the supplied reference object. A reference to the object referenced in the injector's configuration will be returned on each call. The object will be supplied as <emph>BaseT &amp;</emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toThreadLocal&lt;DerivedT>()</cell>
+
+					<cell><para>Bind an interface to an implementing class with thread-local singleton semantics. The thread-local singleton will be heap constructed lazily for each new calling thread. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toThreadLocal()</cell>
+
+					<cell><para>Bind a concrete class with thread-local singleton semantics. The thread-local singleton will be heap constructed lazily for each new calling thread. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toSingleton&lt;DerivedT>()</cell>
+
+					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be heap constructed lazily. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toSingleton()</cell>
+
+					<cell><para>Bind a concrete class with singleton semantics. The singleton will be heap constructed lazily. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toSingleton(std::shared_ptr&lt;BaseT>)</cell>
+
+					<cell><para>Bind an interface to the supplied singleton object. The injector will share ownership of the pointer. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toSingleton(BaseT *)</cell>
+
+					<cell><para>Bind an interface to the supplied singleton object. The injector will take ownership of the pointer. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toEagerSingleton&lt;DerivedT>()</cell>
+
+					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be heap constructed eagerly. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+
+				</row>
+
+				<row>
+					<cell>toEagerSingleton()</cell>
+
+					<cell><para>Bind a concrete singleton class. The singleton will be heap constructed eagerly. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Each of the binding types belongs to one of four meta-types. These meta-types are:</para>
+
+		<bullets>
+			<entry>Value;</entry>
+			<entry>Unique;</entry>
+			<entry>Reference;</entry>
+			<entry>Shared.</entry>
+		</bullets>
+
+		<para>These classifications correspond to the four types of instance provided by the injector.</para>
+
+		<para>Two of the four meta-type classifications are also available in const form. There are thus effectively six meta-types in total:</para>
+
+		<bullets>
+			<entry>Value;</entry>
+			<entry>Unique;</entry>
+			<entry>Reference;</entry>
+			<entry>Const Reference;</entry>
+			<entry>Shared;</entry>
+			<entry>Const Shared.</entry>
+		</bullets>
+
+		<para>The meta-type classification and const qualifier of a binding forms part of the binding key (the other parts being the typeid and the name). The six meta-type classifications thus form six binding groups. In each binding group, the typeid and name must be unique. If an attempt is made to create an injector with a configuration that has duplicate typeid/name pairs in a classification group, a <emph>DuplicateBindingException</emph> will be thrown during creation of the injector.</para>
+
+		<para>When the injector completes the configuration phase, a validation phase is run. This validation phase verifies that all the dependencies required by each injectable participating class (i.e. a class that takes one or more dependencies) can be satisfied by the injector. If this is not the case, the injector throws a <emph>NoBinding</emph> exception.</para>
+
+		<para>The validation phase ensures that any binding issues that may occur with registered classes are caught at the time of injector instantiation. The only subsequent binding runtime errors that may occur are thus direct attempts to obtain instances from the injector for bindings that do not exist.</para>
+
+		<h3>Reference bindings</h3>
+
+		<para>Although reference bindings are conceptually simple, care must be taken with regard to referenced object lifetimes.</para>
+
+		<para>As referenced objects are not instantiated inside the injector nor does the injector take ownership of the object, the injector has no control on the lifetime of the supplied objects. Consequently, it is important to take into account that the lifecycle management of referenced objects is the responsibility of the application and not of the injector.</para>
+
+		<para>The policy for referenced object lifetimes must therefore be to ensure that all objects passed to the injector's configuration for referencing remain alive past the end of the injector's lifetime and the lifetimes of other objects that have obtained references to these objects from the injector.</para>
+
+		<para>Due to the potential complexity of managing this, it is best to limit the use of reference bindings to that of objects that are easily known to have sufficiently long lives.</para>
+
+		<h3>Const bindings</h3>
+
+		<para>The injector supports <emph>const</emph> bindings for <emph>Reference</emph> and <emph>Shared</emph> binding types.</para>
+
+		<para>If <emph>const</emph> bindings are specified for for <emph>Value</emph> or <emph>Unique</emph> binding types, the <emph>const</emph> qualifier will be stripped from the type and a warning logged to the <emph>balau.injector</emph>. Stripping the <emph>const</emph> qualifier from <emph>Value</emph> or <emph>Unique</emph> binding types will not affect the injector semantics, as bindings of these meta-types produce new instances. If a new instance needs to be const, the instance can be set to const at the calling site.</para>
+
+		<h2>Injectable classes</h2>
+
+		<para>Base interfaces / abstract base classes do not require an injector macro and are no different from any other abstract C++ class.</para>
+
+		<para>Concrete implementation classes that are to be instantiated by the injector require an injector configuration macro. This macro specifies the types (via <emph>decltype</emph> for the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> and <emph>BalauInject</emph> / <emph>BalauInjectNamed</emph> macros, and directly for the <emph>BalauInjectTypes</emph> / <emph>BalauInjectNamedTypes</emph> macros) and optional names of the injected dependencies. The <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros also define an injectable constructor.</para>
+
+		<para>Injector macros are currently defined with up to sixteen unnamed or named dependencies.</para>
+
+		<h3>Inject-construct macros</h3>
+
+		<para>The following is an example of an injectable class that uses an inject-construct macro.</para>
+
+		<code lang="C++">
+			class Derived2 : public Base2 {
+				// The dependency that is populated via the constructor.
+				private: std::shared_ptr&lt;Base&gt; dependency;
+
+				// The injector boilerplate.
+				BalauInjectConstruct(Derived2, dependency)
+
+				public: void foo2() override;
+			};
+		</code>
+
+		<para>The macro <emph>BalauInjectConstruct</emph> specifies that this implementation of <emph>Base2</emph> takes a single dependency. The specified member variable's type will be used to form the factory method in the class and the corresponding constructor.</para>
+
+		<para>The resulting implicit constructor defined by the <emph>BalauInjectConstruct</emph> macro is as follows.</para>
+
+		<code lang="C++">
+			private: explicit Derived2(std::shared_ptr&lt;Base&gt; dependency_)
+				: dependency(std::forward&lt;std::shared_ptr&lt;Base&gt;>(dependency_)) {}
+		</code>
+
+		<para>The automatically generated constructor will move value, unique pointer, and shared pointer <emph>rvalue</emph> type dependencies into the member variables, and will assign supplied reference <emph>lvalue</emph> type dependencies to their associated class members.</para>
+
+		<para>The general form of the automatically generated constructors via the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros is as follows (d0, d1, d2, ... are the member variables/references of the class).</para>
+
+		<code lang="C++">
+			private: ClassName(decltype(d0) d0_,
+			                   decltype(d1) d1_,
+			                   decltype(d2) d2_,
+			                   // ... up to 16 in total ...
+			) : d0(std::forward&lt;decltype(d0)>(d0_))
+			  , d1(std::forward&lt;decltype(d1)>(d1_))
+			  , d2(std::forward&lt;decltype(d2)>(d2_))
+			    // ... up to 16 in total ...
+			{}
+		</code>
+
+		<para>The two possible formats of the macro are:</para>
+
+		<code lang="C++">
+			BalauInjectConstruct(ClassName, MemberVariable ... )
+			BalauInjectConstructNamed(ClassName, { MemberVariable, Name } ... )
+		</code>
+
+		<para>where:</para>
+
+		<bullets>
+			<entry><emph>ClassName</emph> is the name of the class;</entry>
+
+			<entry><emph>X</emph> is the number of dependencies that the implicitly defined class constructor will take;</entry>
+
+			<entry><emph>MemberVariable</emph> is the direct or indirect member variable to be set in the constructor;</entry>
+
+			<entry><emph>Name</emph> is the name of the dependency.</entry>
+		</bullets>
+
+		<para>The first parameter in the macros is always the name of the class. As C++ does not have any way of specifying the class' type within a class declaration, the class name must be provided to the macro.</para>
+
+		<para>The <emph>MemberVariable</emph> entries specified in the macro are used in <emph>decltype</emph> expressions in order to obtain the required types for the dependencies.</para>
+
+		<h3>Inject only macros</h3>
+
+		<para>In addition to the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros, a similar pair of <emph>BalauInject</emph> / <emph>BalauInjectNamed</emph> macros exist.</para>
+
+		<code lang="C++">
+			BalauInject(ClassName, MemberVariable ... )
+			BalauInjectNamed(ClassName, { MemberVariable, Name } ... )
+		</code>
+
+		<para>These macros are identical to the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros with the exception that they leave the definition of the injectable constructor to the end developer. This allows the injectable constructor to be customised. The notable requirement for this is when injected objects are consumed in a non-uniform way.</para>
+
+		<para>The following is an example of a constructor-less macro used to specify named dependencies.</para>
+
+		<code lang="C++">
+			class Derived2WithNamed : public Base2 {
+				private: std::shared_ptr&lt;Base&gt; dependency;
+
+				// The injector boilerplate for a named dependency.
+				BalauInjectNamed(Derived2WithNamed, dependency, "namedBase")
+
+				// Explicitly defined injectable class, allowing customisation.
+				private: explicit Derived2WithNamed(std::shared_ptr&lt;Base&gt; aDependency)
+					: dependency(std::move(aDependency)) {
+					capture.add("Derived2WithNamed constructor");
+				}
+
+				public: ~Derived2WithNamed() override = default;
+
+				public: void foo2() override {
+					capture.add("Derived2WithNamed.foo2");
+					dependency->foo();
+				}
+			};
+		</code>
+
+		<para>One notable use case for using the <emph>BalauInject</emph> / <emph>BalauInjectNamed</emph> macros instead of the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros is when indirect member variables need to be specified.</para>
+
+		<para>Another example of the use of an explicit injectable constructor can be seen in the <emph>HttpServer</emph> class of the Balau library. This example illustrates the use of indirect member variables to define the injected types. Several of the injected objects are consumed by the inner <emph>state</emph> object instead of direct fields, necessitating an explicit definition of the injected constructor.</para>
+
+		<code lang="C++">
+			// The injector macro.
+			BalauInjectNamed(
+				  HttpServer
+				, state->injector,    ""
+				, state->serverId,    "httpServerIdentification"
+				, state->endpoint,    "httpServerEndpoint"
+				, threadNamePrefix,   "httpServerThreadName"
+				, workerCount,        "httpServerWorkerCount"
+				, state->httpHandler, "httpHandler"
+				, state->wsHandler,   "webSocketHandler"
+				, state->mimeTypes,   "mimeTypes"
+			);
+
+			// The explicitly defined injectable constructor.
+			HttpServer(std::shared_ptr&lt;Injector> injector,
+			           std::string serverIdentification,
+			           TCP::endpoint endpoint,
+			           std::string threadNamePrefix_,
+			           size_t workerCount_,
+			           std::shared_ptr&lt;HttpWebApp> httpHandler,
+			           std::shared_ptr&lt;WsWebApp> wsHandler,
+			           std::shared_ptr&lt;MimeTypes> mimeTypes);
+		</code>
+
+		<h3>Inject types macros</h3>
+
+		<para>The standard injector macros use the direct or indirect field names of the class in <emph>decltype</emph> expressions in order to obtain the required types for the dependencies. This approach is compact and efficient and should be used in the majority of cases. However, these macros will not work if:</para>
+
+		<bullets>
+			<entry>one or more of the dependencies should be specified as different but compatible types to the ones derived via <emph>decltype</emph>, (an example of which is promoting a <emph>std::unique_ptr&lt;BaseT></emph> to a <emph>std::shared_ptr&lt;BaseT></emph> member variable in the constructor initialisation);</entry>
+
+			<entry>one or more of the dependencies are used without assigning them to direct or indirect member variables.</entry>
+		</bullets>
+
+		<para>The alternative <emph>BalauInjectTypes</emph> / <emph>BalauInjectNamedTypes</emph> macros perform a similar job to the standard macros, but take the types of the dependencies instead of the direct or indirect member variable names.</para>
+
+		<code lang="C++">
+			BalauInjectTypes(ClassName, DependencyType ... )
+			BalauInjectNamedTypes(ClassName, { DependencyType, Name } ... )
+		</code>
+
+		<para>If the <emph>HttpServer</emph> class were to be declared with a <emph>BalauInjectNamedTypes</emph> macro instead of the <emph>BalauInjectNamed</emph> macro, the source code would look like the following extract.</para>
+
+		<code lang="C++">
+			// The injector macro with explicit dependency type information.
+			BalauInjectNamedTypes(
+				  HttpServer
+				, std::shared_ptr&lt;Injector>,   ""
+				, std::string,                 "httpServerIdentification"
+				, TCP::Endpoint,               "httpServerEndpoint"
+				, std::string,                 "httpServerThreadName"
+				, size_t,                      "httpServerWorkerCount"
+				, std::shared_ptr&lt;HttpWebApp>, "httpHandler"
+				, std::shared_ptr&lt;WsWebApp>,   "webSocketHandler"
+				, std::shared_ptr&lt;MimeTypes>,  "mimeTypes"
+			);
+
+			// The explicitly defined injectable constructor.
+			HttpServer(std::shared_ptr&lt;Injector> injector,
+			           std::string serverIdentification,
+			           TCP::endpoint endpoint,
+			           std::string threadNamePrefix_,
+			           size_t workerCount_,
+			           std::shared_ptr&lt;HttpWebApp> httpHandler,
+			           std::shared_ptr&lt;WsWebApp> wsHandler,
+			           std::shared_ptr&lt;MimeTypes> mimeTypes);
+		</code>
+
+		<para>Given that the types of the direct or indirect member variables of an injectable class often match the types of the dependencies, use of the <emph>BalauInjectTypesX</emph> macros should only occur in a minority of cases.</para>
+
+		<h1>Instantiation</h1>
+
+		<h2>Injector</h2>
+
+		<para>Once one or more suitable configuration classes have been defined, an injector instance may be created by calling the <emph>Injector::create(conf, ...)</emph> function:</para>
+
+		<code lang="C++">
+			std::shared_ptr&lt;Injector&gt; injector = Injector::create(Config1(), Config2());
+		</code>
+
+		<para>This instantiates an injector instance in a <emph>std::shared_ptr&lt;Injector></emph> and initialises the bindings from the supplied configuration(s). The <emph>auto</emph> keyword can be used to condense the statement:</para>
+
+		<code lang="C++">
+			auto injector = Injector::create(Config1(), Config2());
+		</code>
+
+		<para>Injectors can only be instantiated within a <emph>std::shared_ptr&lt;Injector></emph>. This allows them to supply themselves as a dependency when required (via <emph>shared_from_this()</emph>), and also be accessed as class member fields of type <emph>Injector</emph> in classes that require direct access to the injector.</para>
+
+		<para>An injector may be shared throughout the application by copying the shared pointer. Injectors may be used across multiple threads of the application without any synchronisation.</para>
+
+		<h2>Instances</h2>
+
+		<para>In order to obtain instances from an injector, four templated method calls are available:</para>
+
+		<code lang="C++">
+			ValueT                 stackInstance = injector.getValue&lt;ValueT&gt;();
+			std::unique_ptr&lt;BaseT> heapInstance  = injector.getUnique&lt;BaseT&gt;();
+			BaseT &amp;                reference     = injector.getReference&lt;BaseT&gt;();
+			std::shared_ptr&lt;BaseT> singleton     = injector.getShared&lt;BaseT&gt;();
+		</code>
+
+		<para>The type <emph>BaseT</emph> can be non-const or const for reference and shared bindings.</para>
+
+		<para>Depending on the injector's configuration:</para>
+
+		<bullets>
+			<entry><emph>getValue</emph> calls may access instance objects created on the stack and moved, or copy constructed from a prototype object;</entry>
+
+			<entry><emph>getUnique</emph> calls may obtain polymorphic instance objects created on the heap;</entry>
+
+			<entry><emph>getReference</emph> calls may access long lived objects referenced from within the configuration used to construct the injector;</entry>
+
+			<entry><emph>getShared</emph> calls may access singletons or thread-local singletons created on the heap.</entry>
+		</bullets>
+
+		<para>In addition to the above calls, there is a unified templated method call that resolves the meta-type by specialising on the supplied type parameter.</para>
+
+		<code lang="C++">
+			T object = injector.getInstance&lt;T&gt;();
+		</code>
+
+		<para>Unlike the four previous template functions that all accept the direct value or base type of the instance(s) represented by the binding, the <emph>getInstance</emph> template method resolves at compile time to:</para>
+
+		<bullets>
+			<entry><emph>getShared&lt;T></emph> if the specified type is <emph>std::shared_ptr&lt;T></emph>;</entry>
+
+			<entry><emph>getReference&lt;T></emph> if the specified type is <emph>T &amp;</emph>;</entry>
+
+			<entry><emph>getUnique&lt;T></emph> if the specified type is <emph>std::unique_ptr&lt;T></emph>;</entry>
+
+			<entry><emph>getValue&lt;T></emph> otherwise.</entry>
+		</bullets>
+
+		<para>The <emph>getInstance</emph> template method is useful when an injector is used within a template class or function, where the exact type to be requested is deduced by the compiler.</para>
+
+		<h2>Const bindings</h2>
+
+		<para>Bindings may be created <emph>const</emph> for reference and shared meta-types. For example, the following application creates an injector configuration with a const reference binding and a const singleton binding, along with an injected double value, then gets the objects from the constructed injector.</para>
+
+		<code lang="C++">
+			#include &lt;Balau/Application/Injector.hpp>
+
+			struct A {
+				double value;
+
+				BalauInjectConstruct(A, value);
+
+				A(A &amp;) = delete; // Prevent copying.
+			};
+
+			const A a(543.2);
+
+			int main () {
+				class Configuration : public ApplicationConfiguration {
+					public: void configure() const override {
+						// A double value injected into A.
+						bind&lt;double>().toValue(123.456);
+
+						// Bind a const reference.
+						bind&lt;const A>().toReference(a);
+
+						// Bind a const singleton.
+						bind&lt;const A>().toSingleton();
+					}
+				};
+
+				auto injector = Injector::create&lt;Configuration>();
+
+				auto &amp; r = injector->getReference&lt;const A>();
+				auto a = injector->getShared&lt;const A>();
+			}
+		</code>
+
+		<para>The injector calls return a const reference and a shared pointer containing a const pointer. Note that the reference call requires an ampersand after the <emph>auto</emph> type keyword in order for the code to compile.</para>
+
+		<para>Care should be take with regard to getting references from the injector. If the copy constructor of class <emph>A</emph> were not deleted, the code would compile if the ampersand were removed.</para>
+
+		<code lang="C++">
+			// Class A2 has a copy constructor..
+			auto a3 = injector->getReference&lt;const A2>();
+		</code>
+
+		<para>The result of this would be a copy of the reference instead of a reference to it. Such semantics are best created via the <emph>toValue(prototype)</emph> binding call instead.</para>
+
+		<para>Consequently, it is wise to delete the copy constructor of classes that are destined to be referenced via the injector. This will enforce referencing at compile time.</para>
+
+		<h2>Const promotion</h2>
+
+		<para>When a get-instance call is made for a const object, the resulting binding used may be a non-const binding that is <emph>promoted</emph> to a const binding. This non-const to const binding semantics of the injector parallels the non-const to const binding semantics of the C++ language.</para>
+
+		<para>Although value and unique meta-types do not support const bindings, const promotion nevertheless applies to these non-polymorphic and polymorphic new instance binding types. These const promotions are similar to that in C++ when a non-const object is copy assigned to a new const declared object.</para>
+
+		<para>When the injector is part of a hierarchy, const promotion applies to the whole hierarchy. The whole hierarchy will thus first be checked for a const binding, then the whole hierarchy will be checked again for a non-const binding.</para>
+
+		<para>The promotion rules are listed in the following table. The left hand column lists the requested const types. The middle column lists the default binding type supplied by the injector if a binding of that type is available. If such a binding is not available, the injector will lookup a binding of the type listed in the third column.</para>
+
+		<table>
+			<head>
+				<cell>Requested meta-type</cell>
+				<cell>Default provided meta-type</cell>
+				<cell>Promoted provided meta-type</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><emph>const ValueT</emph></cell>
+					<cell>-</cell>
+					<cell><emph>ValueT</emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>std::unique_ptr&lt;const BaseT></emph></cell>
+					<cell>-</cell>
+					<cell><emph>std::unique_ptr&lt;BaseT></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::unique_ptr&lt;const BaseT></emph></cell>
+					<cell>-</cell>
+					<cell><emph>std::unique_ptr&lt;BaseT></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const BaseT &amp;</emph></cell>
+					<cell><emph>const BaseT &amp;</emph></cell>
+					<cell><emph>BaseT &amp;</emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>std::shared_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;BaseT></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::shared_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;BaseT></emph></cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Weak promotion</h2>
+
+		<para>When a get-instance call is made for a <emph>std::weak_ptr&lt;BaseT></emph>, the binding request will be <emph>promoted</emph> to a shared binding. Weak pointer fields are thus initialised via shared bindings during injection.</para>
+
+		<para>The promotion rules for weak pointers are as follows.</para>
+
+		<table>
+			<head>
+				<cell>Requested meta-type</cell>
+				<cell>Default provided meta-type</cell>
+				<cell>Fallback provided meta-type</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><emph>std::weak_ptr&lt;BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;BaseT></emph></cell>
+					<cell><emph>-</emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>std::weak_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;BaseT></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::weak_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;const BaseT></emph></cell>
+					<cell><emph>std::shared_ptr&lt;BaseT></emph></cell>
+				</row>
+			</body>
+		</table>
+
+		<h1>Injector hierarchies</h1>
+
+		<para>The injector resolves instances from its binding configuration or from its parent injector. Injectors can form a hierarchy, the binding configurations of which are queried in turn when an instance is requested.</para>
+
+		<h2>Child injector creation</h2>
+
+		<para>In order to construct a child injector, the <emph>createChild(Conf(), ...)</emph> member function is used.</para>
+
+		<code lang="C++">
+			auto childInjector = parent->createChild(Config());
+		</code>
+
+		<para>This method call is identical to the function used to create a parentless injector, with the exception that it is a member function.</para>
+
+		<h2>Prototype child injectors</h2>
+
+		<para>Child injectors may also be created by first creating a prototype child injector as discussed previously, then repeatedly calling the <emph>createChild(prototype)</emph> method each time a new child injector is required.</para>
+
+		<code lang="C++">
+			// Create child injector with the specified configuration.
+			auto prototype = injector->createChild(ChildConf());
+
+			// Create child injector from the prototype.
+			auto c = injector->createChild(prototype);
+		</code>
+
+		<para>Using prototype child injectors avoids the build and validation phases of injector construction each time a new child injector is required. The total overhead of creating a child injector from a prototype is thus limited to the copying of two shared pointers.</para>
+
+		<para>It is important to note that the instances of singleton and thread-local singleton bindings of the prototype will be shared between all child injectors created from the prototype. If this is not desired behaviour, then a new child injector must be created via the other <emph>createChild</emph> functions that instantiate their own bindings.</para>
+
+		<h1>Cyclic dependencies</h1>
+
+		<para>This section discusses how cyclic dependencies are prevented by the injector.</para>
+
+		<h2>Configuration cycles</h2>
+
+		<para>The Balau injector provides a constructor injection paradigm. One consequence of this is that if a cyclic dependency is created between instances obtained from the injector, the application will crash due to a call stack overflow for stack based types or a segmentation fault for hreap based types.</para>
+
+		<para>Due to this, the injector runs cyclic dependency analysis in the validation phase run during injector instantiation. If a cycle is found in the binding dependency tree constructed from the supplied configuration, a <emph>CyclicDependencyException</emph> is thrown.</para>
+
+		<para>If a cyclic relationship between two instances is required, this must be managed explicitly by the application. One way to do this is to inject one instance into the other, then call the injected instance inside the constructor. This requires a manually coded injectable constructor in one of the classes.</para>
+
+		<para>If an explicitly constructed cyclic relationship approach is used using shared pointer containers, the normal rules in C++ regarding <emph>std::shared_ptr</emph> cycles apply and must be managed accordingly. If an approach is taken that uses a raw pointer, object lifetime mangement must be explicitly performed outside of the injector.</para>
+
+		<h2>Injector cycles</h2>
+
+		<para>One feature that the Balau injector provides is the injection of the injector. If the injection macro of a class specifies the injector type, the injector will inject itself during a get-instance call.</para>
+
+		<para>In order to ensure that the injector does not become a node within an implicitly created dependency cycle, injection of the injector inside a <emph>Shared</emph> binding can only be performed if the receiving type is a <emph>std::weak_ptr&lt;Injector></emph>.</para>
+
+		<para>An example of this is illustrated in the following diagrams. The diagram below shows a set of relationships between an injector, two singleton bindings, and some shared pointers obtained from the injector by the application. Instances are shown in blue, shared pointers internal to the instances are shown in purple, and shared pointers in the application code are shown in brown.</para>
+
+		<graphic position="center" url="../resources/images/NoCyclicShared.png" width="160mm" />
+
+		<para>In this example, singleton instance <emph>B</emph> has a shared pointer field to singleton instance <emph>A</emph>. It can be verified that there are no cycles by following sequences of agregation/composition paths and nodes. All paths lead to the terminal node <emph>A</emph>.</para>
+
+		<para>If a <emph>std::shared_ptr&lt;Injector></emph> member variable is added to <emph>A</emph>, then the relationships change to those in the diagram below. Two cycles have been formed within the pathways. The new <emph>std::shared_ptr&lt;Injector></emph> member variable of <emph>A</emph> is shown in red. Also shown in red are the path segments that form the cycles.</para>
+
+		<graphic position="center" url="../resources/images/CyclicShared.png" width="160mm" />
+
+		<para>If an attempt to instantiate an injector is made with such a configuration, the injector will throw a <emph>SharedInjectorException</emph> during the validation phase.</para>
+
+		<para>The solution to this is to use a weak pointer when a <emph>Shared</emph> binding needs the injector to be injected into it. If a <emph>std::weak_ptr&lt;Injector></emph> member variable is created in <emph>A</emph> instead of the previous <emph>std::shared_ptr&lt;Injector></emph>, no such exception is thrown by the injector. The relationships created by this modified configuration are illustrated below.</para>
+
+		<graphic position="center" url="../resources/images/WeakCyclicShared.png" width="160mm" />
+
+		<para>The <emph>std::weak_ptr&lt;Injector></emph> forms a dependency break in the pathways and consequently there are no cycles present in the dependency graph.</para>
+
+		<h1>Configuration testing</h1>
+
+		<para>Once the configuration(s) of the application's injector(s) have been created, they can be unit tested via one or more simple unit tests.</para>
+
+		<para>The injector provides two static methods <emph>validate</emph> and <emph>validateChild</emph>. The first method <emph>validate</emph> validates root injector configurations and the second method <emph>validateChild</emph> validates child configurations.</para>
+
+		<h2>Root injectors</h2>
+
+		<para>Unit testing an injector configuration that does not contain any eager singletons could be achived by simply instantiating the injector. However, if the configuration has any eager singletons, they would be instantiated in the constructor. The <emph>validate</emph> method thus performs injector instantiation without eager singleton instantiation.</para>
+
+		<para>The unit test can consist of a single statement. The test passes if no exception is thrown.</para>
+
+		<code lang="C++">
+			// Test the main runtime configuration of the application.
+			void InjectorConfigurationTest::mainRuntimeConfiguration() {
+				// Configuration objects obtained at runtime.
+				Config1 config1();
+				Config2 config2();
+
+				Injector::validate(config1, config2);
+			}
+		</code>
+
+		<para>The vector based validate function is also available if required.</para>
+
+		<code lang="C++">
+			// Test the main runtime configuration of the application.
+			void InjectorConfigurationTest::mainRuntimeConfiguration() {
+				std::vector&lt;std::shared_ptr&lt;InjectorConfiguration>> conf;
+				conf.emplace_back(new Config1());
+				conf.emplace_back(new Config2());
+
+				Injector::validate(conf);
+			}
+		</code>
+
+		<para>The vector based validate function is useful because the application's final configuration can be defined in a single place, and then accessed by the main application and the validation unit test. No duplication of the configuration instantiation list is then necessary, and the unit test automatically picks up configuration instance changes without the test needing any modification.</para>
+
+		<h2>Child injectors</h2>
+
+		<para>Validation of child injector configuration requires a suitable parent injector to be supplied to the validation method. In order to avoid the eager singleton issues discussed previously, the root injector <emph>validate</emph> method returns a <emph>ValidationParent</emph> object that represents the validated parent injector for use in child injector validation calls.</para>
+
+		<code lang="C++">
+			// Test the child configuration.
+			void InjectorConfigurationTest::childConfiguration() {
+				auto parent = Injector::validate(Config1(), Config2());
+				Injector::validateChild(parent, Config3());
+			}
+		</code>
+
+		<para>The <emph>validateChild</emph> method also returns a <emph>ValidationParent</emph> object, allowing deep injector hierarchies to be validated.</para>
+
+		<code lang="C++">
+			// Test 4 levels of child configuration.
+			void InjectorConfigurationTest::childConfiguration() {
+				auto parent1 = Injector::validate(Config1(), Config2());
+				auto parent2 = Injector::validateChild(parent1, Config3());
+				auto parent3 = Injector::validateChild(parent2, Config4());
+				Injector::validateChild(parent3, Config5(), Config6());
+			}
+		</code>
+
+		<para>The alternative vector based <emph>validateChild</emph> method is also available if required for child injector testing.</para>
+
+		<h1>Design</h1>
+
+		<para>This section provides a summary of some aspects of the philosophy and design of the Balau injector framework. It is not necessary to read this section in order to use the injector.</para>
+
+		<h2>Overview</h2>
+
+		<para>The design of the Balau injector framework was partly influenced from experience with the Java based <emph>Guice</emph> and <emph>Spring</emph> dependency injection frameworks in enterprise software development. The Balau injector implements a philosophy that is similar to <emph>Guice</emph>, but has a technical approach that reflects the more comprehensive type system available in the C++ language and standard library, and the runtime reflection limitations in C++.</para>
+
+		<h2>Background</h2>
+
+		<para>Java based dependency injection frameworks work within the confines of the Java type system. The combination of dual primitive/reference types and generics type erasure has resulted in Java based injectors having an API based on a single meta-type: the Java reference.</para>
+
+		<para>Outside of the compiler imposed <emph>final</emph> keyword, Java references may be bound and rebound. Assigning a Java reference copies the reference "value", resulting in a new reference "value" that points to the same object. In the context of C++, the Java reference is most similar to a C++ pointer. Java dependency injector frameworks thus effectively work wholly with pointers to objects.</para>
+
+		<para>In C++, we have a much richer type system than in Java. We also have a responsibility for managing object lifetime that can only be partially automated via pointer containers.</para>
+
+		<para>Given the richer type system, a C++ dependency injector framework does not need to be limited to providing <emph>T *</emph> pointers to objects. Potentially some or all or more than the following meta-types could be supplied.</para>
+
+		<table class="bdml-table40L60">
+			<head> <cell>Meta-type</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell><emph>T</emph></cell>
+					<cell>value</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T</emph></cell>
+					<cell>const value</cell>
+				</row>
+
+				<row>
+					<cell><emph>T *</emph></cell>
+					<cell>pointer to object</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T *</emph></cell>
+					<cell>pointer to const object</cell>
+				</row>
+
+				<row>
+					<cell><emph>T * const</emph></cell>
+					<cell>const pointer to object</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T * const</emph></cell>
+					<cell>const pointer to const object</cell>
+				</row>
+
+				<row>
+					<cell><emph>T &amp;</emph></cell>
+					<cell>reference to object (<emph>final</emph> pointer)</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T &amp;</emph></cell>
+					<cell>reference to const object</cell>
+				</row>
+
+				<row>
+					<cell><emph>unique_ptr&lt;T></emph></cell>
+					<cell>uniquely owned pointer</cell>
+				</row>
+
+				<row>
+					<cell><emph>const unique_ptr&lt;T></emph></cell>
+					<cell>const uniquely owned pointer to object</cell>
+				</row>
+
+				<row>
+					<cell><emph>unique_ptr&lt;const T></emph></cell>
+					<cell>uniquely owned pointer to const object</cell>
+				</row>
+
+				<row>
+					<cell><emph>const unique_ptr&lt;const T></emph></cell>
+					<cell>const uniquely owned pointer to const object</cell>
+				</row>
+
+				<row>
+					<cell><emph>shared_ptr&lt;T></emph></cell>
+					<cell>shared ownership pointer</cell>
+				</row>
+
+				<row>
+					<cell><emph>const shared_ptr&lt;T></emph></cell>
+					<cell>const shared ownership pointer to object</cell>
+				</row>
+
+				<row>
+					<cell><emph>shared_ptr&lt;const T></emph></cell>
+					<cell>shared ownership pointer to const object</cell>
+				</row>
+
+				<row>
+					<cell><emph>const shared_ptr&lt;const T></emph></cell>
+					<cell>const shared ownership pointer to const object</cell>
+				</row>
+			</body>
+		</table>
+
+		<h2>Meta-design</h2>
+
+		<para>The key questions raised during the development of the Balau injector framework were:</para>
+
+		<list>
+			<entry>which meta-types should be provided by the injector;</entry>
+
+			<entry>how much of the work should be done at compile time;</entry>
+
+			<entry>how should the lack of Java-like annotations be mitigated;</entry>
+
+			<entry>behind what kind of API should this be encapsulated?</entry>
+		</list>
+
+		<para>Some of the key requirements determined during the injector design phase were:</para>
+
+		<list>
+			<entry>the injector must be a simple, standard (non-template) class <emph>Injector</emph>, able to be trivially used in a class member variable declarations;</entry>
+
+			<entry>magic injection (injection of types or provision of instances not registered with the injector) must not be supported;</entry>
+
+			<entry>the API must be simple to use;</entry>
+
+			<entry>the injector framework code must be simple to debug when an end developer is faced with a failing binding or a non-obvious injection issue;</entry>
+
+			<entry>the injector must be able to inject itself;</entry>
+
+			<entry>injector creation must fail if there are dependency tree issues or cyclic dependencies;</entry>
+
+			<entry>application configuration must be represented in C++ code (i.e. no DSL or XML files);</entry>
+
+			<entry>environment configuration must be represented by text based property files, loaded into the injector during instantiation.</entry>
+		</list>
+
+		<para>It rapidly became clear that the technical implications of these questions and requirements were tightly coupled. Allowing a lot of technical freedom in the technical solution to one of the questions often resulted in unacceptable limitations for the technical solutions to one or more of the other questions and requirements.</para>
+
+		<para>The final chosen design aims to reflect the common needs of enterprise software development with a simple API, whilst maintaining safety, testability, and minimising feature shrinkage. Good performance was a requirement, but not to the point of detriment to other requirements. Enterprise dependency injection is not a replacement for fine grained object lifetime management. The design thus reflects real world requirements for wiring enterprise C++ applications.</para>
+
+		<h2>Design</h2>
+
+		<h3>Meta-types</h3>
+
+		<para>The table below lists the previous meta-types again, along with comments raised during the design phase with regard to binding creation.</para>
+
+		<table class="bdml-table2517L58">
+			<head> <cell>Meta-type</cell> <cell>Provide binding?</cell> <cell>Comments</cell> </head>
+
+			<body>
+				<row>
+					<cell><emph>T</emph></cell>
+					<cell>Yes</cell>
+					<cell>Copy elision / copy semantics of stack based new instances.</cell>
+				</row>
+
+				<row>
+					<cell><emph>unique_ptr&lt;T></emph></cell>
+					<cell>Yes</cell>
+					<cell>Unique ownership of heap based polymorphic new instances.</cell>
+				</row>
+
+				<row>
+					<cell><emph>T &amp;</emph></cell>
+					<cell>Yes</cell>
+					<cell>Warn in the documentation that object lifetime is the responsibility of the end developer.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T &amp;</emph></cell>
+					<cell>Yes</cell>
+					<cell>Warn in the documentation that object lifetime is the responsibility of the end developer.</cell>
+				</row>
+
+				<row>
+					<cell><emph>shared_ptr&lt;T></emph></cell>
+					<cell>Yes</cell>
+					<cell>Shared ownership of heap based polymorphic singletons and thread-local singletons.</cell>
+				</row>
+
+				<row>
+					<cell><emph>shared_ptr&lt;const T></emph></cell>
+					<cell>Yes</cell>
+					<cell>Const singletons could be useful and their inclusion does not impact the design.</cell>
+				</row>
+
+				<row>
+					<cell><emph>T *</emph></cell>
+					<cell>No</cell>
+					<cell>Raw pointers should be managed inside pointer containers.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T *</emph></cell>
+					<cell>No</cell>
+					<cell>Raw pointers should be managed inside pointer containers.</cell>
+				</row>
+
+				<row>
+					<cell><emph>T * const</emph></cell>
+					<cell>No</cell>
+					<cell>Raw pointers should be managed inside pointer containers.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T * const</emph></cell>
+					<cell>No</cell>
+					<cell>Raw pointers should be managed inside pointer containers.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const T</emph></cell>
+					<cell>Promote</cell>
+					<cell>The semantics are identical to non-const new value instance provision.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const unique_ptr&lt;T></emph></cell>
+					<cell>Promote</cell>
+					<cell>The semantics are identical to non-const new polymorphic instance provision.</cell>
+				</row>
+
+				<row>
+					<cell><emph>unique_ptr&lt;const T></emph></cell>
+					<cell>Promote</cell>
+					<cell>The semantics are identical to non-const new polymorphic instance provision.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const unique_ptr&lt;const T></emph></cell>
+					<cell>Promote</cell>
+					<cell>The semantics are identical to non-const new polymorphic instance provision.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const shared_ptr&lt;T></emph></cell>
+					<cell>Promote</cell>
+					<cell>The semantics are identical to non-const shared pointer to T.</cell>
+				</row>
+
+				<row>
+					<cell><emph>const shared_ptr&lt;const T></emph></cell>
+					<cell>Promote</cell>
+					<cell>The semantics are identical to non-const shared pointer to const T.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>The use of <emph>T</emph>, <emph>std::unique_ptr&lt;T></emph>, and <emph>std::shared_ptr&lt;T></emph> meta-types for non-polymorphic values, polymorphic instances, and singletons respectively was natural from the outset.</para>
+
+		<para>A decision that was taken during the design of the injector was to raise the severity of using raw pointer bindings to a compile time error, via static assertions. Thus any bindings defined with raw pointers result in a compile time error, along with an error message that proposes using <emph>Unique</emph> or <emph>Shared</emph> bindings instead.</para>
+
+		<para>One consideration was whether reference bindings should be allowed, or whether the lifetime management of this would open up the risk of dangling references. The conclusion was that references should be provided, but the implications of providing references from the injector should be clearly discussed in the documentation.</para>
+
+		<para>Another consideration was how to implement const versions of long lived objects (i.e. <emph>const BaseT &amp;</emph> and <emph>std::shared_ptr&lt;const BaseT></emph>, including provision for promoting a non-const binding to a const binding when no suitable const binding has been registered.</para>
+
+		<para>The final design thus provides the following types of non-const object.</para>
+
+		<table class="bdml-table40L60">
+			<head> <cell>Type of object</cell> <cell>Comments</cell> </head>
+
+			<body>
+				<row>
+					<cell>non-polymorphic instances<newline /><emph>T</emph></cell>
+
+					<cell>Non-polymorphic instances are stack based values produced from default construction, prototype copying, and provider bindings. A new instance is created on each call.</cell>
+				</row>
+
+				<row>
+					<cell>polymorphic instances<newline /><emph>std::unique_ptr&lt;T></emph></cell>
+
+					<cell>Polymorphic instances are heap based abstract values. A new instance is created on each call.</cell>
+				</row>
+
+				<row>
+					<cell>polymorphic references<newline /><emph>T &amp;</emph></cell>
+
+					<cell>Long lived provided objects, managed by the application. The injector plays no part in lifetime management, and assumes that the referenced object specified in the configuration will live longer than the injector and the consumers of references supplied by the injector.</cell>
+				</row>
+
+				<row>
+					<cell>polymorphic thread-local singletons<newline /><emph>std::shared_ptr&lt;T></emph></cell>
+
+					<cell>Thread-local singletons are, amongst other things, useful for tunnelling information through a call stack without the need for explicit and repeated call parameters or concurrent techniques.</cell>
+				</row>
+
+				<row>
+					<cell>polymorphic singletons<newline /><emph>std::shared_ptr&lt;T></emph></cell>
+
+					<cell>Singletons form the basic wiring of the software application. Lazy singletons (the default) allow optional singletons to be defined in configuration but only instantiated if requested.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>In addition to non-const bindings, the injector provides the following types of const object.</para>
+
+		<table class="bdml-table40L60">
+			<head> <cell>Type of object</cell> <cell>Comments</cell> </head>
+
+			<body>
+				<row>
+					<cell>polymorphic references<newline /><emph>const T &amp;</emph></cell>
+
+					<cell>Const version of the reference binding.</cell>
+				</row>
+
+				<row>
+					<cell>polymorphic thread-local singletons<newline /><emph>std::shared_ptr&lt;const T></emph></cell>
+
+					<cell>Const version of the thread-local singleton binding.</cell>
+				</row>
+
+				<row>
+					<cell>polymorphic singletons<newline /><emph>std::shared_ptr&lt;const T></emph></cell>
+
+					<cell>Const version of the singleton binding.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h3>Const promotions</h3>
+
+		<para>Whilst certain const meta-type forms are not included in the previous list, the injector does nevertheless implement const promotion. When a binding request for a const type is not available, a suitable non-const type will be provided instead if available. This applies equally to the non-polymorphic and polymorphic new instance binding types which do not support const bindings in the configuration.</para>
+
+		<para>The following table details these non-const to const binding promotions.</para>
+
+		<table>
+			<head>
+				<cell>Requested meta-type</cell>
+				<cell>Default provided meta-type</cell>
+				<cell>Promoted provided meta-type</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><emph>const T</emph></cell>
+					<cell>-</cell>
+					<cell><emph>T</emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::unique_ptr&lt;T></emph></cell>
+					<cell>-</cell>
+					<cell><emph>std::unique_ptr&lt;T></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>std::unique_ptr&lt;const T></emph></cell>
+					<cell>-</cell>
+					<cell><emph>std::unique_ptr&lt;T></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::unique_ptr&lt;const T></emph></cell>
+					<cell>-</cell>
+					<cell><emph>std::unique_ptr&lt;T></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const T &amp;</emph></cell>
+					<cell><emph>const T &amp;</emph></cell>
+					<cell><emph>T &amp;</emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::shared_ptr&lt;T></emph></cell>
+					<cell>-</cell>
+					<cell><emph>std::shared_ptr&lt;T></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>std::shared_ptr&lt;const T></emph></cell>
+					<cell><emph>std::shared_ptr&lt;const T></emph></cell>
+					<cell><emph>std::shared_ptr&lt;T></emph></cell>
+				</row>
+
+				<row>
+					<cell><emph>const std::shared_ptr&lt;const T></emph></cell>
+					<cell><emph>std::shared_ptr&lt;const T></emph></cell>
+					<cell><emph>std::shared_ptr&lt;T></emph></cell>
+				</row>
+			</body>
+		</table>
+
+		<h3>Performance</h3>
+
+		<para>Once an application is compiled with optimisation, each get-instance call in an injector collapses down to a lookup in the binding map and a virtual method call on the looked up binding object. The keys used in the binding map contain a type index encapsulating the meta-type and const qualifier, plus a UTF-8 string for the name. The hash thus consists of the type index hash combined with the hash of the string.</para>
+
+		<para>The injector's binding map is only mutated during the configuration phase of the injector instantiation. Each injector's binding map is thus <emph>const</emph> and consequently an unsynchronised hash map is used internally. The injector is thread safe and no synchronisation is used in get-instance calls.</para>
+
+		<h3>Planned C++20 features</h3>
+
+		<para>One feature that has not been implemented in the current version of the Balau injector is compile time binding keys. The idea of building the binding keys at compile time via the get-instance typename and string literal is not achievable in a simple way in C++17.</para>
+
+		<para>In a get-instance call, the type argument encapsulates all the information required for the key apart from the name, i.e. binding meta-type, const qualifier, and typeid. In order to provide compile time binding keys, the compile time name would also need to be specified as a template argument.</para>
+
+		<code lang="C++">
+			// This is not possible in C++17.
+			auto obj = injector->getInstance&lt;int, "blah">();
+		</code>
+
+		<para>A fully compile time key would also allow hashes to be precalculated, reducing the binding lookup to a modulus calculation and one or more equals calls on the hash map bin contents.</para>
+
+		<para>Whilst there are fudges and hacks to get the above kind of working in C++17, it was decided that runtime binding keys would be sufficient until C++20 is released. C++20 should allow string literal template arguments to be used, allowing the above code to be used without any hacks.</para>
+
+		<para>The current runtime binding key get-instance methods will remain as they are. The addition of compile time binding key get-instance methods will be implemented within an <emph>#ifdef</emph> block, allowing continued use of the library with a C++17 compiler.</para>
+	</chapter>
+</document>

@@ -1,0 +1,355 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* This is the main CSS file to be referenced in the BDML document. */
+
+@import url("bdml.css");
+
+* {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	text-align: justify;
+	padding: 0;
+	margin: auto;
+	overflow-x: hidden;
+}
+
+#bdml-page {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+h1.bdml-chapter-title {
+	font-size: 1.70em;
+}
+
+p {
+	font-weight: 400;
+	margin-top: 0.75em;
+	margin-bottom: 0.75em;
+}
+
+p, tr, td, li {
+	color: #333;
+}
+
+h1, h2, h3, h4, h5 {
+	text-align: left;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.50em;
+	margin-top: 1.25em;
+}
+
+h2 {
+	font-size: 1.28em;
+}
+
+h3 {
+	font-size: 1.15em;
+}
+
+h4 {
+	font-size: 1.00em;
+}
+
+h5 {
+	font-size: 1.00em;
+}
+
+ul, ol {
+	margin-left: 0.5em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+ul p, li p {
+	margin-left: 0.25em;
+}
+
+sup {
+	font-size: 0.7em;
+}
+
+img {
+	border: none;
+}
+
+pre, .bdml-code, .bdml-grammar {
+	background-color: #fbfbfb;
+}
+
+#bdml-toc {
+	float: right;
+	margin: 2em 1.5em 1em 1em;
+	padding: 0.75em;
+	line-height: 1.2em;
+	border: solid 1px #d9d9d9;
+	background-color: #fbfbfb;
+}
+
+#bdml-toc-title {
+	text-align: center;
+	color: #555;
+	font-size: 1.1em;
+	margin-left: 0.25em;
+	margin-right: 0.25em;
+}
+
+#bdml-toc li a {
+	text-align: left;
+	font-size: 0.9em;
+	color: #777;
+}
+
+#bdml-toc li a:hover {
+	color: #3e48ff;
+}
+
+.bdml-toc-part-title {
+	text-align: center;
+	padding: 0.3em 0;
+	margin: 1em 0;
+	border-top: 1px solid #d9d9d9;
+	border-bottom: 1px solid #d9d9d9;
+}
+
+.bdml-toc-part {
+	margin: 0.7em 0 0.0em 0
+}
+
+.bdml-toc-chapter {
+	margin: 0.7em 0 0.0em 0
+}
+
+.bdml-toc-h1 {
+	margin: 0.5em 0 0.0em 0.6em
+}
+
+.bdml-toc-h2 {
+	margin: 0.2em 0 0.0em 0.6em
+}
+
+.bdml-toc-h3 {
+	margin: 0.2em 0 0.0em 0.6em
+}
+
+.bdml-toc-h4 {
+	margin: 0.2em 0 0.0em 0.6em
+}
+
+.bdml-toc-h5 {
+	margin: 0.2em 0 0.0em 0.6em
+}
+
+#bdml-page {
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+}
+
+.bdml-part {
+	margin-top: 2em;
+}
+
+.bdml-chapter {
+	margin-top: 2em;
+	margin-left: 24px;
+	margin-right: 24px;
+}
+
+.bdml-hide-toc {
+	display: none;
+}
+
+.bdml-toc-title-show:after {
+	color: #844;
+	font-size: 0.75em;
+	padding-left: 0.5em;
+	content: '[SHOW]';
+}
+
+.bdml-toc-title-hide:after {
+	color: #844;
+	font-size: 0.75em;
+	padding-left: 0.5em;
+	content: '[HIDE]';
+}
+
+.bdml-part-title {
+	padding: 0.3em 0;
+}
+
+.bdml-chapter-title {
+	overflow: auto;
+	margin-top: 1.1em;
+	font-size: 1.6em;
+	padding: 0.2em 0;
+}
+
+.bdml-header .bdml-chapter-title,
+.bdml-footer .bdml-chapter-title,
+.bdml-front-matter .bdml-chapter-title,
+.bdml-back-matter .bdml-chapter-title {
+	border: none;
+}
+
+.bdml-part-title {
+	font-size: 2em;
+	border-top: solid 1px #999;
+	border-bottom: solid 1px #999;
+	overflow: auto;
+}
+
+.bdml-chapter-title {
+	font-size: 1.8em;
+}
+
+.bdml-part {
+	margin-left: 24px;
+	margin-right: 24px;
+}
+
+#bdml-header {
+	padding: 0;
+	margin: 0;
+	z-index: -4;
+	line-height: 0;
+	background-color: #144075;
+}
+
+#bdml-header p {
+	padding: 0;
+	margin: 0;
+}
+
+
+#bdml-footer {
+	text-align: center;
+	background-color: #144075;
+	padding: 0;
+	margin: 1.5em 0 0 0;
+	font-size: 0.85em;
+}
+
+#bdml-footer, #bdml-footer a, #bdml-footer p {
+	color: #ddd;
+	text-decoration: none;
+}
+
+#bdml-footer table {
+	text-align: center;
+	padding: 1.25em 0 0 0;
+	margin: 1em auto 0 auto;
+	width: 90%;
+}
+
+#bdml-footer table th, #bdml-footer table td {
+	padding: 0.25em;
+	text-align: left;
+	width: 25%;
+}
+
+#bdml-footer a {
+	text-decoration: none;
+}
+
+#bdml-footer a:hover {
+	color: #fff;
+}
+
+#bdml-footer p:first-child {
+	padding-top: 1em;
+}
+
+#bdml-top-menu-ul {
+	text-align: left;
+	padding: 1em 0 1.7em 1.5em;
+	margin: 0;
+	list-style-type: none;
+	color: white;
+}
+
+#bdml-top-menu-ul li {
+	display: inline-block;
+	padding: 0.2em 0.3em;
+	margin: 0;
+}
+
+#bdml-top-menu-ul a, #bdml-top-menu-ul p {
+	color: #fff !important;
+	text-decoration: none !important;
+}
+
+#bdml-top-menu-ul a:hover {
+	color: #888 !important;
+}
+
+.bdml-horizontal-dropdown-menu > li > ul > li {
+	width: 200px;
+}
+
+#bdml-top-menu-ul {
+	padding: 1.8em 0 1.8em 0;
+	line-height: 1.7em;
+}
+
+#bdml-footer {
+	padding-left: 24px;
+	padding-right: 24px;
+}
+
+#bdml-top-menu {
+	width: 48em;
+	text-align: center;
+	border: none;
+	font-size: 0.8em;
+	font-weight: bold;
+	padding: 1.25em 0 1.75em 0;
+	margin: 0;
+}
+
+#bdml-top-menu a {
+	color: #444 !important;
+	text-decoration: none !important;
+}
+
+#bdml-top-menu th, #bdml-top-menu td {
+	border: none;
+}
+
+.bdml-toc-h1 {
+	margin-left: 0;
+}
+
+.bdml-comment-question, .bdml-comment-remark {
+	margin-left: 1.5em;
+	margin-bottom: 1em;
+}

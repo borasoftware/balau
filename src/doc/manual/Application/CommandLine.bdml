@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - command line parser" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Command line parser">
+		<h1>Overview</h1>
+
+		<para>A compact command line parser. The options of a constructed parser are specified via a fluent API. Options with and without values are supported. Options can be specified with abbreviated and full names. A final value option is also supported.</para>
+
+		<para>The command line parser supports two styles of command line switches. The first style is <emph>switch - space - value</emph> (SSV). In this style, the switches supplied on the command line start with a "-" for abbreviated switches and "--" for full switches. For arguments with values, the value is separated from the switch with whitespace.</para>
+
+		<para>The second supported style is <emph>switch - equals - value</emph> (SEV). In this style, the switches supplied on the command line do not have a prefix. For arguments with values, the value is separated from the switch with an equals character "=".</para>
+
+		<para>The command line parser can be configured to use one or the other style. Alternative, it can be default constructed whereapon it will detect the style from the first switch's leading character.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Application/CommandLine.hpp></strong></emph></para>
+
+		<h2>Style</h2>
+
+		<para>Here are some examples of command lines.</para>
+
+		<code>
+			#
+			# Command line that uses the SSV style and that has a final value.
+			#
+			# -k    = switch without value
+			# --max = switch with value
+			# foo   = final value
+			#
+			./myApp1 -k --max 4 foo
+
+			#
+			# Command line that uses the SEV style and that has a final value.
+			#
+			./myApp2 k max=4 foo
+
+			#
+			# Command line that uses the SSV style and that does not have a final value.
+			#
+			./myApp3 -k --max 4
+
+			#
+			# Command line that uses the SEV style and that does not have a final value.
+			#
+			./myApp3 k max=4
+		</code>
+
+		<h2>Configuration</h2>
+
+		<para>Here is an example of a configured parser. The switches specified in <emph>withOption</emph> calls do not take "-" or "--" prefixes, regardless of whether the parser is to be configured as SSV, SEV, or detected.</para>
+
+		<para>The command line parser is a template class. The single typename is the key type. Typically, this is an enum, the elements of which are the keys.</para>
+
+		<code lang="C++">
+			// Pre-defined option keys used in code.
+			enum Key {
+				KEY1, KEY2, KEY3, HELP
+			};
+
+			auto commandLine = CommandLine&lt;Key>()
+				.withOption(KEY1, "k", "key-one", true, "The first key.")
+				.withOption(KEY2, "m", "key-two", true, "The second key.")
+				.withOption(KEY3, "3", false, "Specify in order to use third style.")
+				.withHelpOption(HELP, "h", "help", "Displays this help message")
+				.withFinalValue();
+		</code>
+
+		<para>This builds a parser with two options that have values, one option that does not have a value, plus a (key-less) final value option.</para>
+
+		<para>If the application's command line does not have a final (switch-less) value, the <emph>.withFinalValue()</emph> call should be omitted.</para>
+
+		<para>Each option has a key (<emph>KEY1</emph>, <emph>KEY2</emph>, <emph>KEY3</emph> in the example above). These keys are used to query the parsed data later on.</para>
+
+		<para>The previous example will detect the style from the first command line argument parsed.</para>
+
+		<para>More often, one or the other style is chosen for an application. In order to create the same parser as in the previous example that is configured as SSV, the <emph>CommandLineStyle::SwitchSpaceValue</emph> argument should be passed into the constructor.</para>
+
+		<code lang="C++">
+			auto commandLine = CommandLine&lt;Key>(CommandLineStyle::SwitchSpaceValue)
+				.withOption(KEY1, "k", "key-one", true, "The first key.")
+				.withOption(KEY2, "m", "key-two", true, "The second key.")
+				.withOption(KEY3, "3", false, "Specify in order to use third style.")
+				.withFinalValue();
+		</code>
+
+		<para>Similarly, if the parser should be configured to parse the SEV style only, the <emph>CommandLineStyle::SwitchEqualsValue</emph> argument should be passed into the constructor.</para>
+
+		<code lang="C++">
+			auto commandLine = CommandLine&lt;Key>(CommandLineStyle::SwitchEqualsValue)
+				.withOption(KEY1, "k", "key-one", true, "The first key.")
+				.withOption(KEY2, "m", "key-two", true, "The second key.")
+				.withOption(KEY3, "3", false, "Specify in order to use third style.")
+				.withFinalValue();
+		</code>
+
+		<h2>Retrieving data</h2>
+
+		<para>To parse a command line, call the <emph>parse</emph> method.</para>
+
+		<code lang="C++">
+			commandLine.parse(argc, argv, true);
+		</code>
+
+		<para>The first two arguments in the parse call are the standard argc/argv argument of the main function.</para>
+
+		<para>The third argument in the parse call indicates whether the first argument should be ignored (i.e. the first argument is the executable path).</para>
+
+		<para>To obtain options from the parser, call the option verification and extraction methods. In addition to string extraction, methods are available for extracting option data in a variety of primitive types. Refer to the command line parser <ref type="raw" new="true" url="../../api/classBalau_1_1Application_1_1CommandLine.html">API documentation</ref> for details.</para>
+
+		<para>Some example code that extracts the options from the previous command line parser is shown below.</para>
+
+		<code lang="C++">
+			auto o1 = commandLine.getOption(KEY1);
+			auto o2 = commandLine.getOption(KEY2);
+			auto o3 = commandLine.getOption(KEY3);
+			auto fv = commandLine.getFinalValue();
+		</code>
+
+		<h2>Help text</h2>
+
+		<para>The command line parser has a method called <emph>getHelpText</emph> that generates a multi-line help text string for use in command line help text.</para>
+	</chapter>
+</document>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - file utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="File utilities">
+		<h1>Overview</h1>
+
+		<para>This header provides user friendly file utility functions, defined within the <emph>Balau::Util::Files</emph> namespace.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Files.hpp></strong></emph></para>
+
+
+		<para>The following functions are currently implemented. More information is available on the <ref type="raw" new="true" url="../../api/structBalau_1_1Util_1_1Files.html">API documentation</ref> page.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>copy</cell>
+					<cell>Copy the contents of the source file into the destination file.</cell>
+				</row>
+
+				<row>
+					<cell>toLines</cell>
+					<cell>Read all lines of text of the specified file into a string vector.</cell>
+				</row>
+
+				<row>
+					<cell>readToString</cell>
+					<cell>Read the specified file into a string.</cell>
+				</row>
+
+				<row>
+					<cell>readToVector</cell>
+					<cell>Read the specified file into a character vector.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

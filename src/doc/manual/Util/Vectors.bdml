@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - vector utilities" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Vector utilities">
+		<h1>Overview</h1>
+
+		<para>This header provides user friendly utility functions, defined within the <emph>Balau::Util::Vectors</emph> namespace.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Vectors.hpp></strong></emph></para>
+
+		<para>The following utilities are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1Vectors.html">API documentation</ref> page.</para>
+
+		<h2>Appending</h2>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>append</cell>
+					<cell>Appends the source vector to the destination vector.</cell>
+				</row>
+
+				<row>
+					<cell>pushBack</cell>
+					<cell>Populate an existing vector via emplace back of multiple elements.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>The <emph>pushBack</emph> function allows variadic emplace back to be performed in a single function.</para>
+
+		<h2>Conversion</h2>
+
+		<para>These functions convert vectors of characters to strings and strings to vectors of characters.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Function name</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>charsToString</cell>
+					<cell>Convert the characters in the supplied char/char16_t/chare32_t vector to a UTF-8/UTF-16/UTF-32 string.</cell>
+				</row>
+
+				<row>
+					<cell>toCharVector</cell>
+					<cell>Convert the supplied UTF-8/UTF-32 string to a char/char32_t vector.</cell>
+				</row>
+
+				<row>
+					<cell>toStringVector</cell>
+					<cell>Convert the supplied vector to a vector of UTF-8 strings, by calling <emph>toString</emph> on each object.</cell>
+				</row>
+
+				<row>
+					<cell>toString32Vector</cell>
+					<cell>Convert the supplied vector to a vector of UTF-32 strings, by calling <emph>toString32</emph> on each object.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

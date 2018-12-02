@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<chapter>
+		<para class="notice-dark">Copyright &#169; 2008 Bora Software</para>
+
+		<para class="notice-dark last-notice">Bora&#174; and the Bora logo are registered trademarks in the European Community, the United States of America, and other countries.</para>
+	</chapter>
+</document>

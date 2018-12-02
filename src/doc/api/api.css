@@ -1,0 +1,352 @@
+/**
+ * Balau core C++ library
+ *
+ * Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+ *
+ * Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+ * See the LICENSE file for the full license text.
+ *
+**/
+
+/* Balau API CSS for Doxygen version 1.8.13. */
+
+body {
+	text-align: left;
+}
+
+body, table, div, p, dl, table.directory {
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
+	font-size: 11.5pt;
+	font-weight: normal;
+	color: #333;
+	line-height: 1.7em;
+}
+
+.bdml-chapter {
+	clear: both;
+}
+
+#bdml-footer p {
+	font-size: 10.25pt;
+}
+
+div.contents {
+	margin: 24px;
+}
+
+.sm-dox {
+	background: #fff none;
+	padding: 0 10px;
+}
+
+.sm-dox a {
+	background: none;
+	border-right: 1px solid #144075;
+	border-bottom: none;
+	border-top: none;
+	border-left: none;
+}
+
+.sm-dox a, .sm-dox a:focus, .sm-dox a:hover, .sm-dox a:active,
+.sm-dox ul a, .sm-dox ul a:focus, .sm-dox ul a:hover, .sm-dox ul a:active {
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	font-size: 10.8pt;
+}
+
+.sm-dox ul {
+	background-color: #144075;
+	border: 1px solid #144075;
+	border-radius: 8px;
+	box-shadow: none;
+}
+
+.sm-dox ul a span.sub-arrow {
+	border-color: transparent transparent transparent #bbb;
+}
+
+.sm-dox > li > ul::before, .sm-dox > li > ul::after {
+	content: none;
+}
+
+#main-nav, #main-menu, #nav-path ul {
+	background: none;
+	border: none;
+}
+
+#main-menu {
+	padding-top: 2px;
+}
+
+h2.groupheader, tr.heading h2 {
+	border-top: none;
+	border-bottom: none;
+	color: black;
+	font-weight: bold;
+	margin-top: 16px;
+	margin-bottom: 16px;
+}
+
+#main-menu li {
+	border: none;
+}
+
+#main-menu li {
+	border: none;
+}
+
+#main-menu li:first-child + li + li + li {
+	padding-right: 2em;
+}
+
+#main-menu > li > a {
+	text-transform: uppercase;
+}
+
+#main-menu li a {
+	color: white;
+	background-image: none;
+	text-shadow: none;
+}
+
+#main-menu li ul, #main-menu li ul li, #main-menu li ul li a {
+	color: white;
+	background-color: #144075;
+}
+
+#main-nav {
+	position: absolute;
+	top: 1.7em;
+	left: 12em;
+}
+
+div.header {
+	color: #043065;
+	background: none;
+	border: none;
+}
+
+div.header div.title {
+	white-space: nowrap;
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
+	color: #043065;
+	margin: 32px 24px 24px 24px;
+	padding: 0.2em 0;
+	font-size: 1.7em;
+	border-top: solid 1px #043065;
+	font-weight: bold;
+}
+
+div.header .summary {
+	display: none;
+}
+
+hr {
+	margin-top: 2.5em;
+}
+
+#nav-path {
+	margin: 0;
+}
+
+#nav-path li.navelem {
+	margin-bottom: 0;
+	background: #fff none;
+	padding: 0.3em 1em 0 0;
+	float: none;
+	display: inline-block;
+}
+
+.navpath li a, #nav-path ul, .navpath li.navelem a {
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
+	font-weight: normal;
+}
+
+.navpath li a {
+	height: 1em;
+	font-weight: normal;
+}
+
+#nav-path ul li a::after {
+	content: ">";
+	padding: 0 0 0 1em;
+}
+
+#nav-path ul li:last-child a::after {
+	content: "";
+	padding: 0 0 0 0.8em;
+}
+
+#nav-path ul li:first-child {
+	margin: 12px 0 0 24px;
+}
+
+#nav-path ul, .navpath li.navelem a {
+	line-height: 1.6em;
+	height: auto;
+	font-size: 14px;
+}
+
+h2.memtitle, div.memproto {
+	background: #F9FAFC none;
+	border-top: 1px solid #b6c2ca;
+	border-left: 1px solid #b6c2ca;
+	border-right: 1px solid #b6c2ca;
+}
+
+.memberdecls {
+	width: 100%;
+}
+
+.mdescLeft, .mdescRight,
+.memItemLeft, .memItemRight,
+.memTemplItemLeft, .memTemplItemRight {
+	padding-top: 2px;
+}
+
+.mdescLeft, .mdescRight {
+	padding-bottom: 2px;
+	color: #333;
+}
+
+
+.memItemRight {
+	padding-right: 8px;
+}
+
+.memTemplParams {
+	padding-top: 2px;
+}
+
+.memTemplParams {
+	font-size: 90%;
+}
+
+div.line, code {
+	font-family: "Courier New", monospace;
+	font-size: 15px;
+}
+
+div.line {
+	line-height: 1.3;
+}
+
+span.lineno {
+	border-right: 1px solid #009;
+	padding: 4px 4px 8px 0;
+}
+
+span.lineno, span.lineno a {
+	background-color: #f4f4f4;
+	color: #555;
+}
+
+div.fragment {
+	padding: 4px 4px 4px 0;
+	margin: 24px 0 24px 0;
+}
+
+span.keyword, span.keywordflow {
+	color: #227;
+	font-weight: bold;
+}
+
+span.comment {
+	color: #080;
+}
+
+span.preprocessor {
+	color: #880;
+}
+
+span.keywordtype {
+	color: #722;
+}
+
+span.permalink > a {
+	display: none;
+}
+
+div.headertitle {
+	padding: 0;
+}
+
+table.mlabels, table.memname {
+	line-height: 1.3em;
+}
+
+span.mlabels {
+	margin-left: 16px;
+}
+
+span.mlabel {
+	font-size: 10pt;
+	padding: 3px 6px;
+	background-color: white;
+	border: 1px solid #043065;
+	color: #043065;
+	font-weight: bold;
+	margin-right: 8px;
+}
+
+td.mlabels-right {
+	padding-bottom: 3px;
+}
+
+div.directory {
+	border: none;
+}
+
+div.qindex, div.ah, span.ah {
+	background: white none;
+	font-weight: bold;
+	color: #043065;
+	padding: 0 0.3em 0.1em 0.3em;
+	vertical-align: middle;
+	border: solid 2px #043065;
+	border-radius: 0.5em;
+	-webkit-border-radius: .5em;
+	-moz-border-radius: .5em;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	margin: 1em 0 0.2em 0;
+	text-transform: uppercase;
+}
+
+div.qindex {
+	padding: 0.2em 0.3em 0.4em 0.3em;
+	margin: 1.5em 0;
+	color: #fff;
+}
+
+div.qindex a {
+	margin: 0 0.1em;
+	color: #043065;
+}
+
+.directory .icona {
+	vertical-align: middle;
+}
+
+.directory .icon {
+	height: 17px;
+	line-height: 17px;
+	background: white none;
+	font-weight: bold;
+	color: #043065;
+	border: solid 1px #043065;
+}
+
+.icondoc {
+	background-position: 0 -1px;
+}
+
+div.contents > h3.version {
+	font-size: 100%;
+	text-align: left;
+	margin: -16px 0 24px 0;
+}
+
+div.contents > h3.version::before {
+	content: "Git revision ";
+}

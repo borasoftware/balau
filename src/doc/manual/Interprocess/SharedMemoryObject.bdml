@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - SharedMemoryObject" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="SharedMemoryObject">
+		<h1>Overview</h1>
+
+		<para>Shared memory objects that use the Boost Interprocess library.</para>
+
+		<para>This documentation covers two classes which are similar in usage:</para>
+
+		<bullets>
+			<entry>MSharedMemoryObject;</entry>
+			<entry>USharedMemoryObject.</entry>
+		</bullets>
+
+		<para>The semantic difference between these two classes is that instances of <emph>USharedMemoryObject</emph> require a call to <emph>remap()</emph> in child processes after forking, whilst instances of  <emph>MSharedMemoryObject</emph> do not. The other difference between the two classes is that  <emph>MSharedMemoryObject</emph> uses half a kilobyte of shared memory for metadata, whilst instances of <emph>USharedMemoryObject</emph> do not.</para>
+
+		<para>As operating systems generally allocate entire pages for shared memory (a page is typically 4KB), <emph>MSharedMemoryObject</emph> instances generally use the same amount of memory as <emph>USharedMemoryObject</emph>, unless your object has a size of between 4096N + 3584 and 4096(N+1), where N is an unsigned integer.</para>
+
+		<para>Note also that as shared memory is typically allocated in 4k pages, a whole page will be allocated even if your object size is a single byte. It is thus not efficient to create a large number of managed/unmanaged shared memory object instances each containing a small object. If a large number of small objects need to be shared across multiple processes, the efficient approach is to create a holder class of these objects and then to create a single managed/unmanaged shared memory object of the holder.</para>
+
+		<para>These template classes encapsulate calls to the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_66_0/doc/html/interprocess.html">Boost Interprocess library</ref> in order to manage the lifetime of a shared memory object, and provide a simple API to construct/open and use the object.</para>
+
+		<para>The shared memory object classes are useful when a simple approach to creating a typed shared memory object is desired. They can also act as a tutorial introduction into using shared memory via the Boost Interprocess library. More advance use of shared memory can then follow by direct use of the Boost library.</para>
+
+		<para>Note that when using the shared memory object classes, the type T must have a POD type structure. If the type contains pointers, the objects pointed to will not share and consequently your application will be defective. If non-POD data structures are required to be shared across multiple processes, advanced use of the Boost Interprocess library is recommended.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement">
+			<emph><strong>#include &lt;Balau/Interprocess/MSharedMemoryObject.hpp></strong></emph><newline />
+			<emph><strong>#include &lt;Balau/Interprocess/USharedMemoryObject.hpp></strong></emph>
+		</para>
+
+		<para>There are two types of constructors in these classes:</para>
+
+		<bullets>
+			<entry>one constructor that creates automatically named shared memory objects;</entry>
+			<entry>constructors that explicitly create or open a new or existing named shared memory object.</entry>
+		</bullets>
+
+		<para>The first constructor creates an automatically named shared memory object by generating a name prefix based on a UUID.</para>
+
+		<para>The second set of constructors take a dummy object specifying whether to create or open the shared memory object, plus the name of the shared memory.</para>
+
+		<h2>Forked processes</h2>
+
+		<para>Forking is a simple way to construct and use the share memory object across processes, but it is only supported by Unix-like operating systems. In order to construct and use a shared memory object in a parent process and a set of forked child processes, construct the object in the parent and fork as normal. The Balau <ref url="Concurrent/Fork" >Fork</ref> class provides a convenient API for forking. The shared memory object will be ready for use in the child processes without any further action. The first constructor is used for this.</para>
+
+		<code lang="C++">
+			// The type of object being shared.
+			struct A {
+				int i;
+				double d;
+
+				A(int i_, double d_) : i(i_), d(d_) {}
+			};
+
+			// Construct the shared memory object before forking.
+			MSharedMemoryObject&lt;A&gt; sharedA(1, 2.0);
+
+			// Perform the fork. The child will not return.
+			Fork::performFork([&amp;sharedA] () { return runChildLogic(sharedA); }, true)
+		</code>
+
+		<para>As previously discussed, use of the <emph>USharedMemoryObject</emph> class with forking will require subsequent calls to <emph>remap()</emph> in each child process before the object is usable. The equivalent code to the previous example using an instance of <emph>USharedMemoryObject</emph> is thus as follows.</para>
+
+		<code lang="C++">
+			// Construct the shared memory object before forking.
+			USharedMemoryObject&lt;A&gt; sharedA(1, 2.0);
+
+			// Perform the fork. The child will not return.
+			Fork::performFork(
+				[&amp;sharedA] () {
+					sharedA.remap();
+					return runChildLogic(sharedA);
+				}
+				, true
+			)
+		</code>
+
+		<h2>Independent processes</h2>
+
+		<para>Processes that are not related by forking may access the same shared memory object by communicating the name prefix to each process. A choice of constructors are available for this, which implement the Boost Interprocess <emph>create-only</emph>, <emph>create-or-open</emph>, <emph>open-only</emph>, and <emph>open-read-only</emph> options.</para>
+
+		<para>There are two possibilities for communicating the name prefix:</para>
+
+		<bullets>
+			<entry>pre-share the name prefix between the processes;</entry>
+
+			<entry>create the object in one process and communicate its name to the other processes in some way.</entry>
+		</bullets>
+
+		<para>With the first solution, a name prefix is decided upon in advance or is algorithmically generated by the application. One solution to this when sharing an object between multiple instances of the same application is to construct a name prefix via the application's executable path. A helper function namePrefixFromAppPath() is available for this in the <emph>SharedMemoryUtils</emph> class. Using this solution, a set of shared memory object name prefixes can be created by appending predefined strings to the name prefix generated from the helper function.</para>
+
+		<para>Another solution is to pre-share a name prefix that can be guaranteed not to be used by other processes, either hard wired in the application (not recommended) or via the application's configuration/options.</para>
+
+		<para>The template constructors are used for creating/opening a shared memory object with a pre-shared or algorithmically generated name.</para>
+
+		<para>In order to use a peer-to-peer approach, the <emph>create-or-open</emph> constructor can be used.</para>
+
+		<code lang="C++">
+			// Create the name prefix for the shared memory object.
+			const std::string name = SharedMemoryUtils::namePrefixFromAppPath() + "_myObj";
+
+			// Create or open the shared memory object with the name prefix.
+			USharedMemoryObject&lt;A&gt; object(OpenOrCreate, name, 2, 4.0);
+		</code>
+
+		<para>In order to use a manager-worker approach, the <emph>create-only</emph> constructor can be used in the manager process and the <emph>open-only</emph> constructor can be used in the worker processes. Due to the necessity of the queue existing for the worker processes, the manager process will need to create the queue before the workers attempt to open it.</para>
+
+		<code lang="C++">
+			// Manager process..
+
+			// Create the name prefix for the shared memory object.
+			const std::string name = SharedMemoryUtils::namePrefixFromAppPath() + "_myObj";
+
+			// Create the shared memory object.
+			USharedMemoryObject&lt;A&gt; object(CreateOnly, name, 2, 4.0);
+
+			///////////////////////////////////////////////////////////////////
+
+			// Worker process..
+
+			// Create a name prefix for the shared memory object.
+			const std::string name = SharedMemoryUtils::namePrefixFromAppPath() + "_myObj";
+
+			// Open the shared memory object.
+			USharedMemoryObject&lt;A&gt; object(OpenOnly, name);
+		</code>
+	</chapter>
+</document>

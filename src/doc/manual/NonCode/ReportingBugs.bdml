@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - reporting bugs" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Reporting bugs">
+		<para>The Balau library is in active development. Although care has been taken to define test cases for a variety of use cases for each component, it is possible that an untested use case may have a defect.</para>
+
+		<para>The proposed procedure for reporting and fixing defects is as follows.</para>
+
+		<list>
+			<entry>Create one or more Balau test cases for the defect. All defect reports should include at least one test case that reproduces the defect. One option to achieve this is to create your own fork of the library and add your test case to your repository.</entry>
+
+			<entry>Either: report the defect on the main repository issue page <ref type="raw" new="true" url="https://github.com/borasoftware/balau/issues">here</ref>;</entry>
+
+			<entry>Or: fix the defect in your own fork and submit a pull request to merge it to the main repository.</entry>
+
+		</list>
+
+	</chapter>
+</document>

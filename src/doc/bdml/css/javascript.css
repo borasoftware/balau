@@ -1,0 +1,189 @@
+/**
+ * BDML CSS file
+ *
+ * Copyright 2007 Bora Software (contact@borasoftware.com)
+ * https://borasoftware.com/specifications/bdml.html
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ *
+**/
+
+/* Javascript syntax highlighting colours. */
+
+.bdml-javascript .bdml-keyword {
+	color: #227;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-type-identifier {
+	color: #800;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-operator {
+	color: #000;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-define {
+	color: #880;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-comment {
+	color: #080;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-comment-todo {
+	color: #821222;
+	font-style: italic;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-placeholder {
+	color: #480;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-continuation {
+	color: #22c;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-number {
+	color: #00d;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-hex-oct-number {
+	color: #077;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-suf-num {
+	color: #07f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-suf-nho {
+	color: #777;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-mod {
+	color: #b22;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-typ {
+	color: #722;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-directive {
+	color: #880;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-api-doc {
+	color: #088;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-api-doc-todo {
+	color: #821222;
+	font-style: italic;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-opt {
+	color: #f22;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-sym {
+	color: #22f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-string {
+	color: #c22;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-str-sp {
+	color: #f2f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-str-fc {
+	color: #f52;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-cont {
+	color: #22f;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-dir {
+	color: #292;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-dir-name {
+	color: #bb2;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-disp {
+	color: #227;
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-javascript .bdml-ln {
+	color: #999;
+	margin: 0;
+	padding: 0;
+}

@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - logger" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Logger">
+		<h1>Overview</h1>
+
+		<para>A logging framework, with configurable loggers via logging namespaces. Loggers output to C++ streams specified via the logging namespace configuration. Logging namespaces inherit their parent configuration via a cascading inheritance.</para>
+
+		<h1>Quick start</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Logging/Logger.hpp></strong></emph></para>
+
+		<h2>Logging messages</h2>
+
+		<para>Logging to Balau loggers is similar to that of other logging systems.</para>
+
+		<code lang="C++">
+			// A debug message.
+			log.debug("An object: {}", obj);
+
+			// An info message.
+			log.info("Hello, world!");
+
+			// An error message.
+			log.error("Something went wrong. Data: {} / {}", data1, data2);
+		</code>
+
+		<para>The first argument is a <emph>const char *</emph> or <emph>std::string_view</emph>  string that specifies the message. The <emph>{}</emph> placeholders in the message are replaced by the string conversions of the remaining arguments.</para>
+
+		<para>If source code file and line number information is required, the logging macros should be used instead. The definitions of these macros contain the standard <emph>__FILE__</emph> and <emph>__LINE__</emph> macros that provide file and line number information.</para>
+
+		<code lang="C++">
+			// A debug message with file and line number information.
+			BalauLogDebug(log, "An object: {}", obj);
+
+			// An info message with file and line number information.
+			BalauLogInfo(log, "Hello, world!");
+
+			// An error message with file and line number information.
+			BalauLogError(log, "Something went wrong. Data: {} / {}", data1, data2);
+		</code>
+
+		<para>There are six logging levels: <emph>trace</emph>, <emph>debug</emph>, <emph>info</emph>, <emph>warn</emph>, <emph>error</emph>, and <emph>none</emph>.</para>
+
+		<para>Whether a log message is output to the logging stream depends on whether the logging namespace is enabled for that logging level. This depends on the logging configuration.</para>
+
+		<para>The <emph>{}</emph> placeholders are replaced with the result of the <emph>toString</emph> call of the object(s) supplied in the logging call. It is thus necessary that suitable <emph>toString</emph> functions are defined for all object types passed to logging calls.</para>
+
+		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
+
+		<para>In addition to the standard logging methods that accept a variable number of parameters, there is a function based logging method for each logging level. These methods accept a function that is used to generate the message to log.</para>
+
+		<code lang="C++">
+			// An info message via a lambda.
+			log.info([&amp;v1, &amp;v2] () { return toString("Value = ", v1 * v2); });
+		</code>
+
+		<para>The function based logging methods are useful when derived arguments need to be logged. If a function based logging method were not used, the code used to derive the arguments would execute, regardless of whether the message is needed or not, as prescribed by the logging level of the logger.</para>
+
+		<para>In order to use loggers, there are two tasks required:</para>
+
+		<bullets>
+			<entry>configure the logging system namespaces (optional);</entry>
+
+			<entry>obtaining references to loggers.</entry>
+		</bullets>
+
+		<para>These tasks are discussed in reverse order below.</para>
+
+		<h2>Logger references</h2>
+
+		<para>Loggers are identified via logging namespaces. A logging namespace is a string of dot delimited idenfiers. Typically, the application name or the reverse domain name of the company is used as the logging namespace prefix, i.e. <emph>"balau"</emph> or <emph>"com.borasoftware"</emph>. Namespaces are case sensitive.</para>
+
+		<para>Loggers are owned by the logging system and can be obtained by reference, by calling the <emph>Logger::getLogger</emph> function.</para>
+
+		<code lang="C++">
+			// Get a logger for the "balau.network" logging namespace.
+			Logger &amp; log = Logger::getLogger("balau.network");
+		</code>
+
+		<para>Logger references are typically set up as static fields of classes, but instance references and local variables are also possible if the use case requires it.</para>
+
+		<code lang="C++">
+			////////// In header file. //////////
+
+			class A {
+				// Static member logger reference declaration.
+				private: static Balau::Logger &amp; log;
+			};
+
+			/////////// In body file. ///////////
+
+			// Static member logger reference definition.
+			Balau::Logger &amp; A::log = Balau::Logger::getLogger("balau.network");
+		</code>
+
+		<h2>Logging configuration</h2>
+
+		<para>The configuration of loggers is determined by the configuration of the logging namespaces. Logging namespaces inherit their parent configuration via a cascading priority inheritance.</para>
+
+		<para>By default, the logging system configures itself automatically to log info and warn level messages to stdout, and error level messages to stderr.</para>
+
+		<para>The default logging message format is:</para>
+
+		<code>
+			"%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message"
+		</code>
+
+		<para>Details of the message format placeholders are provided in the detailed documentation.</para>
+
+		<para>There are two ways of providing a custom logging configuration:</para>
+
+		<bullets>
+			<entry>create a <emph>balau-logging.conf</emph> configuration file in the same folder as the application's executable;</entry>
+
+			<entry>call Balau::Logger::configure(std::string) within the application.</entry>
+		</bullets>
+
+		<para>If a logging configuration file is provided, the contained configuration will be used from the start of the application's execution. If logging configuration is provided via a <emph>Balau::Logger::configure</emph> call, the logging system will use the default configuration until the call is made.</para>
+
+		<para>Details of the logging configuration DSL are provided in the detailed documentation.</para>
+
+		<h1>Usage</h1>
+
+		<h2>Configuration</h2>
+
+		<para>There are two ways to supply the logging configuration.</para>
+
+		<para>The implicit way to configure the logging system is to provide a <emph>balau-logging.conf</emph> configuration file in the application binary directory. This will be automatically picked up by the logging system.</para>
+
+		<para>The explicit way to configure the logging system is to provide logging configuration via a call to:</para>
+
+		<code lang="C++">
+			Balau::Logger::configure(const std::string &amp; conf);
+		</code>
+
+		<para>The string argument passed in the call contains the logging configuration. This logging configuration can be read from a file in a custom location, or may be generated by the application as deemed appropriate by the caller.</para>
+
+		<para>The logging system can be reconfigured via subsequent calls to the above function. Calling the following function will lock the configuration for the lifetime of the application execution:</para>
+
+		<code lang="C++">
+			Balau::Logger::lockConfiguration(bool throwOnReconfigure = false);
+		</code>
+
+		<para>Subsequent calls to the configure function will then either be ignored (default behaviour) or will throw a LoggingConfigurationException if throwOnReconfigure is set to true.</para>
+
+		<para>Logging reconfiguration provides eventual consistency. Logging during reconfiguring will result in stable but non-deterministically configured logging. The logging format of a particular logger during reconfiguration will either be the previous configuration or the new configuration, but not a mixture of the two. Similarly, the stream(s) written to by a logger during reconfiguration may be the previously specified ones or the newly specified ones.</para>
+
+		<para>Logging configuration calls can be made in static contexts, including within static initialisation blocks that are each executed in a non-deterministic order.</para>
+
+		<para>If no <emph>balau-logging.conf</emph> file is found and no call to configure is made, the logging system will log INFO and WARN level messages to stdout and ERROR messages to stderr.</para>
+
+		<para>If the parsed logging configuration from <emph>balau-logging.conf</emph> is invalid, an error message will be written to stderr and loggers associated with the affected namespaces will be configured to write to stdout for all invalidly configured logging levels. If the format specification for a namespace contains an invalid format specifier, an error message will be written to stderr and the the invalid specifier will be output verbatim in subsequent log messages to affected loggers.</para>
+
+		<h2>Logger instances</h2>
+
+		<para>Loggers are obtained via the static getLogger call in the logger class:</para>
+
+		<code lang="C++">
+			Balau::Logger &amp; logger = Balau::Logger::getLogger(const std::string &amp; loggingNamespace);
+		</code>
+
+		<para>The parameter 'loggingNamespace' is the logging namespace that determines the configuration of the logger (logging level, streams, message format).</para>
+
+		<para>The <emph>Logger.hpp</emph> header also contains a static reference <emph>Balau::globalLogger</emph> that references the logger associated with the global namespace. This logger may be useful when logging to the global namespace is all that is required.</para>
+
+		<para>Calls to getLogger() can be in static or instance contexts. Normally such calls are placed in static contexts.</para>
+
+		<code lang="C++">
+			//////////// Header file ////////////
+
+			class A {
+			    // The class' logger.
+			    private: static Balau::Logger &amp; logger;
+
+			    // main class declaration..
+			};
+
+			///////////// Body file /////////////
+
+			// Get the logger associated with the logging namespace "A".
+			Balau::Logger &amp; A::logger = Balau::Logger::getLogger("A");
+		</code>
+
+		<para>Loggers should always be maintained as references. Loggers are not owned by the caller, and must not be deleted or placed within pointer containers.</para>
+
+		<para>The Balau logging system will not throw any exceptions from the <emph>getLogger</emph> call, other than if there is a fatal error such as an out of memory issue.</para>
+
+		<h2>Startup and shutdown</h2>
+
+		<para>The logging system is first configured when the first call to <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph> is made. Subsequent calls to <emph>Logger::configure</emph> will reconfigure the logging system.</para>
+
+		<para>The logging system state is maintained in a lazy singleton that is instantiated on the first call to <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph>. It is thus safe to use loggers inside static initialisation blocks. However, if such logging is made via another statically initialised logger reference, that reference may not be initialised yet, and the application will crash. Due to this, logging from within static initialisation blocks must be done by obtaining the logger from inside the initialisation block by calling <emph>Logger::getInstance</emph>. This will always obtain a valid logger reference.</para>
+
+		<para>The logging system shutdown happens from the destructor of the statically allocated singleton. The C++ standard states that the order of destruction of statically allocated objects is non-deterministic. Logging from inside the destructors of statically allocated objects is thus not safe and should not be performed, as the logging system may have already been shut down by the time the destructor runs.</para>
+
+		<h2>Logging messages</h2>
+
+		<para>To log a message, the logger has five sets of templated methods that accept a variable number of parameters. Each set corresponds to a logging level { trace, debug, info, warn, error }.</para>
+
+		<para>The templated methods accept any types as const references. Each parameter is converted to a string via the Balau universal to-string function (see the documentation on the <ref url="Application/ToString">universal to-string function</ref> for more information). It is sufficient to ensure that a <emph>toString</emph> function has been defined for the type of each parameter at the point of template function instantiation, and the logger will use it to stringify the parameter.</para>
+
+		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
+
+		<para>It is often more convenient to add an incomplete <emph><strong>class Logger;</strong></emph> declaration in the header file where a logger reference is defined, and include the <emph>Logger.hpp</emph> header in the body file instead. This ensures that verification of header include order is confined to the single body file instead of propagating to all files that include the header containing the logger reference.</para>
+
+		<para>The log message passed to the call should contain the same number of parameter placeholders as is passed to the function. A parameter placeholder has the form of a pair of curly braces "{}". Each placeholder is then replaced during the log call by the associated parameter.</para>
+
+		<para>Writing a log message thus has the following form:</para>
+
+		<code lang="C++">
+			ComplexObject results = process();
+
+			LOG.info("The results of run {}/{} are: {}", runIndex, runCount, results);
+		</code>
+
+		<para>In order to output source code file names, file paths, and/or line numbers of log message locations, it is necessary to call the logging functions that take file path and line information via a <emph>SourceCodeLocation</emph> instance:</para>
+
+		<code lang="C++">
+			LOG.info(SourceCodeLocation(__FILE__, __LINE__), "blah");
+
+			LOG.info(SourceCodeLocation(__FILE__, __LINE__), "blah {} {}", one, two);
+
+			LOG.info(SourceCodeLocation(__FILE__, __LINE__), [&amp;o1, &amp;o2] () {
+				return toString("value = ", one * two);
+			});
+		</code>
+
+		<para>The <emph>__FILE__</emph> and <emph>__LINE__</emph> macros are the standard C++ preprocessor macros that provide file path and line information. They must be physically placed in the source code line.</para>
+
+		<para>A better alternative to explicitly specifying the file path and line macros, <emph>Logger.hpp</emph> contains a set of convenience macros that define the source code file paths and line macros implicitly:</para>
+
+		<code lang="C++">
+			#define BalauLogTrace(LOGGER, ...)
+			#define BalauLogDebug(LOGGER, ...)
+			#define BalauLogInfo(LOGGER, ...)
+			#define BalauLogWarn(LOGGER, ...)
+			#define BalauLogError(LOGGER, ...)
+		</code>
+
+		<para>These are used as function calls that take the logger as the first argument and the message/parameters as subsequent arguments:</para>
+
+		<code lang="C++">
+			BalauLogInfo(LOG, "blah");
+
+			BalauLogInfo(LOG, "blah {} {}", one, two);
+
+			BalauLogInfo(LOG, [&amp;o1, &amp;o2] () { return toString("value = ", one * two); });
+		</code>
+
+		<para>Use of these macros is recommended in preference to the explicit calls.</para>
+
+		<h2>Logging namespaces</h2>
+
+		<para>The logging framework uses hierarchical logging namespaces to determine the logging configuration for each logger. Logging namespaces are dot delimited names with the following syntax:</para>
+
+		<code>
+			[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*
+		</code>
+
+		<para>Logging namespaces work in a hierarchical manner by inheriting the configuration of the nearest ancestor unless overridden in the immediate logger namespace configuration. For example, if the logging configuration supplied during the configuration of the logging system is:</para>
+
+		<code>
+			com.borasoftware   = level: info
+			com.borasoftware.a = level: debug
+		</code>
+
+		<para>then a logger instantiated with the <emph>com.borasoftware</emph> namespace:</para>
+
+		<code lang="C++">
+			Balau::Logger &amp; logger = Balau::Logger::getLogger("com.borasoftware");
+		</code>
+
+		<para>will log to info level. If a logger is instantiated with the <emph>com.borasoftware.a</emph> namespace:</para>
+
+		<code lang="C++">
+			Balau::Logger &amp; logger = Balau::Logger::getLogger("com.borasoftware.a");
+		</code>
+
+		<para>then it will log to debug level. If a logger is instantiated with the <emph>com.borasoftware.b.c</emph> namespace (i.e. a namespace that is not directly specified in the configuration but has ancestor <emph>com.borasoftware</emph>):</para>
+
+		<code lang="C++">
+			Balau::Logger &amp; logger = Balau::Logger::getLogger("com.borasoftware.b.c");
+		</code>
+
+		<para>then this logger will log to the level specified by <emph>com.borasoftware</emph>.</para>
+
+		<para>If a logger is instantiated with an unknown namespace with no known ancestors, the global logging namespace configuration will be used. The global namespace may also be configured in the logging configuration by using the special "." namespace name.</para>
+
+		<h1>Configuration file</h1>
+
+		<h2>Overview</h2>
+
+		<para>The configuration file format is very simple. Each namespace is the key in a key-value pair. The equals character separates the namespace key and its configuration value. The configuration value contains a set of descendant properties, the name and value of each property being separated by a colon. Properties are comma delimited. Spaces and newlines can be inserted in order to align the text. If spaces or commas are required in a property value, the value should be surrounded by double quotes. Whitespace outside of quoted text is ignored.</para>
+
+		<para>The global logging namespace is referenced via the special "." key. This namespace can be configured in the same way as any other namespace, and forms the global ancestor to all namespaces. It is thus useful to place any configuration applicable to all loggers in the global namespace.</para>
+
+		<para>Here is an example of a simple logging configuration:</para>
+
+		<code>
+			.                  = level: warn, format: "%Y-%m-%d %H:%M:%S [%thread] %level - %namespace - %message"
+			com.borasoftware   = level: info
+			com.borasoftware.a = level: debug
+		</code>
+
+		<para>This example configuration configures three logging namespaces. The global namespace logging level is set to warn. Two other descendant namespaces' levels are also set. All loggers will log to the default stdout/stderr streams.</para>
+
+		<para>The example configuration configures the global namespace with a logging message format. Unless this is reconfigured in a descendant namespace, all loggers will use this format.</para>
+
+		<para>Namespace configurations are separated by whitespace. Normally this would be a newline as in the example above, but this is not required. In addition, newlines may be inserted inside a namespace's value list outside of quoted text. The same example configuration could equally be presented in the following way:</para>
+
+		<code>
+			.                  = level: warn
+			                   , format: "%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message"
+
+			com.borasoftware   = level: info
+
+			com.borasoftware.a = level: debug
+		</code>
+
+		<h2>Configuration macros</h2>
+
+		<para>Logging configurations may contain the following macro placeholders in the output stream specifications. With the exception of the <emph>${date}</emph> placeholder, these placeholders are expanded during logging system configuration.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Placeholder</cell> <cell>Expansion</cell> </head>
+
+			<body>
+				<row>
+					<cell>${user.home}</cell>
+					<cell>The path to the user's home directory in file URI format (example: <emph>file:///home/bob</emph>).</cell>
+				</row>
+
+				<row>
+					<cell>${executable}</cell>
+					<cell>The name of the executable.</cell>
+				</row>
+
+				<row>
+					<cell>${date}</cell>
+					<cell>The current date.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>For example, the logging system could be configured to log all output to a file contained within the user's home directory and with the same name as the executable by using the following stream option:</para>
+
+		<code>
+			. = stream: ${user.home}/${executable}.log
+		</code>
+
+		<para>All occurrences of the macro placeholders are expanded before the configuration text is parsed.</para>
+
+		<h2>The date placeholder</h2>
+
+		<para>Unlike the other placeholders, the <emph>${date}</emph> placeholder is not expanded before configuration parsing. Instead, the <emph>${date}</emph> placeholder is processed later on by the stream class.</para>
+
+		<h3>Basic usage</h3>
+
+		<para>When a stream URI contains the <emph>${date}</emph> placeholder, the logging system will automatically change the stream URI each day with the <emph>${date}</emph> placeholder updated to the new current date. This will result in the logging output changing at midnight each day. This can be useful when a new logging file is required each day, without requiring an application restart.</para>
+
+		<para>As this functionality is implemented in the <emph>FileLoggingStream</emph> class, custom logging stream classes are responsible for implementing this functionality if required. If a custom logging stream implementation is specified in the logging configuration, the associated custom logging stream class will need to be programmed with the necessary logic to recognise and expand the <emph>${date}</emph> placeholder, and close/open the relevant output streams each day.</para>
+
+		<para>The previous configuration example with with the <emph>${date}</emph> placeholder added to the file logging stream is:</para>
+
+		<code>
+			. = stream: ${user.home}/${executable}-${date}.log
+		</code>
+
+		<h3>Date options</h3>
+
+		<para>Date placeholders may take up to two options. These options are placed within the {} brackets of the placeholder, after the <emph>date</emph> placeholder keyword. The options are whitespace delimited.</para>
+
+		<para>The options are as follows.</para>
+
+		<table class="bdml-table20L80">
+			<head> <cell>Option</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row>
+					<cell>Compress</cell>
+					<cell>When the "compress" option is specified, the previous logging file is compressed when the day advances.</cell>
+				</row>
+
+				<row>
+					<cell>Date format</cell>
+					<cell>The text format of the date used in the logging file names. When not specified, the default %F is used. Permitted flags are: aAbBcCdeFgGhjmuUVwWyY. Permitted characters between flags are '-' and '_'.</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>Information on the date flags is available in the HH date library's documentation. See the <ref url="Util/DateTime">DateTime</ref> documentation for more details on the date library.</para>
+
+		<h2>Configuration options</h2>
+
+		<para>The following configuration options are currently defined.</para>
+
+		<table class="bdml-table30L70">
+			<head> <cell>OPTION NAME</cell> <cell>DESCRIPTION</cell> </head>
+
+			<body>
+				<row> <cell>level</cell>        <cell>Logging level</cell>                                      </row>
+				<row> <cell>format</cell>       <cell>Message format specification</cell>                       </row>
+				<row> <cell>stream</cell>       <cell>Output stream specification for all logging levels</cell> </row>
+				<row> <cell>trace-stream</cell> <cell>Output stream specification for trace logging</cell>      </row>
+				<row> <cell>debug-stream</cell> <cell>Output stream specification for debug logging</cell>      </row>
+				<row> <cell>info-stream</cell>  <cell>Output stream specification for info logging</cell>       </row>
+				<row> <cell>warn-stream</cell>  <cell>Output stream specification for warn logging</cell>       </row>
+				<row> <cell>error-stream</cell> <cell>Output stream specification for error logging</cell>      </row>
+			</body>
+        </table>
+
+		<h2>Logging level</h2>
+
+		<para>The logging level option value is just the level (trace, debug, info, warn, error, none). The value text is case insensitive.</para>
+
+		<para><strong>TODO (not yet implemented)</strong> The logging level option may be specified without the <emph>level</emph> prefix. This allows simple configuration files such as:</para>
+
+		<code>
+			com.borasoftware   = info
+			com.borasoftware.a = debug
+		</code>
+
+		<para>The default level if no global namespace logging level is specified is info. The above example can thus be simplified to:</para>
+
+		<code>
+			com.borasoftware.a = debug
+		</code>
+
+		<h2>Format specification</h2>
+
+		<para>The message format specification consists of a printf like format string that contains text and format specifiers. The available format specifiers are:</para>
+
+		<table class="bdml-table2080">
+			<head> <cell>Specifier</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row> <cell>%Y</cell>         <cell>the year as four digits</cell> </row>
+				<row> <cell>%y</cell>         <cell>the year as two digits</cell> </row>
+				<row> <cell>%m</cell>         <cell>the month as two digits</cell> </row>
+				<row> <cell>%d</cell>         <cell>the day of the month</cell> </row>
+				<row> <cell>%H</cell>         <cell>the hour as two digits</cell> </row>
+				<row> <cell>%M</cell>         <cell>the minute as two digits</cell> </row>
+				<row> <cell>%S</cell>         <cell>the seconds as two digits followed by six digits representing the microsecond remainder</cell> </row>
+				<row> <cell>%thread</cell>    <cell>the thread name if one has been set or the thread id otherwise</cell> </row>
+				<row> <cell>%level</cell>     <cell>the logging level in lowercase</cell> </row>
+				<row> <cell>%LEVEL</cell>     <cell>the logging level in uppercase</cell> </row>
+				<row> <cell>%namespace</cell> <cell>the logger's logging namespace</cell> </row>
+				<row> <cell>%ns</cell>        <cell>an abbreviation of the logger's logging namespace, created by printing each identifier's first letter only, apart from the last identifier which is printed in its entirety</cell> </row>
+				<row> <cell>%filename</cell>  <cell>the source code file name</cell> </row>
+				<row> <cell>%filepath</cell>  <cell>the full path to the source code file</cell> </row>
+				<row> <cell>%line</cell>      <cell>the line number in the source code file</cell> </row>
+				<row> <cell>%message</cell>   <cell>the message, after stringification and combination of all arguments</cell> </row>
+				<row> <cell>%%</cell>         <cell>the percent character</cell> </row>
+				<row> <cell>%"</cell>         <cell>the double quotation character</cell> </row>
+			</body>
+		</table>
+
+		<para>For the <emph>%thread</emph> specifier, the thread name can be set by calling <emph>Util::ThreadName::setName(name)</emph> from the thread. The <emph>Util::ThreadName</emph> class is a utility that stores a thread-local name that is used by the logging system for the purpose of replacing the thread id with a meaningful name. Note that currently, the name of a thread can only be set from within the thread itself.</para>
+
+		<para>The default format specification if none is supplied or inherited for a particular namespace is:</para>
+
+		<code>
+			"%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message"
+		</code>
+
+		<para>An alternative to the default logging format that includes the filename and line number could be:</para>
+
+		<code>
+			format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message";
+		</code>
+
+		<para>Log messages resulting from this format would be similar to the following:</para>
+
+		<code>
+			2018-03-26 18:19:59.904675835 LoggerTest.cpp:139 - [main] INFO  -  - hello bob
+			2018-03-26 18:19:59.904699204 LoggerTest.cpp:140 - [main] INFO  - com.borasoftware - hello C++
+		</code>
+
+		<h2>Stream specification</h2>
+
+		<para>The stream specification options specify the output stream(s) to be created and written to for the logging namespace. The value of the options is a URI:</para>
+
+		<code>
+			stream:         [uri]
+			[level]-stream: [uri]
+		</code>
+
+		<para>where <emph>[uri]</emph> is a real or pseudo URI identifying a stream to write to. Stream URIs are supported by logging system plugins.</para>
+
+		<para>URIs that are handled by default are:</para>
+
+		<bullets>
+			<entry>standard localhost file URLs (file:///path/to/file);</entry>
+			<entry>stdout/stderr file descriptor pseudo schemes.</entry>
+		</bullets>
+
+		<para>Built in stream configuration examples:</para>
+
+		<code>
+			stream:       file:///path/to/file
+			warn-stream:  stdout
+			error-stream: stderr
+		</code>
+
+		<para>Output streams for other types of URI are instantiated by logging system plugins (see next section).</para>
+
+		<para>The file descriptor pseudo schemes log to the application's standard output and error streams.</para>
+
+		<para>For a particular stream specification, the logging system will instantiate an output stream if the stream type is recognised by the logging system or one of the registered plugins. If a stream specification is not recognised, the logging system will configure the logger to the null output stream and will log an error message to the output stream of the global logging namespace.</para>
+
+		<para>The different stream specification options correspond to non-level specific and level specific stream configurations. The non-level specific <emph>stream</emph> option sets a single stream for all logging levels. All log output for a particular namespace will log to this stream when this option is specified with no other stream options.</para>
+
+		<para>The level specific <emph>[level]-stream</emph> options allow different output streams to be configured for different logging levels. Each level specific stream option configures the log output of that level.</para>
+
+		<para>When one or more level specific <emph>[level]-stream</emph> options are specified and the non-level specific <emph>stream</emph> option is not specified, the streams of levels that do not have any stream specification will be determined via the stream configurations of adjacent levels. In this case, the priority of the adjacent level specific stream configurations is first downwards, then upwards. For example, if the info level is configured via a level specific stream configuration to log to stdout and the error level is configured via a level specific stream configuration to log to stderr, the warn level will be implicitly configured to log to stderr and the trace and debug levels will be implicitly configured to log to stdout.</para>
+
+		<para>If the non-level specific <emph>stream</emph> option is specified along with one or more level specific <emph>[level]-stream</emph> options, all levels without level specific <emph>[level]-stream</emph> options will be configured to the non-level specific stream setting.</para>
+
+		<para>Some additional examples will make this concept more clear:</para>
+
+		<code>
+			com.borasoftware = warn-stream:  stdout
+			                 , error-stream: stderr
+		</code>
+
+		<para>The above specification will configure the com.borasoftware logger to output all trace, debug, info, and warn level log messages to stdout, and all error level log messages to stderr.</para>
+
+		<code>
+			com.borasoftware = debug-stream: ${user.home}/.bora/${executable}/debug.log
+			                 , warn-stream:  stdout
+			                 , error-stream: stderr
+		</code>
+
+		<para>The above specification will configure the com.borasoftware logger to output all trace and debug level log messages to the specified file, all info and warn level log messages to stdout, and all error level log messages to stderr.</para>
+
+		<para>If, for example the user home directory is <emph>/home/bob</emph> and the executable name is <emph>BalauTests</emph>, the resulting debug stream for the above example would be <emph>file:///home/bob/.bora/BalauTests/debug.log</emph>.</para>
+
+		<code>
+			com.borasoftware = stream:       stdout
+			                 , error-stream: stderr
+		</code>
+
+		<para>The above specification will configure the com.borasoftware logger to output all logging to stdout apart from the error stream, which will be configured to output to stderr.</para>
+
+		<h1>Logging stream plugins</h1>
+
+		<para>Additional logging streams may be registered with the logging system before reconfiguring the system with schemes referencing these custom logging streams. This is achieved by deriving a new class from the <emph>LoggingStream</emph> base class, and creating a factory function with the same signature as specified by the <emph>LoggingStreamFactory</emph> typedef.</para>
+
+		<para>The <emph>LoggingStream</emph> base class has the following virtual methods:</para>
+
+		<code lang="C++">
+			class LoggingStream {
+				public: virtual void write(const std::string &amp; str) = 0;
+				public: virtual void flush() = 0;
+			};
+		</code>
+
+		<para>The string passed to the write method is the pre-formatted message.</para>
+
+		<para>The signature for logging stream factory functions is:</para>
+
+		<code lang="C++">
+			using LoggingStreamFactory = LoggingStream * (*)(const std::string &amp; uri);
+		</code>
+
+		<para>The logging system is a pointer container for the logging streams, thus the logging stream factories return a raw pointer instead of a pointer container.</para>
+
+		<para>The URI passed to logging stream factory functions is the URI from the logging configuration text, with all macro placeholders expanded apart from the <emph>${date}</emph> placeholder. If the URI specified in the logging configuration contains one or more occurrences of the <emph>${date}</emph> macro placeholder, this placeholder will be present in the URI .</para>
+
+		<para>The factory function for the custom logging stream needs to be registered with the logging system by calling:</para>
+
+		<code lang="C++">
+			Logger::registerLoggingStreamFactory(const std::string &amp; scheme, LoggingStreamFactory factory);
+		</code>
+
+		<para>The uri string of the custom logging stream is not specified by the logging system. The custom logging stream class must parse the supplied uri with its own DSL.</para>
+
+		<h1>Design</h1>
+
+		<para>This section provides a summary of the design of the logging system. It is not necessary to read this section in order to use the logging system.</para>
+
+		<h2>Overview</h2>
+
+		<para>The logging system is based around the public <emph>Logger</emph> class and the private <emph>LoggingState</emph> class. The <emph>LoggingState</emph> class is instantiated as a lazy singleton. The logging state contains a tree of loggers, plus pools for logging streams, log items, and composed log item vectors. The logging system contains a mutex that is locked when a logger is requested and when a reconfiguration is performed. Logging does not lock the mutex, hence concurrent logging and reconfiguration is supported.</para>
+
+		<para>Configuration text supplied to the logging system is parsed via the logging configuration parser. This is a self contained recursive descent parser written in pure C++, using the Balau parser support classes.</para>
+
+		<para>The logging system is configured at application startup, in the first call to either <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph>.</para>
+
+		<para>If a call to <emph>Logger::getInstance</emph> is the first call, the following procedure occurs:</para>
+
+		<list>
+			<entry>a default logging configuration is created;</entry>
+
+			<entry>an override logging configuration is created from the contents of the <emph>balau-logging.conf</emph> file if it exists;</entry>
+
+			<entry>the logging configuration created from <emph>balau-logging.conf</emph> (if it exists) is cascaded onto the default logging configuration;</entry>
+
+			<entry>the properties of each resulting parent logger are propagated onto the children;</entry>
+
+			<entry>the logging levels of the loggers are set from the resulting level properties;</entry>
+
+			<entry>the streams of the loggers are set from the stream properties;</entry>
+
+			<entry>the message format item vectors of the loggers are set from the message format properties.</entry>
+		</list>
+
+		<para>If a call to <emph>Logger::configure</emph> is the first call or on any subsequent call to <emph>Logger::configure</emph>, the following procedure occurs:</para>
+
+		<list>
+			<entry>a default logging configuration is created;</entry>
+
+			<entry>an override logging configuration is created from the contents of the string passed to the <emph>configure()</emph> method;</entry>
+
+			<entry>the new logging configuration is cascaded onto the default logging configuration;</entry>
+
+			<entry>the properties of each resulting parent logger are propagated onto the children;</entry>
+
+			<entry>the properties of the existing loggers are wiped, ready for the new properties;</entry>
+
+			<entry>the logging levels of the loggers are set from the resulting level properties;</entry>
+
+			<entry>the streams of the loggers are set from the stream properties;</entry>
+
+			<entry>the message format item vectors of the loggers are set from the message format properties.</entry>
+		</list>
+
+		<h2>Concurrency</h2>
+
+		<para>Configuration of the logging system is covered by a mutex. Only a single configuration execution may take place at any one time. The mutex is not locked on normal logging calls.</para>
+
+		<para>During configuration or reconfiguration, all missing streams, log items, and log item vectors are created and pooled. Subsequently, the atomic fields of new or existing loggers are set. This two stage process allows concurrent configuration and logging to occur without invalidating any of the existing loggers' state. In addition, the pooling ensures that there is no duplication of identical logging state, minimising the memory requirements of the logging system when reconfigured.</para>
+
+		<para>Due to <emph>TSO</emph> memory ordering, the atomic reads performed when logging are free reads on x86/x86-64 platforms.</para>
+
+		<para>The <emph>Logger</emph> class has the following fields that are read when logging a message. All mutable fields are implemented as atomic fields.</para>
+
+		<table class="bdml-table2080">
+			<head> <cell>Field name</cell> <cell>Comments</cell> </head>
+
+			<body>
+				<row> <cell>namespace</cell> <cell>Doesn't change for the lifetime of the logger.</cell> </row>
+
+				<row> <cell>ns</cell> <cell>Doesn't change for the lifetime of the logger.</cell> </row>
+
+				<row> <cell>level</cell> <cell>Logging levels are read with <emph>std::memory_order_relaxed</emph> semantics.</cell> </row>
+
+				<row> <cell>stream[x]</cell> <cell>The set of stream pointers is kept within a <emph>std::array&lt;std::atomic&lt;LoggingStream *&gt;, 5&gt;</emph>. Pointers are read with <emph>std::memory_order_relaxed</emph> semantics.</cell> </row>
+
+				<row> <cell>loggerItems</cell> <cell>The entire log item vector is iterated over when logging a message. A pointer to the vector is read before iteration. The pointer is read with <emph>std::memory_order_acquire</emph> semantics.</cell> </row>
+			</body>
+		</table>
+
+		<para>All mutable logger state is updated with <emph>std::memory_order_seq_cst</emph> semantics during reconfiguration.</para>
+	</chapter>
+</document>
