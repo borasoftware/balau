@@ -1166,6 +1166,57 @@ void InjectorTest::injectorCycleAvoidance() {
 	auto injector2 = Injector::create(Configuration3());
 }
 
+class SingletonProvider {
+	public: std::shared_ptr<int> operator () () {
+		auto r = std::shared_ptr<int>(new int);
+		*r = value;
+		return r;
+	}
+
+	private: int value;
+
+	BalauInjectConstructNamed(SingletonProvider, value, "reference-value");
+};
+
+void InjectorTest::singletonProvider() {
+	// Create a singleton binding via the provider (which has its own dependency).
+
+	const int expected = 123;
+
+	class Configuration : public ApplicationConfiguration {
+		public: void configure() const override {
+			bind<int>("reference-value").toValue(expected);
+			bind<int>().toSingletonProvider<SingletonProvider>();
+		}
+	};
+
+	auto injector = Injector::create(Configuration());
+
+	auto provided = injector->getShared<int>();
+
+	assertThat(*provided, is(expected));
+}
+
+void InjectorTest::providedSingletonProvider() {
+	// Create a singleton binding via a provider instance.
+
+	const int expected = 123;
+
+	class Configuration : public ApplicationConfiguration {
+		public: void configure() const override {
+			auto provider = std::shared_ptr<SingletonProvider>(new SingletonProvider(expected));
+
+			bind<int>().toSingletonProvider(provider);
+		}
+	};
+
+	auto injector = Injector::create(Configuration());
+
+	auto provided = injector->getShared<int>();
+
+	assertThat(*provided, is(expected));
+}
+
 } // namespace Balau
 
 #pragma clang diagnostic pop

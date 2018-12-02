@@ -152,7 +152,7 @@
 
 				<row>
 					<cell>toValueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
-					<cell>Bind an injectable value provider class instance.</cell>
+					<cell>Bind an injectable value provider instance.</cell>
 				</row>
 
 				<row>
@@ -167,12 +167,12 @@
 
 				<row>
 					<cell>toUniqueProvider&lt;ProviderT>()</cell>
-					<cell>Bind an interface to an injectable polymorphic provider class.</cell>
+					<cell>Bind an interface to an injectable unique pointer provider class.</cell>
 				</row>
 
 				<row>
 					<cell>toUniqueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
-					<cell>Bind an interface to an injectable polymorphic provider class instance.</cell>
+					<cell>Bind an interface to a provided unique pointer provider instance.</cell>
 				</row>
 
 				<row>
@@ -209,6 +209,17 @@
 					<cell>toSingleton(BaseT *)</cell>
 					<cell>Bind an interface to the supplied singleton object via pointer container initialisation style syntax.</cell>
 				</row>
+
+				<row>
+					<cell>toSingletonProvider&lt;ProviderT>()</cell>
+					<cell>Bind an interface to an injectable singleton provider class.</cell>
+				</row>
+
+				<row>
+					<cell>toSingletonProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
+					<cell>Bind an interface to a provided singleton provider instance.</cell>
+				</row>
+
 
 				<row>
 					<cell>toEagerSingleton&lt;DerivedT>()</cell>
@@ -505,7 +516,7 @@
 				<row>
 					<cell>toValueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
 
-					<cell><para>Bind a concrete class to an injectable provider class instance. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance of the value class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+					<cell><para>Bind a concrete class to an injectable provider instance. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance of the value class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
 				</row>
 
 				<row>
@@ -577,10 +588,21 @@
 				</row>
 
 				<row>
+					<cell>toSingletonProvider()</cell>
+
+					<cell><para>Bind a singleton provider class for singleton semantics. The singleton will be provided by instantiating the provider and calling it a single time during injector creation. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+				</row>
+
+				<row>
+					<cell>toSingletonProvider(std::shared&lt;ProviderT>)</cell>
+
+					<cell><para>Bind a singleton provider instance for singleton semantics. The singleton will be provided by calling the provider a single time during injector creation. The provider will then be dereferenced. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+				</row>
+
+				<row>
 					<cell>toEagerSingleton&lt;DerivedT>()</cell>
 
 					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be heap constructed eagerly. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
-
 				</row>
 
 				<row>

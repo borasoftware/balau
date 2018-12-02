@@ -241,6 +241,28 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	}
 
 	///
+	/// Bind an interface to a singleton provider class.
+	///
+	/// The provider will be called once when the singleton is first requested.
+	///
+	public: template <typename ProviderT> void toSingletonProvider() {
+		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
+		supplier = std::unique_ptr<BindingSupplier>(new ProvidingClassSingletonBindingSupplier<ProviderT>());
+	}
+
+	///
+	/// Bind an interface to a singleton provider class instance.
+	///
+	/// The provider instance is supplied as a shared pointer, allowing the caller to maintain shared ownership if required.
+	///
+	/// The provider will be called once when the singleton is first requested.
+	///
+	public: template <typename ProviderT> void toSingletonProvider(std::shared_ptr<ProviderT> provider) {
+		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
+		supplier = std::unique_ptr<BindingSupplier>(new ProvidingClassInstanceSingletonBindingSupplier<ProviderT>(std::move(provider)));
+	}
+
+	///
 	/// Bind an interface to a concrete singleton type.
 	///
 	/// The singleton will be instantiated eagerly.
@@ -398,6 +420,27 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 				new Impl::ProvidedSingletonBinding<BaseT>(std::move(key), instance)
 			);
 		}
+	};
+
+	private: template <typename ProviderT> class ProvidingClassSingletonBindingSupplier : public BindingSupplier {
+		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
+			return std::unique_ptr<Impl::AbstractBinding>(
+				new Impl::ProvidingClassSingletonBinding<BaseT, ProviderT>(std::move(key))
+			);
+		}
+	};
+
+	private: template <typename ProviderT> class ProvidingClassInstanceSingletonBindingSupplier : public BindingSupplier {
+		public: ProvidingClassInstanceSingletonBindingSupplier(std::shared_ptr<ProviderT> && provider_)
+			: provider(std::move(provider_)) {}
+
+		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
+			return std::unique_ptr<Impl::AbstractBinding>(
+				new Impl::ProvidingClassInstanceSingletonBinding<BaseT, ProviderT>(std::move(key), provider)
+			);
+		}
+
+		private: std::shared_ptr<ProviderT> provider;
 	};
 
 	private: template <typename DerivedT> class LazySingletonBindingSupplier : public BindingSupplier {

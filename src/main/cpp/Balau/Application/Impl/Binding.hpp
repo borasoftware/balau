@@ -435,6 +435,52 @@ class ProvidedSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 	}
 };
 
+template <typename BaseT, typename ProviderT>
+class ProvidingClassSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
+	private: std::shared_ptr<BaseT> instance;
+
+	public: explicit ProvidingClassSingletonBinding(BindingKey && key_)
+		: AbstractSharedPtrBinding<BaseT>(std::move(key_)) {}
+
+	public: std::shared_ptr<BaseT> get(const Injector * ) const override {
+		return instance;
+	}
+
+	public: std::vector<BindingKey> getDependencyKeys() const override {
+		// Compilation error? Did you forget to add an injection macro to your class?
+		return ProviderT::_Balau_getDependencyKeys();
+	}
+
+	public: void instantiateIfEager(Injector & injector) override {
+		// Compilation error? Did you forget to add an injection macro to your class?
+		std::unique_ptr<ProviderT> provide = std::unique_ptr<ProviderT>(ProviderT::_Balau_newHeapInstance(injector));
+		instance = (*provide)();
+	}
+};
+
+template <typename BaseT, typename ProviderT>
+class ProvidingClassInstanceSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
+	private: std::shared_ptr<ProviderT> provide;
+	private: std::shared_ptr<BaseT> instance;
+
+	public: ProvidingClassInstanceSingletonBinding(BindingKey && key_, std::shared_ptr<ProviderT> provide_)
+		: AbstractSharedPtrBinding<BaseT>(std::move(key_))
+		, provide(std::move(provide_)) {}
+
+	public: std::shared_ptr<BaseT> get(const Injector * ) const override {
+		return instance;
+	}
+
+	public: std::vector<BindingKey> getDependencyKeys() const override {
+		return {};
+	}
+
+	public: void instantiateIfEager(Injector & injector) override {
+		instance = (*provide)();
+		provide.reset(); // Single use provider.
+	}
+};
+
 template <typename BaseT, typename DerivedT>
 class LazySingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 	// Mutable in order to allow lazy evaluation.

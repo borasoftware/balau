@@ -18,20 +18,22 @@ namespace Balau {
 
 struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	explicit InjectorTest(Testing::TestRunner & runner) : TestGroup(runner) {
-		registerTest(&InjectorTest::creationAndDeletion,    "creationAndDeletion");
-		registerTest(&InjectorTest::singletonCreation,      "singletonCreation");
-		registerTest(&InjectorTest::simpleTypeInjection,    "simpleTypeInjection");
-		registerTest(&InjectorTest::multipleCustomScopes,   "multipleCustomScopes");
-		registerTest(&InjectorTest::namedDependency,        "namedDependency");
-		registerTest(&InjectorTest::eagerSingletons,        "eagerSingletons");
-		registerTest(&InjectorTest::runtimeCustomScopes,    "runtimeCustomScopes");
-		registerTest(&InjectorTest::threadLocalScopeUsage,  "threadLocalScopeUsage");
-		registerTest(&InjectorTest::allBindings,            "allBindings");
-		registerTest(&InjectorTest::docTest,                "docTest");
-		registerTest(&InjectorTest::injectTheInjector,      "injectTheInjector");
-		registerTest(&InjectorTest::sharedCycleChecks,      "sharedCycleChecks");
-		registerTest(&InjectorTest::mixedCycleChecks,       "mixedCycleChecks");
-		registerTest(&InjectorTest::injectorCycleAvoidance, "injectorCycleAvoidance");
+		registerTest(&InjectorTest::creationAndDeletion,       "creationAndDeletion");
+		registerTest(&InjectorTest::singletonCreation,         "singletonCreation");
+		registerTest(&InjectorTest::simpleTypeInjection,       "simpleTypeInjection");
+		registerTest(&InjectorTest::multipleCustomScopes,      "multipleCustomScopes");
+		registerTest(&InjectorTest::namedDependency,           "namedDependency");
+		registerTest(&InjectorTest::eagerSingletons,           "eagerSingletons");
+		registerTest(&InjectorTest::runtimeCustomScopes,       "runtimeCustomScopes");
+		registerTest(&InjectorTest::threadLocalScopeUsage,     "threadLocalScopeUsage");
+		registerTest(&InjectorTest::allBindings,               "allBindings");
+		registerTest(&InjectorTest::docTest,                   "docTest");
+		registerTest(&InjectorTest::injectTheInjector,         "injectTheInjector");
+		registerTest(&InjectorTest::sharedCycleChecks,         "sharedCycleChecks");
+		registerTest(&InjectorTest::mixedCycleChecks,          "mixedCycleChecks");
+		registerTest(&InjectorTest::injectorCycleAvoidance,    "injectorCycleAvoidance");
+		registerTest(&InjectorTest::singletonProvider,         "singletonProvider");
+		registerTest(&InjectorTest::providedSingletonProvider, "providedSingletonProvider");
 	}
 
 	void creationAndDeletion();
@@ -48,6 +50,8 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	void sharedCycleChecks();
 	void mixedCycleChecks();
 	void injectorCycleAvoidance();
+	void singletonProvider();
+	void providedSingletonProvider();
 };
 
 } // namespace Balau
