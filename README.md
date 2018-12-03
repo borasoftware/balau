@@ -10,7 +10,7 @@ Balau
 
 Balau is a C++ application framework designed for enterprise C++ software development.
 
-Following the C++11 and more recent C++14 and C++17 revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.
+Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.
 
 Balau builds on the foundations of the [ICU](http://site.icu-project.org) and [Boost](http://www.boost.org) projects, and focuses on using modern C++17 features and the standard unicode string classes.
 
