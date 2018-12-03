@@ -38,7 +38,7 @@ enum ExecutionModel {
 	/// If a test causes a segmentation fault, the entire test application will
 	/// terminate.
 	///
-	SingleThreaded = 1
+	SingleThreaded = 1,
 
 	///
 	/// Run all tests in a single process.
@@ -52,7 +52,7 @@ enum ExecutionModel {
 	/// If a test causes a segmentation fault, the entire test application will
 	/// terminate.
 	///
-	, WorkerThreads = 2
+	WorkerThreads = 2,
 
 	///
 	/// Run tests in a set of worker processes.
@@ -66,7 +66,7 @@ enum ExecutionModel {
 	/// If a test causes a segmentation fault, the worker process will terminate and
 	/// a new worker process will be spawned to take its place.
 	///
-	, WorkerProcesses = 4
+	WorkerProcesses = 4,
 
 	///
 	/// Run each test in a separate worker process.
@@ -80,7 +80,7 @@ enum ExecutionModel {
 	/// If a test causes a segmentation fault, the test's worker process will
 	/// terminate. This will not affect the other tests.
 	///
-	, ProcessPerTest = 8
+	ProcessPerTest = 8
 };
 
 ///
