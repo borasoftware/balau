@@ -103,7 +103,7 @@
 			<entry>environment configuration.</entry>
 		</bullets>
 
-		<para>Application configuration defines the fixed application binding definitions for values, instance creation, references, thread-local singletons, and singletons. Environment configuration defines requirements and type information for envrionment specific value bindings (simple and composite), created from environment specific properties files.</para>
+		<para>Application configuration defines the fixed application binding definitions for values, instance creation, references, thread-local singletons, and singletons. Environment configuration defines requirements and type information for environment specific value bindings (simple and composite), created from environment specific properties files.</para>
 
 		<para>Both types of configuration are defined by creating a class containing an implementation of the <emph>configure</emph> method. The code contained within the <emph>configure</emph> method is different for the two types of configuration.</para>
 
