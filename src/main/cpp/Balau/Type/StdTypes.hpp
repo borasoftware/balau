@@ -48,7 +48,7 @@
 ///
 /// Four key components of the %Balau library are
 /// the <a href="classBalau_1_1Injector.html">injector</a>,
-/// the <a href="classBalau_1_1Environment.html">environment configuration</a> framework,
+/// the <a href="classBalau_1_1EnvironmentConfiguration.html">environment configuration</a> framework,
 /// the <a href="classBalau_1_1Logger.html">logging system</a>, and
 /// the <a href="classBalau_1_1Testing_1_1TestRunner.html">test runner</a>. In
 /// this respect, part of %Balau is a C++ equivalent to the de facto standard Java
