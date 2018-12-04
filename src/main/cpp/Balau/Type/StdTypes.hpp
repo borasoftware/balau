@@ -22,13 +22,13 @@
 ///
 /// @mainpage
 ///
-/// Developer manual: https://borasoftware.com/doc/balau/manual
+/// Developer manual: https://borasoftware.com/doc/balau/latest/manual
 /// <p>
-/// API documentation: https://borasoftware.com/doc/balau/api
+/// API documentation: https://borasoftware.com/doc/balau/latest/api
 /// <p>
 /// Main %Balau Git repository: https://github.com/borasoftware/balau
 /// <p>
-/// License: https://borasoftware.com/license/balau-license.html
+/// License: https://borasoftware.com/licenses/balau-license.html
 /// <p>
 /// %Balau is a C++ application framework designed for enterprise C++ software development.
 ///
