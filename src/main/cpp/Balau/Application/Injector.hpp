@@ -35,7 +35,7 @@ namespace Balau {
 /// An instantiated injector can be used by multiple threads without requiring
 /// any synchronisation.
 ///
-/// See the injector <a href="../manual/balau/src/doc/manual/Application/Injector.html"> manual page</a>
+/// See the injector <a href="../manual/Application/Injector.html"> manual page</a>
 /// for detailed usage information and the injector unit tests for examples.
 ///
 class Injector final : public std::enable_shared_from_this<Injector> {
