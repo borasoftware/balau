@@ -366,6 +366,9 @@ void LoggerTest::functionBasedLogging() {
 
 	log1.info([] () { return "hello bob"; });
 
+	// Default flushing = true.
+	assertThat(log1.flushes(), is(true));
+
 	int i = 2;
 	int j = 3;
 
@@ -386,6 +389,21 @@ void LoggerTest::functionBasedLogging() {
 	};
 
 	assertContains(actual, expectedContains);
+}
+
+void LoggerTest::flushing() {
+	const std::string configurationText = 1 + R"RR(
+. = level: info, flush: false
+)RR";
+
+	Resource::File logFile = configureLoggerForTest("flushing", configurationText);
+	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
+	Logger & log1 = globalLogger;
+
+	log1.info([] () { return "hello bob"; });
+
+	assertThat(log1.getLevel(), is(LoggingLevel::INFO));
+	assertThat(log1.flushes(), is(false));
 }
 
 std::ostringstream customLoggingStreamStream;

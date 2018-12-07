@@ -149,7 +149,16 @@ class Logger {
 	}
 
 	///
+	/// Returns true if the logger is auto-flushing.
+	///
+	public: bool flushes() const noexcept {
+		return shouldFlush.load(std::memory_order_relaxed);
+	}
+
+	///
 	/// Flush the streams associated with the logger.
+	///
+	/// The logger may already be configured to flush after every message.
 	///
 	/// If the logging system is reconfigured during a call to flush, it
 	/// is not guaranteed that all or any of the streams will be flushed.
@@ -731,6 +740,13 @@ class Logger {
 	// Reads on this atomic are free on x86/x64.
 	//
 	private: std::atomic<LoggingLevel> level = LoggingLevel::NONE;
+
+	//
+	// Indicates whether messages from this logger should flush the stream after each message.
+	//
+	// Reads on this atomic are free on x86/x64.
+	//
+	private: std::atomic_bool shouldFlush = true;
 
 	//
 	// The log items for which this logger is configured.

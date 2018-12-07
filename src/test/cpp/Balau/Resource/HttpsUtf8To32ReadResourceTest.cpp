@@ -39,16 +39,12 @@ void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_) {
 	std::u32istream & uriReadStream = uriReadResource->readStream();
 
 	const std::u32string expectedStart = U"<!DOCTYPE html";
-	const std::u32string expectedEnd = U"</html>\n";
 
 	auto actualHttpsData = ::toString32(httpsReadStream);
 	auto actualUriData = ::toString32(uriReadStream);
 
 	assertThat(actualHttpsData, startsWith(expectedStart));
 	assertThat(actualUriData, startsWith(expectedStart));
-
-	assertThat(actualHttpsData, endsWith(expectedEnd));
-	assertThat(actualUriData, endsWith(expectedEnd));
 }
 
 } // namespace Resource

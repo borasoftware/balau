@@ -138,6 +138,9 @@ class LoggingState final {
 	// Sets the level variables in the loggers.
 	void setLevels(LoggerTree & theLoggers);
 
+	// Sets the shouldFlush variables in the loggers.
+	void setShouldFlush(LoggerTree & theLoggers);
+
 	friend class LoggingStateHolder;
 	friend class ::Balau::Logger;
 

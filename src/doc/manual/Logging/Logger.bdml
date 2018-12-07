@@ -430,6 +430,7 @@
 			<body>
 				<row> <cell>level</cell>        <cell>Logging level</cell>                                      </row>
 				<row> <cell>format</cell>       <cell>Message format specification</cell>                       </row>
+				<row> <cell>flush</cell>        <cell>Whether to automatically flush after each message (default is to flush)</cell>  </row>
 				<row> <cell>stream</cell>       <cell>Output stream specification for all logging levels</cell> </row>
 				<row> <cell>trace-stream</cell> <cell>Output stream specification for trace logging</cell>      </row>
 				<row> <cell>debug-stream</cell> <cell>Output stream specification for debug logging</cell>      </row>
@@ -505,6 +506,12 @@
 			2018-03-26 18:19:59.904675835 LoggerTest.cpp:139 - [main] INFO  -  - hello bob
 			2018-03-26 18:19:59.904699204 LoggerTest.cpp:140 - [main] INFO  - com.borasoftware - hello C++
 		</code>
+
+		<h2>Flush</h2>
+
+		<para>The flush option allows automatic flushing to be selectively disabled for different logging namespaces.</para>
+
+		<para>By default, loggers automatically flush the writer stream after writing a logging line. This ensures that logging is physically written to output streams promptly. Automatic flushing can be disabled for a namespace by specifying <emph>flush: false</emph> in the namespace configuration.</para>
 
 		<h2>Stream specification</h2>
 

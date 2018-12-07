@@ -157,7 +157,8 @@ Logger::Logger(std::string identifier_,
 	: identifier(std::move(identifier_))
 	, nameSpace(std::move(nameSpace_))
 	, ns(std::move(ns_))
-	, level(LoggingLevel::INFO) {
+	, level(LoggingLevel::INFO)
+	, shouldFlush(true) {
 	auto iter = propertyPairs.begin();
 	while (iter != propertyPairs.end()) {
 		auto & key = *(iter++);
@@ -171,16 +172,19 @@ Logger::Logger(Logger && rhs) noexcept
 	, nameSpace(std::move(rhs.nameSpace))
 	, ns(std::move(rhs.ns))
 	, level(rhs.level.load())
+	, shouldFlush(rhs.shouldFlush.load())
 	, properties(std::move(rhs.properties)) {}
 
 Logger::Logger(std::string && identifier_, std::string && nameSpace_, std::string && ns_) noexcept
 	: identifier(std::move(identifier_))
 	, nameSpace(std::move(nameSpace_))
 	, ns(std::move(ns_))
-	, level(LoggingLevel::INFO) {}
+	, level(LoggingLevel::INFO)
+	, shouldFlush(true) {}
 
 void Logger::inheritConfiguration(const Logger & copy) {
 	level.store(copy.level);
+	shouldFlush.store(copy.shouldFlush);
 	logItems.store(copy.logItems.load());
 	copyStreamPointers(streams, copy.streams);
 	const std::string streamStr = std::string("stream");
@@ -241,6 +245,10 @@ void Logger::logMessage(const SourceCodeLocation & location,
 
 	fullTextStream << "\n";
 	stream->write(fullTextStream.str());
+
+	if (logger.shouldFlush) {
+		stream->flush();
+	}
 }
 
 void Logger::logMessage(const SourceCodeLocation & location,
@@ -301,6 +309,10 @@ void Logger::logMessage(const SourceCodeLocation & location,
 
 	fullTextStream << "\n";
 	stream->write(fullTextStream.str());
+
+	if (logger.shouldFlush) {
+		stream->flush();
+	}
 }
 
 } // namespace Balau

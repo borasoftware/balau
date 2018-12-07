@@ -197,10 +197,10 @@ Property ConfigurationParser::produceProperty() {
 	std::string_view name = token.text;
 	scannedTokens.expect(Token::String, "Expected property name.");
 
-	// Not a static constant due to the logger parser being run from a static context.
-	const std::set<std::string> validProperties {
+	static const std::set<std::string> validProperties {
 		  "level"
 		, "format"
+		, "flush"
 		, "stream"
 		, "trace-stream"
 		, "debug-stream"

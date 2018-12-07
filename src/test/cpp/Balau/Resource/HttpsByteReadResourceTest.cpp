@@ -26,7 +26,7 @@ void HttpsByteReadResourceTest::emptyPath() {
 }
 
 void HttpsByteReadResourceTest::nonEmptyPath() {
-	performTest("https://borasoftware.com/index.html");
+	performTest("https://borasoftware.com/en/index.html");
 }
 
 void HttpsByteReadResourceTest::performTest(const std::string & url_) {
@@ -39,16 +39,12 @@ void HttpsByteReadResourceTest::performTest(const std::string & url_) {
 	std::istream & uriReadStream = uriReadResource->readStream();
 
 	const std::string expectedStart = "<!DOCTYPE html";
-	const std::string expectedEnd = "</html>\n";
 
 	auto actualHttpsData = ::toString(httpsReadStream);
 	auto actualUriData = ::toString(uriReadStream);
 
 	assertThat(actualHttpsData, startsWith(expectedStart));
 	assertThat(actualUriData, startsWith(expectedStart));
-
-	assertThat(actualHttpsData, endsWith(expectedEnd));
-	assertThat(actualUriData, endsWith(expectedEnd));
 }
 
 } // namespace Resource

@@ -29,6 +29,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		registerTest(&LoggerTest::configuredNamespaceWithoutFormat, "configuredNamespaceWithoutFormat");
 		registerTest(&LoggerTest::loggingWithLineAndFileName,       "loggingWithLineAndFileName");
 		registerTest(&LoggerTest::functionBasedLogging,             "functionBasedLogging");
+		registerTest(&LoggerTest::flushing,                         "flushing");
 		registerTest(&LoggerTest::customLoggingStream,              "customLoggingStream");
 		registerTest(&LoggerTest::resetLoggingSystem,               "resetLoggingSystem");
 	}
@@ -42,6 +43,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 	void configuredNamespaceWithoutFormat();
 	void loggingWithLineAndFileName();
 	void functionBasedLogging();
+	void flushing();
 	void customLoggingStream();
 	void resetLoggingSystem(); // Resets the logging system.
 

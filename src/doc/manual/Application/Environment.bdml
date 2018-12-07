@@ -137,7 +137,7 @@
 		<para>IDL based environment configuration type specifications are best used for applications that:</para>
 
 		<bullets>
-			<entry>are written in multiple programming languages (and thus require language agnostic type specifications;</entry>
+			<entry>are written in multiple programming languages (and thus require language agnostic type specifications);</entry>
 
 			<entry>are maintained by multiple teams each with a different release schedule.</entry>
 		</bullets>

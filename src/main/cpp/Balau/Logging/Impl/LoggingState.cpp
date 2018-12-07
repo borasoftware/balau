@@ -474,6 +474,13 @@ void LoggingState::configureLoggers(LoggerTree & theLoggers) {
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 	#endif
 
+	setShouldFlush(theLoggers);
+
+	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	std::cout << "----------------- after setShouldFlush -----------------" << std::endl;
+		std::cout << "theLoggers: \n" << theLoggers << std::endl;
+	#endif
+
 	setStreams(theLoggers);
 
 	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
@@ -825,6 +832,21 @@ void LoggingState::setLevels(LoggerTree & theLoggers) {
 			level.store(LoggingLevel::NONE);
 		} else {
 			level.store(LoggingLevel::INFO);
+		}
+	}
+}
+
+void LoggingState::setShouldFlush(LoggerTree & theLoggers) {
+	printLoggingDebugMessage("setShouldFlush called");
+
+	for (LoggerTreeNode & node : theLoggers) {
+		auto & shouldFlush = node.value.getLogger()->shouldFlush;
+		const auto iter = node.value.getLogger()->properties.find("flush");
+
+		if (iter != node.value.getLogger()->properties.end() && Strings::toLower(iter->second) == "false") {
+			shouldFlush.store(false);
+		} else {
+			shouldFlush.store(true);
 		}
 	}
 }
