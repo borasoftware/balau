@@ -90,6 +90,8 @@
 		<h2>Test runner</h2>
 
 		<bullets>
+			<entry>Add selective running of tests via command line test case selection.</entry>
+			<entry>Integrate with common test running proxies (IDEs).</entry>
 			<entry>Add test case serialisation via dependency keys.</entry>
 		</bullets>
 
