@@ -89,12 +89,12 @@ void AssertionsTest::test() {
 	assertThat(D{"test"}, doesNotContain(D{"ets"}));
 
 	assertThat([&] () { foo(); }, throws<Exception::SizeException>());
-	assertThat([&] () { foo(); }, throws(Exception::SizeException("", 0, "testing")));
+	assertThat([&] () { foo(); }, throws(Exception::SizeException("", 0, "", "testing")));
 
 	assertThat(
 		  [&] () { foo(); }
 		, throws(
-			Exception::SizeException("", 0, "testing")
+			Exception::SizeException("", 0, "", "testing")
 			, [] (auto a, auto e) { return std::string(a.message) == e.message; }
 		)
 	);

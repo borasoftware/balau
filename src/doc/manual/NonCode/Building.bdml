@@ -41,8 +41,6 @@
 
 		<para>The second dependency is the <ref type="raw" new="true" url="http://www.boost.org">Boost library</ref>. Boost version <strong>1.68.0</strong> is the currently specified version in the CMakeLists.txt file.</para>
 
-		<para>The three utility libraries are .</para>
-
 		<para>The three utility library dependencies are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. These libraries should be installed via your distribution's standard packaging system.</para>
 
 		<para>The only other dependencies used are standard dependencies on each supported platform.</para>
@@ -50,6 +48,8 @@
 		<h2>ICU</h2>
 
 		<h3>Linux</h3>
+
+		<para>Download the ICU version 60.2 sources <ref new="true" type="raw" url="http://download.icu-project.org/files/icu4c/60.2/icu4c-60_2-src.tgz">here</ref>.</para>
 
 		<para>To configure the ICU sources on Linux, open a command prompt and run the following commands. Replace <emph>/path/to/icu/code</emph> with the source code path and <emph>/path/to/icu/install/dir</emph> with the path where you wish to install the library. For example, this could be <emph>/home/&lt;user&gt;/usr</emph> for an installation in your home directory.</para>
 
@@ -90,6 +90,8 @@
 		<h2>Boost</h2>
 
 		<h3>Linux</h3>
+
+		<para>Download the Boost version 1.68.0 sources <ref new="true" type="raw" url="https://dl.bintray.com/boostorg/release/1.68.0/source/boost_1_68_0.tar.bz2">here</ref>.</para>
 
 		<para>To configure the Boost sources on Linux, open a command prompt and run the following commands. Replace <emph>/path/to/boost_1_66_0</emph> with the source code path, <emph>/path/to/icu/install/dir</emph> with the path where you installed the ICU library, and <emph>/path/to/boost/install/dir</emph> with the path where you wish to install the library. For example, this could be <emph>$HOME/usr</emph> for an installation in your home directory.</para>
 

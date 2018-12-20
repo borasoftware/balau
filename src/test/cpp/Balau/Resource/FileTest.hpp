@@ -20,9 +20,11 @@ namespace Resource {
 struct FileTest : public Testing::TestGroup<FileTest> {
 	explicit FileTest(Testing::TestRunner & runner) : TestGroup(runner) {
 		registerTest(&FileTest::iteration, "iteration");
+		registerTest(&FileTest::resolve,   "resolve");
 	}
 
 	void iteration();
+	void resolve();
 };
 
 } // namespace Resource

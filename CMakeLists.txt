@@ -32,7 +32,9 @@ add_definitions("-DBALAU_TEST_EMAIL_TO_=$ENV{BALAU_TEST_EMAIL_TO}")
 
 ############################# CMAKE CONFIGURATION #############################
 
-## Disallow in-source builds
+#
+# Disallow in-source builds
+#
 if ("${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
 	message(FATAL_ERROR
 		"
@@ -66,8 +68,10 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testResults)
 include_directories(src/main/cpp)
 include_directories(${CMAKE_BINARY_DIR})
 
+#
 # For devs..
 # Default user include and lib directories if not already set.
+#
 if (NOT DEFINED USER_INCLUDE_DIR)
 	set(USER_INCLUDE_DIR $ENV{HOME}/usr/include)
 endif ()
@@ -76,7 +80,9 @@ if (NOT DEFINED USER_LIB_DIR)
 	set(USER_LIB_DIR $ENV{HOME}/usr/lib)
 endif ()
 
+#
 # Directories in which the compiling user has custom libraries.
+#
 include_directories(${USER_INCLUDE_DIR})
 link_directories(${USER_LIB_DIR})
 
@@ -85,7 +91,9 @@ message(STATUS "User lib dirs: ${USER_LIB_DIR}")
 
 ################################### COMPILER ##################################
 
+#
 # Common compiler switches used in targets.
+#
 set(BALAU_CXX_FLAGS "-fPIC -Wall -pedantic -Wextra")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -117,7 +125,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBALAU_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -130,13 +138,32 @@ set(Boost_DETAILED_FAILURE_MSG ON)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+	message("Debug mode: adding libbacktrace to link libraries.")
+	find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBOOST_STACKTRACE_LINK -DBOOST_STACKTRACE_USE_BACKTRACE")
+
+	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES} backtrace)
+else ()
+	find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+	message("Release mode: no stack traces will be available.")
+	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
+endif ()
+
 include_directories(${Boost_INCLUDE_DIRS})
-set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
 message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
+
+#
+# Undefine this in end code before including any Balau headers in order to
+# print relative paths in stack traces instead of just the filename.
+#
+add_definitions("-DBALAU_STACK_TRACES_STRIP_PATH")
 
 ##################################### ICU #####################################
 
+#
 # ###### ICU LIBRARIES #######
 #
 #  - Data Library:  dt/data
@@ -197,14 +224,16 @@ set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
 
 message(STATUS "Include directories:")
 get_property(ALL_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(INCLUDE_DIRECTORY ${ALL_INCLUDE_DIRECTORIES})
+
+foreach (INCLUDE_DIRECTORY ${ALL_INCLUDE_DIRECTORIES})
 	message(STATUS "    ${INCLUDE_DIRECTORY}")
-endforeach()
+endforeach ()
 
 message(STATUS "Libraries:")
-foreach(LIB ${ALL_LIBS})
+
+foreach (LIB ${ALL_LIBS})
 	message(STATUS "    ${LIB}")
-endforeach()
+endforeach ()
 
 message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")
 
@@ -340,16 +369,22 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/CannedHttpWebApp.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.cpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp
+	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/FailingHttpWebApp.cpp
+	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/FailingHttpWebApp.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.cpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.hpp
+	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebApp.cpp
+	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebApp.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.cpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.cpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlInitializer.cpp
 	src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlInitializer.hpp
-	src/main/cpp/Balau/Network/Http/Server/Impl/ClientSession.hpp
+	src/main/cpp/Balau/Network/Http/Server/ClientSession.hpp
+	src/main/cpp/Balau/Network/Http/Server/Impl/ClientSessions.hpp
 	src/main/cpp/Balau/Network/Http/Server/Impl/HttpSessions.hpp
+	src/main/cpp/Balau/Network/Http/Server/Impl/HttpWebAppFactory.hpp
 	src/main/cpp/Balau/Network/Http/Server/Impl/Listener.cpp
 	src/main/cpp/Balau/Network/Http/Server/Impl/Listener.hpp
 	src/main/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebApp.cpp
@@ -493,7 +528,9 @@ add_library(Balau STATIC ${THIRD_PARTY_SOURCE_FILES} ${BALAU_SOURCE_FILES})
 
 ############################# BALAU DOCUMENTATION #############################
 
+#
 # This target requires doxygen.
+#
 add_custom_target(
 	BalauApiDoc
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -506,7 +543,9 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/api ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/api
 )
 
+#
 # This target requires xsltproc.
+#
 add_custom_target(
 	BalauManual
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -519,6 +558,7 @@ install(DIRECTORY src/main/cpp/Balau/ DESTINATION "include/Balau-${PROJECT_VERSI
 install(TARGETS Balau DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/BalauConfig.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/BalauConfigVersion.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${PROJECT_VERSION}/BalauConfig" FILES_MATCHING PATTERN "*.thconf")
 
 ################################# BALAU TESTS #################################
 
@@ -567,6 +607,8 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.hpp
 	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.cpp
 	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.hpp
+	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.hpp
 	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.cpp
 	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.hpp
 	src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.cpp
@@ -627,7 +669,9 @@ set(BALAU_TESTS_SOURCE_FILES
 add_executable(BalauTests ${BALAU_TESTS_SOURCE_FILES})
 target_link_libraries(BalauTests Balau ${ALL_LIBS})
 
+#
 # Copy logging test resource to build/bin directory.
+#
 add_custom_command(
 	TARGET BalauTests
 	POST_BUILD

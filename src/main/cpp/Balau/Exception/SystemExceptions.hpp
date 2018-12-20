@@ -29,17 +29,19 @@ class ErrNoException : public BalauException {
 
 	protected: ErrNoException(const char * file,
 	                          int line,
+	                          const std::string & st,
 	                          int errorNumber_,
 	                          const std::string & name)
-		: BalauException(file, line, name, " - error: " + ::toString(errorNumber_))
+		: BalauException(file, line, st, name, " - error: " + ::toString(errorNumber_))
 		, errorNumber(errorNumber_) {}
 
 	protected: ErrNoException(const char * file,
 	                          int line,
+	                          const std::string & st,
 	                          int errorNumber_,
 	                          const std::string & name,
 	                          const std::string & message_)
-		: BalauException(file, line, name, " - error: " + ::toString(errorNumber_) + " - " + message_)
+		: BalauException(file, line, st, name, " - error: " + ::toString(errorNumber_) + " - " + message_)
 		, errorNumber(errorNumber_) {}
 };
 
@@ -54,19 +56,27 @@ inline bool operator == (const ErrNoException & lhs, const ErrNoException & rhs)
 /// ENOMEM: insufficient storage space is available
 ///
 class ForkException : public ErrNoException {
-	public: ForkException(const char * file, int line, int errorNumber_, const std::string & message_)
-		: ErrNoException(file, line, errorNumber_, "Fork", message_) {}
+	public: ForkException(const char * file,
+	                      int line,
+	                      const std::string & st,
+	                      int errorNumber_,
+	                      const std::string & message_)
+		: ErrNoException(file, line, st, errorNumber_, "Fork", message_) {}
 };
 
 ///
 /// Thrown when a wait call fails.
 ///
 class WaitException : public ErrNoException {
-	public: WaitException(const char * file, int line, int errorNumber_, const std::string & message_)
-		: ErrNoException(file, line, errorNumber_, "Wait", message_) {}
+	public: WaitException(const char * file,
+	                      int line,
+	                      const std::string & st,
+	                      int errorNumber_,
+	                      const std::string & message_)
+		: ErrNoException(file, line, st, errorNumber_, "Wait", message_) {}
 
-	public: WaitException(const char * file, int line, int errorNumber_)
-		: ErrNoException(file, line, errorNumber_, "Wait") {}
+	public: WaitException(const char * file, int line, const std::string & st, int errorNumber_)
+		: ErrNoException(file, line, st, errorNumber_, "Wait") {}
 };
 
 } // namespace Balau::Exception

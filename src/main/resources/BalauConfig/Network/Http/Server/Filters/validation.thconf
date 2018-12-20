@@ -1,0 +1,17 @@
+##
+## Balau core C++ library
+##
+## Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+##
+## Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+## See the LICENSE file for the full license text.
+##
+
+#
+# The validation filter performs validation on the request.
+#
+validation {
+	name    : string =
+	depends : string =
+	# TODO What validation? How should this be expressed?
+}

@@ -1,0 +1,14 @@
+
+http.server {
+	http {
+		email.sender {
+			#
+			# The test case makes a copy of this file and replaces
+			# PASSWORD_PLACEHOLDER with the contents of the
+			# BALAU_TEST_EMAIL_SENDER_PASSWORD environment variable.
+			#
+
+			password = PASSWORD_PLACEHOLDER
+		}
+	}
+}

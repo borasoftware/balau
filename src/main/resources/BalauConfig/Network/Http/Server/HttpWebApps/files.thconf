@@ -1,0 +1,22 @@
+##
+## Balau core C++ library
+##
+## Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+##
+## Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+## See the LICENSE file for the full license text.
+##
+
+#
+# HTTP web application that serves static file GET requests from the file system.
+#
+files {
+	location  : string
+
+	log.ns    : string = http.server.files
+	info.log  : string =
+	error.log : string =
+
+	root      : uri
+	index     : string = index.html
+}

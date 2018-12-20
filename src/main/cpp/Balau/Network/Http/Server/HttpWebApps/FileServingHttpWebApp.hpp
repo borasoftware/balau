@@ -9,17 +9,22 @@
 //
 
 ///
-/// @file FileServingHttpWebApp.hpp
+/// @file FileServerHttpWebApp.hpp
 ///
 /// An HTTP web application handler that serves files from the file system.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FILE_SERVING_WEB_APP
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FILE_SERVING_WEB_APP
+#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FILE_SERVING_HTTP_WEB_APP
+#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FILE_SERVING_HTTP_WEB_APP
 
 #include <Balau/Network/Http/Server/HttpWebApp.hpp>
 
-namespace Balau::Network::Http::HttpWebApps {
+namespace Balau {
+
+class BalauLogger;
+class EnvironmentProperties;
+
+namespace Network::Http::HttpWebApps {
 
 ///
 /// An HTTP web application handler that serve files from the file system.
@@ -31,15 +36,26 @@ class FileServingHttpWebApp : public HttpWebApp {
 	/// @param documentRoot_ a local file system folder that is the root of the file hierarchy to serve
 	/// @param defaultFile_ the default file to serve if only a folder has been specified as the path
 	///
-	public: explicit FileServingHttpWebApp(Resource::File documentRoot_, std::string defaultFile_ = "index.html")
-		: documentRoot(std::move(documentRoot_))
-		, defaultFile(std::move(defaultFile_)) {}
+	public: explicit FileServingHttpWebApp(Resource::File documentRoot_, std::string defaultFile_ = "index.html");
 
-	public: void handleGetRequest(HttpSession & session, const StringRequest & request) override;
+	///
+	/// Constructor called by the HTTP server during construction.
+	///
+	/// @param configuration The environment configuration for the file server web application.
+	///
+	public: FileServingHttpWebApp(const EnvironmentProperties & configuration, const BalauLogger & logger);
 
-	public: void handleHeadRequest(HttpSession & session, const StringRequest & request) override;
+	public: void handleGetRequest(HttpSession & session,
+	                              const StringRequest & request,
+	                              std::map<std::string, std::string> & variables) override;
 
-	public: void handlePostRequest(HttpSession & session, const StringRequest & request) override;
+	public: void handleHeadRequest(HttpSession & session,
+	                               const StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override;
+
+	public: void handlePostRequest(HttpSession & session,
+	                               const StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override;
 
 	///////////////////////// Private implementation //////////////////////////
 
@@ -51,6 +67,8 @@ class FileServingHttpWebApp : public HttpWebApp {
 	private: const std::string defaultFile;
 };
 
-} // namespace Balau::HttpWebApps::Http::Network
+} // namespace HttpWebApps::Http::Network
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FILE_SERVING_WEB_APP
+} // namespace Balau
+
+#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FILE_SERVING_HTTP_WEB_APP

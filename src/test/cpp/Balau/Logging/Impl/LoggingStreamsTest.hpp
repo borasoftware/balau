@@ -19,7 +19,8 @@ namespace LoggingSystem {
 
 struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
 	explicit LoggingStreamsTest(Testing::TestRunner & runner) : TestGroup(runner) {
-		registerTest(&LoggingStreamsTest::fileRotation, "fileRotation");
+		// Work in progress.
+		//registerTest(&LoggingStreamsTest::fileRotation, "fileRotation");
 	}
 
 	void fileRotation();

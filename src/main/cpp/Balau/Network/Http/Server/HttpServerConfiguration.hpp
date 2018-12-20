@@ -19,11 +19,13 @@
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Network/Utilities/MimeTypes.hpp>
+#include <Balau/Application/Impl/BindingKey.hpp>
+#include <Balau/Logging/Impl/BalauLogger.hpp>
 
 namespace Balau {
 
+class EnvironmentProperties;
 class Injector;
-class Logger;
 
 namespace System {
 
@@ -43,21 +45,22 @@ class WsWebApp;
 ///
 struct HttpServerConfiguration {
 	///
-	/// The injector instance passed to the HTTP server.
-	///
-	/// If this is null, no injector was supplied to the server.
-	///
-	const std::weak_ptr<Injector> injector;
-
-	///
 	/// The clock used by the server.
 	///
-	const std::shared_ptr<System::Clock> clock;
+	const std::shared_ptr<const System::Clock> clock;
 
 	///
-	/// The logger into which the server will log.
+	/// The Http server's environment configuration.
 	///
-	const Logger & logger;
+	/// This is available to web applications if they require it after the
+	/// initial construction time configuration.
+	///
+	const std::shared_ptr<EnvironmentProperties> configuration;
+
+	///
+	/// The main logger into which the server will log.
+	///
+	const BalauLogger logger;
 
 	///
 	/// The server identification string.
@@ -68,6 +71,11 @@ struct HttpServerConfiguration {
 	/// The IP address and port on which the server is listening.
 	///
 	const TCP::endpoint endpoint;
+
+	///
+	/// The name of the cookie where the client session id is stored.
+	///
+	const std::string sessionCookieName;
 
 	///
 	/// The handler implementation used to handle HTTP messages.
@@ -86,19 +94,19 @@ struct HttpServerConfiguration {
 
 	///////////////////////// Private implementation //////////////////////////
 
-	HttpServerConfiguration(std::weak_ptr<Injector> injector_,
-	                        std::shared_ptr<System::Clock> clock_,
-	                        Logger & logger_,
+	HttpServerConfiguration(std::shared_ptr<const System::Clock> clock_,
+	                        BalauLogger logger_,
 	                        std::string serverIdentification_,
 	                        TCP::endpoint endpoint_,
+	                        std::string sessionCookieName_,
 	                        std::shared_ptr<HttpWebApp> httpHandler_,
 	                        std::shared_ptr<WsWebApp> wsHandler_,
 	                        std::shared_ptr<MimeTypes> mimeTypes_)
-		: injector(std::move(injector_))
-		, clock(clock_)
+		: clock(clock_)
 		, logger(logger_)
 		, serverId(std::move(serverIdentification_))
 		, endpoint(std::move(endpoint_))
+		, sessionCookieName(std::move(sessionCookieName_))
 		, httpHandler(std::move(httpHandler_))
 		, wsHandler(std::move(wsHandler_))
 		, mimeTypes(std::move(mimeTypes_)) {}

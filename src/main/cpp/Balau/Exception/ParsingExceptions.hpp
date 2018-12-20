@@ -30,9 +30,10 @@ class SyntaxErrorException : public BalauException {
 
 	public: SyntaxErrorException(const char * file,
 	                             int line,
+	                             const std::string & st,
 	                             const std::string & text,
 	                             const Lang::CodeSpan & codeSpan_)
-		: BalauException(file, line, "Network", text)
+		: BalauException(file, line, st, "Network", text)
 		, codeSpan(codeSpan_) {}
 };
 

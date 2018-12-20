@@ -11,7 +11,6 @@
 #include "InjectorTest.hpp"
 
 #include "../../../../main/cpp/Balau/Application/Injectable.hpp"
-#include "../../../../main/cpp/Balau/Application/Injector.hpp"
 
 #include <thread>
 

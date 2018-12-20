@@ -44,11 +44,11 @@
 
 		<para>In addition to string value properties, the environment configuration framework supports typed configuration properties via type specifications. The use of type specification files allows a single set of hierarchical environment configuration type specification files to be used across multiple applications written in multiple programming languages.</para>
 
-		<para>Type specifications can also have default values attached to them. This allows sensible defaults that apply to all environments to be specified in a single location, preventing the need for complex environment configuration property files and consequential logical coupling across multiple environments and applications.</para>
+		<para>Type specifications may also have default values attached to them. This allows sensible defaults that apply to all environments to be specified in a single location, preventing the need for complex environment configuration property files and consequential logical coupling across multiple environments and applications.</para>
 
 		<para>Type specification files and property value files are conceptually similar to classes and instances. A type specification file provides a hierarchical typed contract. A property value file provides hierarchical instance values that fulfill a type specification contract. This analogy is not exact, as type specification files can provide default values for instantiation and property value files can provide values that default to string types when no matching type specification is provided. The hierarchical configuration design thus provides a looser contract than the class-instance contract.</para>
 
-		<para>The Balau library provides a C++ implementation of the environment configuration and environment properties support classes. Java based environment configuration classes are also planned to support <emph>Guice</emph> and <emph>Spring</emph> based applications.</para>
+		<para>The Balau library provides a C++ implementation of the environment configuration and environment properties support classes. Java based environment configuration classes are also planned, to support <emph>Guice</emph> and <emph>Spring</emph> based applications.</para>
 
 		<h2>Usage patterns</h2>
 
@@ -232,7 +232,7 @@
 			auto injector = Injector::create(AppConfig(), EnvConfig(envProps));
 		</code>
 
-		<para>The above code will parse the contents of the properties file and will build a corresponding set of bindings in the injector that correspond to the root properties (simple and composite) within. Simple properties become named value bindings of the type specified in the environment configuration declaration, or <emph>std::string</emph> if no type specification was made for that property. Composite properties become named shared bindings of type <emph>EnvironmentProperties</emph>.</para>
+		<para>The above code will parse the contents of the properties file and will build a corresponding set of bindings in the injector that correspond to the root properties (simple and composite) within. Simple properties become named value or unique bindings of the type specified in the environment configuration declaration, or <emph>std::string</emph> if no type specification was made for that property. Composite properties become named shared bindings of type <emph>EnvironmentProperties</emph>.</para>
 
 		<para>Any issues encountered during the build will be flagged via an <emph>EnvironmentPropertiesException</emph>.</para>
 
@@ -253,7 +253,7 @@
 				</row>
 
 				<row>
-					<cell>getShared</cell>
+					<cell>getComposite</cell>
 					<cell>Composite properties</cell>
 				</row>
 			</body>
@@ -277,6 +277,20 @@
 
 		<para>The <emph>EnvironmentConfiguration</emph> class is designed to fail immediately if an environment configuration property file is not well formed, thereby preventing the application from starting up with an invalid configuration.</para>
 
+		<h3>Credentials</h3>
+
+		<para>Part of the environment configuration supplied to an application will be one or more credential properties. Unlike other environment configuration properties, credentials properties should not be checked into VCS and will thus exist in one or more separate properties files. This approach allows credentials information to be private to system administrators.</para>
+
+		<para>Applications that require credentials information should thus have at least two environment configuration properties files:</para>
+
+		<bullets>
+			<entry>one for the main environment configuration (checked into VCS);</entry>
+
+			<entry>a second one containing credentials information and with a similar hierarchical structure to the main configuration file.</entry>
+		</bullets>
+
+		<para>During creation of the environment configuration injector bindings, the main environment configuration and the credentials environment configuration will be merged together to form a single set of hierarchical properties that will be transformed into bindings.</para>
+
 		<h1>Property type IDL</h1>
 
 		<para>Property type specifications are defined in the hierarchical property format. In the IDL, the physical structure of the type specification hierarchy is similar to the hierarchy of corresponding environment configuration data files.</para>
@@ -292,6 +306,7 @@
 			<entry>double;</entry>
 			<entry>string;</entry>
 			<entry>char;</entry>
+			<entry>boolean;</entry>
 			<entry>uri.</entry>
 		</bullets>
 
@@ -341,6 +356,11 @@
 				<row>
 					<cell>char</cell>
 					<cell>char</cell>
+				</row>
+
+				<row>
+					<cell>boolean</cell>
+					<cell>bool</cell>
 				</row>
 
 				<row>
@@ -543,7 +563,6 @@
 			<target target="html" width="100%" />
 			<target target="pdf" width="120mm" />
 		</graphic>
-
 
 		<h1>Design</h1>
 

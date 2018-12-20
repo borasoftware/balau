@@ -54,42 +54,70 @@ template <typename ResponseT> void assertResponse(const ResponseT & response,
 }
 
 void HttpServerTest::injectedInstantiation() {
-	const Resource::File documentRoot = TestResources::BalauSourceFolder / "doc";
+	const auto documentRoot = TestResources::BalauSourceFolder / "doc";
+
 	std::shared_ptr<HttpServer> server;
 
 	const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
 		[&server, documentRoot] () {
 			class Wiring : public ApplicationConfiguration {
-				public: Wiring(Resource::File documentRoot_) : documentRoot(documentRoot_) {}
+				public: void configure() const override {
+					bind<System::Clock>().toSingleton<System::SystemClock>();
+					bind<HttpServer>().toSingleton();
+				}
+			};
+
+			class EnvConfig : public EnvironmentConfiguration {
+				public: EnvConfig(const Resource::Uri & input) : EnvironmentConfiguration(input) {}
 
 				public: void configure() const override {
 					const unsigned short testPortStart = 43270;
 
-					bind<System::Clock>().toSingleton<System::SystemClock>();
+					value<bool>("http.server.register.signal.handler", false);
 
-					bind<std::string>("httpServerIdentification").toValue("Balau Test");
-					bind<std::string>("httpServerLoggingNamespace").toValue("balau.server");
+					group("http.server"
+						, value<std::string>("logging.ns", "http.server")
+						, value<std::string>("access.log", "stream: stdout")
+						, value<std::string>("error.log", "stream: stderr")
+						, value<std::string>("server.id", "Test Server")
+						, value<int>("worker.count", 2)
+						, value<Endpoint>("listen", makeEndpoint("127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)))
 
-					bind<TCP::endpoint>("httpServerEndpoint").toValue(
-						makeEndpoint(
-							"127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
+						, group("mime.types"
+							, value<std::string>("text/html", "html")
+						)
+
+						, group("http"
+							, group("files"
+								, value<std::string>("location")
+								, value<std::string>("log.ns", "http.server.files")
+								, value<std::string>("access.log", "stream: stdout")
+								, value<std::string>("error.log", "stream: stderr")
+								, unique<Resource::Uri>("root")
+								, value<std::string>("index", "index.html")
+							)
 						)
 					);
-
-					bind<std::string>("httpServerThreadName").toValue("HttpTest");
-					bind<size_t>("httpServerWorkerCount").toValue(2U);
-
-					bind<HttpWebApp>("httpHandler").toSingleton(new HttpWebApps::FileServingHttpWebApp(documentRoot));
-					bind<WsWebApp>("webSocketHandler").toSingleton(new WsWebApps::NullWsWebApp());
-					bind<MimeTypes>("mimeTypes").toSingleton(MimeTypes::defaultMimeTypes);
-
-					bind<HttpServer>().toSingleton();
 				}
 
 				private: const Resource::File documentRoot;
 			};
 
-			auto injector = Injector::create(Wiring(documentRoot));
+			const Resource::StringUri env(
+				R"(
+					# Main HTTP server environment configuration.
+					http.server {
+						http {
+							files {
+								location = /
+								root = )" + documentRoot.toUriString() + R"(
+							}
+						}
+					}
+				)"
+			);
+
+			auto injector = Injector::create(Wiring(), EnvConfig(env));
 
 			server = injector->getShared<HttpServer>();
 			server->start();
@@ -103,7 +131,7 @@ void HttpServerTest::injectedInstantiation() {
 
 	HttpClient client("localhost", port);
 
-	const std::string path = "/manual/index.bdml";
+	std::string path = "/manual/index.bdml";
 	Response<CharVectorBody> response = client.get(path);
 
 	assertResponse(response, "OK", Status::ok, false, true);
@@ -117,6 +145,11 @@ void HttpServerTest::injectedInstantiation() {
 	const std::vector<char> expectedBody = Util::Files::readToVector(documentRoot / path);
 
 	assertThat(actualBody, is(expectedBody));
+
+	std::string path2 = "/";
+	Response<CharVectorBody> response2 = client.get(path2);
+
+	assertThat(response2.base().result(), is(Status::not_found));
 }
 
 } // namespace Http

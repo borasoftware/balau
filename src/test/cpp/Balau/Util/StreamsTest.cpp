@@ -60,7 +60,7 @@ void StreamsTest::readLinesToVector() {
 }
 
 void StreamsTest::consume() {
-	Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Logging" / "balau-logging.conf");
+	Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
 	auto fileReadResource = file.getByteReadResource();
 	std::istream & src = fileReadResource.readStream();
 

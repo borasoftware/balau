@@ -1,0 +1,31 @@
+##
+## Balau core C++ library
+##
+## Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+##
+## Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+## See the LICENSE file for the full license text.
+##
+
+#
+# HTTP web application that handles website contact POST requests and sends
+# an email after mapping the contact request to an email body.
+#
+email.sender {
+	location   : string
+
+	log.ns     : string = http.server.email
+	info.log   : string =
+	error.log  : string =
+
+	host       : string
+	port       : int
+	user       : string
+	password   : string
+	subject    : string
+	from       : string
+	to         : string
+	user-agent : string
+	success    : string
+	failure    : string
+}

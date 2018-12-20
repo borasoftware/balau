@@ -27,15 +27,15 @@ namespace Balau::Network::Http::WsWebApps {
 /// This web app exists for testing purposes.
 ///
 class EchoingWsWebApp : public WsWebApp {
-	public: void handleTextMessage(WsSession & session) override;
+	public: void handleTextMessage(WsSession & session, std::string_view path) override;
 
-	public: void handleBinaryMessage(WsSession & session) override;
+	public: void handleBinaryMessage(WsSession & session, std::string_view path) override;
 
-	public: void handleClose(WsSession & session) override;
+	public: void handleClose(WsSession & session, std::string_view path) override;
 
-	public: void handlePing(WsSession & session) override;
+	public: void handlePing(WsSession & session, std::string_view path) override;
 
-	public: void handlePong(WsSession & session) override;
+	public: void handlePong(WsSession & session, std::string_view path) override;
 };
 
 } // namespace Balau::Network::Http::WsWebApps

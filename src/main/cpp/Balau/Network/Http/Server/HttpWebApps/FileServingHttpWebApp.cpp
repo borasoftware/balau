@@ -10,10 +10,41 @@
 
 #include "FileServingHttpWebApp.hpp"
 #include "../HttpSession.hpp"
+#include "../../../../Application/EnvironmentProperties.hpp"
 
 namespace Balau::Network::Http::HttpWebApps {
 
-void FileServingHttpWebApp::handleGetRequest(HttpSession & session, const StringRequest & request) {
+FileServingHttpWebApp::FileServingHttpWebApp(Resource::File documentRoot_, std::string defaultFile_)
+	: documentRoot(std::move(documentRoot_))
+	, defaultFile(std::move(defaultFile_)) {}
+
+Resource::File determineDocumentRoot(const EnvironmentProperties & configuration) {
+	if (!configuration.hasUnique<Resource::Uri>("root")) {
+		ThrowBalauException(
+			Exception::NetworkException, "Missing \"root\" configuration property for file server."
+		);
+	}
+
+	auto uri = configuration.getUnique<Resource::Uri>("root");
+	auto file = dynamic_cast<Resource::File *>(uri.get());
+
+	if (!file || !file->exists() || !file->isRegularDirectory()) {
+		ThrowBalauException(
+			  Exception::NetworkException
+			, "File server document \"root\" property must be a directory on the local file system."
+		);
+	}
+
+	return *file;
+}
+
+FileServingHttpWebApp::FileServingHttpWebApp(const EnvironmentProperties & configuration, const BalauLogger & logger)
+	: documentRoot(determineDocumentRoot(configuration))
+	, defaultFile(configuration.getValue<std::string>("root", "index.html")) {}
+
+void FileServingHttpWebApp::handleGetRequest(HttpSession & session,
+                                             const StringRequest & request,
+                                             std::map<std::string, std::string> & ) {
 	Resource::File path = resolvePath(session, request);
 
 	if (!path.exists() || !path.isRegularFile()) {
@@ -22,10 +53,7 @@ void FileServingHttpWebApp::handleGetRequest(HttpSession & session, const String
 	}
 
 	const auto pathStr = path.toRawString();
-
 	auto body = getBody(session, request, pathStr);
-
-	auto mimeType = session.configuration().mimeTypes->lookup(pathStr);
 
 	Response<FileBody> response{
 		  std::piecewise_construct
@@ -35,8 +63,13 @@ void FileServingHttpWebApp::handleGetRequest(HttpSession & session, const String
 
 	auto timestamp = std::chrono::time_point_cast<std::chrono::seconds>(session.configuration().clock->now());
 
+	auto mimeType = session.configuration().mimeTypes->lookup(pathStr);
+
+	if (!mimeType.empty()) {
+		response.set(Field::content_type, mimeType);
+	}
+
 	response.set(Field::server, session.configuration().serverId);
-	response.set(Field::content_type, mimeType);
 	response.set(Field::cache_control, "public,max-age=600"); // todo parameterise
 	response.set(Field::date, Util::DateTime::toString("%a, %d %b %Y %T GMT", timestamp));
 	response.prepare_payload();
@@ -45,32 +78,39 @@ void FileServingHttpWebApp::handleGetRequest(HttpSession & session, const String
 	session.sendResponse(std::move(response));
 }
 
-void FileServingHttpWebApp::handleHeadRequest(HttpSession & session, const StringRequest & request) {
+void FileServingHttpWebApp::handleHeadRequest(HttpSession & session,
+                                              const StringRequest & request,
+                                              std::map<std::string, std::string> & ) {
 	Resource::File path = resolvePath(session, request);
+	const auto pathStr = path.toRawString();
 
 	if (!path.exists() || !path.isRegularFile()) {
 		session.sendResponse(createNotFoundHeadResponse(session, request));
 		return;
 	}
 
-	auto mimeType = session.configuration().mimeTypes->lookup(path.toRawString());
-
 	Response<EmptyBody> response { Status::ok, request.version() };
+
+	auto mimeType = session.configuration().mimeTypes->lookup(pathStr);
+
+	if (!mimeType.empty()) {
+		response.set(Field::content_type, mimeType);
+	}
+
 	response.set(Field::server, session.configuration().serverId);
-	response.set(Field::content_type, mimeType);
-	//response.set(Field::content_length, path.size()); // TODO This is causing a deadlock.
 	response.keep_alive(request.keep_alive());
 	session.sendResponse(std::move(response));
 }
 
-void FileServingHttpWebApp::handlePostRequest(HttpSession & session, const StringRequest & request) {
-	session.sendResponse(
-		createServerErrorResponse(session, request, "Post requests are not implemented.")
-	);
+void FileServingHttpWebApp::handlePostRequest(HttpSession & session,
+                                              const StringRequest & request,
+                                              std::map<std::string, std::string> & ) {
+	session.sendResponse(createNotFoundStringResponse(session, request));
 }
 
 Resource::File FileServingHttpWebApp::resolvePath(HttpSession & session, const StringRequest & request) {
 	const auto target = request.target();
+
 	Resource::File path = documentRoot / std::string(target.begin(), target.end());
 
 	// Append default file if no file specified?
@@ -82,8 +122,8 @@ Resource::File FileServingHttpWebApp::resolvePath(HttpSession & session, const S
 }
 
 FileBodyValue FileServingHttpWebApp::getBody(HttpSession & session,
-                                             const StringRequest & request,
-                                             const std::string & pathStr) {
+                                            const StringRequest & request,
+                                            const std::string & pathStr) {
 	FileBodyValue body;
 	BoostSystemErrorCode errorCode;
 	body.open(pathStr.c_str(), FileMode::scan, errorCode);

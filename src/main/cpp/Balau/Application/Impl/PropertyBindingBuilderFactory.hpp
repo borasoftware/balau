@@ -387,7 +387,7 @@ template <typename BaseT> class UniquePropertyBindingBuilderFactory : public Pro
 };
 
 //
-// The implementation of the public addEnvironmentPropertyType call.
+// The implementation of the public registerEnvironmentPropertyType call.
 //
 void registerEnvironmentPropertyType(const std::string & typeString,
                                      std::type_index typeIndex,

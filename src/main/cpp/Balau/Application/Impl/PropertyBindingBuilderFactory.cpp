@@ -15,16 +15,17 @@ namespace Balau::Impl {
 
 // The map of creators by type string.
 std::map<std::string, PropertyBindingBuilderFactoryPtr> propertyBindingBuilderFactoryFactoriesByTypeString = {
-	  std::pair("byte",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed char>("")))
-	, std::pair("short",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed short>("")))
-	, std::pair("int",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed int>("")))
-	, std::pair("long",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed long long>("")))
+	  std::pair("byte",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed char>("")))
+	, std::pair("short",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed short>("")))
+	, std::pair("int",     PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed int>("")))
+	, std::pair("long",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed long long>("")))
 
-	, std::pair("float",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<float>("")))
-	, std::pair("double", PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<double>("")))
+	, std::pair("float",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<float>("")))
+	, std::pair("double",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<double>("")))
 
-	, std::pair("string", PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
-	, std::pair("char",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
+	, std::pair("string",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
+	, std::pair("char",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
+	, std::pair("boolean", PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<bool>("")))
 
 	, std::pair(
 		  "uri"
@@ -51,6 +52,7 @@ std::map<std::type_index, PropertyBindingBuilderFactoryPtr> propertyBindingBuild
 
 	, std::pair(std::type_index(typeid(std::string)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
 	, std::pair(std::type_index(typeid(char)),         PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
+	, std::pair(std::type_index(typeid(bool)),         PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<bool>("")))
 
 	, std::pair(
 		  std::type_index(typeid(Resource::Uri))
@@ -65,7 +67,9 @@ std::map<std::type_index, PropertyBindingBuilderFactoryPtr> propertyBindingBuild
 	)
 };
 
-void addEnvironmentPropertyType(const std::string & typeString, std::type_index typeIndex, PropertyBindingBuilderFactoryPtr factory) {
+void registerEnvironmentPropertyType(const std::string & typeString,
+                                     std::type_index typeIndex,
+                                     PropertyBindingBuilderFactoryPtr factory) {
 	static std::mutex mutex;
 	std::lock_guard<std::mutex> lock(mutex);
 	propertyBindingBuilderFactoryFactoriesByTypeString.insert(std::pair(typeString, factory));
@@ -73,10 +77,10 @@ void addEnvironmentPropertyType(const std::string & typeString, std::type_index 
 }
 
 void registerEnvironmentPropertyUnsignedTypes() {
-	addEnvironmentPropertyType("unsigned byte",  typeid(unsigned char), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned char>("")));
-	addEnvironmentPropertyType("unsigned short", typeid(unsigned short), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned short>("")));
-	addEnvironmentPropertyType("unsigned int",   typeid(unsigned int), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned int>("")));
-	addEnvironmentPropertyType("unsigned long",  typeid(unsigned long long), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned long long>("")));
+	registerEnvironmentPropertyType("unsigned byte",  typeid(unsigned char),      PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned char>("")));
+	registerEnvironmentPropertyType("unsigned short", typeid(unsigned short),     PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned short>("")));
+	registerEnvironmentPropertyType("unsigned int",   typeid(unsigned int),       PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned int>("")));
+	registerEnvironmentPropertyType("unsigned long",  typeid(unsigned long long), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<unsigned long long>("")));
 }
 
 PropertyBindingBuilderFactoryPtr getBindingBuilderFactory(const std::string & typeString,
@@ -86,8 +90,8 @@ PropertyBindingBuilderFactoryPtr getBindingBuilderFactory(const std::string & ty
 
 	if (iter == propertyBindingBuilderFactoryFactoriesByTypeString.end()) {
 		ThrowBalauException(
-			Exception::EnvironmentConfigurationException
-		, ::toString("No registered property type for type string '", typeString, "'.")
+			  Exception::EnvironmentConfigurationException
+			, ::toString("No registered property type for type string '", typeString, "'.")
 		);
 	}
 

@@ -14,12 +14,17 @@
 /// An HTTP web application handler that serves a fixed response for each request method.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__CANNED_WEB_APP
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__CANNED_WEB_APP
+#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__CANNED_HTTP_WEB_APP
+#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__CANNED_HTTP_WEB_APP
 
 #include <Balau/Network/Http/Server/HttpWebApp.hpp>
 
-namespace Balau::Network::Http::HttpWebApps {
+namespace Balau {
+
+class BalauLogger;
+class EnvironmentProperties;
+
+namespace Network::Http::HttpWebApps {
 
 ///
 /// An HTTP web application handler that serves a fixed response for each request method.
@@ -37,16 +42,24 @@ class CannedHttpWebApp : public HttpWebApp {
 	/// @param getResponseBody_ the response body to send or get requests
 	/// @param postResponseBody_ the response body to send or post requests
 	///
-	public: CannedHttpWebApp(std::string mimeType_, std::string getResponseBody_, std::string postResponseBody_)
-		: mimeType(std::move(mimeType_))
-		, getResponseBody(std::move(getResponseBody_))
-		, postResponseBody(std::move(postResponseBody_)) {}
+	public: CannedHttpWebApp(std::string mimeType_, std::string getResponseBody_, std::string postResponseBody_);
 
-	public: void handleGetRequest(HttpSession & session, const StringRequest & request) override;
+	///
+	/// Constructor used by the HTTP server.
+	///
+	public: CannedHttpWebApp(const EnvironmentProperties & configuration, const BalauLogger & logger);
 
-	public: void handleHeadRequest(HttpSession & session, const StringRequest & request) override;
+	public: void handleGetRequest(HttpSession & session,
+	                              const StringRequest & request,
+	                              std::map<std::string, std::string> & variables) override;
 
-	public: void handlePostRequest(HttpSession & session, const StringRequest & request) override;
+	public: void handleHeadRequest(HttpSession & session,
+	                               const StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override;
+
+	public: void handlePostRequest(HttpSession & session,
+	                               const StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override;
 
 	///////////////////////// Private implementation //////////////////////////
 
@@ -57,6 +70,8 @@ class CannedHttpWebApp : public HttpWebApp {
 	private: const std::string postResponseBody;
 };
 
-} // namespace Balau::Network::Http::HttpWebApps
+} // namespace Network::Http::HttpWebApps
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__CANNED_WEB_APP
+} // namespace Balau
+
+#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__CANNED_HTTP_WEB_APP

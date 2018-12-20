@@ -15,7 +15,7 @@ namespace Balau::Network::Http::WsWebApps {
 
 RoutingWsWebApp::RoutingWsWebApp(Routing && routing_) : routing(std::move(routing_)) {}
 
-void RoutingWsWebApp::handleTextMessage(WsSession & session) {
+void RoutingWsWebApp::handleTextMessage(WsSession & session, std::string_view path) {
 //	WsWebApp * handler = resolve(session);
 //
 //	if (handler != nullptr) {
@@ -23,7 +23,7 @@ void RoutingWsWebApp::handleTextMessage(WsSession & session) {
 //	}
 }
 
-void RoutingWsWebApp::handleBinaryMessage(WsSession & session) {
+void RoutingWsWebApp::handleBinaryMessage(WsSession & session, std::string_view path) {
 //	WsWebApp * handler = resolve(session);
 //
 //	if (handler != nullptr) {
@@ -31,7 +31,7 @@ void RoutingWsWebApp::handleBinaryMessage(WsSession & session) {
 //	}
 }
 
-void RoutingWsWebApp::handleClose(WsSession & session) {
+void RoutingWsWebApp::handleClose(WsSession & session, std::string_view path) {
 //	WsWebApp * handler = resolve(session);
 //
 //	if (handler != nullptr) {
@@ -39,7 +39,7 @@ void RoutingWsWebApp::handleClose(WsSession & session) {
 //	}
 }
 
-void RoutingWsWebApp::handlePing(WsSession & session) {
+void RoutingWsWebApp::handlePing(WsSession & session, std::string_view path) {
 //	WsWebApp * handler = resolve(session);
 //
 //	if (handler != nullptr) {
@@ -47,7 +47,7 @@ void RoutingWsWebApp::handlePing(WsSession & session) {
 //	}
 }
 
-void RoutingWsWebApp::handlePong(WsSession & session) {
+void RoutingWsWebApp::handlePong(WsSession & session, std::string_view path) {
 //	WsWebApp * handler = resolve(session);
 //
 //	if (handler != nullptr) {
@@ -55,7 +55,7 @@ void RoutingWsWebApp::handlePong(WsSession & session) {
 //	}
 }
 
-WsWebApp * RoutingWsWebApp::resolve(WsSession & session) {
+WsWebApp * RoutingWsWebApp::resolve(WsSession & session, std::string_view path) {
 //	const auto & path = request.target();
 //	auto components = Util::Strings::split(path, "/");
 //

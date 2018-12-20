@@ -36,7 +36,7 @@ void PropertyParserTest_test(const std::string & expected) {
 	assertThat(actual, is(expected));
 }
 
-const std::string expected1 = 1 + R"Property(
+const std::string simpleHierarchyText = 1 + R"Property(
 http.server.worker.count = 8
 
 file.serve {
@@ -47,12 +47,12 @@ file.serve {
 
 )Property";
 
-const std::string expected2 = 1 + R"Property(
+const std::string specialSymbolNamesText = 1 + R"Property(
 \{ = 8
 abc = \{ brackets }
 )Property";
 
-const std::string expected3 = 1 + R"Property(
+const std::string complexNamesText = 1 + R"Property(
 # A hierarchical property file that has comments,
 # escaped characters, and line continuation.
 
@@ -68,7 +68,7 @@ group.config {
 }
 )Property";
 
-const std::string expected4 = 1 + R"Property(
+const std::string rootIncludesText = 1 + R"Property(
 # An HTTPS include directive.
 @https://borasoftware.com/doc/examples/hprops.properties
 
@@ -79,20 +79,20 @@ const std::string expected4 = 1 + R"Property(
 @extra-sites/special.site
 )Property";
 
-void PropertyParserTest::test1() {
-	PropertyParserTest_test(expected1);
+void PropertyParserTest::simpleHierarchy() {
+	PropertyParserTest_test(simpleHierarchyText);
 }
 
-void PropertyParserTest::test2() {
-	PropertyParserTest_test(expected2);
+void PropertyParserTest::specialSymbolNames() {
+	PropertyParserTest_test(specialSymbolNamesText);
 }
 
-void PropertyParserTest::test3() {
-	PropertyParserTest_test(expected3);
+void PropertyParserTest::complexNames() {
+	PropertyParserTest_test(complexNamesText);
 }
 
-void PropertyParserTest::test4() {
-	PropertyParserTest_test(expected4);
+void PropertyParserTest::rootIncludes() {
+	PropertyParserTest_test(rootIncludesText);
 }
 
 void PropertyParserTest::normalisation() {

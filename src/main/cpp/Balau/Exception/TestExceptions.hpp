@@ -25,16 +25,16 @@ namespace Balau::Exception {
 /// The exception thrown by the test runner when an assertion fails.
 ///
 class AssertionException : public BalauException {
-	public: AssertionException(const char * file, int line, const std::string & message_)
-		: BalauException(file, line, "Assertion", message_) {}
+	public: AssertionException(const char * file, int line, const std::string & st, const std::string & message_)
+		: BalauException(file, line, st, "Assertion", message_) {}
 };
 
 ///
 /// Thrown by the test runner when there is a non test related error.
 ///
 class TestRunnerException : public BalauException {
-	public: TestRunnerException(const char * file, int line, const std::string & message_)
-		: BalauException(file, line, "TestRunner", message_) {}
+	public: TestRunnerException(const char * file, int line, const std::string & st, const std::string & message_)
+		: BalauException(file, line, st, "TestRunner", message_) {}
 };
 
 } // namespace Balau::Exception

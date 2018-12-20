@@ -69,6 +69,8 @@
 			BalauLogError(log, "Something went wrong. Data: {} / {}", data1, data2);
 		</code>
 
+		<para>If you do not wish to see the prefix <emph>Balau</emph> on each of your logging statements, new defines can be created which alias these macros.</para>
+
 		<para>There are six logging levels: <emph>trace</emph>, <emph>debug</emph>, <emph>info</emph>, <emph>warn</emph>, <emph>error</emph>, and <emph>none</emph>.</para>
 
 		<para>Whether a log message is output to the logging stream depends on whether the logging namespace is enabled for that logging level. This depends on the logging configuration.</para>

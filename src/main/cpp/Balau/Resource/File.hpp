@@ -92,6 +92,11 @@ class File : public Uri {
 	};
 
 	///
+	/// The path separator character for the platform.
+	///
+	public: static const boost::filesystem::path::value_type separator = boost::filesystem::path::preferred_separator;
+
+	///
 	/// Create an empty file URI.
 	///
 	public: File() = default;
@@ -149,24 +154,66 @@ class File : public Uri {
 	}
 
 	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
-		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]:" };
+		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
 
 		auto cleanPath = Util::Strings::trim(path);
 		auto str = std::string(cleanPath);
+		std::string sPath;
+		bool hasFileScheme = false;
 
-		if (Util::Strings::startsWithRegex(str, scheme)) {
+		if (Util::Strings::startsWith(str, "file:")) {
+			// Prefixed with file schema.
+			// Relative or absolute?
+			sPath = str.substr(5);
+			hasFileScheme = true;
+		} else if (Util::Strings::startsWithRegex(str, scheme)) {
 			std::unique_ptr<Uri> uri;
 			fromString(uri, str);
 			return uri;
+		} else {
+			// No scheme prefix.
+			// Absolute or relative file path.
+			sPath = str;
 		}
 
-		boost::filesystem::path p(str);
+		if ((!hasFileScheme && sPath.empty()) || (hasFileScheme && sPath == "//")) {
+			// Empty.. return the path if it is a folder,
+			// otherwise return the parent path of the file.
 
-		if (p.is_relative()) {
-			auto p2 = boost::filesystem::relative(p, entry.path());
-			return std::unique_ptr<Uri>(new File(p2));
-		} else { // absolute
-			return std::unique_ptr<Uri>(new File(p));
+			if (isRegularDirectory()) {
+				return std::unique_ptr<Uri>(new File(*this));
+			} else {
+				return std::unique_ptr<Uri>(new File(getParentDirectory()));
+			}
+		} else if (sPath[0] == '/') {
+			// Absolute.
+
+			if (hasFileScheme) {
+				// Invalid?
+				if (sPath.length() < 3 || sPath.substr(0, 3) != "///") {
+					ThrowBalauException(
+						Exception::IllegalArgumentException, ::toString("Illegal path string in file URI: ", path)
+					);
+				}
+
+				// Strip the leading double slash "//".
+				sPath = sPath.substr(2);
+			}
+
+			return std::unique_ptr<Uri>(new File(sPath));
+		} else {
+			// Relative.. resolve according to the current path
+			// (current file if folder or parent otherwise).
+
+			auto bPath = boost::filesystem::path(sPath);
+
+			if (isRegularDirectory()) {
+				auto newPath = (getEntry() / bPath).lexically_normal();
+				return std::unique_ptr<Uri>(new File(newPath));
+			} else {
+				auto newPath = (getParentDirectory().getEntry() / bPath).lexically_normal();
+				return std::unique_ptr<Uri>(new File(newPath));
+			}
 		}
 	}
 
@@ -405,6 +452,15 @@ class File : public Uri {
 	///
 	public: bool removeFile() {
 		return boost::filesystem::remove(entry);
+	}
+
+	///
+	/// Convert the file to an absolute path if it is relative, using the current working directory.
+	///
+	/// @return a copy of the file converted to an absolute path
+	///
+	public: File toAbsolutePath() const {
+		return File(boost::filesystem::absolute(entry));
 	}
 
 	///

@@ -48,7 +48,6 @@ std::string getLibZipErrorAsString(int error) {
 		case ZIP_ER_OPNOTSUPP:       return "Operation not supported";
 		case ZIP_ER_INUSE:           return "Resource still in use";
 		case ZIP_ER_TELL:            return "Tell error";
-		case ZIP_ER_COMPRESSED_DATA: return "Compressed data invalid";
 		default:                     return "No error";
 	}
 }

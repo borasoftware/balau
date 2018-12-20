@@ -45,6 +45,16 @@ class TestClock : public System::Clock {
 		assertFail("now() called");
 		return std::chrono::milliseconds(0); // avoid compiler complaint
 	}
+
+	public: std::chrono::centiseconds centitime() const override {
+		assertFail("now() called");
+		return std::chrono::centiseconds(0); // avoid compiler complaint
+	}
+
+	public: std::chrono::deciseconds decitime() const override {
+		assertFail("now() called");
+		return std::chrono::deciseconds(0); // avoid compiler complaint
+	}
 };
 
 void LoggingStreamsTest::fileRotation() {

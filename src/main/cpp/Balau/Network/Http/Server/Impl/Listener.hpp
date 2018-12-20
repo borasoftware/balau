@@ -11,6 +11,8 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__LISTENER
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__LISTENER
 
+#include <Balau/Network/Http/Server/NetworkTypes.hpp>
+#include <Balau/Network/Http/Server/Impl/ClientSessions.hpp>
 #include <Balau/Network/Http/Server/Impl/HttpSessions.hpp>
 #include <Balau/Logging/Impl/BalauLogger.hpp>
 
@@ -33,16 +35,17 @@ class Listener : public std::enable_shared_from_this<Listener> {
 		boost::system::error_code errorCode;
 
 		acceptor.open(serverConfiguration->endpoint.protocol(), errorCode);
-		checkError(errorCode);
+		checkError(errorCode, [] () { return "acceptor.open failed"; });
 
 		acceptor.set_option(boost::asio::socket_base::reuse_address(true), errorCode);
-		checkError(errorCode);
+		checkError(errorCode, [] () { return "acceptor.set_option(reuse_address(true)) failed"; });
 
-		acceptor.bind(serverConfiguration->endpoint, errorCode);
-		checkError(errorCode);
+		auto & endpoint = serverConfiguration->endpoint;
+		acceptor.bind(endpoint, errorCode);
+		checkError(errorCode, [&endpoint] () { return ::toString("acceptor.bind(", endpoint, ")"); });
 
 		acceptor.listen(boost::asio::socket_base::max_listen_connections, errorCode);
-		checkError(errorCode);
+		checkError(errorCode, [] () { return "acceptor.listen failed"; });
 	}
 
 	public: bool isOpen() {
@@ -62,21 +65,23 @@ class Listener : public std::enable_shared_from_this<Listener> {
 
 	private: void onAccept(boost::system::error_code errorCode);
 
-	private: void checkError(const boost::system::error_code & errorCode) {
+	private: template <typename ErrorMessageCreator>
+	void checkError(const boost::system::error_code & errorCode, const ErrorMessageCreator & errorMessage) {
 		if (errorCode) {
-			ThrowBalauException(Exception::NetworkException, errorCode.message());
+			ThrowBalauException(Exception::NetworkException, ::toString(errorCode.message(), " - ", errorMessage()));
 		}
 	}
 
-	private: std::shared_ptr<Impl::ClientSession> getClientSession() {
+	private: std::shared_ptr<ClientSession> getClientSession() {
 		// TODO
-		return std::shared_ptr<Impl::ClientSession>();
+		return std::shared_ptr<ClientSession>();
 	}
 
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
 	private: TCP::acceptor acceptor;
 	private: TCP::socket socket;
 	private: Impl::HttpSessions httpSessions;
+	private: Impl::ClientSessions clientSessions;
 };
 
 } // namespace Balau::Network::Http::Impl

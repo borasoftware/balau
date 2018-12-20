@@ -47,18 +47,11 @@ class MimeTypes {
 		: data(std::move(data_)) {}
 
 	///
-	/// Lookup a mime type from the supplied file path.
+	/// Lookup a mime type from the supplied path.
 	///
-	/// If no registered file extension is found, the default "application/text" mime type is returned.
+	/// If no registered file extension is found, an empty string view is returned.
 	///
 	public: std::string_view lookup(const std::string & path) const;
-
-	///
-	/// Lookup a mime type from the supplied file path.
-	///
-	/// If no registered file extension is found, a null string view is returned.
-	///
-	public: std::string_view lookupOrNull(const std::string & path) const;
 
 	///
 	/// Get the internal data in order to construct a custom mime types instance.

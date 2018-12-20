@@ -62,7 +62,18 @@ int debugCallback(CURL * handle, curl_infotype type, char * data, size_t size, v
 	switch (type) {
 		case CURLINFO_TEXT: {
 			// The data is informational text.
-			CurlEmailSender::log.debug("Curl: {}", std::function([&data, &size] () { return std::string(data, size); }));
+			if (CurlEmailSender::log.debugEnabled()) {
+				std::string_view s(data, size);
+
+				if (s.length() >= 2 && s[s.length() - 2] == '\r' && s[s.length() - 1] == '\n') {
+					CurlEmailSender::log.debug("Curl: {}", s.substr(0, s.length() - 2));
+				} else if (!s.empty() && s[s.length() - 1] == '\n') {
+					CurlEmailSender::log.debug("Curl: {}", s.substr(0, s.length() - 1));
+				} else {
+					CurlEmailSender::log.debug("Curl: {}", s);
+				}
+			}
+
 			break;
 		}
 

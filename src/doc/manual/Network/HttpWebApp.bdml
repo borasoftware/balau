@@ -20,7 +20,7 @@
 		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
 		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
 
-		<title text="Balau core C++ library - HTTP app framework" />
+		<title text="Balau core C++ library - HTTP web applications" />
 		<toc start="1" />
 
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
@@ -30,16 +30,170 @@
 		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
 	</metadata>
 
-	<chapter title="HTTP app framework">
+	<chapter title="HTTP web applications">
 		<h1>Overview</h1>
 
-		<para>This documentation chapter is pending.</para>
+		<para>This documentation chapter contains information on the HTTP web application framework and the predefiend HTTP web applications currently available in the Balau library. Developers may also define their own HTTP web applications.</para>
 
-		<h1>Quick start</h1>
+		<h1>Framework</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApp.hpp></strong></emph></para>
+		<h2>Creation</h2>
 
-		<para>This documentation chapter is pending.</para>
+		<para>The HTTP web application framework is based around the <emph>HttpWebApp</emph> base class. All HTTP web applications are derived from this base class. HTTP web applications must be registered with the HTTP server framework. Predefined Balau HTTP web applications are automatically registered at application startup. Custom HTTP web applications may be registered by calling <emph>HttpWebApp::registerHttpWebApp&lt;WebAppT>(name)</emph> before creating the application injector.</para>
 
+		<para>Each HTTP web application implements the three request call methods:</para>
+
+		<code lang="C++">
+			void handleGetRequest(HttpSession &amp; session,
+			                      const StringRequest &amp; request,
+			                      std::map&lt;std::string, std::string> &amp; variables) override;
+
+			void handleHeadRequest(HttpSession &amp; session,
+			                      const StringRequest &amp; request,
+			                      std::map&lt;std::string, std::string> &amp; variables) override;
+
+			void handlePostRequest(HttpSession &amp; session,
+			                      const StringRequest &amp; request,
+			                      std::map&lt;std::string, std::string> &amp; variables) override;
+		</code>
+
+		<h2>HTTP session</h2>
+
+		<para>The <emph>HttpSession</emph> passed during a request call references the active HTTP session for the request in progress. The session object is active on a single thread and may handle multiple keep-alive round trips. The session object provides access to:</para>
+
+		<bullets>
+			<entry>the HTTP server's main configuration;</entry>
+			<entry>the remote IP address for logging;</entry>
+			<entry>the client session;</entry>
+			<entry>the cookies sent in the request;</entry>
+			<entry>the sendResponse method used to send the response.</entry>
+		</bullets>
+
+		<h2>Client session</h2>
+
+		<para>The client session referenced within the HTTP session is a long lived session that is obtained on each request by examining the session cookie sent by the client. The name of this session cookie may be specified in the HTTP server's global configuration. By default, the name of the session cookie is <emph>session</emph>.</para>
+
+		<para>The client session Id is present for web applications to use in order to allow stateful sessions such as logins and carts.</para>
+
+		<h2>Request object</h2>
+
+		<para>The request object passed during a request call is the full Boost Beast request. Web applications can access request fields and other information available from the Beast request message API.</para>
+
+		<h2>Request variables</h2>
+
+		<para>The request variables map passed during a request call are variables that are created and consumed by filters and web applications during the request. They are not related to the request HTTP fields. An example of request variables can be seen in the <emph>redirections</emph> HTTP web application, which creates temporary request variables named <emph>$1</emph>, <emph>$2</emph>, <emph>$2</emph>, etc. for regular expression groupings in the redirection matches.</para>
+
+		<h2>Configuration</h2>
+
+		<para>Each web application must have a <emph>location</emph> parameter in its configuration. The value of this parameter is a space delimited set of location prefixes that the web application will handle. During instantiation, the HTTP server will read this parameter on each web application's configuration and use the location prefixes within to construct the request routing.</para>
+
+		<para></para>
+
+		<h1>Web applications</h1>
+
+		<h2>File server</h2>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.hpp></strong></emph></para>
+
+		<para>Environment configuration property name: <ref url="Environment/http.server/http/files">files</ref></para>
+
+		<para>The file serving HTTP web application serves files from a directory on the local file system.</para>
+
+		<para>See the <ref url="Environment/http.server/http/files">files</ref> environment configuration for details on how to configure the file serving HTTP web application.</para>
+
+		<h2>Email sender</h2>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp></strong></emph></para>
+
+		<para>Environment configuration property name: <ref url="Environment/http.server/http/email.sender">email.sender</ref></para>
+
+		<para>The email sending HTTP web application sends an email with a body generated from the form parameters of a POST request. This can be useful for creating a contact page.</para>
+
+		<para>See the <ref url="Environment/http.server/http/email.sender">email.sender</ref> environment configuration for details on how to configure the email sending HTTP web application.</para>
+
+		<h2>Redirector</h2>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebApp.hpp></strong></emph></para>
+
+		<para>Environment configuration property name: <ref url="Environment/http.server/http/redirections">redirections</ref></para>
+
+		<para>The redirecting HTTP web application performs 301 or 302 redirections for specified locations.</para>
+
+		<para>See the <ref url="Environment/http.server/http/redirections">redirections</ref> environment configuration for details on how to configure the redirecting HTTP web application.</para>
+
+		<h2>Canned</h2>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/CannedHttpWebApp.hpp></strong></emph></para>
+
+		<para>Environment configuration property name: <ref url="Environment/http.server/http/canned">canned</ref></para>
+
+		<para>The canned HTTP web application serves fixed responses for GET, HEAD, and POST requests.</para>
+
+		<para>See the <ref url="Environment/http.server/http/canned">canned</ref> environment configuration for details on how to configure the canned HTTP web application.</para>
+
+		<h2>Failing</h2>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/FailingHttpWebApp.hpp></strong></emph></para>
+
+		<para>Environment configuration property name: <ref url="Environment/http.server/http/failing">failing</ref></para>
+
+		<para>The failing HTTP web application returns HTTP 404 responses for all requests.</para>
+
+		<para>See the <ref url="Environment/http.server/http/failing">failing</ref> environment configuration for details on how to configure the failing HTTP web application.</para>
+
+		<h1>Routing</h1>
+
+		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.hpp></strong></emph></para>
+
+		<para>Environment configuration property name: <emph><strong class="cpp-define-statement">n/a</strong></emph></para>
+
+		<para><emph>The current routing web application may be replaced by a regular expression based routing web application in the future.</emph></para>
+
+		<para>The routing HTTP web application contains a trie data structure used to route HTTP requests to different HTTP web applications.</para>
+
+		<para>The routing HTTP web application is normally used implicitly via environment configuration. The HTTP server will instantiate a routing HTTP web application when creating the HTTP web application tree. When defining the HTTP server HTTP web applications via environment configuration, it is thus not necessary to explicitly define a routing HTTP web application.</para>
+
+		<para>The routing HTTP web application may be explicitly used when manually building an HTTP web application routing tree in code. Simple examples of this are available in the Balau unit tests. For example, one of the email sender unit tests defines the following routing HTTP web application.</para>
+
+		<code lang="C++">
+			// Create the routing HTTP web app, specifying the root node.
+			RoutingHttpWebApp::Routing routing(routingNode&lt;FailingHttpWebApp>(""));
+
+			// Add the email sender handler at path "/1/send-message".
+			routing.add(
+				  routingNode("1")
+				, RoutingHttpWebApp::Node::child(
+					RoutingHttpWebApp::Value(
+						"send-message", emailHandler, emailHandler, emailHandler
+					)
+				)
+			);
+		</code>
+
+		<para>In order to facilitate the manual building of routing trees, the <emph>RoutingHttpWebApp.hpp</emph> header contains the following helper methods and type.</para>
+
+		<table class="bdml-table40L60">
+			<head>
+				<cell>Name</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>routingNode</cell>
+					<cell>Make a routing node (3 overloads).</cell>
+				</row>
+
+				<row>
+					<cell>RoutingHttpWebApp::Node::child</cell>
+					<cell>Add a child of the child being added, plus descendants of the child (2 overloads).</cell>
+				</row>
+
+				<row>
+					<cell>RoutingHttpWebApp::Value</cell>
+					<cell>The tuple type representing a routing node.</cell>
+				</row>
+			</body>
+		</table>
 	</chapter>
 </document>

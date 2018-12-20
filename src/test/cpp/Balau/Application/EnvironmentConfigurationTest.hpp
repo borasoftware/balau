@@ -11,6 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_CONFIGURATION_TEST
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_CONFIGURATION_TEST
 
+#include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau {
@@ -41,6 +42,11 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 		registerTest(&EnvironmentConfigurationTest::mixedSimpleWithDefaults,      "mixedSimpleWithDefaults");
 		registerTest(&EnvironmentConfigurationTest::mixedCompositeWithDefaults,   "mixedCompositeWithDefaults");
 		registerTest(&EnvironmentConfigurationTest::mixedMultipleWithDefaults,    "mixedMultipleWithDefaults");
+
+		registerTest(&EnvironmentConfigurationTest::includedFilesConfig,          "includedFilesConfig");
+		registerTest(&EnvironmentConfigurationTest::customConfigurationTypes,     "customConfigurationTypes");
+
+		registerTest(&EnvironmentConfigurationTest::balauConfig,                  "balauConfig");
 	}
 
 	void derivedEmpty();
@@ -67,6 +73,11 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	void mixedSimpleWithDefaults();
 	void mixedCompositeWithDefaults();
 	void mixedMultipleWithDefaults();
+
+	void includedFilesConfig();
+	void customConfigurationTypes();
+
+	void balauConfig();
 };
 
 } // namespace Balau

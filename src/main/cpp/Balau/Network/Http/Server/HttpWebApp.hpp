@@ -18,6 +18,7 @@
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_SERVER__HTTP_WEB_APPLICATION
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
+#include <Balau/Network/Http/Server/Impl/HttpWebAppFactory.hpp>
 
 namespace Balau::Network::Http {
 
@@ -26,9 +27,24 @@ class HttpSession;
 ///
 /// Abstract base class of HTTP web application handlers.
 ///
+/// All concrete HTTP web applications must have a constructor of the following signature:
+///
+///  <pre>const EnvironmentProperties & configuration</pre>
+///
+/// This constructor will be used to instantiate the web application during initialisation
+/// of the HTTP server.
+///
 /// This class also contains some canned responses for use in handler implementations.
 ///
 class HttpWebApp {
+	public: template <typename WebAppT> static void registerHttpWebApp(const std::string & name) {
+		Impl::HttpWebAppFactory::registerHttpWebApp<WebAppT>(name);
+	}
+
+	/////// Canned responses for use in web application implementations ///////
+
+	///////////////////// HTTP 200 /////////////////////
+
 	///
 	/// Create an empty 200 response.
 	///
@@ -39,12 +55,24 @@ class HttpWebApp {
 	///
 	public: static EmptyResponse createOkHeadResponse(HttpSession & session, const StringRequest & request);
 
+	///////////////////// HTTP 300 /////////////////////
+
+	///
+	/// Create a redirect response.
+	///
+	public: static EmptyResponse createRedirectResponse(HttpSession & session, const StringRequest & request, std::string_view location);
+
+	///
+	/// Create a permanent redirect response.
+	///
+	public: static EmptyResponse createPermanentRedirectResponse(HttpSession & session, const StringRequest & request, std::string_view location);
+
+	///////////////////// HTTP 400 /////////////////////
+
 	///
 	/// Create a bad request response.
 	///
-	public: static StringResponse createBadRequestResponse(HttpSession & session,
-	                                                       const StringRequest & request,
-	                                                       std::string_view errorMessage);
+	public: static StringResponse createBadRequestResponse(HttpSession & session, const StringRequest & request, std::string_view errorMessage);
 
 	///
 	/// Create a bad request response for a head request.
@@ -61,12 +89,12 @@ class HttpWebApp {
 	///
 	static EmptyResponse createNotFoundHeadResponse(HttpSession & session, const StringRequest & request);
 
+	///////////////////// HTTP 500 /////////////////////
+
 	///
 	/// Create a server error response.
 	///
-	public: static StringResponse createServerErrorResponse(HttpSession & session,
-	                                                        const StringRequest & request,
-	                                                        std::string_view errorMessage);
+	public: static StringResponse createServerErrorResponse(HttpSession & session, const StringRequest & request, std::string_view errorMessage);
 
 	///
 	/// Create a server error response for a head request.
@@ -80,21 +108,39 @@ class HttpWebApp {
 	///
 	/// The supplied session provides shared server state and the sendResponse method.
 	///
-	public: virtual void handleGetRequest(HttpSession & session, const StringRequest & request) = 0;
+	/// @param session the HTTP session object, also containing the client session
+	/// @param request the HTTP request object
+	/// @param variables the request variables that are generated and consumed during the request
+	///
+	public: virtual void handleGetRequest(HttpSession & session,
+	                                      const StringRequest & request,
+	                                      std::map<std::string, std::string> & variables) = 0;
 
 	///
 	/// Handle a HEAD request.
 	///
 	/// The supplied session provides shared server state and the sendResponse method.
 	///
-	public: virtual void handleHeadRequest(HttpSession & session, const StringRequest & request) = 0;
+	/// @param session the HTTP session object, also containing the client session
+	/// @param request the HTTP request object
+	/// @param variables the request variables that are generated and consumed during the request
+	///
+	public: virtual void handleHeadRequest(HttpSession & session,
+	                                       const StringRequest & request,
+	                                       std::map<std::string, std::string> & variables) = 0;
 
 	///
 	/// Handle a POST request.
 	///
 	/// The supplied session provides shared server state and the sendResponse method.
 	///
-	public: virtual void handlePostRequest(HttpSession & session, const StringRequest & request) = 0;
+	/// @param session the HTTP session object, also containing the client session
+	/// @param request the HTTP request object
+	/// @param variables the request variables that are generated and consumed during the request
+	///
+	public: virtual void handlePostRequest(HttpSession & session,
+	                                       const StringRequest & request,
+	                                       std::map<std::string, std::string> & variables) = 0;
 
 	///////////////////////////////////////////////////////////////////////////
 

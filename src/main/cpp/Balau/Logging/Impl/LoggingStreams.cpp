@@ -9,6 +9,7 @@
 //
 
 #include "LoggingStreams.hpp"
+#include "../../Exception/ResourceExceptions.hpp"
 #include "../../Util/Compression.hpp"
 #include "../../Util/DateTime.hpp"
 #include "../../Util/Files.hpp"
@@ -73,18 +74,46 @@ void FileLoggingStream::createNewStream() {
 	}
 
 	// Lop off the "file://" prefix.
-	const std::string newPath = str.str().substr(7);
+	const std::string newPathStr = str.str().substr(7);
 
-	if (currentPath == newPath) {
+	if (currentPath == newPathStr) {
 		return; // spurious awaken.
 	}
 
 	const std::string previousPathString = currentPath;
-	currentPath = newPath;
+	currentPath = newPathStr;
+
+	boost::filesystem::path newPath(newPathStr);
+
+	try {
+		boost::filesystem::create_directories(newPath.parent_path());
+	} catch (const boost::filesystem::filesystem_error & e) {
+		ThrowBalauException(
+			  Exception::CouldNotCreateException
+			, "Failed to create parent directory of logging file"
+			, Resource::File(newPath)
+		);
+	}
+
+	if (boost::filesystem::is_directory(newPath)) {
+		ThrowBalauException(
+			  Exception::CouldNotCreateException
+			, "The specified logging file is a directory"
+			, Resource::File(newPath)
+		);
+	}
 
 	stream = std::make_shared<boost::filesystem::ofstream>(
-		boost::filesystem::path(newPath), std::ios::app | std::ios::binary
+		newPath, std::ios::app | std::ios::binary
 	);
+
+	if (!stream->is_open()) {
+		ThrowBalauException(
+			  Exception::CouldNotOpenException
+			, "The specified logging file could not be opened for writing"
+			, Resource::File(newPath)
+		);
+	}
 
 	if (previousPathString.empty()) {
 		return;

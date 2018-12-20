@@ -116,9 +116,10 @@ struct Vectors final {
 	///////////////////////////////////////////////////////////////////////////
 
 	///
-	/// Perform a map operator (transform the input elements to a vector of different elements).
+	/// Perform a map operator from one vector to another (transform the input elements to a vector of different elements).
 	///
-	template <typename D, typename S> static std::vector<D> map(const std::vector<S> & input, std::function<D (const S &)> f) {
+	template <typename D, typename S>
+	static std::vector<D> map(const std::vector<S> & input, std::function<D (const S &)> f) {
 		std::vector<D> ret;
 		std::transform(input.begin(), input.end(), std::back_inserter(ret), f);
 		return ret;

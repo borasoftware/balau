@@ -79,13 +79,20 @@ class EnvironmentConfigurationBuilderUtils {
 		private: const std::shared_ptr<Resource::Uri> uri;
 	};
 
-	// Parse the properties source and create an object trie containing property string objects.
-	public: static Container::ObjectTrie<PropertyString> createPropertyStrings(const std::shared_ptr<Resource::Uri> & input) {
-		auto properties = Lang::Property::PropertyParserService::parse(input);
-		PropertyTrieCreatorPayload payload {};
-		PropertyTrieCreator visitor(input);
-		visitor.visit(payload, properties);
-		return payload.trie;
+	// Parse the properties sources and create an object trie containing property string objects.
+	// The property hierarchies from all the input files are cascaded together in this function.
+	public: static Container::ObjectTrie<PropertyString> createPropertyStrings(const std::vector<std::shared_ptr<Resource::Uri>> & inputs) {
+		Container::ObjectTrie<PropertyString> propertyTrie;
+
+		for (const auto & input : inputs) {
+			auto properties = Lang::Property::PropertyParserService::parse(input);
+			PropertyTrieCreatorPayload payload {};
+			PropertyTrieCreator visitor(input);
+			visitor.visit(payload, properties);
+			propertyTrie.cascade(payload.trie);
+		}
+
+		return propertyTrie;
 	}
 
 	// Utility method: adds the children to the parent.

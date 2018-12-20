@@ -450,8 +450,8 @@ class EnvironmentConfigurationBuilder {
 					while (iter != nameHierarchy.end()) {
 						const auto & name = *iter;
 
-						if (compositeInstance->hasCompositeValue(name)) {
-							compositeInstance = compositeInstance->getShared(name).get();
+						if (compositeInstance->hasComposite(name)) {
+							compositeInstance = compositeInstance->getComposite(name).get();
 						} else {
 							// Create a new environment properties instance.
 							auto childLevel = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);

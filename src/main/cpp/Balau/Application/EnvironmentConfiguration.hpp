@@ -23,6 +23,7 @@
 #include <Balau/Lang/Property/PropertyParserService.hpp>
 #include <Balau/Resource/StringUri.hpp>
 #include <Balau/Util/Streams.hpp>
+#include <Balau/Util/Vectors.hpp>
 
 // Avoid false positives.
 #pragma clang diagnostic push
@@ -162,6 +163,36 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	////////////////////////////// Construction ///////////////////////////////
 
 	///
+	/// Create an environment configuration by specifying a vector of URIs pointing to the source properties texts and a vector of URIs pointing to type specification texts.
+	///
+	/// @param inputs a vector of URIs pointing to the source properties texts
+	/// @param specs a vector of URIs pointing to the type specification texts
+	///
+	public: EnvironmentConfiguration(const std::vector<std::shared_ptr<Resource::Uri>> & inputs,
+	                                 const std::vector<std::shared_ptr<Resource::Uri>> & specs = {})
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(inputs))
+		, typeSpecificationsUris(specs) {}
+
+	///
+	/// Create an environment configuration by specifying a vector of files pointing to the source properties texts and a vector of files pointing to type specification texts.
+	///
+	/// This convenience constructor allows file URIS to be supplied by value instead of via pointer containers.
+	///
+	/// @param inputs a vector of files pointing to the source properties texts
+	/// @param specs a vector of files pointing to the type specification texts
+	///
+	public: EnvironmentConfiguration(const std::vector<Resource::File> & inputs,
+	                                 const std::vector<Resource::File> & specs = {})
+		: EnvironmentConfiguration(
+			Util::Vectors::map<std::shared_ptr<Resource::Uri>, Resource::File>(
+				inputs, [] (const auto & file) { return std::shared_ptr<Resource::Uri>(new Resource::File(file)); }
+			)
+			, Util::Vectors::map<std::shared_ptr<Resource::Uri>, Resource::File>(
+				specs, [] (const auto & file) { return std::shared_ptr<Resource::Uri>(new Resource::File(file)); }
+			)
+		) {}
+
+	///
 	/// Create an environment configuration by specifying the source properties file and the property types via a properties file.
 	///
 	/// @tparam FileT the Resource::File type for moreTypeSpecifications
@@ -173,10 +204,12 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	EnvironmentConfiguration(const Resource::Uri & input,
 	                         const Resource::Uri & firstTypeSpecifications,
 	                         const UriT & ... moreTypeSpecifications)
-		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(input.clone()))
-		, typeSpecificationsUris(Util::Vectors::pushBack(
-			  std::shared_ptr<Resource::Uri>(firstTypeSpecifications.clone())
-			, std::shared_ptr<Resource::Uri>(moreTypeSpecifications.clone()) ...)
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings({ input.clone() }))
+		, typeSpecificationsUris(
+			Util::Vectors::pushBack(
+				  std::shared_ptr<Resource::Uri>(firstTypeSpecifications.clone())
+				, std::shared_ptr<Resource::Uri>(moreTypeSpecifications.clone()) ...
+			)
 		) {}
 
 	///
@@ -191,7 +224,7 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	EnvironmentConfiguration(const std::shared_ptr<Resource::Uri> & input,
 	                         const std::shared_ptr<Resource::Uri> & firstTypeSpecifications,
 	                         const UriT & ... moreTypeSpecifications)
-		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(input))
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings({ input }))
 		, typeSpecificationsUris(Util::Vectors::pushBack(firstTypeSpecifications, moreTypeSpecifications ...)) {}
 
 	///
@@ -201,7 +234,7 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	/// @param typeSpecification the properties type specifications
 	///
 	public: EnvironmentConfiguration(const std::string & input, const std::string & typeSpecifications_)
-		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(std::shared_ptr<Resource::Uri>(new Resource::StringUri(input))))
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings({ std::shared_ptr<Resource::Uri>(new Resource::StringUri(input)) }))
 		, typeSpecificationsUris(Util::Vectors::pushBack(std::shared_ptr<Resource::Uri>(new Resource::StringUri(input)))) {}
 
 	///
@@ -209,24 +242,24 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	///
 	/// @param input the path to the properties file to parse
 	///
-	protected: EnvironmentConfiguration(const Resource::Uri & input)
-		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(input.clone())) {}
+	public: EnvironmentConfiguration(const Resource::Uri & input)
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings({ input.clone() })) {}
 
 	///
 	/// Create an environment configuration by specifying a URI pointing to the source properties text.
 	///
 	/// @param input the URI pointing to the source properties text
 	///
-	protected: EnvironmentConfiguration(const std::shared_ptr<Resource::Uri> & input)
-		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(input)) {}
+	public: EnvironmentConfiguration(const std::shared_ptr<Resource::Uri> & input)
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings({ input })) {}
 
 	///
 	/// Create an environment configuration by specifying a string for the source properties text.
 	///
 	/// @param input the properties text
 	///
-	protected: EnvironmentConfiguration(const std::string & input)
-		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings(std::shared_ptr<Resource::Uri>(new Resource::StringUri(input)))) {}
+	public: EnvironmentConfiguration(const std::string & input)
+		: propertyStringsHierarchy(Impl::EnvironmentConfigurationBuilderUtils::createPropertyStrings({ std::shared_ptr<Resource::Uri>(new Resource::StringUri(input)) })) {}
 
 	/////////////// Hard wired type specification declarations ////////////////
 
@@ -473,9 +506,14 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	friend struct Impl::EnvironmentConfigurationBuilderTest;
 
 	// For testing only.
-	private: EnvironmentConfiguration(std::vector<std::shared_ptr<Impl::BindingBuilderBase>> && builders_)
-		: builders(std::move(builders_))
-		, testing(true) {}
+	private: static EnvironmentConfiguration testInstance(std::vector<std::shared_ptr<Impl::BindingBuilderBase>> && builders_) {
+		EnvironmentConfiguration conf;
+		conf.builders = std::move(builders_);
+		return conf;
+	}
+
+	// For testing only.
+	private: EnvironmentConfiguration() : testing(true) {}
 
 	// For testing only. Bypasses the normal binding builder creation.
 	private: const bool testing = false;

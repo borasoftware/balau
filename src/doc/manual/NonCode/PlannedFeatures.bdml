@@ -90,8 +90,6 @@
 		<h2>Test runner</h2>
 
 		<bullets>
-			<entry>Add selective running of tests via command line test case selection.</entry>
-			<entry>Integrate with common test running proxies (IDEs).</entry>
 			<entry>Add test case serialisation via dependency keys.</entry>
 		</bullets>
 
@@ -136,17 +134,17 @@
 
 			<entry>Add features to the HTTP and HTTPS clients (start with chunked transfer and asynchronous API, redirects).</entry>
 
-			<entry>Add keep alive support to the HTTP server.</entry>
+			<entry>Add keep alive configuration support to the HTTP server.</entry>
 
-			<entry>Extend the HTTP server to include TLS support.</entry>
+			<entry>Add TLS support to the HTTP server.</entry>
 
 			<entry>Improve/add other features to the HTTP server (chunked transfer, etc.).</entry>
 
 			<entry>Consider which other web application handlers would be useful.</entry>
 
-			<entry>Improve the default mime type map.</entry>
-
 			<entry>Analyse the performance of the HTTP server and determine how to improve performance.</entry>
+
+			<entry>Create a more efficient regular expression algorithm/data structure for the redirecting HTTP web application.</entry>
 		</bullets>
 
 		<h2>Resource</h2>
@@ -161,6 +159,13 @@
 
 		<bullets>
 			<entry>Add more features to the clock API and the system clock implementation.</entry>
+		</bullets>
+
+		<h2>Testing</h2>
+
+		<bullets>
+			<entry>Add selective test running via command line test specifications.</entry>
+			<entry>Integrate with common C++ unit test running frameworks.</entry>
 		</bullets>
 
 		<h2>Util</h2>

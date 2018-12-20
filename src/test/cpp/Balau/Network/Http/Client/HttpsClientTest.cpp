@@ -23,7 +23,7 @@ void HttpsClientTest::getRequest() {
 	HttpsClient client("borasoftware.com");
 
 	try {
-		Response<CharVectorBody> response = client.get("/");
+		Response<CharVectorBody> response = client.get("/test/testfile.html");
 		HttpClientTest::assertResponse(response, "<!DOCTYPE html", "OK", Status::ok);
 	} catch (const boost::system::system_error & e) {
 		logLine(e.what());
@@ -36,7 +36,7 @@ void HttpsClientTest::headRequest() {
 	HttpsClient client("borasoftware.com");
 
 	try {
-		Response<CharVectorBody> response = client.get("/");
+		Response<CharVectorBody> response = client.get("/test/testfile.html");
 		HttpClientTest::assertResponse(response, nullptr, "OK", Status::ok);
 	} catch (const boost::system::system_error & e) {
 		logLine(e.what());

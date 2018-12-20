@@ -8,8 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDER_WEB_APP_TEST
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDER_WEB_APP_TEST
+#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST
+#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
@@ -24,13 +24,16 @@ namespace HttpWebApps {
 
 struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWebAppTest> {
 	explicit EmailSendingHttpWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
-		registerTest(&EmailSendingHttpWebAppTest::test, "test");
+		registerTest(&EmailSendingHttpWebAppTest::directInstantiation,   "directInstantiation");
+		registerTest(&EmailSendingHttpWebAppTest::injectedInstantiation, "injectedInstantiation");
 	}
 
-	void test();
+	void directInstantiation();
+	void injectedInstantiation();
 
 	// Util
 	bool checkEnvironmentVariableSourcedString(const std::string & envVar, const std::string & value);
+	bool checkEnvironmentVariables();
 };
 
 } // namespace HttpWebApps
@@ -41,4 +44,4 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDER_WEB_APP_TEST
+#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST

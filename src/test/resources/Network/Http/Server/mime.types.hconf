@@ -1,0 +1,37 @@
+
+# Example HTTP server mime types configuration.
+mime.types {
+	bdml  = application/xml
+	bmp   = image/bmp
+	bz    = application/x-bzip
+	bz2   = application/x-bzip2
+	css   = text/css
+	csv   = text/csv
+	epub  = application/epub+zip
+	flv   = video/x-flv
+	gif   = image/gif
+	htm   = text/html
+	html  = text/html
+	ico   = image/x-icon
+	jar   = application/java-archive
+	jpeg  = image/jpeg
+	jpg   = image/jpeg
+	js    = application/javascript
+	json  = application/json
+	mpeg  = video/mpeg
+	pdf   = application/pdf
+	png   = image/png
+	php   = text/html
+	svg   = image/svg+xml
+	svgz  = image/svg+xml
+	tar   = application/x-tar
+	tif   = image/tiff
+	tiff  = image/tiff
+	txt   = text/plain
+	woff  = font/woff
+	woff2 = font/woff2
+	xhtml = application/xhtml+xml
+	xml   = application/xml
+	zip   = application/zip
+	7z    = application/x-7z-compressed
+}

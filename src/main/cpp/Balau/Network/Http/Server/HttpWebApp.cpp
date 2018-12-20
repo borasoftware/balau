@@ -18,10 +18,8 @@ StringResponse HttpWebApp::createOkResponse(HttpSession & session, const StringR
 	response.set(Field::server, session.configuration().serverId);
 	response.set(Field::content_type, "text/html");
 	response.keep_alive(request.keep_alive());
-
 	response.body() = "";
 	response.prepare_payload();
-
 	return response;
 }
 
@@ -33,6 +31,26 @@ EmptyResponse HttpWebApp::createOkHeadResponse(HttpSession & session, const Stri
 	return response;
 }
 
+EmptyResponse HttpWebApp::createRedirectResponse(HttpSession & session,
+                                                 const StringRequest & request,
+                                                 std::string_view location) {
+	Response<EmptyBody> response { Status::found, request.version() };
+	response.set(Field::server, session.configuration().serverId);
+	response.set(Field::location, location);
+	response.keep_alive(request.keep_alive());
+	return response;
+}
+
+EmptyResponse HttpWebApp::createPermanentRedirectResponse(HttpSession & session,
+                                                          const StringRequest & request,
+                                                          std::string_view location) {
+	Response<EmptyBody> response { Status::moved_permanently, request.version() };
+	response.set(Field::server, session.configuration().serverId);
+	response.set(Field::location, location);
+	response.keep_alive(request.keep_alive());
+	return response;
+}
+
 StringResponse HttpWebApp::createBadRequestResponse(HttpSession & session,
                                                     const StringRequest & request,
                                                     std::string_view errorMessage) {
@@ -40,10 +58,8 @@ StringResponse HttpWebApp::createBadRequestResponse(HttpSession & session,
 	response.set(Field::server, session.configuration().serverId);
 	response.set(Field::content_type, "text/html");
 	response.keep_alive(request.keep_alive());
-
 	response.body() = std::string(errorMessage);
 	response.prepare_payload();
-
 	return response;
 }
 

@@ -17,10 +17,9 @@
 /// Manages the handling of WebSocket messages in a WebSocket connection.
 ///
 
-#include <Balau/Exception/NetworkExceptions.hpp>
-#include <Balau/Network/Http/Server/HttpServer.hpp>
 #include <Balau/Network/Http/Server/WsWebApp.hpp>
-#include <Balau/Network/Http/Server/Impl/ClientSession.hpp>
+#include <Balau/Network/Http/Server/HttpServerConfiguration.hpp>
+#include <Balau/Util/DateTime.hpp>
 
 // Avoid false positive (due to std::make_shared).
 #pragma clang diagnostic push
@@ -33,23 +32,24 @@ namespace Balau::Network::Http {
 ///
 /// Holds a pointer to the private session information object for the client.
 ///
-/// TODO Do web sockets have cookie data? If not, there cannot be a client session and thus ClientSession will be HTTP only.
-///
 class WsSession : public std::enable_shared_from_this<WsSession> {
 	///
-	/// Create a WebSockets session object with the supplied data.
+	/// Create a WebSocket session object with the supplied data.
 	///
-	/// @param clientSession_ the client session associated with the WebSockets session
+	/// @param clientSession_ the client session associated with the WebSocket session
 	/// @param serverConfiguration_ the configuration of the HTTP server that created this session
 	/// @param socket_ the session socket
 	///
-	public: WsSession(std::shared_ptr<Impl::ClientSession> clientSession_,
-	                  std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-	                  TCP::socket socket_)
-		: clientSession(std::move(clientSession_))
-		, serverConfiguration(std::move(serverConfiguration_))
+	/// TODO A single WebSocket web application will handle all the session.
+	/// TODO This can be selected from the routing trie in advance.
+	///
+	public: WsSession(std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
+	                  TCP::socket socket_,
+	                  std::string path_)
+		: serverConfiguration(std::move(serverConfiguration_))
 		, ws(std::move(socket_))
-		, strand(ws.get_executor()) {}
+		, strand(ws.get_executor())
+		, path(std::move(path_)) {}
 
 	///
 	/// Get the shared state of the http server.
@@ -61,7 +61,7 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 	}
 
 	public: template <class Body, class Allocator>
-	void doAccept(HTTP::request <Body, HTTP::basic_fields<Allocator>> req) {
+	void doAccept(HTTP::request<Body, HTTP::basic_fields<Allocator>> req) {
 
 
 		// TODO
@@ -97,17 +97,17 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 
 		switch (frameType) {
 			case WsFrame::close: {
-				serverConfiguration->wsHandler->handleClose(*this); // TODO
+				serverConfiguration->wsHandler->handleClose(*this, path); // TODO
 				break;
 			}
 
 			case WsFrame::ping: {
-				serverConfiguration->wsHandler->handlePing(*this); // TODO
+				serverConfiguration->wsHandler->handlePing(*this, path); // TODO
 				break;
 			}
 
 			case WsFrame::pong: {
-				serverConfiguration->wsHandler->handlePong(*this); // TODO
+				serverConfiguration->wsHandler->handlePong(*this, path); // TODO
 				break;
 			}
 		}
@@ -149,14 +149,11 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 		ws.text(ws.got_text());
 
 		ws.async_write(
-			buffer.data(),
-			boost::asio::bind_executor(
-				strand,
-				std::bind(
-					&WsSession::onWrite,
-					shared_from_this(),
-					std::placeholders::_1,
-					std::placeholders::_2)));
+			  buffer.data()
+			, boost::asio::bind_executor(
+				strand, std::bind(&WsSession::onWrite, shared_from_this(), std::placeholders::_1, std::placeholders::_2)
+			)
+		);
 	}
 
 	///
@@ -178,10 +175,10 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 		}
 	}
 
-	private: std::shared_ptr<Impl::ClientSession> clientSession;
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
 	private: WS::stream<TCP::socket> ws;
 	private: boost::asio::strand<boost::asio::io_context::executor_type> strand;
+	private: const std::string path;
 	private: boost::beast::multi_buffer buffer;
 };
 

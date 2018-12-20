@@ -10,14 +10,30 @@
 
 #include "CannedHttpWebApp.hpp"
 #include "../HttpSession.hpp"
+#include "../../../../Application/EnvironmentProperties.hpp"
+#include "../../../../Logging/Impl/BalauLogger.hpp"
 
 namespace Balau::Network::Http::HttpWebApps {
 
-void CannedHttpWebApp::handleGetRequest(HttpSession & session, const StringRequest & request) {
+CannedHttpWebApp::CannedHttpWebApp(std::string mimeType_, std::string getResponseBody_, std::string postResponseBody_)
+	: mimeType(std::move(mimeType_))
+	, getResponseBody(std::move(getResponseBody_))
+	, postResponseBody(std::move(postResponseBody_)) {}
+
+CannedHttpWebApp::CannedHttpWebApp(const EnvironmentProperties & configuration, const BalauLogger & logger)
+	: mimeType(configuration.getValue<std::string>("mime.type"))
+	, getResponseBody(configuration.getValue<std::string>("get.body"))
+	, postResponseBody(configuration.getValue<std::string>("post.body")) {}
+
+void CannedHttpWebApp::handleGetRequest(HttpSession & session,
+                                        const StringRequest & request,
+                                        std::map<std::string, std::string> & ) {
 	handle(session, request, getResponseBody);
 }
 
-void CannedHttpWebApp::handleHeadRequest(HttpSession & session, const StringRequest & request) {
+void CannedHttpWebApp::handleHeadRequest(HttpSession & session,
+                                         const StringRequest & request,
+                                         std::map<std::string, std::string> & ) {
 	Response <StringBody> response {Status::ok, request.version()};
 	response.set(Field::server, session.configuration().serverId);
 	response.set(Field::content_type, mimeType);
@@ -26,7 +42,9 @@ void CannedHttpWebApp::handleHeadRequest(HttpSession & session, const StringRequ
 	session.sendResponse(std::move(response));
 }
 
-void CannedHttpWebApp::handlePostRequest(HttpSession & session, const StringRequest & request) {
+void CannedHttpWebApp::handlePostRequest(HttpSession & session,
+                                         const StringRequest & request,
+                                         std::map<std::string, std::string> & ) {
 	handle(session, request, postResponseBody);
 }
 

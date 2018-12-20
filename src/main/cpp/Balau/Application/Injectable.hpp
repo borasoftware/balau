@@ -17,6 +17,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE
 
+#include <Balau/Application/Injector.hpp>
 #include <Balau/Application/Impl/InjectorMacros.hpp>
 
 ///

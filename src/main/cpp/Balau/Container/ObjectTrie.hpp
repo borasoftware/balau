@@ -102,6 +102,7 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new value.
 	///
+	/// @param value the value that will be added
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: ObjectTrieNode<T> & add(T && value) {
@@ -114,6 +115,7 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new value.
 	///
+	/// @param value the value that will be added
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: ObjectTrieNode<T> & add(const T & value) {
@@ -131,6 +133,7 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new or existing value.
 	///
+	/// @param value the value that will be added or will replace
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: ObjectTrieNode<T> & addOrReplace(T && value) {
@@ -155,6 +158,7 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new or existing value.
 	///
+	/// @param value the value that will be added or will replace
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: ObjectTrieNode<T> & addOrReplace(const T & value) {
@@ -179,6 +183,9 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new or existing value.
 	///
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: template <typename CompareT>
@@ -204,6 +211,9 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new or existing value.
 	///
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: template <typename CompareT>
@@ -231,6 +241,11 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new or existing value.
 	///
+	/// @tparam CompareT the type of the comparison function
+	/// @tparam ReplaceT the type of the replacer function
+	/// @param replace the replacer function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: template <typename CompareT, typename ReplaceT, ReplaceT replace>
@@ -258,6 +273,11 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new or existing value.
 	///
+	/// @tparam CompareT the type of the comparison function
+	/// @tparam ReplaceT the type of the replacer function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
+	/// @param replace the replacer function
 	/// @return the current node, allowing chaining calls to be made
 	///
 	public: template <typename CompareT, typename ReplaceT>
@@ -281,6 +301,7 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new value.
 	///
+	/// @param value the value that will be added
 	/// @return the newly created node
 	///
 	public: ObjectTrieNode<T> & addAndReturnChild(const T & value) {
@@ -296,6 +317,7 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new value.
 	///
+	/// @param value the value that will be added
 	/// @return the newly created node
 	///
 	public: ObjectTrieNode<T> & addAndReturnChild(T && value) {
@@ -316,7 +338,8 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new or existing value.
 	///
-	/// @return the newly created node
+	/// @param value the value that will be added or will replace
+	/// @return the newly created or modified node
 	///
 	public: ObjectTrieNode<T> & addOrReplaceAndReturnChild(const T & value) {
 		ObjectTrieNode<T> * match = find(value);
@@ -342,7 +365,8 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new or existing value.
 	///
-	/// @return the newly created node
+	/// @param value the value that will be added or will replace
+	/// @return the newly created or modified node
 	///
 	public: ObjectTrieNode<T> & addOrReplaceAndReturnChild(T && value) {
 		ObjectTrieNode<T> * match = find(value);
@@ -368,7 +392,10 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new or existing value.
 	///
-	/// @return the newly created node
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
+	/// @return the newly created or modified node
 	///
 	public:  template <typename CompareT>
 	ObjectTrieNode<T> & addOrReplaceAndReturnChild(const T & value, CompareT compare) {
@@ -395,7 +422,10 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new or existing value.
 	///
-	/// @return the newly created node
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
+	/// @return the newly created or modified node
 	///
 	public: template <typename CompareT>
 	ObjectTrieNode<T> & addOrReplaceAndReturnChild(T && value, CompareT compare) {
@@ -424,7 +454,12 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is copied into the new or existing value.
 	///
-	/// @return the newly created node
+	/// @tparam CompareT the type of the comparison function
+	/// @tparam ReplaceT the type of the replacer function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
+	/// @param replace the replacer function
+	/// @return the newly created or modified node
 	///
 	public:  template <typename CompareT, typename ReplaceT>
 	ObjectTrieNode<T> & addOrReplaceAndReturnChild(const T & value, CompareT compare, ReplaceT replace) {
@@ -453,7 +488,12 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The data is moved into the new or existing value.
 	///
-	/// @return the newly created node
+	/// @tparam CompareT the type of the comparison function
+	/// @tparam ReplaceT the type of the replacer function
+	/// @param value the value that will be added or will replace
+	/// @param compare the comparison function
+	/// @param replace the replacer function
+	/// @return the newly created or modified node
 	///
 	public: template <typename CompareT, typename ReplaceT>
 	ObjectTrieNode<T> & addOrReplaceAndReturnChild(T && value, CompareT compare, ReplaceT replace) {
@@ -470,6 +510,9 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// Locates the first child matching the supplied value or return nullptr if not found.
 	///
+	/// @param value the value to compare
+	/// @return the matching child or nullptr if no match was found.
+	///
 	public: ObjectTrieNode<T> * find(const T & value) {
 		for (size_t m = 0; m < children.size(); m++) {
 			if (children[m].value == value) {
@@ -482,6 +525,9 @@ template <typename T> class ObjectTrieNode {
 
 	///
 	/// Locates the first child matching the supplied value or return nullptr if not found.
+	///
+	/// @param value the value to compare
+	/// @return the matching child or nullptr if no match was found.
 	///
 	public: const ObjectTrieNode<T> * find(const T & value) const {
 		for (size_t m = 0; m < children.size(); m++) {
@@ -497,6 +543,11 @@ template <typename T> class ObjectTrieNode {
 	/// Locates the first child matching the supplied value or return nullptr if not found.
 	///
 	/// The supplied comparator is used to determine equality (true == equal).
+	///
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value to compare
+	/// @param compare the comparison function between type U and type T
+	/// @return the matching child or nullptr if no match was found.
 	///
 	public: template <typename CompareT>
 	ObjectTrieNode<T> * find(const T & value, CompareT compare) {
@@ -514,6 +565,11 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The supplied comparator is used to determine equality (true == equal).
 	///
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value to compare
+	/// @param compare the comparison function between type U and type T
+	/// @return the matching child or nullptr if no match was found.
+	///
 	public: template <typename CompareT>
 	const ObjectTrieNode<T> * find(const T & value, CompareT compare) const {
 		for (size_t m = 0; m < children.size(); m++) {
@@ -529,6 +585,12 @@ template <typename T> class ObjectTrieNode {
 	/// Locates the first child matching the supplied value or return nullptr if not found.
 	///
 	/// The supplied comparator is used to determine equality (true == equal).
+	///
+	/// @tparam U the type of the value to compare
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value to compare
+	/// @param compare the comparison function between type U and type T
+	/// @return the matching child or nullptr if no match was found.
 	///
 	public: template <typename U, typename CompareT>
 	ObjectTrieNode<T> * find(const U & value, CompareT compare) {
@@ -546,6 +608,12 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// The supplied comparator is used to determine equality (true == equal).
 	///
+	/// @tparam U the type of the value to compare
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value to compare
+	/// @param compare the comparison function between type U and type T
+	/// @return the matching child or nullptr if no match was found.
+	///
 	public: template <typename U, typename CompareT>
 	const ObjectTrieNode<T> * find(const U & value, CompareT compare) const {
 		for (size_t m = 0; m < children.size(); m++) {
@@ -560,8 +628,9 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// Locates the first child matching the supplied value or creates a one.
 	///
-	/// The supplied value will be copied if no match was found and a new value is created.
+	/// The supplied value will be copied if no match was found and a new node is created.
 	///
+	/// @param value the value to compare and copy if a new node is created
 	/// @return the matching child or the newly created one.
 	///
 	public: ObjectTrieNode<T> & findOrAddChild(const T & value) {
@@ -578,8 +647,9 @@ template <typename T> class ObjectTrieNode {
 	///
 	/// Locates the first child matching the supplied value or creates a one.
 	///
-	/// The supplied value will be moved if no match was found and a new value is created.
+	/// The supplied value will be moved if no match was found and a new node is created.
 	///
+	/// @param value the value to compare and move if a new node is created
 	/// @return the matching child or the newly created one.
 	///
 	public: ObjectTrieNode<T> & findOrAddChild(T && value) {
@@ -590,6 +660,55 @@ template <typename T> class ObjectTrieNode {
 		}
 
 		children.emplace_back(ObjectTrieNode<T>(std::move(value)));
+		return children.back();
+	}
+
+	///
+	/// Locates the first child matching the supplied value or creates one.
+	///
+	/// A new value will be created from the supplied value if no match was
+	/// found and a new node is created.
+	///
+	/// @tparam U the type of the value to compare
+	/// @tparam CompareT the type of the comparison function
+	/// @param value the value to compare
+	/// @param compare the comparison function between type U and type T
+	/// @return the matching child or the newly created one.
+	///
+	public: template <typename U, typename CompareT>
+	ObjectTrieNode<T> & findOrAddChild(const U & value, CompareT compare) {
+		for (size_t m = 0; m < children.size(); m++) {
+			if (compare(children[m].value, value)) {
+				return children[m];
+			}
+		}
+
+		children.emplace_back(ObjectTrieNode<T>(T(value)));
+		return children.back();
+	}
+
+	///
+	/// Locates the first child matching the supplied value or creates one.
+	///
+	/// A new value will be created from the supplied value via the create
+	/// function if no match was found and a new node is created.
+	///
+	/// @tparam U the type of the value to compare
+	/// @tparam CompareT the type of the comparison function
+	/// @tparam Create the function used to create a new value
+	/// @param value the value to compare
+	/// @param compare the comparison function between type U and type T
+	/// @return the matching child or the newly created one.
+	///
+	public: template <typename U, typename CompareT, typename Create>
+	ObjectTrieNode<T> & findOrAddChild(const U & value, CompareT compare, Create create) {
+		for (size_t m = 0; m < children.size(); m++) {
+			if (compare(children[m].value, value)) {
+				return children[m];
+			}
+		}
+
+		children.emplace_back(ObjectTrieNode<T>(create(value)));
 		return children.back();
 	}
 
@@ -1768,6 +1887,110 @@ template <typename T> class ObjectTrie {
 		}
 
 		return node;
+	}
+
+
+	///
+	/// Descend into the trie, locating matches of the supplied values, or creating them if they do not exist.
+	///
+	/// The default operator == compare function is used to determine equality.
+	///
+	/// Descends into the trie, locating at each node the first child which matches
+	/// the next value in the supplied value chain. Any nodes that are not found are created.
+	/// Returns the node that was found or the created node if the node or one or more of its
+	/// parent were not present.
+	///
+	/// As the root node of the trie is fixed, the findOrAdd algorithm never checks the
+	/// first value against the root node of the trie, i.e. skipRoot is always true.
+	///
+	/// If the supplied values container is empty, the root node is returned.
+	///
+	/// @param values a vector of values to search for
+	/// @return a reference to the matching or created node
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC>
+	ObjectTrieNode<T> & findOrAdd(const ContainerT<U, UC ...> & values) {
+		return findOrAdd(values, [] (auto & lhs, auto & rhs) { return lhs == rhs; });
+	}
+
+	///
+	/// Descend into the trie, locating matches of the supplied values, or creating them if they do not exist.
+	///
+	/// The supplied search vector contains values that are used in the custom compare function.
+	///
+	/// Descends into the trie, locating at each node the first child which matches
+	/// the next value in the supplied value chain. Any nodes that are not found are created.
+	/// Returns the node that was found or the created node if the node or one or more of its
+	/// parent were not present.
+	///
+	/// As the root node of the trie is fixed, the findOrAdd algorithm never checks the
+	/// first value against the root node of the trie, i.e. skipRoot is always true.
+	///
+	/// If the supplied values container is empty, the root node is returned.
+	///
+	/// @tparam U the type of the values used in the compare function
+	/// @tparam CompareT the compare function type
+	/// @param values a vector of values to search for
+	/// @param compare the compare function
+	/// @return a reference to the matching node or nullptr if no node was found
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
+	ObjectTrieNode<T> & findOrAdd(const ContainerT<U, UC ...> & values, CompareT compare) {
+		auto iter = values.begin();
+		ObjectTrieNode<T> * node = &trieRoot;
+
+		if (values.empty()) {
+			return *node;
+		}
+
+		while (iter != values.end()) {
+			node = &node->template findOrAddChild<U, CompareT>(*iter, compare);
+			++iter;
+		}
+
+		return *node;
+	}
+
+	///
+	/// Descend into the trie, locating matches of the supplied values, or creating them if they do not exist.
+	///
+	/// The supplied search vector contains values that are used in the custom compare function.
+	///
+	/// The create function is used to create new nodes. The create function's argument
+	/// is the current value as supplied in the values container.
+	///
+	/// Descends into the trie, locating at each node the first child which matches
+	/// the next value in the supplied value chain. Any nodes that are not found are created.
+	/// Returns the node that was found or the created node if the node or one or more of its
+	/// parent were not present.
+	///
+	/// As the root node of the trie is fixed, the findOrAdd algorithm never checks the
+	/// first value against the root node of the trie, i.e. skipRoot is always true.
+	///
+	/// If the supplied values container is empty, the root node is returned.
+	///
+	/// @tparam U the type of the values used in the compare function
+	/// @tparam CompareT the compare function type
+	/// @tparam Create the function used to create new nodes
+	/// @param values a vector of values to search for
+	/// @param compare the compare function
+	/// @return a reference to the matching node or nullptr if no node was found
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT, typename Create>
+	ObjectTrieNode<T> & findOrAdd(const ContainerT<U, UC ...> & values, CompareT compare, Create create) {
+		auto iter = values.begin();
+		ObjectTrieNode<T> * node = &trieRoot;
+
+		if (values.empty()) {
+			return *node;
+		}
+
+		while (iter != values.end()) {
+			node = &node->template findOrAddChild<U, CompareT>(*iter, compare, create);
+			++iter;
+		}
+
+		return *node;
 	}
 
 	///

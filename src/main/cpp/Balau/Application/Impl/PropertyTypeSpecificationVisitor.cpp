@@ -108,7 +108,11 @@ void PropertyTypeSpecificationVisitor::visit(Lang::Property::Payload & payload, 
 	std::shared_ptr<Resource::Uri> resolvedUri = uris.top()->resolve(Util::Strings::trim(object.getText()));
 	auto properties = Lang::Property::PropertyParserService::parse(resolvedUri);
 	uris.push(resolvedUri);
-	visit(payload, properties);
+
+	for (auto & node : properties.getNodes()) {
+		node->visit(payload, *this);
+	}
+
 	uris.pop();
 }
 

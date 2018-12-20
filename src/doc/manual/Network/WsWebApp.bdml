@@ -20,7 +20,7 @@
 		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
 		<copyright>Copyright (C) 2017 Bora Software (contact@borasoftware.com)</copyright>
 
-		<title text="Balau core C++ library - WebSockets app framework" />
+		<title text="Balau core C++ library - WebSocket app framework" />
 		<toc start="1" />
 
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
@@ -30,7 +30,7 @@
 		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
 	</metadata>
 
-	<chapter title="WebSockets app framework">
+	<chapter title="WebSocket app framework">
 		<h1>Overview</h1>
 
 		<para>This documentation chapter is pending.</para>

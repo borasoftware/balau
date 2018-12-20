@@ -661,8 +661,6 @@ template <typename KeyT> class CommandLine {
 
 				first = false;
 			}
-
-			builder << "\n";
 		}
 
 		return builder.str();

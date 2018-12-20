@@ -56,7 +56,7 @@ void EnvironmentConfigurationTest::derivedEmpty() {
 	assertThat(fileServe->getValue<std::string>("document.root"), is("file:doc"));
 	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("1200"));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(abc->getValue<std::string>("f"), is("https://borasoftware.com"));
@@ -83,7 +83,7 @@ void EnvironmentConfigurationTest::derivedSimple() {
 	assertThat(fileServe->getValue<std::string>("document.root"), is("file:doc"));
 	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("1200"));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(abc->getValue<std::string>("f"), is("https://borasoftware.com"));
@@ -120,7 +120,7 @@ void EnvironmentConfigurationTest::derivedComposite() {
 	assertThat(*fileServe->getUnique<Resource::Uri>("document.root"), is(Resource::File("doc")));
 	assertThat(fileServe->getValue<int>("cache.ttl"), is(1200));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(*abc->getUnique<Resource::Uri>("f"), is(Resource::Https("https://borasoftware.com")));
@@ -140,7 +140,7 @@ void EnvironmentConfigurationTest::directEmpty() {
 	assertThat(fileServe->getValue<std::string>("document.root"), is("file:doc"));
 	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("1200"));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(abc->getValue<std::string>("f"), is("https://borasoftware.com"));
@@ -163,7 +163,7 @@ void EnvironmentConfigurationTest::directSimple() {
 	assertThat(fileServe->getValue<std::string>("document.root"), is("file:doc"));
 	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("1200"));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(abc->getValue<std::string>("f"), is("https://borasoftware.com"));
@@ -183,14 +183,14 @@ void EnvironmentConfigurationTest::directComposite() {
 	assertThat(*fileServe->getUnique<Resource::Uri>("document.root"), is(Resource::File("doc")));
 	assertThat(fileServe->getValue<int>("cache.ttl"), is(1200));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(*abc->getUnique<Resource::Uri>("f"), is(Resource::Https("https://borasoftware.com")));
 }
 
 void EnvironmentConfigurationTest::directMultiple() {
-
+	// TODO
 }
 
 void EnvironmentConfigurationTest::mixedEmpty() {
@@ -214,7 +214,7 @@ void EnvironmentConfigurationTest::mixedEmpty() {
 	assertThat(fileServe->getValue<std::string>("document.root"), is("file:doc"));
 	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("1200"));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(abc->getValue<std::string>("f"), is("https://borasoftware.com"));
@@ -243,7 +243,7 @@ void EnvironmentConfigurationTest::mixedSimple() {
 	assertThat(fileServe->getValue<std::string>("document.root"), is("file:doc"));
 	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("1200"));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(abc->getValue<std::string>("f"), is("https://borasoftware.com"));
@@ -282,14 +282,14 @@ void EnvironmentConfigurationTest::mixedComposite() {
 	assertThat(*fileServe->getUnique<Resource::Uri>("document.root"), is(Resource::File("doc")));
 	assertThat(fileServe->getValue<int>("cache.ttl"), is(1200));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(*abc->getUnique<Resource::Uri>("f"), is(Resource::Https("https://borasoftware.com")));
 }
 
 void EnvironmentConfigurationTest::mixedMultiple() {
-
+	// TODO
 }
 
 void EnvironmentConfigurationTest::derivedSimpleWithDefaults() {
@@ -365,14 +365,14 @@ void EnvironmentConfigurationTest::derivedCompositeWithDefaults() {
 	assertThat(fileServe->getValue<int>("cache.ttl"), is(3600));
 
 	assertThat([&fileServe] () { fileServe->getValue<std::string>("cache.ttl"); }, throws<Exception::NoBindingException>());
-	assertThat([&fileServe] () { fileServe->getShared("a.b.c"); }, throws<Exception::NoBindingException>());
+	assertThat([&fileServe] () { fileServe->getComposite("a.b.c"); }, throws<Exception::NoBindingException>());
 
 	// Present in type specifications with default, but not in env conf.
-	auto withDefaults1 = fileServe->getShared("with.defaults1");
+	auto withDefaults1 = fileServe->getComposite("with.defaults1");
 
 	assertThat(withDefaults1->getValue<std::string>("message1"), is("hello1"));
 
-	auto withDefaults2 = withDefaults1->getShared("with.defaults2");
+	auto withDefaults2 = withDefaults1->getComposite("with.defaults2");
 
 	assertThat(withDefaults2->getValue<std::string>("message2"), is("hello2"));
 
@@ -413,7 +413,7 @@ void EnvironmentConfigurationTest::directCompositeWithDefaults() {
 }
 
 void EnvironmentConfigurationTest::directMultipleWithDefaults() {
-
+	// TODO
 }
 
 void EnvironmentConfigurationTest::mixedSimpleWithDefaults() {
@@ -488,14 +488,125 @@ void EnvironmentConfigurationTest::mixedCompositeWithDefaults() {
 	assertThat([&fileServe] () { fileServe->getValue<int>("cache.ttl"); }, throws<Exception::NoBindingException>());
 	assertThat([&fileServe] () { fileServe->getValue<std::string>("cache.ttl"); }, throws<Exception::NoBindingException>());
 
-	auto options = fileServe->getShared("options");
+	auto options = fileServe->getComposite("options");
 
 	assertThat(options->getValue<std::string>("identity"), is("Balau Server"));
 	assertThat(*options->getUnique<Resource::Uri>("404"), is(Resource::File("404.html")));
 }
 
 void EnvironmentConfigurationTest::mixedMultipleWithDefaults() {
+	// TODO
+}
 
+void EnvironmentConfigurationTest::includedFilesConfig() {
+	const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+	Resource::File env = resourceFolder / "Application" / "EnvironmentConfiguration" / "hasDescendantInclude.properties";
+
+	class EnvConfig : public EnvironmentConfiguration {
+		public: EnvConfig(const Resource::File & file) : EnvironmentConfiguration(file) {}
+
+		public: void configure() const override {}
+	};
+
+	auto injector = Injector::create(EnvConfig(env));
+
+	assertThat(injector->getValue<std::string>("http.server.worker.count"), is("8"));
+
+	auto fileServe = injector->getShared<EnvironmentProperties>("file.serve");
+
+	assertThat(fileServe->getValue<std::string>("location"), is("/"));
+	assertThat(fileServe->getValue<std::string>("document.root"), is("file:src/doc"));
+	assertThat(fileServe->getValue<std::string>("cache.ttl"), is("3600"));
+	assertThat(fileServe->getValue<std::string>("a.b.c"), is("test value"));
+
+	auto abc = fileServe->getComposite("another.block");
+
+	assertThat(abc->getValue<std::string>("first"), is("1"));
+	assertThat(abc->getValue<std::string>("second"), is("2"));
+	assertThat(abc->getValue<std::string>("third"), is("3"));
+	assertThat(abc->getValue<std::string>("fourth"), is("4"));
+}
+
+void EnvironmentConfigurationTest::customConfigurationTypes() {
+	const auto envSpec = Resource::StringUri("listen : endpoint");
+	const auto env     = Resource::StringUri("listen = 192.168.1.23:4567");
+
+	// Injector instantiation without custom type registration.
+	assertThat(
+		  [env, envSpec] () { Injector::create(EnvironmentConfiguration(env, envSpec)); }
+		, throws<Exception::EnvironmentConfigurationException>()
+	);
+
+	EnvironmentConfiguration::registerValueType<Endpoint>("endpoint");
+
+	auto injector = Injector::create(EnvironmentConfiguration(env, envSpec));
+
+	assertThat(injector->getValue<Endpoint>("listen"), is(makeEndpoint("192.168.1.23", 4567U)));
+}
+
+void EnvironmentConfigurationTest::balauConfig() {
+	// The Balau environment configuration property specifications.
+	const auto srcFolder = TestResources::BalauSourceMainFolder;
+	Resource::File specs = srcFolder / "resources" / "BalauConfig" / "balau.thconf";
+
+	// Example environment.
+	const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+	Resource::File env = resourceFolder / "Application" / "EnvironmentConfiguration" / "testenv" / "env.hconf";
+	Resource::File creds = resourceFolder / "Application" / "EnvironmentConfiguration" / "testenv" / "creds.hconf";
+
+	// Register non-standard type.
+	EnvironmentConfiguration::registerValueType<Endpoint>("endpoint");
+
+	auto injector = Injector::create(EnvironmentConfiguration({ env, creds }, { specs }));
+
+	auto httpServerConfig = injector->getShared<EnvironmentProperties>("http.server");
+
+	assertThat(httpServerConfig->getValue<std::string>("info.log"), is("stream: file:access.log"));
+	assertThat(httpServerConfig->getValue<std::string>("error.log"), is("stream: file:error.log"));
+	assertThat(httpServerConfig->getValue<std::string>("server.id"), is("Http server"));
+	assertThat(httpServerConfig->getValue<int>("worker.count"), is(2));
+	assertThat(httpServerConfig->getValue<Network::Endpoint>("listen"), is(Network::makeEndpoint("127.0.0.1", 12345)));
+
+	auto mimeTypes = httpServerConfig->getComposite("mime.types");
+
+	assertThat(mimeTypes->getValue<std::string>("image/jpeg"),    is("jpg jpeg"));
+	assertThat(mimeTypes->getValue<std::string>("image/png"),     is("png"));
+	assertThat(mimeTypes->getValue<std::string>("image/svg+xml"), is("svg svgz"));
+	assertThat(mimeTypes->getValue<std::string>("image/x-icon"),  is("ico"));
+	assertThat(mimeTypes->getValue<std::string>("text/css"),      is("css"));
+	assertThat(mimeTypes->getValue<std::string>("text/html"),     is("html htm"));
+	assertThat(mimeTypes->getValue<std::string>("text/xml"),      is("xml bdml"));
+
+	auto filters = httpServerConfig->getComposite("filters");
+
+	// TODO
+	assertThat(filters->begin() == filters->end(), is(true));
+
+	auto httpConfig = httpServerConfig->getComposite("http");
+
+	auto filesConfig = httpConfig->getComposite("files");
+
+	assertThat(filesConfig->getValue<std::string>("location"), is("/"));
+	assertThat(*filesConfig->getUnique<Resource::Uri>("root"), is(Resource::File("/var/www")));
+
+	auto emailSenderConfig = httpConfig->getComposite("email.sender");
+
+	assertThat(emailSenderConfig->getValue<std::string>("location"), is("/send-message"));
+	assertThat(emailSenderConfig->getValue<std::string>("host"), is("smtp.do_not_use.com"));
+	assertThat(emailSenderConfig->getValue<int>("port"), is(465));
+	assertThat(emailSenderConfig->getValue<std::string>("user"), is("testuser"));
+	assertThat(emailSenderConfig->getValue<std::string>("subject"), is("message"));
+	assertThat(emailSenderConfig->getValue<std::string>("from"), is("testuser@do_not_use.com"));
+	assertThat(emailSenderConfig->getValue<std::string>("to"), is("testuser@do_not_use.com"));
+	assertThat(emailSenderConfig->getValue<std::string>("user-agent"), is("Test Agent"));
+	assertThat(emailSenderConfig->getValue<std::string>("success"), is("/s/success.html"));
+	assertThat(emailSenderConfig->getValue<std::string>("failure"), is("/f/failed.html"));
+
+	auto parametersConfig = emailSenderConfig->getComposite("parameters");
+
+	assertThat(parametersConfig->getValue<std::string>("Name"), is("1"));
+	assertThat(parametersConfig->getValue<std::string>("Email"), is("2"));
+	assertThat(parametersConfig->getValue<std::string>("Message"), is("3"));
 }
 
 } // namespace Balau

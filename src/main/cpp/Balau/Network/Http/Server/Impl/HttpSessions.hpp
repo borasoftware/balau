@@ -48,6 +48,8 @@ class HttpSessions {
 		for (auto & session : sessions) {
 			session->stop();
 		}
+
+		sessions.clear();
 	}
 
 	private: std::set<std::shared_ptr<HttpSession>> sessions;

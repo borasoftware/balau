@@ -22,14 +22,14 @@ using Testing::endsWith;
 namespace Resource {
 
 void HttpsUtf8To32ReadResourceTest::emptyPath() {
-	performTest("https://borasoftware.com");
+	performTest("http://borasoftware.com", U"<html>\r\n<head><title>302 Found</title></head>");
 }
 
 void HttpsUtf8To32ReadResourceTest::nonEmptyPath() {
-	performTest("https://borasoftware.com/index.html");
+	performTest("https://borasoftware.com/en/index.html", U"<!DOCTYPE html");
 }
 
-void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_) {
+void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_, const std::u32string & expectedStart) {
 	Https url(url_);
 
 	auto httpsReadResource = url.getUtf8To32ReadResource();
@@ -37,8 +37,6 @@ void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_) {
 
 	std::u32istream & httpsReadStream = httpsReadResource.readStream();
 	std::u32istream & uriReadStream = uriReadResource->readStream();
-
-	const std::u32string expectedStart = U"<!DOCTYPE html";
 
 	auto actualHttpsData = ::toString32(httpsReadStream);
 	auto actualUriData = ::toString32(uriReadStream);

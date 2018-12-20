@@ -21,17 +21,17 @@ namespace Property {
 
 struct PropertyParserTest : public Testing::TestGroup<PropertyParserTest> {
 	explicit PropertyParserTest(Testing::TestRunner & runner) : TestGroup(runner) {
-		registerTest(&PropertyParserTest::test1, "test1");
-		registerTest(&PropertyParserTest::test2, "test2");
-		registerTest(&PropertyParserTest::test3, "test3");
-		registerTest(&PropertyParserTest::test4, "test4");
-		registerTest(&PropertyParserTest::normalisation, "normalisation");
+		registerTest(&PropertyParserTest::simpleHierarchy,    "simpleHierarchy");
+		registerTest(&PropertyParserTest::specialSymbolNames, "specialSymbolNames");
+		registerTest(&PropertyParserTest::complexNames,       "complexNames");
+		registerTest(&PropertyParserTest::rootIncludes,       "rootIncludes");
+		registerTest(&PropertyParserTest::normalisation,      "normalisation");
 	}
 
-	void test1();
-	void test2();
-	void test3();
-	void test4();
+	void simpleHierarchy();
+	void specialSymbolNames();
+	void complexNames();
+	void rootIncludes();
 	void normalisation();
 };
 

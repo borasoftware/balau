@@ -18,12 +18,11 @@
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SERVER
 
 #include <Balau/Network/Http/Server/HttpServerConfiguration.hpp>
-#include <Balau/Network/Http/Server/HttpWebApp.hpp>
-#include <Balau/Network/Http/Server/WsWebApp.hpp>
+#include <Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.hpp>
+#include <Balau/Network/Http/Server/WsWebApps/RoutingWsWebApp.hpp>
 #include <Balau/Resource/File.hpp>
 #include <Balau/System/Clock.hpp>
 #include <Balau/Application/Injectable.hpp>
-#include <Balau/Application/Injector.hpp>
 
 #include <boost/asio/signal_set.hpp>
 
@@ -78,26 +77,12 @@ class Listener;
 /// fault when the injector nullptr is accessed.
 ///
 class HttpServer {
-	BalauInjectNamed(
+	BalauInjectNamedTypes(
 		  HttpServer
-		, state->injector,    ""
-		, state->clock,       ""
-		, state->serverId,    "httpServerIdentification"
-		, state->endpoint,    "httpServerEndpoint"
-		, threadNamePrefix,   "httpServerThreadName"
-		, workerCount,        "httpServerWorkerCount"
-		, state->httpHandler, "httpHandler"
-		, state->wsHandler,   "webSocketHandler"
-		, threadNamePrefix,   "httpServerLoggingNamespace"
-		, state->mimeTypes,   "mimeTypes"
+		, std::shared_ptr<System::Clock>,         ""
+		, std::shared_ptr<EnvironmentProperties>, "http.server"
+		, bool,                                   "http.server.register.signal.handler"
 	);
-
-//	BalauInjectNamedTypes(
-//		  HttpServer
-//		, std::weak_ptr<Injector>,        ""
-//		, std::shared_ptr<System::Clock>, ""
-//		, std::string,                    "http.server.configuration"
-//	);
 
 	////////////////// Constructors with injector parameter ///////////////////
 
@@ -110,86 +95,25 @@ class HttpServer {
 	/// This constructor can be used within an injector configuration in order
 	/// to bind an HTTP server that is configured via complex configuration.
 	///
-	/// @param injector the injector to use in the web apps
-	/// @param clock the clock to be used in the server
-	/// @param configurationUri the server configuration
-	///
-	public: HttpServer(std::weak_ptr<Injector> injector,
-	                   std::shared_ptr<System::Clock> clock,
-	                   const std::string & configurationUri);
-
-	///
-	/// Create an HTTP server with HTTP and WebSocket handlers.
-	///
-	/// The supplied injector will be used by the handlers during requests to
-	/// obtain injected instances.
-	///
-	/// This constructor can be used within an injector configuration in order
-	/// to bind a custom configured HTTP server. If the default configuration is
-	/// sufficient, the standard injector constructor can be used instead.
-	///
-	/// The mime type map can be specified or left as the default mime type map.
+	/// By default, the HTTP server installs its own signal handler in order to provide graceful
+	/// shutdown in SIGINT and SIGTERM. If this is not required, the registerSignalHandler
+	/// parameter can be set to false. This is set by default to true in the Balau environment
+	/// configuration specification.
 	///
 	/// @param injector the injector to use in the web apps
 	/// @param clock the clock to be used in the server
-	/// @param serverIdentification the server string to return
-	/// @param endpoint the network address and port to listen on
-	/// @param threadNamePrefix_ the prefix of the worker thread names (used for logging)
-	/// @param workerCount_ the number of worker threads to use
-	/// @param httpHandler the HTTP request handler to use
-	/// @param wsHandler the WebSocket message handler to use
-	/// @param loggingNamespace the logging namespace to use (default = "balau.network.server")
-	/// @param mimeTypes the mime type map to use
+	/// @param configuration the server configuration
+	/// @param registerSignalHandler (default = true) set to false in order to prevent signal handler installation
 	///
-	public: HttpServer(std::weak_ptr<Injector> injector,
-	                   std::shared_ptr<System::Clock> clock,
-	                   const std::string & serverIdentification,
-	                   const TCP::endpoint & endpoint,
-	                   std::string threadNamePrefix_,
-	                   size_t workerCount_,
-	                   std::shared_ptr<HttpWebApp> httpHandler,
-	                   std::shared_ptr<WsWebApp> wsHandler,
-	                   const std::string & loggingNamespace = "balau.network.server",
-	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes);
+	public: HttpServer(std::shared_ptr<System::Clock> clock,
+	                   std::shared_ptr<EnvironmentProperties> configuration,
+	                   bool registerSignalHandler = true);
 
 	///
-	/// Create an HTTP server with an HTTP handler.
+	/// Create an HTTP server with HTTP and optional WebSocket handlers.
 	///
-	/// The supplied injector will be used by the handlers during requests to
-	/// obtain injected instances.
-	///
-	/// This constructor can be used within an injector configuration in order
-	/// to bind a custom configured HTTP server. If the default configuration is
-	/// sufficient, the standard injector constructor can be used instead.
-	///
-	/// The mime type map can be specified or left as the default mime type map.
-	///
-	/// @param injector the injector to use in the web apps
-	/// @param clock the clock to be used in the server
-	/// @param serverIdentification the server string to return
-	/// @param endpoint the network address and port to listen on
-	/// @param threadNamePrefix_ the prefix of the worker thread names (used for logging)
-	/// @param workerCount_ the number of worker threads to use
-	/// @param httpHandler the HTTP request handler to use
-	/// @param loggingNamespace the logging namespace to use (default = "balau.network.server")
-	/// @param mimeTypes the mime type map to use
-	///
-	public: HttpServer(std::weak_ptr<Injector> injector,
-	                   std::shared_ptr<System::Clock> clock,
-	                   const std::string & serverIdentification,
-	                   const TCP::endpoint & endpoint,
-	                   std::string threadNamePrefix_,
-	                   size_t workerCount_,
-	                   std::shared_ptr<HttpWebApp> httpHandler,
-	                   const std::string & loggingNamespace = "balau.network.server",
-	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes);
-
-	////////////////////// Constructors without injector //////////////////////
-
-	///
-	/// Create an HTTP server with HTTP and WebSocket handlers.
-	///
-	/// The mime type map can be specified or left as the default mime type map.
+	/// In addition to direct instantiation, this constructor can be used
+	/// within an injector provider.
 	///
 	/// @param clock the clock to be used in the server
 	/// @param serverIdentification the server string to return
@@ -197,9 +121,11 @@ class HttpServer {
 	/// @param threadNamePrefix_ the prefix of the worker thread names (used for logging)
 	/// @param workerCount_ the number of worker threads to use
 	/// @param httpHandler the HTTP request handler to use
-	/// @param wsHandler the WebSocket message handler to use
+	/// @param wsHandler the WebSocket message handler to use (default is no WebSocket handler)
 	/// @param loggingNamespace the logging namespace to use (default = "balau.network.server")
+	/// @param sessionCookieName the name of the cookie in which the session id is stored (default = "session")
 	/// @param mimeTypes the mime type map to use
+	/// @param registerSignalHandler (default = true) set to false in order to prevent signal handler installation
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
 	                   const std::string & serverIdentification,
@@ -207,32 +133,11 @@ class HttpServer {
 	                   std::string threadNamePrefix_,
 	                   size_t workerCount_,
 	                   std::shared_ptr<HttpWebApp> httpHandler,
-	                   std::shared_ptr<WsWebApp> wsHandler,
+	                   std::shared_ptr<WsWebApp> wsHandler = std::shared_ptr<WsWebApp>(nullptr),
 	                   const std::string & loggingNamespace = "balau.network.server",
-	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes);
-
-	///
-	/// Create an HTTP server with an HTTP handler.
-	///
-	/// The mime type map can be specified or left as the default mime type map.
-	///
-	/// @param clock the clock to be used in the server
-	/// @param serverIdentification the server string to return
-	/// @param endpoint the network address and port to listen on
-	/// @param threadNamePrefix_ the prefix of the worker thread names (used for logging)
-	/// @param workerCount_ the number of worker threads to use
-	/// @param httpHandler the HTTP request handler to use
-	/// @param loggingNamespace the logging namespace to use (default = "balau.network.server")
-	/// @param mimeTypes the mime type map to use
-	///
-	public: HttpServer(std::shared_ptr<System::Clock> clock,
-	                   const std::string & serverIdentification,
-	                   const TCP::endpoint & endpoint,
-	                   std::string threadNamePrefix_,
-	                   size_t workerCount_,
-	                   std::shared_ptr<HttpWebApp> httpHandler,
-	                   const std::string & loggingNamespace = "balau.network.server",
-	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes);
+	                   std::string sessionCookieName = "session",
+	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes,
+	                   bool registerSignalHandler = true);
 
 	///
 	/// Create an HTTP server using the file serving HTTP handler.
@@ -247,7 +152,9 @@ class HttpServer {
 	/// @param mimeTypes the mime type map to use
 	/// @param documentRoot the root file system path for serving files
 	/// @param loggingNamespace the logging namespace to use (default = "balau.network.server")
+	/// @param sessionCookieName the name of the cookie in which the session id is stored (default = "session")
 	/// @param defaultFile the default file to return if no file is specified in the request
+	/// @param registerSignalHandler (default = true) set to false in order to prevent signal handler installation
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
 	                   const std::string & serverIdentification,
@@ -257,7 +164,9 @@ class HttpServer {
 	                   const Resource::File & documentRoot,
 	                   const std::string & defaultFile = "index.html",
 	                   const std::string & loggingNamespace = "balau.network.server",
-	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes);
+	                   std::string sessionCookieName = "session",
+	                   std::shared_ptr<MimeTypes> mimeTypes = MimeTypes::defaultMimeTypes,
+	                   bool registerSignalHandler = true);
 
 	///
 	/// Destroy the HTTP server, stopping it if it is running.
@@ -296,13 +205,6 @@ class HttpServer {
 	public: bool isRunning();
 
 	///
-	/// Blocks until isRunning() returns false.
-	///
-	/// @param period the sleep period in milliseconds
-	///
-	public: void blockUntilStopped(size_t period);
-
-	///
 	/// Stop the HTTP server.
 	///
 	/// If the server is already stopped, this call is a NOP.
@@ -327,9 +229,47 @@ class HttpServer {
 
 	////////////////////////// Private implementation /////////////////////////
 
+	//
+	// Create the HTTP server configuration object.
+	//
+	private: static std::shared_ptr<HttpServerConfiguration> createState(std::shared_ptr<System::Clock> clock,
+	                                                                     std::shared_ptr<EnvironmentProperties> configuration);
+
+	//
+	// Create a mime type map from the environment configuration if one is
+	// supplied, otherwise use the default mime type map that is hard coded.
+	//
+	private: static std::shared_ptr<MimeTypes> createMimeTypes(std::shared_ptr<EnvironmentProperties> configuration,
+	                                                           BalauLogger & logger);
+
+	//
+	// Create the HTTP handler, consisting of a HTTP routing handle at the base
+	// and other HTTP handlers at the leaves.
+	//
+	private: static std::shared_ptr<HttpWebApp> createHttpHandler(std::shared_ptr<EnvironmentProperties> configuration,
+	                                                              BalauLogger & logger);
+
+	//
+	// Create the WebSocket handler, consisting of a WebSocket routing handle at the base
+	// and other WebSocket handlers at the leaves.
+	//
+	private: static std::shared_ptr<WsWebApp> createWsHandler(std::shared_ptr<EnvironmentProperties> configuration,
+	                                                          BalauLogger & logger);
+
+	//
+	// Helper function that adds the HTTP web application to the supplied routing
+	// trie in the location(s) specified in the location string.
+	//
+	// An exception will be thrown a location is specified that already has a web
+	// application defined for it.
+	//
+	private: static void addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & routing,
+	                                          const std::string & locationStr,
+	                                          std::shared_ptr<HttpWebApp> & webApp);
+
 	private: void startWorkerThreads(size_t thisWorkerCount);
 	private: void workerThreadFunction(size_t workerIndex, bool blocking);
-	private: void registerSignalHandler();
+	private: void doRegisterSignalHandler();
 	private: void handleSignal(const boost::system::error_code & error, int sig);
 
 	private: std::shared_ptr<HttpServerConfiguration> state;

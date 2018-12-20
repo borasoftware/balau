@@ -584,7 +584,7 @@
 	}                                                                                               \
 	                                                                                                \
 	public: static std::vector<::Balau::Impl::BindingKey> _Balau_getDependencyKeys() {              \
-		return { _BalauIKT(T0, N0); _BalauIKT(T1, N1) };                                            \
+		return { _BalauIKT(T0, N0), _BalauIKT(T1, N1) };                                            \
 	}
 
 #define _BalauInjectNamedTypes__7(TYPE, T0, N0, T1, N1, T2, N2)                                     \

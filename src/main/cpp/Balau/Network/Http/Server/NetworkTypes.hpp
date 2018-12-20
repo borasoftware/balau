@@ -17,6 +17,7 @@
 /// Low level types used in networking code.
 ///
 
+#include <Balau/Type/FromString.hpp>
 #include <Balau/Util/Enums.hpp>
 #include <Balau/ThirdParty/Boost/Beast/Http/BasicFileBody.hpp>
 
@@ -325,5 +326,55 @@ inline std::string toString(const Balau::Network::Method & method) {
 inline std::string toString(const Balau::Network::BoostSystemErrorCode & errorCode) {
 	return errorCode.message();
 }
+
+namespace boost::asio::ip {
+
+///
+/// Print the endpoint as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the endpoint
+///
+inline std::string toString(const tcp::endpoint & endpoint) {
+	return endpoint.address().to_string() + ":" + ::toString(endpoint.port());
+}
+
+///
+/// Populate the endpoint by parsing the supplied string.
+///
+inline void fromString(tcp::endpoint & endpoint, const std::string & value) {
+	// TODO improve implementation (ipv4 / ipv6).
+
+	static std::regex numeric("[0-9]+");
+
+	const bool isPortOnly = std::regex_match(value, numeric);
+
+	if (isPortOnly) {
+		unsigned short port;
+		::fromString(port, value);
+		endpoint = Balau::Network::makeEndpoint("127.0.0.1", port);
+		return;
+	}
+
+	auto lastColon = Balau::Util::Strings::lastIndexOf(value, ":");
+
+	if (lastColon == std::string::npos) {
+		// No port.
+		endpoint = Balau::Network::makeEndpoint(value, 8080);
+	} else {
+		auto portStr = value.substr(lastColon + 1);
+
+		if (Balau::Util::Strings::contains(portStr, "]")) {
+			// No port.
+			endpoint = Balau::Network::makeEndpoint(value, 8080);
+		} else {
+			auto ip = value.substr(0, lastColon);;
+			unsigned short port;
+			::fromString(port, portStr);
+			endpoint = Balau::Network::makeEndpoint(ip, port);
+		}
+	}
+}
+
+} // namespace boost::asio::ip
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__NETWORK_TYPES

@@ -342,7 +342,7 @@ template <typename T> struct CreateBindingKey<const std::weak_ptr<const T>> {
 };
 
 //
-// A transient binding key type that is used in get instance calls.
+// A transient binding key type that is used in get instance calls and other transiently defined data structures.
 //
 // Using this type prevents the need for string creation.
 //
@@ -350,6 +350,10 @@ struct BindingKeyView {
 	BindingKeyView(std::type_index type_, std::string_view name_)
 		: type(type_)
 		, name(name_) {}
+
+	BindingKeyView(const BindingKey & key)
+		: type(key.getType())
+		, name(key.getName()) {}
 
 	//
 	// ////// C++ specification: std::string and std::string_view hashes //////

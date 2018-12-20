@@ -16,18 +16,22 @@ using namespace Balau::Network::Http;
 
 namespace Balau::Documentation {
 
-void ConfigurationWebApp::handleGetRequest(HttpSession & session, const StringRequest & request) {
+void ConfigurationWebApp::handleGetRequest(HttpSession & session,
+                                           const StringRequest & request,
+                                           std::map<std::string, std::string> & variables) {
 	session.sendResponse(createServerErrorResponse(session, request, "Get requests are not implemented yet."));
 }
 
-void ConfigurationWebApp::handleHeadRequest(HttpSession & session, const StringRequest & request) {
+void ConfigurationWebApp::handleHeadRequest(HttpSession & session,
+                                            const StringRequest & request,
+                                            std::map<std::string, std::string> & variables) {
 	session.sendResponse(createServerErrorResponse(session, request, "Head requests are not implemented yet."));
 }
 
-void ConfigurationWebApp::handlePostRequest(HttpSession & session, const StringRequest & request) {
-	session.sendResponse(
-		createServerErrorResponse(session, request, "Post requests are not implemented.")
-	);
+void ConfigurationWebApp::handlePostRequest(HttpSession & session,
+                                            const StringRequest & request,
+                                            std::map<std::string, std::string> & variables) {
+	session.sendResponse(createServerErrorResponse(session, request, "Post requests are not implemented."));
 }
 
 } // namespace Balau::Documentation

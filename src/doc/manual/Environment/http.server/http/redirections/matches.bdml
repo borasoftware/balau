@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url="../../../.." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - http.server -> http -> redirections -> matches" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="http.server -> http -> redirections -> matches">
+		<h1>Description</h1>
+
+		<para class="short-desc">Regular expression matches for the redirector web application.</para>
+
+		<h1>Ancestor</h1>
+
+		<para>The <emph>matches</emph> composite property is contained within  <ref url="Environment/http.server/http/redirections">redirections</ref>.</para>
+
+		<h1>Simple configuration</h1>
+
+		<para>The <emph>matches</emph> composite property can contain any conforming simple property.</para>
+
+		<para>A conforming simple property represents a redirection specification. The key of such a property is a regular expression defining the set of possible paths that will be redirected. The value of such a propery is the redirection path.</para>
+
+		<para>The regular expression may contain capture groups. The text of these capture groups are added to the request variables, with names $1, $2, $3, etc.</para>
+
+		<para>The redirection path may contain any previously defined request variables, including the variables defined for the capture groups.</para>
+
+		<h1>Composite configuration</h1>
+
+		<para>The <emph>matches</emph> composite property does not contain any composite configuration.</para>
+
+		<h1>Example</h1>
+
+		<code lang="Properties">
+			redirections {
+				location = /redirect-paths/
+
+				matches {
+					^/redirect-paths/(.*)$ = /redirected/$1
+				}
+			}
+		</code>
+	</chapter>
+</document>

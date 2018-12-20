@@ -43,11 +43,14 @@ struct UrlEncodeSplit {
 		for (auto parameter : parameters) {
 			std::vector<std::string_view> keyAndValue = Util::Strings::split(parameter, "=");
 
-			if (keyAndValue.size() != 2) {
+			if (keyAndValue.size() == 1) {
+				// No value supplied.
+				keysAndValues.emplace(keyAndValue[0], "");
+			} else if (keyAndValue.size() != 2) {
 				ThrowBalauException(Exception::NetworkException, "Invalid parameter list");
+			} else {
+				keysAndValues.emplace(keyAndValue[0], keyAndValue[1]);
 			}
-
-			keysAndValues.emplace(keyAndValue[0], keyAndValue[1]);
 		}
 
 		return keysAndValues;

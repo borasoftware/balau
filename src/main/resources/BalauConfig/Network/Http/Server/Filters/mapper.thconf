@@ -1,0 +1,26 @@
+##
+## Balau core C++ library
+##
+## Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+##
+## Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+## See the LICENSE file for the full license text.
+##
+
+#
+# The mapper filter creates/updates a variable according to an input
+# variable.
+#
+# This example creates the $region variable by mapping from the
+# $country variable.
+#
+mapper {
+	name    : string =
+	depends : string =
+	input   : string
+	output  : string
+
+	entries {
+		* : string
+	}
+}

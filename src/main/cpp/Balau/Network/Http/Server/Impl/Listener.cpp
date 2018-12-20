@@ -14,7 +14,6 @@
 namespace Balau::Network::Http::Impl {
 
 void Listener::onAccept(boost::system::error_code errorCode) {
-	// TODO determine what other error codes should result in no doAccept call.
 	if (errorCode == boost::system::errc::operation_canceled) {
 		BalauBalauLogInfo(
 			  serverConfiguration->logger
@@ -26,9 +25,8 @@ void Listener::onAccept(boost::system::error_code errorCode) {
 
 		return;
 	} else {
-		auto clientSession = getClientSession();
 		httpSessions.start(
-			std::make_shared<HttpSession>(httpSessions, clientSession, serverConfiguration, std::move(socket))
+			std::make_shared<HttpSession>(httpSessions, clientSessions, serverConfiguration, std::move(socket))
 		);
 	}
 

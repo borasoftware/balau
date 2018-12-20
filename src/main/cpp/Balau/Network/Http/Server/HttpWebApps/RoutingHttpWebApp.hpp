@@ -34,14 +34,28 @@ namespace Balau::Network::Http::HttpWebApps {
 /// If a most specific match is not suitable for all paths, the resolved handlers
 /// may nevertheless return not found / bad request responses for invalid paths.
 ///
-/// In order to use the routing HTTP handler, construct a routing trie, with each
-/// node containing a routing node. Routing nodes are std::tuple objects, the first
-/// element containing a string component in the path and the second, third, and
-/// fourth elements containing shared pointers of the handlers to route to for GET,
-/// HEAD, and POST requests.
+/// There are two ways to use the routing HTTP handler: automatically or manually.
 ///
-/// To construct the routing trie, the routingNode() convenience functions may be
-/// used. If the routing trie is fixed at compile time, the fluent API of the
+/// The routing handler is automatically instantiated when the HTTP server is
+/// created via environment configuration. In this case, the HTTP server will
+/// create a populated routing handler from the HTTP web applications specified
+/// in the environment configuration. The HTTP server environment configuration
+/// thus specifies the routing hierarchy via the location properties in each web
+/// application.
+///
+/// Manual creation of a routing handler may also be performed if required, by
+/// constructing a routing trie with each node containing a routing node. Routing
+/// nodes are std::tuple objects, the first element containing a string component
+/// in the path and the second, third, and fourth elements containing shared
+/// pointers of the handlers to route to for GET, HEAD, and POST requests.
+///
+/// As the HTTP server will assign the same handler instance to all three GET,
+/// HEAD, and POST pointers for a particular location, manual creation can be
+/// useful when different handlers are required for each HTTP method in a single
+/// location.
+///
+/// To manually construct the routing trie, the routingNode() convenience functions
+/// may be used. If the routing trie is fixed at compile time, the fluent API of the
 /// ObjectTrie class can be used to construct the routing.
 ///
 /// As the handlers are kept in shared pointers, handler instances may be shared
@@ -68,36 +82,96 @@ class RoutingHttpWebApp : public HttpWebApp {
 	///
 	public: using Routing = Container::ObjectTrie<Value>;
 
+	public: static constexpr size_t KeyIndex = 0;
+	public: static constexpr size_t GetHandlerIndex = 1;
+	public: static constexpr size_t HeadHandlerIndex = 2;
+	public: static constexpr size_t PostHandlerIndex = 3;
+
 	///
 	/// Construct a routing HTTP handler, by supplying a preformed routing trie.
 	///
-	public: explicit RoutingHttpWebApp(Routing && routing_);
+	public: RoutingHttpWebApp(Routing && routing_) : routing(std::move(routing_)) {}
 
-	public: void handleGetRequest(HttpSession & session, const StringRequest & request) override;
+	public: void handleGetRequest(HttpSession & session,
+	                              const StringRequest & request,
+	                              std::map<std::string, std::string> & variables) override {
+		HttpWebApp * handler = resolve(session, request);
 
-	public: void handleHeadRequest(HttpSession & session, const StringRequest & request) override;
+		if (handler != nullptr) {
+			handler->handleGetRequest(session, request, variables);
+		}
+	}
 
-	public: void handlePostRequest(HttpSession & session, const StringRequest & request) override;
+	public: void handleHeadRequest(HttpSession & session,
+	                               const StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override {
+		HttpWebApp * handler = resolve(session, request);
+
+		if (handler != nullptr) {
+			handler->handleHeadRequest(session, request, variables);
+		}
+	}
+
+	public: void handlePostRequest(HttpSession & session,
+	                               const StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override {
+		HttpWebApp * handler = resolve(session, request);
+
+		if (handler != nullptr) {
+			handler->handlePostRequest(session, request, variables);
+		}
+	}
 
 	///////////////////////// Private implementation //////////////////////////
 
-	private: HttpWebApp * resolve(HttpSession & session, const StringRequest & request);
+	//private: HttpWebApp * resolve(HttpSession & session, const StringRequest & request);
+	private: HttpWebApp * resolve(HttpSession & session, const StringRequest & request) {
+		const std::string_view & path = std::string_view(request.target().data(), request.target().length());
+		auto components = Util::Strings::split(path, "/");
 
-	private: static constexpr size_t KeyIndex = 0;
-	private: static constexpr size_t GetHandlerIndex = 1;
-	private: static constexpr size_t HeadHandlerIndex = 2;
-	private: static constexpr size_t PostHandlerIndex = 3;
+		Node * node = !components.empty()
+			? routing.findNearest(components, [] (auto & lhs, auto & rhs) { return std::get<KeyIndex>(lhs) == rhs; })
+			: &routing.root();
+
+		if (node != nullptr) {
+			HttpWebApp * handler;
+
+			switch (request.method()) {
+				case Method::get: {
+					handler = std::get<GetHandlerIndex>(node->value).get();
+					break;
+				}
+
+				case Method::head: {
+					handler = std::get<HeadHandlerIndex>(node->value).get();
+					break;
+				}
+
+				case Method::post: {
+					handler = std::get<PostHandlerIndex>(node->value).get();
+					break;
+				}
+
+				default: {
+					handler = nullptr;
+					break;
+				}
+			}
+
+			if (handler != nullptr) {
+				return handler;
+			}
+		}
+
+		// No handler found for method.
+		sendNotFoundResponse(session, request);
+		return nullptr;
+	}
+
+	private: void sendNotFoundResponse(HttpSession & session, const StringRequest & request);
 
 	private: Routing routing;
 };
-
-///
-/// Builds a routing
-///
-class RoutingBuilder {
-
-};
-
 
 ///
 /// Convenience function to make a routing node from a handler type, a string

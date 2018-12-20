@@ -27,12 +27,12 @@ namespace Balau::Exception {
 class IndexOutOfRangeException : public BalauException {
 	public: const size_t index;
 
-	public: IndexOutOfRangeException(const char * file, int line, size_t index_)
-		: BalauException(file, line, "IndexOutOfRange", ::toString(index_))
+	public: IndexOutOfRangeException(const char * file, int line, const std::string & st, size_t index_)
+		: BalauException(file, line, st, "IndexOutOfRange", ::toString(index_))
 		, index(index_) {}
 
-	public: IndexOutOfRangeException(const char * file, int line, const std::string & text, size_t index_)
-		: BalauException(file, line, "IndexOutOfRange", text + " - " + ::toString(index_))
+	public: IndexOutOfRangeException(const char * file, int line, const std::string & st, const std::string & text, size_t index_)
+		: BalauException(file, line, st, "IndexOutOfRange", text + " - " + ::toString(index_))
 		, index(index_) {}
 };
 
@@ -44,16 +44,16 @@ inline bool operator == (const IndexOutOfRangeException & lhs, const IndexOutOfR
 /// Thrown when a request is made for an element but no elements are available.
 ///
 class EmptyException : public BalauException {
-	public: EmptyException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "Empty", text) {}
+	public: EmptyException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "Empty", text) {}
 };
 
 ///
 /// Thrown when an invalid size is supplied or detected.
 ///
 class SizeException : public BalauException {
-	public: SizeException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "Size", text) {}
+	public: SizeException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "Size", text) {}
 };
 
 ///
@@ -62,8 +62,8 @@ class SizeException : public BalauException {
 template <typename T> class ItemExistsException : public BalauException {
 	public: const T item;
 
-	public: ItemExistsException(const char * file, int line, T item_, const std::string & text)
-		: BalauException(file, line, "ItemExists", text)
+	public: ItemExistsException(const char * file, int line, const std::string & st, T item_, const std::string & text)
+		: BalauException(file, line, st, "ItemExists", text)
 		, item(item_) {}
 };
 
@@ -73,8 +73,8 @@ template <typename T> class ItemExistsException : public BalauException {
 template <typename T> class ItemDoesNotExistException : public BalauException {
 	public: const T item;
 
-	public: ItemDoesNotExistException(const char * file, int line, T item_, const std::string & text)
-		: BalauException(file, line, "ItemDoesNotExist", text)
+	public: ItemDoesNotExistException(const char * file, int line, const std::string & st, T item_, const std::string & text)
+		: BalauException(file, line, st, "ItemDoesNotExist", text)
 		, item(item_) {}
 };
 

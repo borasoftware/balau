@@ -123,7 +123,7 @@ void numericValueImpl(int argc, const char * argv[], CommandLineStyle style) {
 	assertThat(commandLine.getOption(KEY7), is(fValueStr));
 	assertThat(commandLine.getOption(KEY8), is(dValueStr));
 
-	assertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, ::toString(KEY9))));
+	assertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, "", ::toString(KEY9))));
 
 	assertThat([&] () { commandLine.getOption(KEY9); }, throws<Exception::OptionNotFoundException>());
 
@@ -220,22 +220,17 @@ void CommandLineTest::docOutputSsv() {
 
 	const std::string expected = 1 + R"(
     -h, --help     - Displays this help message
-
     -k, --key-one  - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                      ncididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru
                      d exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aut
                      e irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat n
                      ulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
                       officia deserunt mollit anim id est laborum.
-
     -m, --key-two  - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
                      nt mollit anim id est laborum.
-
     -3             - ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid
                      unt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-
     -n, --key-four - The fourth key.
-
 )";
 
 	assertThat(actual, is(expected));
@@ -316,22 +311,17 @@ void CommandLineTest::docOutputSev() {
 
 	const std::string expected = 1 + R"(
     h, help     - Displays this help message
-
     k, key-one  - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
                   ncididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru
                   d exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aut
                   e irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat n
                   ulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
                    officia deserunt mollit anim id est laborum.
-
     m, key-two  - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
                   nt mollit anim id est laborum.
-
     3           - ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidid
                   unt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-
     n, key-four - The fourth key.
-
 )";
 
 	assertThat(actual, is(expected));

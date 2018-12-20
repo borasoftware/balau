@@ -29,6 +29,7 @@
 #include "Balau/Network/Http/Server/HttpServerTest.hpp"
 #include "Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.hpp"
 #include "Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.hpp"
+#include "Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.hpp"
 #include "Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.hpp"
 #include "Balau/Resource/FileByteReadResourceTest.hpp"
 #include "Balau/Resource/FileByteWriteResourceTest.hpp"
@@ -129,6 +130,7 @@ int main(int argc, char * argv[]) {
 		.registerGroup<Network::Http::HttpsClientTest>()
 		.registerGroup<Network::Http::HttpWebApps::EmailSendingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpWebApps::FileServingHttpWebAppTest>()
+		.registerGroup<Network::Http::HttpWebApps::RedirectingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpWebApps::RoutingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpServerTest>()
 		.registerGroup<Resource::FileByteReadResourceTest>()

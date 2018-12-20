@@ -27,11 +27,17 @@ namespace Balau::Documentation {
 /// @todo implement this web app
 ///
 class ConfigurationWebApp : public Network::Http::HttpWebApp {
-	public: void handleGetRequest(Network::Http::HttpSession & session, const Network::StringRequest & request) override;
+	public: void handleGetRequest(Network::Http::HttpSession & session,
+	                              const Network::StringRequest & request,
+	                              std::map<std::string, std::string> & variables) override;
 
-	public: void handleHeadRequest(Network::Http::HttpSession & session, const Network::StringRequest & request) override;
+	public: void handleHeadRequest(Network::Http::HttpSession & session,
+	                               const Network::StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override;
 
-	public: void handlePostRequest(Network::Http::HttpSession & session, const Network::StringRequest & request) override;
+	public: void handlePostRequest(Network::Http::HttpSession & session,
+	                               const Network::StringRequest & request,
+	                               std::map<std::string, std::string> & variables) override;
 };
 
 } // namespace Balau::Documentation

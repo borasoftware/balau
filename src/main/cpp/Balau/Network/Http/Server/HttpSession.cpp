@@ -8,24 +8,23 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "Impl/ClientSession.hpp"
+#include "Impl/ClientSessions.hpp"
 #include "Impl/HttpSessions.hpp"
 #include "../../../Logging/Logger.hpp"
 
 namespace Balau::Network::Http {
 
 HttpSession::HttpSession(Impl::HttpSessions & owner_,
-                         std::shared_ptr<Impl::ClientSession> clientSession_,
+                         Impl::ClientSessions & clientSessions_,
                          std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
                          TCP::socket socket_)
 	: owner(owner_)
-	, log(serverConfiguration_->logger)
-	, clientSession(std::move(clientSession_))
+	, clientSessions(clientSessions_)
 	, serverConfiguration(std::move(serverConfiguration_))
 	, socket(std::move(socket_))
 	, strand(socket.get_executor()) {
 	BalauBalauLogTrace(
-		  log
+		  serverConfiguration->logger
 		, "HttpSession created (local = {}, remote = {})"
 		, socket.local_endpoint()
 		, socket.remote_endpoint()
@@ -54,17 +53,26 @@ void HttpSession::doRead() {
 void HttpSession::onRead(boost::system::error_code errorCode, std::size_t bytesTransferred) {
 	boost::ignore_unused(bytesTransferred);
 
+	parseCookies();
+
 	if (!validateRequest(errorCode, request)) {
 		return;
 	}
 
+	setClientSession();
+
 	// Check for WebSocket upgrade.
 	if (WS::is_upgrade(request)) {
-		std::make_shared<WsSession>(clientSession, serverConfiguration, std::move(socket))->doAccept(std::move(request));
-		return;
-	}
+		std::make_shared<WsSession>(
+			serverConfiguration, std::move(socket), std::string(request.target())
+		)->doAccept(
+			std::move(request)
+		);
 
-	handleRequest(request);
+		return;
+	} else {
+		handleRequest(request);
+	}
 }
 
 bool HttpSession::validateRequest(boost::system::error_code errorCode, const StringRequest & request) {
@@ -72,7 +80,7 @@ bool HttpSession::validateRequest(boost::system::error_code errorCode, const Str
 		doClose(); // The client closed the connection.
 		return false;
 	} else if (errorCode) {
-		BalauBalauLogWarn(log, "HttpSession request error: {}", errorCode);
+		BalauBalauLogWarn(serverConfiguration->logger, "HttpSession request error: {}", errorCode);
 		return false;
 	}
 
@@ -86,35 +94,11 @@ bool HttpSession::validateRequest(boost::system::error_code errorCode, const Str
 	return true;
 }
 
-void HttpSession::handleRequest(const StringRequest & request) {
-	switch (request.method()) {
-		case Method::get: {
-			serverConfiguration->httpHandler->handleGetRequest(*this, request);
-			break;
-		}
-
-		case Method::head: {
-			serverConfiguration->httpHandler->handleHeadRequest(*this, request);
-			break;
-		}
-
-		case Method::post: {
-			serverConfiguration->httpHandler->handlePostRequest(*this, request);
-			break;
-		}
-
-		default: {
-			sendResponse(HttpWebApp::createBadRequestResponse(*this, request, "Unsupported HTTP method."));
-			break;
-		}
-	}
-}
-
 void HttpSession::onWrite(boost::system::error_code errorCode, std::size_t bytesTransferred, bool close) {
 	boost::ignore_unused(bytesTransferred);
 
 	if (errorCode) {
-		BalauBalauLogWarn(log, "HttpSession error: {}", errorCode);
+		BalauBalauLogWarn(serverConfiguration->logger, "HttpSession error: {}", errorCode);
 		doClose();
 	} else if (close) {
 		doClose();
@@ -125,18 +109,54 @@ void HttpSession::onWrite(boost::system::error_code errorCode, std::size_t bytes
 }
 
 void HttpSession::stop() {
-	BalauBalauLogTrace(log, "HttpSession::stop");
+	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::stop");
 	doClose();
 	owner.stop(shared_from_this());
 }
 
 void HttpSession::doClose() {
 	boost::system::error_code errorCode;
-	BalauBalauLogTrace(log, "HttpSession::doClose shutting down");
+	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose shutting down");
 	socket.shutdown(TCP::socket::shutdown_send, errorCode);
-	BalauBalauLogTrace(log, "HttpSession::doClose completed shut down");
+	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose completed shut down");
 	socket.close(errorCode);
-	BalauBalauLogTrace(log, "HttpSession::doClose closed");
+	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose closed");
+}
+
+void HttpSession::parseCookies() {
+	cookies.clear();
+	cookieString = ::toString(request[Field::cookie]);
+
+	// According to RFC-6265, cookies must be split by the exact "; " string.
+	auto cookieViews = Util::Strings::split(cookieString, "; ");
+
+	for (auto cookieView : cookieViews) {
+		auto cookieNameAndValue = Util::Strings::split(cookieView, "=");
+
+		if (cookieNameAndValue.size() != 2) {
+			// Invalid cookie sent by user agent.. ignore.
+			continue;
+		}
+
+		cookies.insert(std::make_pair(cookieNameAndValue[0], cookieNameAndValue[1]));
+	}
+}
+
+void HttpSession::setClientSession() {
+	auto iter = cookies.find(std::string_view(serverConfiguration->sessionCookieName));
+
+	if (iter != cookies.end()) {
+		// Existing client session?
+		auto session = clientSessions.get(std::string(iter->second));
+
+		if (session) {
+			clientSession = session;
+			return;
+		}
+	}
+
+	// New client session.
+	clientSession = clientSessions.create(*serverConfiguration->clock);
 }
 
 } // namespace Balau::Network::Http

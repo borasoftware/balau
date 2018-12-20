@@ -275,14 +275,19 @@ std::unique_ptr<PropertyNode> PropertyParser::produceSimple(std::string_view key
 				break;
 			}
 
-			case PropertyToken::LineBreak: {
+			case PropertyToken::LineBreak:
+			case PropertyToken::EndOfFile: {
 				scannedTokens.consume();
 				valueFinished = true;
 				break;
 			}
 
 			default: {
-				break;
+				ThrowBalauException(
+					  Exception::SyntaxErrorException
+					, "Invalid input: unexpected token in simple property."
+					, token.codeSpan
+				);
 			}
 		}
 	}

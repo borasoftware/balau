@@ -20,6 +20,9 @@ LoggingLevel BalauLogger::getLevel() const noexcept {
 BalauLogger::BalauLogger(const char * loggingNamespace)
 	: logger(Logger::getLogger(loggingNamespace)) {}
 
+BalauLogger::BalauLogger(const std::string & loggingNamespace)
+	: logger(Logger::getLogger(loggingNamespace)) {}
+
 BalauLogger::BalauLogger(const Logger & logger_)
 	: logger(logger_) {}
 

@@ -8,8 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK__FILE_SERVING_WEB_APP_TEST
-#define COM_BORA_SOFTWARE__BALAU_NETWORK__FILE_SERVING_WEB_APP_TEST
+#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK__FILE_SERVING_HTTP_WEB_APP_TEST
+#define COM_BORA_SOFTWARE__BALAU_NETWORK__FILE_SERVING_HTTP_WEB_APP_TEST
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
@@ -50,4 +50,4 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK__FILE_SERVING_WEB_APP_TEST
+#endif // COM_BORA_SOFTWARE__BALAU_NETWORK__FILE_SERVING_HTTP_WEB_APP_TEST

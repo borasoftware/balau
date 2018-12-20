@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url="../.." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - http.server -> mime.types" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="http.server -> mime.types">
+		<h1 toc='false'>Description</h1>
+
+		<para class="short-desc">The list of MIME types to use in the HTTP server.</para>
+
+		<para>The MIME type list consists of a MIME type key and a space delimited list of file extensions which identify as this MIME type.</para>
+
+		<h1 toc='false'>Ancestor</h1>
+
+		<para>The <emph>http</emph> composite property is contained within  <ref url="Environment/http.server">http.server</ref>.</para>
+
+		<h1 toc='false'>Simple configuration</h1>
+
+		<para>The <emph>mime.types</emph> composite property can contain any conforming simple property.</para>
+
+		<para>A conforming simple property is a valid MIME type key and a space delimited list of valid file extensions. It is an error if a file extension appears in more than one MIME type key within the <emph>mime.types</emph> composite property.</para>
+
+		<h1 toc='false'>Composite configuration</h1>
+
+		<para>The <emph>mime.types</emph> composite property does not contain any composite configuration.</para>
+
+		<h1 toc='false'>Example</h1>
+
+		<code lang="Properties">
+			mime.types {
+				application/epub+zip        = epub
+				application/java-archive    = jar war ear
+				application/javascript      = js
+				application/json            = json
+				application/msword          = doc
+				application/pdf             = pdf
+				application/postscript      = ps eps
+				application/rtf             = rtf
+				application/xhtml+xml       = xhtml
+				application/x-7z-compressed = 7z
+				application/x-bzip          = bz
+				application/x-bzip2         = bz2
+				application/x-gzip          = gz gzip
+				application/x-tar           = tar
+				application/zip             = zip
+				audio/mpeg                  = mp3
+				audio/ogg                   = ogg
+				font/woff                   = woff
+				font/woff2                  = woff2
+				image/bmp                   = bmp
+				image/gif                   = gif
+				image/jpeg                  = jpg jpeg
+				image/png                   = png
+				image/svg+xml               = svg svgz
+				image/tiff                  = tif tiff
+				image/x-icon                = ico
+				text/css                    = css
+				text/csv                    = csv
+				text/html                   = html htm
+				text/mathml                 = mml
+				text/xml                    = xml bdml
+				text/plain                  = txt
+				video/mpeg                  = mpg mpeg
+				video/mp4                   = mp4
+				video/x-msvideo             = avi
+				video/x-flv                 = flv
+			}
+		</code>
+	</chapter>
+</document>

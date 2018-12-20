@@ -1100,6 +1100,70 @@ struct Strings final {
 		return splitImpl(input, delimiter, compress);
 	}
 
+	///////////////////////////////////
+
+	///
+	/// Split the input string on each of the occurrences of the specified delimiter regular expression and subsequently trim the resulting strings.
+	///
+	/// The input string must remain valid after the call, or the resulting string
+	/// views will be invalid.
+	///
+	/// @param input the input string to split
+	/// @param delimiter the regular expression delimiter marking each split
+	/// @param returnDelimiters when true, the delimiter matches are also returned
+	/// @param compress false returns empty strings where multiple delimiters touch
+	///
+	static std::vector<std::string_view> splitAndTrim(const std::string_view & input,
+	                                                  const std::regex & delimiter,
+	                                                  bool returnDelimiters = false,
+	                                                  bool compress = true) {
+		auto elements = split(input, delimiter, returnDelimiters, compress);
+
+		for (auto & element : elements) {
+			element = trim(element);
+		}
+
+		return elements;
+	}
+
+	///
+	/// Split the input string on each of the occurrences of the specified delimiter and subsequently trim the resulting strings.
+	///
+	/// @param input the input string to split
+	/// @param delimiter the string delimiter marking each split
+	/// @param compress false returns empty strings where multiple delimiters touch
+	///
+	static std::vector<std::string_view> splitAndTrim(const std::string_view & input,
+	                                                  const std::string_view & delimiter,
+	                                                  bool compress = true) {
+		auto elements = split(input, delimiter, compress);
+
+		for (auto & element : elements) {
+			element = trim(element);
+		}
+
+		return elements;
+	}
+
+	///
+	/// Split the input string on each of the occurrences of the specified delimiter and subsequently trim the resulting strings.
+	///
+	/// @param input the input string to split
+	/// @param delimiter the string delimiter marking each split
+	/// @param compress false returns empty strings where multiple delimiters touch
+	///
+	static std::vector<std::u32string_view> splitAndTrim(const std::u32string_view & input,
+	                                                     const std::u32string_view & delimiter,
+	                                                     bool compress = true) {
+		auto elements = split(input, delimiter, compress);
+
+		for (auto & element : elements) {
+			element = trim(element);
+		}
+
+		return elements;
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	Strings() = delete;

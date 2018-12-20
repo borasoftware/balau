@@ -124,6 +124,7 @@ PropertyToken PropertyScanner::getNextToken() {
 				&& currentChar != U'\t'
 				&& currentChar != U'\r'
 				&& currentChar != U'\n'
+				&& currentChar != std::char_traits<char32_t>::eof()
 			);
 
 			putBackCurrentChar();

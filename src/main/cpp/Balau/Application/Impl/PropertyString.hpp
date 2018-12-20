@@ -50,6 +50,10 @@ struct PropertyString {
 	PropertyString & operator = (PropertyString && ) = default;
 };
 
+inline bool operator == (const PropertyString & lhs, const PropertyString & rhs) {
+	return lhs.type == rhs.type && lhs.name == rhs.name;
+}
+
 } // namespace Impl
 
 } // namespace Balau

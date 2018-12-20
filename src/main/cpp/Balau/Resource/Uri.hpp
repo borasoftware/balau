@@ -104,6 +104,14 @@ class Uri {
 	/// If the supplied path contains a scheme prefix, the URI fromString function will be
 	/// called to create a new unrelated URI instance.
 	///
+	/// This method will determine the base path to use by applying the following rules.
+	///
+	///  - If the URI path ends with a forward slash (or is a directory for file URIs), the
+	///    base path is the URI path.
+	///
+	///  - Otherwise, the rightermost path element is stripped from the URI path to form
+	///    the base path.
+	///
 	/// @param path a relative or absolute path, or a full URI
 	/// @return a new URI
 	///

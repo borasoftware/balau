@@ -17,10 +17,11 @@
 /// Manages the handling of HTTP messages and WebSocket upgrade requests in an HTTP connection.
 ///
 
-#include <Balau/Network/Http/Server/WsSession.hpp>
 #include <Balau/Network/Http/Server/HttpWebApp.hpp>
+#include <Balau/Network/Http/Server/HttpServerConfiguration.hpp>
+#include <Balau/Network/Http/Server/WsSession.hpp>
+#include <Balau/Network/Http/Server/ClientSession.hpp>
 #include <Balau/Util/DateTime.hpp>
-#include <Balau/Logging/Impl/BalauLogger.hpp>
 
 // Avoid false positive (due to std::make_shared).
 #pragma clang diagnostic push
@@ -30,7 +31,7 @@ namespace Balau::Network::Http {
 
 namespace Impl {
 
-class ClientSession;
+class ClientSessions;
 class HttpSessions;
 
 } // namespace Impl
@@ -46,12 +47,13 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 	///
 	/// Create an HTTP session object with the supplied data.
 	///
-	/// @param clientSession_ the client session associated with the HTTP session
+	/// @param owner_ the owning HTTP session manager
+	/// @param clientSessions_ the HTTP client session manager
 	/// @param serverConfiguration_ the configuration of the HTTP server that created this session
 	/// @param socket_ the session socket
 	///
 	public: HttpSession(Impl::HttpSessions & owner_,
-	                    std::shared_ptr<Impl::ClientSession> clientSession_,
+	                    Impl::ClientSessions & clientSessions_,
 	                    std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
 	                    TCP::socket socket_);
 
@@ -63,22 +65,52 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 	}
 
 	///
+	/// Get the requester's IP address for logging.
+	///
+	public: Address remoteIpAddress() const {
+		return socket.remote_endpoint().address();
+	}
+
+	///
 	/// Send the response back to the client.
 	///
 	/// Called by handlers.
 	///
-	public: template <typename BodyT> void sendResponse(Response<BodyT> && response) {
+	public: template <typename BodyT> void sendResponse(Response<BodyT> && response,
+	                                                    const std::string & extraLogging = "") {
+		sendResponse(std::move(response), configuration().logger, extraLogging);
+	}
+
+	///
+	/// Send the response back to the client.
+	///
+	/// Called by handlers.
+	///
+	public: template <typename BodyT> void sendResponse(Response<BodyT> && response,
+	                                                    const BalauLogger & log,
+	                                                    const std::string & extraLogging = "") {
+		// 2018-12-15 18:08:12.894435212 [-0] INFO - http.server -
+		//
+		// 127.0.0.1 - GET HTTP/1.1 - 302   bytes - "/redirect/message-sent.html" [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0]
+
 		BalauBalauLogInfo(
 			  log
-			, "{} - {} {} - {} {} {} bytes - \"{}\" [{}]"
-			, socket.remote_endpoint().address().to_string()
+			, "{} - {} {} {} - {} {} - \"{}\"{} - [{}]"
+			, remoteIpAddress().to_string()
 			, request.method()
 			, response.version() == 11 ? "HTTP/1.1" : "HTTP/1.0"
 			, response.result_int()
 			, response[Field::content_type]
 			, response[Field::content_length]
 			, request.target() // path
+			, extraLogging.empty() ? "" : " - " + extraLogging
 			, request[Field::user_agent]
+		);
+
+		// Set the session cookie.
+		response.insert(
+			  Field::set_cookie
+			, serverConfiguration->sessionCookieName + "=" + clientSession->sessionId + "; HttpOnly"
 		);
 
 		// Transfer ownership of the response in preparation for the asynchronous call.
@@ -120,7 +152,32 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 	private: bool validateRequest(boost::system::error_code errorCode, const StringRequest & request);
 
 	// Dispatch the request to the appropriate handler method.
-	private: void handleRequest(const StringRequest & request);
+	private: void handleRequest(const StringRequest & request) {
+		// The variables generated and consumed during this request.
+		std::map<std::string, std::string> variables;
+
+		switch (request.method()) {
+			case Method::get: {
+				serverConfiguration->httpHandler->handleGetRequest(*this, request, variables);
+				break;
+			}
+
+			case Method::head: {
+				serverConfiguration->httpHandler->handleHeadRequest(*this, request, variables);
+				break;
+			}
+
+			case Method::post: {
+				serverConfiguration->httpHandler->handlePostRequest(*this, request, variables);
+				break;
+			}
+
+			default: {
+				sendResponse(HttpWebApp::createBadRequestResponse(*this, request, "Unsupported HTTP method."));
+				break;
+			}
+		}
+	}
 
 	private: void onWrite(boost::system::error_code errorCode, std::size_t bytesTransferred, bool close);
 
@@ -128,14 +185,19 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 
 	private: void doClose();
 
+	private: void parseCookies();
+	private: void setClientSession();
+
 	private: Impl::HttpSessions & owner;
-	private: BalauLogger log;
-	private: std::shared_ptr<Impl::ClientSession> clientSession;
+	private: Impl::ClientSessions & clientSessions;
+	private: std::shared_ptr<ClientSession> clientSession;
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
 	private: TCP::socket socket;
 	private: boost::asio::strand<boost::asio::io_context::executor_type> strand;
 	private: Buffer buffer;
 	private: StringRequest request;
+	private: std::string cookieString;
+	private: std::map<std::string_view, std::string_view> cookies;
 	private: std::shared_ptr<void> cachedResponse; // Used to keep the response alive.
 };
 

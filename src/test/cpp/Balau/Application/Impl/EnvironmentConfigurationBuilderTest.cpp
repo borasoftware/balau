@@ -65,10 +65,10 @@ void EnvironmentConfigurationBuilderTest::mixed() {
 		)
 	);
 
-	auto propertyStrings = EnvironmentConfigurationBuilderUtils::createPropertyStrings(env.clone());
+	auto propertyStrings = EnvironmentConfigurationBuilderUtils::createPropertyStrings({ env.clone() });
 	auto builders = EnvironmentConfigurationBuilder::build(typeSpecificationsUris, factories, propertyStrings);
 
-	auto injector = Injector::create(EnvironmentConfiguration{std::move(builders)});
+	auto injector = Injector::create(EnvironmentConfiguration::testInstance(std::move(builders)));
 	auto count = injector->getValue<int>("http.server.worker.count");
 	auto fileServe = injector->getShared<EnvironmentProperties>("file.serve");
 
@@ -77,7 +77,7 @@ void EnvironmentConfigurationBuilderTest::mixed() {
 	assertThat(*fileServe->getUnique<Resource::Uri>("document.root"), is(Resource::File("doc")));
 	assertThat(fileServe->getValue<int>("cache.ttl"), is(1200));
 
-	auto abc = fileServe->getShared("a.b.c");
+	auto abc = fileServe->getComposite("a.b.c");
 
 	assertThat(abc->getValue<std::string>("d.e"), is("hello, world"));
 	assertThat(*abc->getUnique<Resource::Uri>("f"), is(Resource::Https("https://borasoftware.com")));
@@ -106,10 +106,10 @@ void EnvironmentConfigurationBuilderTest::mixedWithDefaults() {
 		, ValuePropertyBindingBuilderFactory<double>::makePtr("value.fraction", 0.432)
 	);
 
-	auto propertyStrings = EnvironmentConfigurationBuilderUtils::createPropertyStrings(env.clone());
+	auto propertyStrings = EnvironmentConfigurationBuilderUtils::createPropertyStrings({ env.clone() });
 	auto builders = EnvironmentConfigurationBuilder::build(typeSpecificationsUris, factories, propertyStrings);
 
-	auto injector = Injector::create(EnvironmentConfiguration{std::move(builders)});
+	auto injector = Injector::create(EnvironmentConfiguration::testInstance(std::move(builders)));
 
 	assertThat(injector->getValue<int>("http.server.worker.count"), is(16));
 	assertThat(injector->getValue<double>("value.multiplier"), is(12.55e-3));
@@ -121,7 +121,7 @@ void EnvironmentConfigurationBuilderTest::mixedWithDefaults() {
 	assertThat(*fileServe->getUnique<Resource::Uri>("document.root"), is(Resource::File("doc")));
 	assertThat(fileServe->getValue<int>("cache.ttl"), is(3600));
 
-	auto abc = fileServe->getShared("options");
+	auto abc = fileServe->getComposite("options");
 
 	assertThat(abc->getValue<std::string>("identity"), is("My Server"));
 	assertThat(*abc->getUnique<Resource::Uri>("404"), is(Resource::File("404.html")));

@@ -26,7 +26,7 @@ struct HttpsUtf8To32ReadResourceTest : public Testing::TestGroup<HttpsUtf8To32Re
 	void emptyPath();
 	void nonEmptyPath();
 
-	private: void performTest(const std::string & url_);
+	private: void performTest(const std::string & url_, const std::u32string & expectedStart);
 };
 
 } // namespace Resource

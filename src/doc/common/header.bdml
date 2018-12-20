@@ -76,7 +76,7 @@
 					<entry><ref url="Network/HttpClient">HTTP client</ref></entry>
 					<entry><ref url="Network/HttpServer">HTTP server</ref></entry>
 					<entry><ref url="Network/HttpWebApp">HTTP web apps</ref></entry>
-					<entry><ref url="Network/WsWebApp">WebSockets web apps</ref></entry>
+					<entry><ref url="Network/WsWebApp">WebSocket web apps</ref></entry>
 				</bullets>
 			</entry>
 

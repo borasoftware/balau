@@ -94,7 +94,7 @@ template <typename T> class DependencyGraph {
 		/// Increment the iterator (post increment).
 		///
 		public: iterator operator ++ (int) {
-			const_iterator ret = *this;
+			iterator ret = *this;
 			++vertexIter;
 			return ret;
 		}

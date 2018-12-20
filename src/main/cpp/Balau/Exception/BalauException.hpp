@@ -17,14 +17,33 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
 #define COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
 
-#include <Balau/Type/ToString.hpp>
+#include <Balau/Util/Macros.hpp>
+#include <Balau/Util/Strings.hpp>
 
+#include <boost/stacktrace.hpp>
 #include <exception>
 
+#ifdef BALAU_STACK_TRACES
+	#define _ThrowBalauException_generateStackTrace                                \
+		std::ostringstream stStream;                                               \
+		stStream << boost::stacktrace::stacktrace();                               \
+		std::string st = ::Balau::Util::Strings::replaceAll(                       \
+			stStream.str(), std::string(BalauString(BALAU_BASE_FOLDER_)) + "/", "" \
+		);
+#else
+	#define _ThrowBalauException_generateStackTrace std::string st;
+#endif
+
 ///
-/// Throw a %Balau style exception, with implicit file and line number.
+/// Throw a %Balau style exception, with implicit file and line number, and optional stacktrace.
 ///
-#define ThrowBalauException(ExceptionClass, ...) throw ExceptionClass(__FILE__, __LINE__, __VA_ARGS__)
+/// If you do not wish to see the ThrowBalau prefix on each of your throw
+/// statements in your code, define an alias macro for this macro.
+///
+#define ThrowBalauException(ExceptionClass, ...) {             \
+	_ThrowBalauException_generateStackTrace                    \
+	throw ExceptionClass(__FILE__, __LINE__, st, __VA_ARGS__); \
+}
 
 namespace Balau::Exception {
 
@@ -46,11 +65,30 @@ class BalauException : public std::exception {
 		return fullMessage.c_str();
 	}
 
-	protected: BalauException(const char * file, int line, const std::string & name, const std::string & text)
+	protected: BalauException(const char * file,
+	                          int line,
+	                          const std::string & st,
+	                          const std::string & name,
+	                          const std::string & text)
 		: message(::toString(name, " - ", text))
-		  , fullMessage(::toString(stripFilePath(file), ":", line, " - ", name, " - ", text)) {}
+		, fullMessage(generateFullMessage(file, line, st, name, text)) {}
 
-	// This may need to be reimplemented for other platforms.
+	private: static std::string generateFullMessage(const char * file,
+	                                                int line,
+	                                                const std::string & st,
+	                                                const std::string & name,
+	                                                const std::string & text) {
+		std::ostringstream stream;
+		stream << stripFilePath(file) << ":" << line << " - " << name << " - " << text;
+
+		if (!st.empty()) {
+			stream << "\n" << st;
+		}
+
+		return stream.str();
+	}
+
+	// This will need to be reimplemented for the Windows platform.
 	private: static std::string stripFilePath(const char * file) {
 		const char * lastForward = strrchr(file, '/');
 
@@ -86,32 +124,32 @@ inline std::string toString(const BalauException & e) {
 /// Thrown when an illegal argument is passed to a function or method.
 ///
 class IllegalArgumentException : public BalauException {
-	public: IllegalArgumentException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "IllegalArgument", text) {}
+	public: IllegalArgumentException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "IllegalArgument", text) {}
 };
 
 ///
 /// Thrown when a feature is not yet implemented.
 ///
 class NotImplementedException : public BalauException {
-	public: NotImplementedException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "NotImplemented", text) {}
+	public: NotImplementedException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "NotImplemented", text) {}
 };
 
 ///
 /// Thrown when a conversion fails.
 ///
 class ConversionException : public BalauException {
-	public: ConversionException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "Conversion", text) {}
+	public: ConversionException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "Conversion", text) {}
 };
 
 ///
 /// Thrown when a bug is encountered (mainly unimplemented switch cases).
 ///
 class BugException : public BalauException {
-	public: BugException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "Bug", text) {}
+	public: BugException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "Bug", text) {}
 };
 
 } // namespace Balau::Exception

@@ -26,7 +26,7 @@ struct HttpsByteReadResourceTest : public Testing::TestGroup<HttpsByteReadResour
 	void emptyPath();
 	void nonEmptyPath();
 
-	private: void performTest(const std::string & url_);
+	private: void performTest(const std::string & url_, const std::string & expectedStart);
 };
 
 } // namespace Resource

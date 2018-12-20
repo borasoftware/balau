@@ -26,8 +26,8 @@ namespace Balau::Exception {
 /// Thrown when the supplied binding configuration has a cyclic dependency.
 ///
 class CyclicDependencyException : public BalauException {
-	public: CyclicDependencyException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "CyclicDependency", text) {}
+	public: CyclicDependencyException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "CyclicDependency", text) {}
 };
 
 ///
@@ -38,27 +38,19 @@ class BindingException : public BalauException {
 
 	protected: BindingException(const char * file,
 	                            int line,
+	                            const std::string & st,
 	                            const std::string & name,
 	                            const Impl::BindingKey & bindingKey_)
-		: BalauException(
-			  file
-			, line
-			, name
-			, ::toString(bindingKey_)
-		)
+		: BalauException(file, line, st, name, ::toString(bindingKey_))
 		, bindingKey(bindingKey_.getType(), std::string(bindingKey_.getName())) {}
 
 	protected: BindingException(const char * file,
 	                            int line,
+	                            const std::string & st,
 	                            const std::string & name,
 	                            const std::string & str,
 	                            const Impl::BindingKey & bindingKey_)
-		: BalauException(
-			file
-			, line
-			, name
-			, ::toString(str, bindingKey_)
-		)
+		: BalauException(file, line, st, name, ::toString(str, bindingKey_))
 		, bindingKey(bindingKey_.getType(), std::string(bindingKey_.getName())) {}
 };
 
@@ -70,19 +62,22 @@ inline bool operator == (const BindingException & lhs, const BindingException & 
 /// Thrown when an illegal injector binding configuration is attempted.
 ///
 class DuplicateBindingException : public BindingException {
-	public: DuplicateBindingException(const char * file, int line, const Impl::BindingKey & bindingKey_)
-		: BindingException(file, line, "DuplicateBinding", bindingKey_) {}
+	public: DuplicateBindingException(const char * file,
+	                                  int line,
+	                                  const std::string & st,
+	                                  const Impl::BindingKey & bindingKey_)
+		: BindingException(file, line, st, "DuplicateBinding", bindingKey_) {}
 };
 
 ///
 /// Thrown when no binding is found in the injector.
 ///
 class NoBindingException : public BindingException {
-	public: NoBindingException(const char * file, int line, const Impl::BindingKey & key_)
-		: BindingException(file, line, "NoBinding", key_) {}
+	public: NoBindingException(const char * file, int line, const std::string & st, const Impl::BindingKey & key_)
+		: BindingException(file, line, st, "NoBinding", key_) {}
 
 	public: explicit NoBindingException(const Impl::BindingKey & bindingKey_)
-		: BindingException("", 0, "NoBinding", bindingKey_) {}
+		: BindingException("", 0, "", "NoBinding", bindingKey_) {}
 };
 
 inline std::string toString(const NoBindingException & e) {
@@ -95,9 +90,10 @@ inline std::string toString(const NoBindingException & e) {
 class MissingDependencyException : public BindingException {
 	public: MissingDependencyException(const char * file,
 	                                   int line,
+	                                   const std::string & st,
 	                                   const Impl::BindingKey & dependentKey_,
 	                                   const Impl::BindingKey & independentKey_)
-		: BindingException(file, line, "MissingDependency", ::toString(independentKey_, " is required by "), dependentKey_) {}
+		: BindingException(file, line, st, "MissingDependency", ::toString(independentKey_, " is required by "), dependentKey_) {}
 };
 
 inline std::string toString(const MissingDependencyException & e) {
@@ -110,16 +106,22 @@ inline std::string toString(const MissingDependencyException & e) {
 /// Only weak pointers are supported in singleton bindings.
 ///
 class SharedInjectorException : public BindingException {
-	public: SharedInjectorException(const char * file, int line, const Impl::BindingKey & bindingKey_)
-		: BindingException(file, line, "SharedInjector", bindingKey_) {}
+	public: SharedInjectorException(const char * file,
+	                                int line,
+	                                const std::string & st,
+	                                const Impl::BindingKey & bindingKey_)
+		: BindingException(file, line, st, "SharedInjector", bindingKey_) {}
 };
 
 ///
 /// Thrown when there is an issue loading an environment property file.
 ///
 class EnvironmentConfigurationException : public BalauException {
-	public: EnvironmentConfigurationException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "EnvironmentConfiguration", text) {}
+	public: EnvironmentConfigurationException(const char * file,
+	                                          int line,
+	                                          const std::string & st,
+	                                          const std::string & text)
+		: BalauException(file, line, st, "EnvironmentConfiguration", text) {}
 };
 
 inline std::string toString(const SharedInjectorException & e) {

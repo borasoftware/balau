@@ -18,7 +18,6 @@
 #define COM_BORA_SOFTWARE__BALAU_SYSTEM__SYSTEM_CLOCK
 
 #include <Balau/Application/Injectable.hpp>
-#include <Balau/Application/Injector.hpp>
 #include <Balau/System/Clock.hpp>
 
 namespace Balau::System {
@@ -49,6 +48,18 @@ class SystemClock : public Clock {
 
 	public: std::chrono::milliseconds millitime() const override {
 		return std::chrono::duration_cast<std::chrono::milliseconds>(
+			std::chrono::system_clock::now().time_since_epoch()
+		);
+	}
+
+	public: std::chrono::centiseconds centitime() const override {
+		return std::chrono::duration_cast<std::chrono::centiseconds>(
+			std::chrono::system_clock::now().time_since_epoch()
+		);
+	}
+
+	public: std::chrono::deciseconds decitime() const override {
+		return std::chrono::duration_cast<std::chrono::deciseconds>(
 			std::chrono::system_clock::now().time_since_epoch()
 		);
 	}

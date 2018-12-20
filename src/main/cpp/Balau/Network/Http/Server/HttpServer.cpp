@@ -9,8 +9,13 @@
 //
 
 #include "HttpServer.hpp"
+#include "Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp"
+#include "Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.hpp"
+#include "Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebApp.hpp"
+#include "HttpWebApps/RoutingHttpWebApp.hpp"
+#include "Impl/HttpWebAppFactory.hpp"
 #include "Impl/Listener.hpp"
-#include "HttpWebApps/FileServingHttpWebApp.hpp"
+#include "WsWebApps/NullWsWebApp.hpp"
 #include "../../Utilities/MimeTypes.hpp"
 #include "../../../System/ThreadName.hpp"
 #include "../../../System/Sleep.hpp"
@@ -18,50 +23,56 @@
 
 #include <boost/bind.hpp>
 
+// For built in web app initialiser.
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
 namespace Balau::Network::Http {
+
+// The built-in web applications are registered here.
+struct HttpServerRegisterBuiltInWeApps {
+	HttpServerRegisterBuiltInWeApps() {
+		Impl::HttpWebAppFactory::registerHttpWebApp<HttpWebApps::EmailSendingHttpWebApp>("email.sender");
+		Impl::HttpWebAppFactory::registerHttpWebApp<HttpWebApps::FileServingHttpWebApp>("files");
+		Impl::HttpWebAppFactory::registerHttpWebApp<HttpWebApps::RedirectingHttpWebApp>("redirections");
+	}
+};
+
+HttpServerRegisterBuiltInWeApps httpServerRegisterBuiltInWeApps;
 
 //////////////////// Constructors with injector parameter /////////////////////
 
-HttpServer::HttpServer(std::weak_ptr<Injector> injector,
-                       std::shared_ptr<System::Clock> clock,
-                       const std::string & configurationUri)
-	: state(
-		std::make_shared<HttpServerConfiguration>(
-			std::move(injector)
-			, std::move(clock)
-			, Logger::getLogger("")
-			, ""
-			, TCP::endpoint()
-			, std::shared_ptr<HttpWebApp>()
-			, std::shared_ptr<WsWebApp>()
-			, MimeTypes::defaultMimeTypes
-		)
-	)
+HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
+                       std::shared_ptr<EnvironmentProperties> configuration,
+                       bool registerSignalHandler)
+	: state(createState(clock, configuration))
 	, threadNamePrefix("")
 	, workerCount(1)
 	, ioContext(1)
 	, signalSet(ioContext) {
-	registerSignalHandler();
+	if (registerSignalHandler) {
+		doRegisterSignalHandler();
+	}
 }
 
-
-HttpServer::HttpServer(std::weak_ptr<Injector> injector,
-                       std::shared_ptr<System::Clock> clock,
-                       const std::string & serverIdentification,
+HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
+                       const std::string & serverId,
                        const TCP::endpoint & endpoint,
                        std::string threadNamePrefix_,
                        size_t workerCount_,
                        std::shared_ptr<HttpWebApp> httpHandler,
                        std::shared_ptr<WsWebApp> wsHandler,
                        const std::string & loggingNamespace,
-                       std::shared_ptr<MimeTypes> mimeTypes)
+                       std::string sessionCookieName,
+                       std::shared_ptr<MimeTypes> mimeTypes,
+                       bool registerSignalHandler)
 	: state(
 		std::make_shared<HttpServerConfiguration>(
-			  std::move(injector)
-			, std::move(clock)
-			, Logger::getLogger(loggingNamespace)
-			, serverIdentification
+			  std::move(clock)
+			, BalauLogger(loggingNamespace)
+			, serverId
 			, endpoint
+			, sessionCookieName
 			, std::move(httpHandler)
 			, std::move(wsHandler)
 			, std::move(mimeTypes)
@@ -71,100 +82,34 @@ HttpServer::HttpServer(std::weak_ptr<Injector> injector,
 	, workerCount(workerCount_)
 	, ioContext((int) workerCount)
 	, signalSet(ioContext) {
-	registerSignalHandler();
-}
-
-HttpServer::HttpServer(std::weak_ptr<Injector> injector,
-                       std::shared_ptr<System::Clock> clock,
-                       const std::string & serverIdentification,
-                       const TCP::endpoint & endpoint,
-                       std::string threadNamePrefix_,
-                       size_t workerCount_,
-                       std::shared_ptr<HttpWebApp> httpHandler,
-                       const std::string & loggingNamespace,
-                       std::shared_ptr<MimeTypes> mimeTypes)
-	: HttpServer(
-		  std::move(injector)
-		, std::move(clock)
-		, serverIdentification
-		, endpoint
-		, std::move(threadNamePrefix_)
-		, workerCount_
-		, std::move(httpHandler)
-		, std::shared_ptr<WsWebApp>(nullptr)
-		, loggingNamespace
-		, std::move(mimeTypes)
-	) {}
-
-//////////////////////// Constructors without injector ////////////////////////
-
-HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
-                       const std::string & serverIdentification,
-                       const TCP::endpoint & endpoint,
-                       std::string threadNamePrefix_,
-                       size_t workerCount_,
-                       std::shared_ptr<HttpWebApp> httpHandler,
-                       std::shared_ptr<WsWebApp> wsHandler,
-                       const std::string & loggingNamespace,
-                       std::shared_ptr<MimeTypes> mimeTypes)
-	: state(
-		std::make_shared<HttpServerConfiguration>(
-			  std::weak_ptr<Injector>()
-			, std::move(clock)
-			, Logger::getLogger(loggingNamespace)
-			, serverIdentification
-			, endpoint
-			, std::move(httpHandler)
-			, std::move(wsHandler)
-			, std::move(mimeTypes)
-		)
-	)
-	, threadNamePrefix(std::move(threadNamePrefix_))
-	, workerCount(workerCount_)
-	, ioContext((int) workerCount)
-	, signalSet(ioContext) {
-	registerSignalHandler();
+	if (registerSignalHandler) {
+		doRegisterSignalHandler();
+	}
 }
 
 HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
-                       const std::string & serverIdentification,
-                       const TCP::endpoint & endpoint,
-                       std::string threadNamePrefix_,
-                       size_t workerCount_,
-                       std::shared_ptr<HttpWebApp> httpHandler,
-                       const std::string & loggingNamespace,
-                       std::shared_ptr<MimeTypes> mimeTypes)
-	: HttpServer(
-		  clock
-		, serverIdentification
-		, endpoint
-		, std::move(threadNamePrefix_)
-		, workerCount_
-		, std::move(httpHandler)
-		, std::shared_ptr<WsWebApp>(nullptr)
-		, loggingNamespace
-		, std::move(mimeTypes)
-	) {}
-
-HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
-                       const std::string & serverIdentification,
+                       const std::string & serverId,
                        const TCP::endpoint & endpoint,
                        std::string threadNamePrefix_,
                        size_t workerCount_,
                        const Resource::File & documentRoot,
                        const std::string & defaultFile,
                        const std::string & loggingNamespace,
-                       std::shared_ptr<MimeTypes> mimeTypes)
+                       std::string sessionCookieName,
+                       std::shared_ptr<MimeTypes> mimeTypes,
+                       bool registerSignalHandler)
 	: HttpServer(
 		  clock
-		, serverIdentification
+		, serverId
 		, endpoint
 		, std::move(threadNamePrefix_)
 		, workerCount_
 		, std::make_shared<HttpWebApps::FileServingHttpWebApp>(documentRoot, defaultFile)
 		, std::shared_ptr<WsWebApp>(nullptr)
 		, loggingNamespace
+		, sessionCookieName
 		, std::move(mimeTypes)
+		, registerSignalHandler
 	) {}
 
 HttpServer::~HttpServer() {
@@ -201,7 +146,7 @@ void HttpServer::run() {
 		std::unique_lock<std::mutex> lock(mutex);
 
 		if (!workers.empty()) {
-			BalauBalauLogInfo(
+			BalauBalauLogWarn(
 				state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
 			);
 			return;
@@ -225,18 +170,12 @@ bool HttpServer::isRunning() {
 	return !workers.empty();
 }
 
-void HttpServer::blockUntilStopped(size_t period) {
-	while (isRunning()) {
-		System::Sleep::milliSleep(period);
-	}
-}
-
 void HttpServer::stop(bool warn) {
 	std::lock_guard<std::mutex> lock(mutex);
 
 	if (workers.empty()) {
 		if (warn) {
-			BalauBalauLogInfo(
+			BalauBalauLogWarn(
 				state->logger, "HTTP server {}:{} already stopped", state->endpoint.address(), state->endpoint.port()
 			);
 		}
@@ -259,6 +198,178 @@ void HttpServer::stop(bool warn) {
 	workers.clear();
 
 	BalauBalauLogInfo(state->logger, "HTTP server {}:{} stopped", state->endpoint.address(), state->endpoint.port());
+}
+
+std::shared_ptr<HttpServerConfiguration> HttpServer::createState(std::shared_ptr<System::Clock> clock,
+                                                                 std::shared_ptr<EnvironmentProperties> configuration) {
+	// Root logging configuration
+	auto loggingNamespace = configuration->getValue<std::string>("logging.namespace", "http.server");
+	auto accessLog = configuration->getValue<std::string>("access.log", "stream: stdout");
+	auto errorLog = configuration->getValue<std::string>("error.log", "stream: stderr");
+
+	// TODO configure logging namespace.. this requires the fine grained reconfiguration implementation to be created.
+	BalauLogger logger(loggingNamespace);
+
+	auto serverId = configuration->getValue<std::string>("server.id", "Balau server");
+	auto endpoint = configuration->getValue<Network::Endpoint>("listen");
+	auto sessionCookieName = configuration->getValue<std::string>("session-cookie-name", "session");
+	auto mimeTypes = createMimeTypes(configuration, logger);
+	std::shared_ptr<HttpWebApp> httpHandler = createHttpHandler(configuration, logger);
+	std::shared_ptr<WsWebApp> wsHandler = createWsHandler(configuration, logger);
+
+	return std::make_shared<HttpServerConfiguration>(
+		clock, logger, serverId, endpoint, sessionCookieName, httpHandler, wsHandler, mimeTypes
+	);
+}
+
+std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(std::shared_ptr<EnvironmentProperties> configuration, BalauLogger & logger) {
+	auto mimeTypesProperties = configuration->getCompositeOrNull("mime.types");
+
+	if (!mimeTypesProperties) {
+		return MimeTypes::defaultMimeTypes;
+	}
+
+	std::unordered_map<std::string, std::string> data;
+
+	for (const auto & mimeTypesProperty : *mimeTypesProperties) {
+		if (mimeTypesProperty.isValue<std::string>()) {
+			auto mimeType = std::string(mimeTypesProperty.getName());
+			auto extensions = mimeTypesProperty.getValue<std::string>();
+			auto extensionList = Util::Strings::split(extensions, ",");
+			auto mt = Util::Strings::trim(mimeType);
+
+			for (auto extension : extensionList) {
+				auto ext = Util::Strings::trim(extension);
+				data.insert(std::make_pair(ext, mt));
+			}
+		} else {
+			BalauBalauLogWarn(
+				  logger
+				, "Ignoring mime type property entry {} because the property is not of type string."
+				, mimeTypesProperty.getName()
+			);
+		}
+	}
+
+	return std::make_shared<MimeTypes>(std::move(data));
+}
+
+std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(std::shared_ptr<EnvironmentProperties> configuration,
+                                                          BalauLogger & logger) {
+	auto webAppConfigurations = configuration->hasComposite("http")
+		? configuration->getComposite("http")
+		: std::make_shared<EnvironmentProperties>();
+
+	HttpWebApps::RoutingHttpWebApp::Routing routing;
+
+	for (const auto & webAppConfiguration : *webAppConfigurations) {
+		if (webAppConfiguration.isComposite()) {
+			const auto name = std::string(webAppConfiguration.getName());
+			auto config = webAppConfiguration.getComposite();
+
+			//
+			// HTTP web application configurations without a location property are
+			// unconfigured and thus are not instantiated. This also eliminates
+			// default config brought in from the specs.
+			//
+			if (!config->hasValue<std::string>("location")) {
+				continue;
+			}
+
+			auto location = config->getValue<std::string>("location");
+			auto webApp = Impl::HttpWebAppFactory::getInstance(name, *config, logger);
+			addToHttpRoutingTrie(routing, location, webApp);
+		} else {
+			BalauBalauLogWarn(
+				  logger
+				, "Ignoring simple property \"{}\" found in the http web application configuration."
+				, webAppConfiguration.getName()
+			);
+		}
+	}
+
+	return std::shared_ptr<HttpWebApp>(new HttpWebApps::RoutingHttpWebApp(std::move(routing)));
+}
+
+std::shared_ptr<WsWebApp> HttpServer::createWsHandler(std::shared_ptr<EnvironmentProperties> configuration,
+                                                      BalauLogger & logger) {
+	auto webAppConfigurations = configuration->hasComposite("ws")
+		? configuration->getComposite("ws")
+		: std::make_shared<EnvironmentProperties>();
+
+	// TODO complete implementation
+	//WsWebApps::RoutingWsWebApp::Routing routing;
+
+	if (webAppConfigurations) {
+		for (const auto & webAppConfiguration : *webAppConfigurations) {
+			if (webAppConfiguration.isComposite()) {
+				const auto name = std::string(webAppConfiguration.getName());
+				auto config = webAppConfiguration.getComposite();
+
+				//
+				// WebSocket web application configurations without a location property
+				// are unconfigured and thus are not instantiated. This also eliminates
+				// default config brought in from the specs.
+				//
+				if (!config->hasValue<std::string>("location")) {
+					continue;
+				}
+
+				auto webApp = Impl::HttpWebAppFactory::getInstance(name, *config, logger);
+			} else {
+				BalauBalauLogWarn(
+					  logger
+					, "Ignoring simple property \"{}\" found in the WebSocket web application configuration."
+					, webAppConfiguration.getName()
+				);
+			}
+		}
+	}
+
+	// TODO complete implementation
+	//return std::shared_ptr<WsWebApp>(new WsWebApps::RoutingWsWebApp(std::move(routing)));
+	return std::shared_ptr<WsWebApp>(new WsWebApps::NullWsWebApp());
+}
+
+void HttpServer::addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & routing,
+                                      const std::string & locationStr,
+                                      std::shared_ptr<HttpWebApp> & webApp) {
+	// Blank delimited list of locations.
+	static std::regex delimiter("[ \t]+");
+
+	auto locations = Util::Strings::splitAndTrim(locationStr, delimiter);
+
+	for (auto & path : locations) {
+		// Split the path or make it empty for the root path.
+		auto components = path == "/" ? std::vector<std::string_view>() : Util::Strings::split(path, "/");
+
+		HttpWebApps::RoutingHttpWebApp::Node & node = routing.findOrAdd(
+			  components
+			, [] (auto & lhs, auto & rhs) { return std::get<HttpWebApps::RoutingHttpWebApp::KeyIndex>(lhs) == rhs; }
+			, [] (auto & component) {
+				return HttpWebApps::RoutingHttpWebApp::Value(
+					  component
+					, std::shared_ptr<HttpWebApp>()
+					, std::shared_ptr<HttpWebApp>()
+					, std::shared_ptr<HttpWebApp>()
+				);
+			}
+		);
+
+		auto & handler = std::get<HttpWebApps::RoutingHttpWebApp::GetHandlerIndex>(node.value);
+
+		// The pointer container should be empty, otherwise the http webapp config is invalid.
+		if (handler) {
+			ThrowBalauException(
+				  Exception::NetworkException
+				, ::toString("Duplicate HTTP web application handler found for location \"", path, "\".")
+			);
+		}
+
+		std::get<HttpWebApps::RoutingHttpWebApp::GetHandlerIndex>(node.value) = webApp;
+		std::get<HttpWebApps::RoutingHttpWebApp::HeadHandlerIndex>(node.value) = webApp;
+		std::get<HttpWebApps::RoutingHttpWebApp::PostHandlerIndex>(node.value) = webApp;
+	}
 }
 
 void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
@@ -350,7 +461,7 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 	);
 }
 
-void HttpServer::registerSignalHandler() {
+void HttpServer::doRegisterSignalHandler() {
 	signalSet.add(SIGINT);
 	signalSet.add(SIGTERM);
 
@@ -390,3 +501,5 @@ void HttpServer::handleSignal(const boost::system::error_code & error, int sig) 
 }
 
 } // namespace Balau::Network::Http
+
+#pragma clang diagnostic pop

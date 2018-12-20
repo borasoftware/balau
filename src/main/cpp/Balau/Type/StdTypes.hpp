@@ -32,10 +32,9 @@
 /// <p>
 /// %Balau is a C++ application framework designed for enterprise C++ software development.
 ///
-/// Following the C++11 and more recent C++14 and C++17 revisions of the language, C++ has
-/// matured to become an attractive candidate for rapid enterprise application development.
-/// %Balau provides tools designed to support the rapid development of high performance C++
-/// enterprise applications.
+/// Following the recent revisions of the language, C++ has matured to become an attractive
+/// candidate for rapid enterprise application development. %Balau provides tools designed
+/// to support the rapid development of high performance C++ enterprise applications.
 ///
 /// %Balau builds on the foundations of the ICU and Boost projects, and focuses on using
 /// modern C++17 features and the standard unicode string classes.
@@ -85,7 +84,7 @@
 
 /// @namespace Balau::Network::Http::HttpWebApps A set of HTTP web apps provided by the %Balau library.
 
-/// @namespace Balau::Network::Http::WsWebApps A set of WebSockets web apps provided by the %Balau library.
+/// @namespace Balau::Network::Http::WsWebApps A set of WebSocket web apps provided by the %Balau library.
 
 /// @namespace Balau::Resource The unified resource class hierarchy.
 

@@ -28,8 +28,8 @@ namespace Balau::Exception {
 /// stream scheme, attempt to reconfigure after locking the configuration, etc.).
 ///
 class LoggingConfigurationException : public BalauException {
-	public: LoggingConfigurationException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "LoggingConfiguration", text) {}
+	public: LoggingConfigurationException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "LoggingConfiguration", text) {}
 };
 
 } // namespace Balau::Exception

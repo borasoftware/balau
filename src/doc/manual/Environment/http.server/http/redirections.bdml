@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url="../../.." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - http.server -> http -> redirections" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="http.server -> http -> redirections">
+		<h1 toc='false'>Description</h1>
+
+		<para class="short-desc">HTTP web application that serves 301 or 302 redirections.</para>
+
+		<h1 toc='false'>Ancestor</h1>
+
+		<para>The <emph>redirections</emph> composite property is contained within  <ref url="Environment/http.server/http">http</ref>.</para>
+
+		<h1 toc='false'>Simple configuration</h1>
+
+		<table class="bdml-table151515L55">
+			<head>
+				<cell>Name</cell>
+				<cell>Type</cell>
+				<cell>Default value</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>location</cell>
+					<cell>string</cell>
+					<cell/>
+					<cell>The path or set of paths which will be handled by the web application.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1 toc='false'>Composite configuration</h1>
+
+		<table class="bdml-table20L80">
+			<head>
+				<cell>Name</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><ref url="Environment/http.server/http/redirections/matches">matches</ref></cell>
+					<cell>A list of regular expression matches that the redirector will redirect.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1>Example</h1>
+
+		<code lang="Properties">
+			redirections {
+				location = /redirect-paths/
+
+				matches {
+					^/redirect-paths/(.*)$ = /redirected/$1
+				}
+			}
+		</code>
+	</chapter>
+</document>

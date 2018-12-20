@@ -54,7 +54,7 @@ class Http : public Url {
 	}
 
 	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
-		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]:" };
+		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
 
 		auto cleanPath = Util::Strings::trim(path);
 		auto str = std::string(cleanPath);

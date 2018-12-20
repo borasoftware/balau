@@ -12,23 +12,23 @@
 
 namespace Balau::Network::Http::WsWebApps {
 
-void EchoingWsWebApp::handleTextMessage(WsSession & session) {
+void EchoingWsWebApp::handleTextMessage(WsSession & session, std::string_view path) {
 
 }
 
-void EchoingWsWebApp::handleBinaryMessage(WsSession & session) {
+void EchoingWsWebApp::handleBinaryMessage(WsSession & session, std::string_view path) {
 
 }
 
-void EchoingWsWebApp::handleClose(WsSession & session) {
+void EchoingWsWebApp::handleClose(WsSession & session, std::string_view path) {
 
 }
 
-void EchoingWsWebApp::handlePing(WsSession & session) {
+void EchoingWsWebApp::handlePing(WsSession & session, std::string_view path) {
 
 }
 
-void EchoingWsWebApp::handlePong(WsSession & session) {
+void EchoingWsWebApp::handlePong(WsSession & session, std::string_view path) {
 
 }
 

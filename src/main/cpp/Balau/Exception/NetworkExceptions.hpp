@@ -26,8 +26,8 @@ namespace Balau::Exception {
 /// Base class of network exceptions.
 ///
 class NetworkException : public BalauException {
-	public: NetworkException(const char * file, int line, const std::string & text)
-		: BalauException(file, line, "Network", text) {}
+	public: NetworkException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "Network", text) {}
 };
 
 inline std::string toString(const Balau::Exception::NetworkException & e) {

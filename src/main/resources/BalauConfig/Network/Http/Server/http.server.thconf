@@ -1,0 +1,45 @@
+##
+## Balau core C++ library
+##
+## Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+##
+## Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+## See the LICENSE file for the full license text.
+##
+
+#
+# Balau configurable HTTP server.
+#
+http.server {
+	logging.ns   : string = http.server
+	info.log     : string = stream: stdout
+	error.log    : string = stream: stderr
+
+	server.id    : string
+	worker.count : int = 1
+
+	listen       : endpoint
+
+	session-cookie-name : string = session
+
+	mime.types {
+		#TODO * : string
+	}
+
+	filters {
+		@file:Filters/mapper.thconf
+	}
+
+	http {
+		@file:HttpWebApps/canned.thconf
+		@file:HttpWebApps/email.sender.thconf
+		@file:HttpWebApps/failing.thconf
+		@file:HttpWebApps/files.thconf
+		@file:HttpWebApps/redirections.thconf
+	}
+
+	ws {
+		@file:WsWebApps/echo.thconf
+		@file:WsWebApps/null.thconf
+	}
+}

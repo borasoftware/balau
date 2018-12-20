@@ -22,14 +22,14 @@ using Testing::endsWith;
 namespace Resource {
 
 void HttpsByteReadResourceTest::emptyPath() {
-	performTest("https://borasoftware.com");
+	performTest("http://borasoftware.com", "<html>\r\n<head><title>302 Found</title></head>");
 }
 
 void HttpsByteReadResourceTest::nonEmptyPath() {
-	performTest("https://borasoftware.com/en/index.html");
+	performTest("https://borasoftware.com/en/index.html", "<!DOCTYPE html");
 }
 
-void HttpsByteReadResourceTest::performTest(const std::string & url_) {
+void HttpsByteReadResourceTest::performTest(const std::string & url_, const std::string & expectedStart) {
 	Https url(url_);
 
 	auto httpsReadResource = url.getByteReadResource();
@@ -37,8 +37,6 @@ void HttpsByteReadResourceTest::performTest(const std::string & url_) {
 
 	std::istream & httpsReadStream = httpsReadResource.readStream();
 	std::istream & uriReadStream = uriReadResource->readStream();
-
-	const std::string expectedStart = "<!DOCTYPE html";
 
 	auto actualHttpsData = ::toString(httpsReadStream);
 	auto actualUriData = ::toString(uriReadStream);

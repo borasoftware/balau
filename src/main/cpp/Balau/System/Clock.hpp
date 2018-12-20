@@ -19,6 +19,18 @@
 
 #include <Balau/ThirdParty/Date/date.hpp>
 
+namespace std { // NOLINT
+
+namespace chrono {
+
+// Missing typedefs.
+typedef duration<int64_t, centi> centiseconds;
+typedef duration<int64_t, deci>  deciseconds;
+
+}
+
+}
+
 namespace Balau::System {
 
 ///
@@ -52,6 +64,16 @@ class Clock {
 	/// Get the current time in milliseconds since the unix epoch.
 	///
 	public: virtual std::chrono::milliseconds millitime() const = 0;
+
+	///
+	/// Get the current time in centiseconds since the unix epoch.
+	///
+	public: virtual std::chrono::centiseconds centitime() const = 0;
+
+	///
+	/// Get the current time in deciseconds since the unix epoch.
+	///
+	public: virtual std::chrono::deciseconds decitime() const = 0;
 
 	public: virtual ~Clock() = default;
 };

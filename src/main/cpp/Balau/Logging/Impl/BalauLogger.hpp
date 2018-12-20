@@ -40,6 +40,11 @@ class BalauLogger {
 	public: BalauLogger(const char * loggingNamespace);
 
 	//
+	// Construct a Balau library logger by specifying the logging namespace.
+	//
+	public: BalauLogger(const std::string & loggingNamespace);
+
+	//
 	// Construct a Balau library logger by providing the logger reference.
 	//
 	public: BalauLogger(const Logger & logger_);

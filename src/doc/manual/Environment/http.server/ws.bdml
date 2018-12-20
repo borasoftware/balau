@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url="../.." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - http.server -> ws" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="http.server -> ws">
+		<h1 toc='false'>Description</h1>
+
+		<para class="short-desc">The WebSockets web application specifications that the server will construct.</para>
+
+		<para>The configuration of each specified WebSockets web application must have a <emph>location</emph> property (of type string). The <emph>location</emph> property corresponds to the path or set of paths which will trigger the HTTP upgrade request which will subsequently be handled by the specified web application.</para>
+
+		<h1 toc='false'>Ancestor</h1>
+
+		<para>The <emph>ws</emph> composite property is contained within  <ref url="Environment/http.server">http.server</ref>.</para>
+
+		<h1 toc='false'>Simple configuration</h1>
+
+		<para>The <emph>ws</emph> composite property does not contain any simple configuration properties.</para>
+
+		<h1 toc='false'>Composite configuration</h1>
+
+		<para>The <emph>ws</emph> composite property can contain any conforming composite property.</para>
+
+		<para>A conforming composite property represents a WebSockets web application, the configuration of which must contain the following simple properties.</para>
+
+		<table class="bdml-table151515L55">
+			<head>
+				<cell>Name</cell>
+				<cell>Type</cell>
+				<cell>Default value</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>location</cell>
+					<cell>string</cell>
+					<cell/>
+					<cell>The path or set of paths which trigger the HTTP upgrade request which will subsequently be handled by the web application.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1 toc='false'>Built-in web-apps</h1>
+
+		<para>The following WebSocket web applications are available from the Balau library.</para>
+
+		<table class="bdml-table20L80">
+			<head>
+				<cell>Name</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><ref url="Environment/http.server/ws/echo">echo</ref></cell>
+					<cell>Echos messages back to the client.</cell>
+				</row>
+
+				<row>
+					<cell><ref url="Environment/http.server/ws/null">null</ref></cell>
+					<cell>Silently consumes data without responding.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1 toc='false'>Custom web-apps</h1>
+
+		<para>Custom WebSocket web applications must be registered by calling the <emph>registerWsWebApp</emph> method before the application injector is created.</para>
+	</chapter>
+</document>

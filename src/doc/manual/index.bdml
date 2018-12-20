@@ -214,7 +214,7 @@
 			<body>
 				<row>
 					<cell>Documentation</cell>
-					<cell>Write HTTP client, HTTP server, HTTP webapp framework, and WebSockets webapp framework chapters.</cell>
+					<cell>Write the WebSocket webapp framework chapter.</cell>
 				</row>
 
 				<row>
@@ -224,12 +224,12 @@
 
 				<row>
 					<cell>WsWebApp</cell>
-					<cell>Refinement of design and unit testing.</cell>
+					<cell>Complete design, coding, and unit test.</cell>
 				</row>
 
 				<row>
-					<cell>HttpSession/WsSession</cell>
-					<cell>Session support with session cookies.</cell>
+					<cell>Log rotation</cell>
+					<cell>Complete design, coding, and unit testing.</cell>
 				</row>
 			</body>
 		</table>

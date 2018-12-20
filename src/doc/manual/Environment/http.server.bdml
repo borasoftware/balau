@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - http.server" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="http.server">
+		<h1 toc='false'>Description</h1>
+
+		<para class="short-desc">Contains the configuration for the <ref url="Network/HttpServer">HTTP server</ref>.</para>
+
+		<para>All the configuration for the HTTP server is contained within an <emph>http.server</emph> composite property.</para>
+
+		<h1 toc='false'>Ancestor</h1>
+
+		<para>The <emph>http.server</emph> composite property is an environment configuration root.</para>
+
+		<h1 toc='false'>Simple configuration</h1>
+
+		<table class="bdml-table151515L55">
+			<head>
+				<cell>Name</cell>
+				<cell>Type</cell>
+				<cell>Default value</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>logging.ns</cell>
+					<cell>string</cell>
+					<cell>http.server</cell>
+					<cell>The logging namespace into which the server and web-apps (that do not have overriding configuration) will log to.</cell>
+				</row>
+
+				<row>
+					<cell>info.log</cell>
+					<cell>string</cell>
+					<cell>stream: stdout</cell>
+					<cell>The INFO level logging configuration to apply to the logging namespace used by the HTTP server.</cell>
+				</row>
+
+				<row>
+					<cell>error.log</cell>
+					<cell>string</cell>
+					<cell>stream: stderr</cell>
+					<cell>The ERROR level logging configuration to apply to the logging namespace used by the HTTP server.</cell>
+				</row>
+
+				<row>
+					<cell>server.id</cell>
+					<cell>string</cell>
+					<cell/>
+					<cell>The server identification string.</cell>
+				</row>
+
+				<row>
+					<cell>worker.count</cell>
+					<cell>int</cell>
+					<cell>1</cell>
+					<cell>The number of worker threads that the HTTP server will use.</cell>
+				</row>
+
+				<row>
+					<cell>listen</cell>
+					<cell>endpoint</cell>
+					<cell/>
+					<cell>The endpoint to listen on.</cell>
+				</row>
+
+				<row>
+					<cell>session-cookie-name</cell>
+					<cell>string</cell>
+					<cell>session</cell>
+					<cell>The name used to store session cookies on connecting clients.</cell>
+				</row>
+			</body>
+		</table>
+
+		<h1 toc='false'>Composite configuration</h1>
+
+		<table class="bdml-table20L80">
+			<head>
+				<cell>Name</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><ref url="Environment/http.server/mime.types">mime.types</ref></cell>
+					<cell>The list of MIME types to use in the HTTP server.</cell>
+				</row>
+
+				<row>
+					<cell><ref url="Environment/http.server/filters">filters</ref></cell>
+					<cell>The input filters to apply before HTTP web application execution.</cell>
+				</row>
+
+				<row>
+					<cell><ref url="Environment/http.server/http">http</ref></cell>
+					<cell>The HTTP web application specifications that the server will construct.</cell>
+				</row>
+
+				<row>
+					<cell><ref url="Environment/http.server/ws">ws</ref></cell>
+					<cell>The WebSocket web application specifications that the server will construct.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>
