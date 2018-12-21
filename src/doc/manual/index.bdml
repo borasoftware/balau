@@ -81,11 +81,11 @@
 		<para>The main themes currently covered by the Balau library are as follows. Documentation for each component / utility may be accessed from the drop down menu at the top of this page.</para>
 
 		<bullets>
-			<entry>Dependency injection</entry>
+			<entry>dependency injection with application and environment configuration</entry>
 
-			<entry>Environment configuration</entry>
+			<entry>Hierarchical, typed environment configuration</entry>
 
-			<entry>Logging</entry>
+			<entry>Logging system, configured via environment configuration</entry>
 
 			<entry>Test framework</entry>
 

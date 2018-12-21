@@ -78,11 +78,13 @@ std::vector<std::unique_ptr<PropertyNode>> PropertyParser::producePropertyNodes(
 				break;
 			}
 
+			case PropertyToken::EndOfFile: {
+				ThrowBalauException(Exception::SyntaxErrorException, "Unexpected end of file", token.codeSpan);
+			}
+
 			default: {
 				ThrowBalauException(
-					Exception::SyntaxErrorException
-				, "Invalid input: " + std::string(token.text)
-				, token.codeSpan
+					Exception::SyntaxErrorException, "Invalid input: " + std::string(token.text), token.codeSpan
 				);
 			}
 		}

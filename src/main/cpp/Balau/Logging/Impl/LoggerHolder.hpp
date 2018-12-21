@@ -29,6 +29,8 @@ class LoggerHolder {
 
 	private: std::shared_ptr<Logger> logger;
 
+	friend class LoggerPropertyVisitor;
+
 	private: std::shared_ptr<Logger> getLogger() {
 		return logger;
 	}

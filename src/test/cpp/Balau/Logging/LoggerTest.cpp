@@ -26,16 +26,24 @@ using Testing::startsWith;
 using Testing::contains;
 
 const std::string defaultConfigurationTextPrefix = 1 + R"RR(
-.             = level:  warn
-              , format: "%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %ns - %message"
+. {
+	level  = warn
+    format = %Y-%m-%d %H:%M:%S [%thread] %LEVEL - %ns - %message
 )RR";
 
 const std::string defaultConfigurationTextSuffix = 1 + R"RR(
-com.borasoftware      = level:  info
-com.borasoftware.misc = level:  trace
+}
+
+com.borasoftware {
+	level = info
+}
+
+com.borasoftware.misc {
+	level = trace
+}
 )RR";
 
-const std::string STREAM_ENTRY = "{STREAM_ENTRY}";
+const std::string STREAM_ENTRY = "_STREAM_ENTRY_";
 
 void assertContains(const std::string & actual, const std::vector<std::string> & expectedContains) {
 	for (auto expected : expectedContains) {
@@ -54,7 +62,7 @@ Resource::File LoggerTest::configureLoggerForTest(const std::string & testName) 
 	assertThat(logFile.exists(), is(false));
 
 	const std::string configurationText = defaultConfigurationTextPrefix
-		+ "              , stream: \"" + logFileUriStr + "\"\n"
+		+ "              stream = " + logFileUriStr + "\n"
 		+ defaultConfigurationTextSuffix;
 
 	Logger::configure(configurationText);
@@ -62,7 +70,7 @@ Resource::File LoggerTest::configureLoggerForTest(const std::string & testName) 
 	return logFile;
 }
 
-// The string configurationText contains a placeholder {STREAM_ENTRY}
+// The string configurationText contains a placeholder _STREAM_ENTRY_
 // which is replace with the file stream string.
 Resource::File LoggerTest::configureLoggerForTest(const std::string & testName, const std::string & configurationText) {
 	const std::string filename = std::string("LoggerTest-") + testName + ".log";
@@ -137,9 +145,11 @@ void LoggerTest::stringMessages() {
 
 void LoggerTest::parameterisedMessages() {
 	const std::string configurationText = 1 + R"RR(
-. = level: info
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "{STREAM_ENTRY}"
+. {
+	level = info
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("parameterisedMessages", configurationText);
@@ -168,9 +178,11 @@ void LoggerTest::parameterisedMessages() {
 
 void LoggerTest::loggerMacros() {
 	const std::string configurationText = 1 + R"RR(
-. = level: trace
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "{STREAM_ENTRY}"
+. {
+	level = trace
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("loggerMacros", configurationText);
@@ -237,9 +249,11 @@ void LoggerTest::loggerMacros() {
 
 void LoggerTest::getConfigurationCall() {
 	const std::string configurationText = 1 + R"RR(
-. = level: trace
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "{STREAM_ENTRY}"
+. {
+	level  = trace
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("getConfigurationCall", configurationText);
@@ -250,18 +264,21 @@ void LoggerTest::getConfigurationCall() {
 	const std::string actual = log.getConfiguration();
 
 	const std::string expectedConfigurationTextStart = 1 + R"RR(
-com.borasoftware = format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-                 , level: trace
-                 , stream:)RR";
+com.borasoftware {
+    format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+    level = trace
+    stream = )RR";
 
 	assertThat(actual, startsWith(expectedConfigurationTextStart));
 }
 
 void LoggerTest::globalNamespace() {
 	const std::string configurationText = 1 + R"RR(
-. = level: info
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "{STREAM_ENTRY}"
+. {
+	level  = info
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("globalNamespace", configurationText);
@@ -278,7 +295,9 @@ void LoggerTest::globalNamespace() {
 
 void LoggerTest::unconfiguredRootNamespace() {
 	const std::string configurationText = 1 + R"RR(
-. = stream: "{STREAM_ENTRY}"
+. {
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("unconfiguredRootNamespace", configurationText);
@@ -303,8 +322,13 @@ void LoggerTest::unconfiguredRootNamespace() {
 
 void LoggerTest::configuredNamespaceWithoutFormat() {
 	const std::string configurationText = 1 + R"RR(
-.    = stream: "{STREAM_ENTRY}"
-abcd = level: debug
+.    {
+	stream = _STREAM_ENTRY_
+}
+
+abcd {
+	level = debug
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("configuredNamespaceWithoutFormat", configurationText);
@@ -323,9 +347,11 @@ abcd = level: debug
 
 void LoggerTest::loggingWithLineAndFileName() {
 	const std::string configurationText = 1 + R"RR(
-. = level: info
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "{STREAM_ENTRY}"
+. {
+	level = info
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("loggingWithLineAndFileName", configurationText);
@@ -355,9 +381,11 @@ void LoggerTest::loggingWithLineAndFileName() {
 
 void LoggerTest::functionBasedLogging() {
 	const std::string configurationText = 1 + R"RR(
-. = level: info
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "{STREAM_ENTRY}"
+. {
+	level  = info
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = _STREAM_ENTRY_
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("functionBasedLogging", configurationText);
@@ -393,7 +421,10 @@ void LoggerTest::functionBasedLogging() {
 
 void LoggerTest::flushing() {
 	const std::string configurationText = 1 + R"RR(
-. = level: info, flush: false
+. {
+	level = info
+	flush = false
+}
 )RR";
 
 	Resource::File logFile = configureLoggerForTest("flushing", configurationText);
@@ -426,9 +457,11 @@ LoggingStream * customLoggingStreamNewInstance(std::string_view) {
 
 void LoggerTest::customLoggingStream() {
 	const std::string configurationText = 1 + R"RR(
-. = level: info
-  , format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message"
-  , stream: "custom"
+. {
+	level  = info
+	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	stream = custom
+}
 )RR";
 
 	Logger::registerLoggingStreamFactory("custom", customLoggingStreamNewInstance);

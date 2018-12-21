@@ -26,6 +26,7 @@
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
 		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
 		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
 		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
 		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
 	</metadata>
@@ -34,6 +35,8 @@
 		<h1>Overview</h1>
 
 		<para>A logging framework, with configurable loggers via logging namespaces. Loggers output to C++ streams specified via the logging namespace configuration. Logging namespaces inherit their parent configuration via a cascading inheritance.</para>
+
+		<para>Logging namespaces are configured by supplying standard <ref url="Application/Environment">environment configuration</ref>.</para>
 
 		<h1>Quick start</h1>
 
@@ -134,7 +137,7 @@
 		<para>The default logging message format is:</para>
 
 		<code>
-			"%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message"
+			%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message
 		</code>
 
 		<para>Details of the message format placeholders are provided in the detailed documentation.</para>
@@ -142,14 +145,14 @@
 		<para>There are two ways of providing a custom logging configuration:</para>
 
 		<bullets>
-			<entry>create a <emph>balau-logging.conf</emph> configuration file in the same folder as the application's executable;</entry>
+			<entry>create a <emph>balau-logging.hconf</emph> configuration file in the same folder as the application's executable;</entry>
 
 			<entry>call Balau::Logger::configure(std::string) within the application.</entry>
 		</bullets>
 
 		<para>If a logging configuration file is provided, the contained configuration will be used from the start of the application's execution. If logging configuration is provided via a <emph>Balau::Logger::configure</emph> call, the logging system will use the default configuration until the call is made.</para>
 
-		<para>Details of the logging configuration DSL are provided in the detailed documentation.</para>
+		<para>The logging configuration is standard <ref url="Application/Environment">environment configuration</ref>. Composite property names specify the logging namespaces. The value properties defined within a composite property provide the logging configuration for that namespace.</para>
 
 		<h1>Usage</h1>
 
@@ -157,7 +160,7 @@
 
 		<para>There are two ways to supply the logging configuration.</para>
 
-		<para>The implicit way to configure the logging system is to provide a <emph>balau-logging.conf</emph> configuration file in the application binary directory. This will be automatically picked up by the logging system.</para>
+		<para>The implicit way to configure the logging system is to provide a <emph>balau-logging.hconf</emph> configuration file in the application binary directory. This will be automatically picked up by the logging system.</para>
 
 		<para>The explicit way to configure the logging system is to provide logging configuration via a call to:</para>
 
@@ -179,9 +182,9 @@
 
 		<para>Logging configuration calls can be made in static contexts, including within static initialisation blocks that are each executed in a non-deterministic order.</para>
 
-		<para>If no <emph>balau-logging.conf</emph> file is found and no call to configure is made, the logging system will log INFO and WARN level messages to stdout and ERROR messages to stderr.</para>
+		<para>If no <emph>balau-logging.hconf</emph> file is found and no call to configure is made, the logging system will log INFO and WARN level messages to stdout and ERROR messages to stderr.</para>
 
-		<para>If the parsed logging configuration from <emph>balau-logging.conf</emph> is invalid, an error message will be written to stderr and loggers associated with the affected namespaces will be configured to write to stdout for all invalidly configured logging levels. If the format specification for a namespace contains an invalid format specifier, an error message will be written to stderr and the the invalid specifier will be output verbatim in subsequent log messages to affected loggers.</para>
+		<para>If the parsed logging configuration from <emph>balau-logging.hconf</emph> is invalid, an error message will be written to stderr and loggers associated with the affected namespaces will be configured to write to stdout for all invalidly configured logging levels. If the format specification for a namespace contains an invalid format specifier, an error message will be written to stderr and the the invalid specifier will be output verbatim in subsequent log messages to affected loggers.</para>
 
 		<h2>Logger instances</h2>
 
@@ -221,9 +224,9 @@
 
 		<para>The logging system is first configured when the first call to <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph> is made. Subsequent calls to <emph>Logger::configure</emph> will reconfigure the logging system.</para>
 
-		<para>The logging system state is maintained in a lazy singleton that is instantiated on the first call to <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph>. It is thus safe to use loggers inside static initialisation blocks. However, if such logging is made via another statically initialised logger reference, that reference may not be initialised yet, and the application will crash. Due to this, logging from within static initialisation blocks must be done by obtaining the logger from inside the initialisation block by calling <emph>Logger::getInstance</emph>. This will always obtain a valid logger reference.</para>
+		<para>The logging system state is maintained in a lazy singleton that is instantiated on the first call to <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph>. It is thus safe to use loggers inside static initialisation blocks. However, if such logging is made via another statically initialised logger reference, that statically initialised logger reference may not be initialised yet, and the application will crash. Due to this, the safe way of logging from within static initialisation blocks is done by obtaining the logger from inside the initialisation block by calling <emph>Logger::getInstance</emph>. This will always obtain a valid logger reference.</para>
 
-		<para>The logging system shutdown happens from the destructor of the statically allocated singleton. The C++ standard states that the order of destruction of statically allocated objects is non-deterministic. Logging from inside the destructors of statically allocated objects is thus not safe and should not be performed, as the logging system may have already been shut down by the time the destructor runs.</para>
+		<para>Logging system shutdown happens from the destructor of the statically allocated singleton. The C++ standard states that the order of destruction of statically allocated objects is non-deterministic. Logging from inside the destructors of statically allocated objects is thus not safe and should not be performed, as the logging system may have already been shut down by the time the destructor runs.</para>
 
 		<h2>Logging messages</h2>
 
@@ -281,6 +284,16 @@
 
 		<para>Use of these macros is recommended in preference to the explicit calls.</para>
 
+		<para>If you do not wish to see the <emph>Balau</emph> prefix on each logging line of your code, create a set of your own macros which delegate to the above macros:</para>
+
+		<code lang="C++">
+			#define MyAppLogTrace(LOGGER, ...)  BalauLogTrace(LOGGER, __VA_ARGS__)
+			#define MyAppLogDebug(LOGGER, ...)  BalauLogDebug(LOGGER, __VA_ARGS__)
+			#define MyAppLogInfo(LOGGER, ...)   BalauLogInfo(LOGGER, __VA_ARGS__)
+			#define MyAppLogWarn(LOGGER, ...)   BalauLogWarn(LOGGER, __VA_ARGS__)
+			#define MyAppLogError(LOGGER, ...)  BalauLogError(LOGGER, __VA_ARGS__)
+		</code>
+
 		<h2>Logging namespaces</h2>
 
 		<para>The logging framework uses hierarchical logging namespaces to determine the logging configuration for each logger. Logging namespaces are dot delimited names with the following syntax:</para>
@@ -291,9 +304,14 @@
 
 		<para>Logging namespaces work in a hierarchical manner by inheriting the configuration of the nearest ancestor unless overridden in the immediate logger namespace configuration. For example, if the logging configuration supplied during the configuration of the logging system is:</para>
 
-		<code>
-			com.borasoftware   = level: info
-			com.borasoftware.a = level: debug
+		<code lang="Properties">
+			com.borasoftware {
+				level: info
+			}
+
+			com.borasoftware.a {
+				level: debug
+			}
 		</code>
 
 		<para>then a logger instantiated with the <emph>com.borasoftware</emph> namespace:</para>
@@ -316,38 +334,36 @@
 
 		<para>then this logger will log to the level specified by <emph>com.borasoftware</emph>.</para>
 
-		<para>If a logger is instantiated with an unknown namespace with no known ancestors, the global logging namespace configuration will be used. The global namespace may also be configured in the logging configuration by using the special "." namespace name.</para>
+		<para>If a logger is instantiated with an unknown namespace with no known ancestors, the global logging namespace configuration will be used. The global namespace may also be configured in the logging configuration by using the special "." namespace.</para>
 
 		<h1>Configuration file</h1>
 
 		<h2>Overview</h2>
 
-		<para>The configuration file format is very simple. Each namespace is the key in a key-value pair. The equals character separates the namespace key and its configuration value. The configuration value contains a set of descendant properties, the name and value of each property being separated by a colon. Properties are comma delimited. Spaces and newlines can be inserted in order to align the text. If spaces or commas are required in a property value, the value should be surrounded by double quotes. Whitespace outside of quoted text is ignored.</para>
+		<para>The configuration file format is standard <ref url="Application/Environment">environment configuration</ref>. Each composite property defines a namespace key and a set of configuration value properties within.</para>
 
-		<para>The global logging namespace is referenced via the special "." key. This namespace can be configured in the same way as any other namespace, and forms the global ancestor to all namespaces. It is thus useful to place any configuration applicable to all loggers in the global namespace.</para>
+		<para>The global logging namespace is specified via the special "." key. This namespace can be configured in the same way as any other namespace, and forms the global ancestor to all namespaces. It is thus useful to place any configuration applicable to all loggers in the global namespace.</para>
 
 		<para>Here is an example of a simple logging configuration:</para>
 
-		<code>
-			.                  = level: warn, format: "%Y-%m-%d %H:%M:%S [%thread] %level - %namespace - %message"
-			com.borasoftware   = level: info
-			com.borasoftware.a = level: debug
+		<code lang="Properties">
+			. {
+				level  = warn
+				format = %Y-%m-%d %H:%M:%S [%thread] %level - %namespace - %message
+			}
+
+			com.borasoftware {
+				level = info
+			}
+
+			com.borasoftware.a {
+				level = debug
+			}
 		</code>
 
 		<para>This example configuration configures three logging namespaces. The global namespace logging level is set to warn. Two other descendant namespaces' levels are also set. All loggers will log to the default stdout/stderr streams.</para>
 
 		<para>The example configuration configures the global namespace with a logging message format. Unless this is reconfigured in a descendant namespace, all loggers will use this format.</para>
-
-		<para>Namespace configurations are separated by whitespace. Normally this would be a newline as in the example above, but this is not required. In addition, newlines may be inserted inside a namespace's value list outside of quoted text. The same example configuration could equally be presented in the following way:</para>
-
-		<code>
-			.                  = level: warn
-			                   , format: "%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message"
-
-			com.borasoftware   = level: info
-
-			com.borasoftware.a = level: debug
-		</code>
 
 		<h2>Configuration macros</h2>
 
@@ -376,13 +392,15 @@
 
 		<para>For example, the logging system could be configured to log all output to a file contained within the user's home directory and with the same name as the executable by using the following stream option:</para>
 
-		<code>
-			. = stream: ${user.home}/${executable}.log
+		<code lang="Properties">
+			. {
+				stream = ${user.home}/${executable}.log
+			}
 		</code>
 
-		<para>All occurrences of the macro placeholders are expanded before the configuration text is parsed.</para>
-
 		<h2>The date placeholder</h2>
+
+		<para><strong><emph>This functionality is not yet implemented.</emph></strong></para>
 
 		<para>Unlike the other placeholders, the <emph>${date}</emph> placeholder is not expanded before configuration parsing. Instead, the <emph>${date}</emph> placeholder is processed later on by the stream class.</para>
 
@@ -394,8 +412,10 @@
 
 		<para>The previous configuration example with with the <emph>${date}</emph> placeholder added to the file logging stream is:</para>
 
-		<code>
-			. = stream: ${user.home}/${executable}-${date}.log
+		<code lang="Properties">
+			. {
+				stream = ${user.home}/${executable}-${date}.log
+			}
 		</code>
 
 		<h3>Date options</h3>
@@ -446,19 +466,6 @@
 
 		<para>The logging level option value is just the level (trace, debug, info, warn, error, none). The value text is case insensitive.</para>
 
-		<para><strong>TODO (not yet implemented)</strong> The logging level option may be specified without the <emph>level</emph> prefix. This allows simple configuration files such as:</para>
-
-		<code>
-			com.borasoftware   = info
-			com.borasoftware.a = debug
-		</code>
-
-		<para>The default level if no global namespace logging level is specified is info. The above example can thus be simplified to:</para>
-
-		<code>
-			com.borasoftware.a = debug
-		</code>
-
 		<h2>Format specification</h2>
 
 		<para>The message format specification consists of a printf like format string that contains text and format specifiers. The available format specifiers are:</para>
@@ -493,13 +500,13 @@
 		<para>The default format specification if none is supplied or inherited for a particular namespace is:</para>
 
 		<code>
-			"%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message"
+			%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message
 		</code>
 
 		<para>An alternative to the default logging format that includes the filename and line number could be:</para>
 
 		<code>
-			format: "%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message";
+			%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
 		</code>
 
 		<para>Log messages resulting from this format would be similar to the following:</para>
@@ -515,13 +522,13 @@
 
 		<para>By default, loggers automatically flush the writer stream after writing a logging line. This ensures that logging is physically written to output streams promptly. Automatic flushing can be disabled for a namespace by specifying <emph>flush: false</emph> in the namespace configuration.</para>
 
-		<h2>Stream specification</h2>
+		<h2>Stream specifications</h2>
 
 		<para>The stream specification options specify the output stream(s) to be created and written to for the logging namespace. The value of the options is a URI:</para>
 
-		<code>
-			stream:         [uri]
-			[level]-stream: [uri]
+		<code lang="Properties">
+			stream         = [uri]
+			[level]-stream = [uri]
 		</code>
 
 		<para>where <emph>[uri]</emph> is a real or pseudo URI identifying a stream to write to. Stream URIs are supported by logging system plugins.</para>
@@ -535,10 +542,10 @@
 
 		<para>Built in stream configuration examples:</para>
 
-		<code>
-			stream:       file:///path/to/file
-			warn-stream:  stdout
-			error-stream: stderr
+		<code lang="Properties">
+			stream       = file:///path/to/file
+			warn-stream  = stdout
+			error-stream = stderr
 		</code>
 
 		<para>Output streams for other types of URI are instantiated by logging system plugins (see next section).</para>
@@ -557,26 +564,32 @@
 
 		<para>Some additional examples will make this concept more clear:</para>
 
-		<code>
-			com.borasoftware = warn-stream:  stdout
-			                 , error-stream: stderr
+		<code lang="Properties">
+			com.borasoftware {
+				warn-stream  = stdout
+				error-stream = stderr
+			}
 		</code>
 
 		<para>The above specification will configure the com.borasoftware logger to output all trace, debug, info, and warn level log messages to stdout, and all error level log messages to stderr.</para>
 
-		<code>
-			com.borasoftware = debug-stream: ${user.home}/.bora/${executable}/debug.log
-			                 , warn-stream:  stdout
-			                 , error-stream: stderr
+		<code lang="Properties">
+			com.borasoftware {
+				debug-stream = ${user.home}/.bora/${executable}/debug.log
+				warn-stream  = stdout
+				error-stream = stderr
+			}
 		</code>
 
 		<para>The above specification will configure the com.borasoftware logger to output all trace and debug level log messages to the specified file, all info and warn level log messages to stdout, and all error level log messages to stderr.</para>
 
 		<para>If, for example the user home directory is <emph>/home/bob</emph> and the executable name is <emph>BalauTests</emph>, the resulting debug stream for the above example would be <emph>file:///home/bob/.bora/BalauTests/debug.log</emph>.</para>
 
-		<code>
-			com.borasoftware = stream:       stdout
-			                 , error-stream: stderr
+		<code lang="Properties">
+			com.borasoftware {
+				stream       = stdout
+				error-stream = stderr
+			}
 		</code>
 
 		<para>The above specification will configure the com.borasoftware logger to output all logging to stdout apart from the error stream, which will be configured to output to stderr.</para>
@@ -622,7 +635,7 @@
 
 		<para>The logging system is based around the public <emph>Logger</emph> class and the private <emph>LoggingState</emph> class. The <emph>LoggingState</emph> class is instantiated as a lazy singleton. The logging state contains a tree of loggers, plus pools for logging streams, log items, and composed log item vectors. The logging system contains a mutex that is locked when a logger is requested and when a reconfiguration is performed. Logging does not lock the mutex, hence concurrent logging and reconfiguration is supported.</para>
 
-		<para>Configuration text supplied to the logging system is parsed via the logging configuration parser. This is a self contained recursive descent parser written in pure C++, using the Balau parser support classes.</para>
+		<para>Logging configuration text supplied to the logging system is parsed via the standard hierarchical <ref url="Lang/PropertyParser">properties parser</ref>.</para>
 
 		<para>The logging system is configured at application startup, in the first call to either <emph>Logger::getInstance</emph> or <emph>Logger::configure</emph>.</para>
 
@@ -631,9 +644,9 @@
 		<list>
 			<entry>a default logging configuration is created;</entry>
 
-			<entry>an override logging configuration is created from the contents of the <emph>balau-logging.conf</emph> file if it exists;</entry>
+			<entry>an override logging configuration is created from the contents of the <emph>balau-logging.hconf</emph> file if it exists;</entry>
 
-			<entry>the logging configuration created from <emph>balau-logging.conf</emph> (if it exists) is cascaded onto the default logging configuration;</entry>
+			<entry>the logging configuration created from <emph>balau-logging.hconf</emph> (if it exists) is cascaded onto the default logging configuration;</entry>
 
 			<entry>the properties of each resulting parent logger are propagated onto the children;</entry>
 

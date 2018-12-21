@@ -14,7 +14,6 @@
 #include <Balau/Exception/LoggingExceptions.hpp>
 #include <Balau/Logging/Impl/LoggerHolder.hpp>
 #include <Balau/Logging/Impl/LoggerItems.hpp>
-#include <Balau/Logging/Impl/LoggingConfigurationParsing.hpp>
 #include <Balau/Logging/Impl/LoggingStreams.hpp>
 #include <Balau/Util/Files.hpp>
 
@@ -71,10 +70,6 @@ class LoggingState final {
 
 	// Lookup a logging stream from the shared pool, creating it if it does not already exist.
 	LoggingStream * getOrCreateStream(const std::string & uri);
-
-	// Used in the tree searches made during getLogger calls.
-	// Creates a chain of dummy loggers in order to search the tree for the nearest logger.
-	std::vector<LoggerHolder> parseNamespaceToLoggerChain(const std::string & namespaceText);
 
 	// Wipe all the loggers' properties, pending a reconfiguration.
 	void wipeProperties(LoggerTree & theLoggers);

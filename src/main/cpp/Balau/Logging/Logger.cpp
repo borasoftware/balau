@@ -61,17 +61,14 @@ void Logger::lockConfiguration(bool throwOnReconfigure) {
 
 std::string Logger::getConfiguration() const {
 	std::ostringstream stream;
-	stream << nameSpace << " = ";
-	const auto padLength = (unsigned int) nameSpace.length() + 3U;
-	std::string prefix;
+
+	stream << nameSpace << " {\n";
 
 	for (const auto & property : properties) {
-		stream << prefix << property.first << ": " << property.second << "\n";
-
-		if (prefix.empty()) {
-			prefix = Util::Strings::padLeft(", ", padLength, ' ');
-		}
+		stream << "    " << property.first << " = " << property.second << "\n";
 	}
+
+	stream << "}\n";
 
 	return stream.str();
 }

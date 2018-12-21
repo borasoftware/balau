@@ -122,9 +122,7 @@
 		<bullets>
 			<entry>Create a threaded writer in order to offload writing to another thread.</entry>
 
-			<entry>Make quoting unnecessary for URIs.</entry>
-
-			<entry>Improve the validation in the parser (space handling).</entry>
+			<entry>Decide whether to support descendant composite properties in the logging configuration instead of the current flat logging configuration format.</entry>
 		</bullets>
 
 		<h2>Network</h2>

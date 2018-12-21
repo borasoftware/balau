@@ -28,6 +28,12 @@
 
 namespace Balau {
 
+namespace LoggingSystem {
+
+class LoggerPropertyVisitor;
+
+} // namespace LoggingSystem
+
 /////////////////////////// Logging stream plugins ////////////////////////////
 
 ///
@@ -112,7 +118,7 @@ class Logger {
 	/// Flush all current logging streams and reconfigure the logging system to the default configuration.
 	///
 	/// The default configuration will be the default configuration plus the
-	/// cascade of the configuration obtained from the balau-logging.conf
+	/// cascade of the configuration obtained from the balau-logging.hconf
 	/// file if the file exists.
 	///
 	/// This call will obtain a lock on the logging system mutex.
@@ -776,6 +782,8 @@ class Logger {
 	// free on x86/x64.
 	//
 	private: std::array<std::atomic<LoggingStream *>, _BalauLoggingLevelCount> streams {};
+
+	friend class LoggingSystem::LoggerPropertyVisitor;
 
 	//
 	// This logger's configuration properties.

@@ -34,7 +34,7 @@
 <chapter title="Hierarchical properties">
 	<h1>Overview</h1>
 
-	<para>This chapter describes a hierarchical property file format and associated C++ parser. The format has been conceived principally for describing application and environment configuration. The format is based upon a hierarchical extension to the Java <emph>.properties</emph> file format. Composite properties are defined via <emph>"{"</emph> and <emph>"}"</emph> delimited blocks.</para>
+	<para>This chapter describes a hierarchical property file format and associated C++ parser. The format has been conceived principally for describing application, environment, and logging configuration. The format is based upon a hierarchical extension to the Java <emph>.properties</emph> file format. Composite properties are defined via <emph>"{"</emph> and <emph>"}"</emph> delimited blocks.</para>
 
 	<para>In addition to providing composite properties, the hierarchical property format provides an <emph>include</emph> feature. This allows property files to be spread over multiple files and compiled via inclusion. Includes are specified via the <emph>"@"</emph> directive.</para>
 
@@ -42,7 +42,7 @@
 
 	<para>The hierarchical properties parser can also parse non-hierarchical Java properties files. The exception that cannot be parsed is when a non-hierarchical properties file contains one or more names and/or values that contain unescaped special hierarchical characters. As the <emph>"{"</emph>, <emph>"}"</emph> and <emph>"@"</emph> characters are used to indicate hierarchical blocks and include directives, parsing will fail if names and/or values are defined with these characters in them. Property names and values that contain these character can nevertheless be defined by escaping the special characters with a <emph>"\"</emph>.</para>
 
-	<para>No file extension has been explicitly denoted to indicate hierarchical properties files. Given that the hierarchical property file format is effectively just a text serialisation format, files themselves do not have any intrinsic semantics. It is thus proposed that users should define their own file extensions which attach semantic value to file contents. The Balau library thus uses the <emph>.properties</emph> extension for hierarchical properties files without specific semantics, the <emph>.thconf</emph> extension for environment configuration type specification files, and the <emph>.hconf</emph> extension for environment configuration value files. The <ref url="Application/Environment">environment configuration</ref> chapter discusses this in more detail.</para>
+	<para>No file extension has been explicitly denoted to indicate hierarchical properties files. Given that the hierarchical property file format is effectively just a text based serialisation format, files themselves do not have any intrinsic semantics. It is thus proposed that users should define their own file extensions which attach semantic value to file contents. The Balau library thus uses the <emph>.properties</emph> extension for hierarchical properties files without specific semantics, the <emph>.thconf</emph> extension for environment configuration type specification files, and the <emph>.hconf</emph> extension for environment configuration value files. The <ref url="Application/Environment">environment configuration</ref> chapter discusses this in more detail.</para>
 
 	<h1>Quick start</h1>
 
@@ -172,7 +172,7 @@
 
 	<h1>Hierarchical format</h1>
 
-	<para>The basic format of the file is the same as that of Java <emph>.properties</emph> files.</para>
+	<para>The basic format of the hierarchical propery format is the same as that of Java <emph>.properties</emph> files.</para>
 
 	<bullets>
 		<entry>Leading blanks of each line are stripped.</entry>
@@ -328,7 +328,7 @@
 <grNTL>Property</grNTL>        = <grTR>Blank</grTR>* (<grNTR>ValueProperty</grNTR> | <grNTR>ComplexProperty</grNTR> | <grNTR>Include</grNTR> | <grNTR>Comment</grNTR>)
                   (<grTR>LineBreak</grTR> | <grTR>LineBreak</grTR>? <grTR>EndOfFile</grTR>)
 
-<grNTL>ValueProperty</grNTL>  = <grNTR>Key</grNTR> (<grNTR>Assignment</grNTR> <grNTR>Value</grNTR>?)?
+<grNTL>ValueProperty</grNTL>   = <grNTR>Key</grNTR> (<grNTR>Assignment</grNTR> <grNTR>Value</grNTR>?)?
 
 <grNTL>ComplexProperty</grNTL> = <grNTR>Key</grNTR> <grNTR>Assignment</grNTR> <grTR>OpenCurly</grTR> <grTR>LineBreak</grTR> <grNTR>Property</grNTR>* <grTR>CloseCurly</grTR>
 

@@ -9,6 +9,7 @@
 //
 
 #include "LoggingState.hpp"
+#include "LoggerPropertyVisitor.hpp"
 #include "../../System/SystemClock.hpp"
 #include "../../Util/User.hpp"
 #include "../../Util/Vectors.hpp"
@@ -137,7 +138,7 @@ std::string LoggingState::generateAbbreviatedNamespace(std::string_view loggerNa
 		return std::string(loggerNamespace);
 	}
 
-	std::vector<std::string_view> identifiers = Strings::split(loggerNamespace, ".");
+	std::vector<std::string_view> identifiers = Strings::splitAndTrim(loggerNamespace, ".");
 	std::ostringstream builder;
 	std::string prefix;
 
@@ -158,11 +159,12 @@ Logger & LoggingState::getInstance(std::string_view loggingNamespace) {
 
 	std::string nameSpaceStr = std::string(loggingNamespace == "." ? "" : loggingNamespace);
 
-	// Logger holders will contain the full test logger chain (including the global root).
-	std::vector<LoggerHolder> loggerHolders = parseNamespaceToLoggerChain(nameSpaceStr);
+	const std::vector<std::string_view> nameSpace = Util::Strings::splitAndTrim(nameSpaceStr, ".");
 
-	// Nearest will be at least the global root.
-	LoggerTreeNode * nearest = loggerTree.findNearest(loggerHolders, false);
+	LoggerTreeNode * nearest = loggerTree.findNearest(
+		  nameSpace
+		, [] (const auto & holder, const auto & identifier) { return holder.logger->identifier == identifier; }
+	);
 
 	if (nearest->value.getLogger()->nameSpace == nameSpaceStr) {
 		return *nearest->value.getLogger();
@@ -172,7 +174,7 @@ Logger & LoggingState::getInstance(std::string_view loggingNamespace) {
 		? nameSpaceStr
 		: nameSpaceStr.substr(nearest->value.getLogger()->nameSpace.length() + 1);
 
-	std::vector<std::string_view> remainingIdentifiers = Strings::split(remainingNamespace, ".");
+	std::vector<std::string_view> remainingIdentifiers = Strings::splitAndTrim(remainingNamespace, ".");
 
 	// Instantiate missing descendants.
 	LoggerTreeNode * previous;
@@ -198,7 +200,7 @@ Logger & LoggingState::getInstance(std::string_view loggingNamespace) {
 		current->value.getLogger()->inheritConfiguration(*previous->value.getLogger());
 	}
 
-	return *current->value.getLogger().get();
+	return *current->value.getLogger();
 }
 
 void LoggingState::flushAll() {
@@ -305,31 +307,7 @@ LoggingStream * LoggingState::getOrCreateStream(const std::string & uri) {
 	return cachedStream->second;
 }
 
-std::vector<LoggerHolder> LoggingState::parseNamespaceToLoggerChain(const std::string & namespaceText) {
-	LoggingConfigurationParsing::Namespace nameSpace = LoggingConfigurationParsing::parseNamespace(namespaceText);
-	std::vector<LoggerHolder> ret;
-	std::string nameSpaceStr;
-	std::string prefix;
-
-	// Global namespace root.
-	ret.emplace_back(LoggerHolder(std::shared_ptr<Logger>(new Logger)));
-
-	for (size_t m = 0; m < nameSpace.identifiers.size(); m++) {
-		std::string identifier = nameSpace.identifiers[m];
-		std::string ns = generateAbbreviatedNamespace(nameSpace.join());
-		nameSpaceStr += prefix + identifier;
-		prefix = ".";
-
-		ret.emplace_back(
-			LoggerHolder(
-				std::shared_ptr<Logger>(
-					new Logger(std::move(identifier), std::string(nameSpaceStr), std::move(ns)))
-			)
-		);
-	}
-
-	return ret;
-}
+using LoggingNamespace = std::vector<std::string>;
 
 void LoggingState::wipeProperties(LoggerTree & theLoggers) {
 	printLoggingDebugMessage("wipeProperties called");
@@ -344,13 +322,13 @@ LoggerTree LoggingState::autoConfigure() noexcept {
 
 	// Attempt normal configuration.
 	try {
-		const char * configurationFileName = "balau-logging.conf";
+		const char * configurationFileName = "balau-logging.hconf";
 		boost::filesystem::path exeLocation = boost::dll::program_location();
 		std::string configurationText;
 
 		if (!boost::filesystem::is_regular_file(exeLocation)) {
 			std::cerr << "ERROR: cannot locate executable. "
-			          << "Implicit logging system configuration from balau-logging.conf cannot be performed."
+			          << "Implicit logging system configuration from balau-logging.hconf cannot be performed."
 			          << std::endl;
 		} else {
 			boost::filesystem::path confLocation = exeLocation.parent_path() / configurationFileName;
@@ -759,54 +737,12 @@ void LoggingState::setFormats(LoggerTree & theLoggers) {
 
 LoggerTree LoggingState::parseConfiguration(const std::string & configurationText) {
 	printLoggingDebugMessage("parseConfiguration called with text:\n" + configurationText);
-
-	std::istringstream input(configurationText);
-	LoggingConfigurationParsing::ConfigurationScanner scanner(input);
-	LoggingConfigurationParsing::ConfigurationParser parser(scanner.scan());
-	LoggingConfigurationParsing::Entries entries = parser.parse();
-	LoggerTree configuration(LoggerHolder(std::shared_ptr<Logger>(new Logger("", "", ""))));
-	std::set<LoggingConfigurationParsing::Namespace> parsedNamespaces;
-
-	for (auto & entry : entries.entries) {
-		if (parsedNamespaces.find(entry.nameSpace) != parsedNamespaces.end()) {
-			std::cerr << "LOGGING CONFIGURATION WARNING: "
-			          << "ignoring duplicate logging configuration found for namespace "
-			          << "\"" << entry.nameSpace.join() << "\"." << std::endl;
-			continue;
-		} else {
-			parsedNamespaces.emplace(entry.nameSpace);
-		}
-
-		LoggerTreeNode * node = &configuration.root();
-
-		if (!entry.nameSpace.identifiers.empty()) { // The empty namespace is the root.
-			std::string nameSpace;
-			std::string ns;
-			std::string prefix;
-
-			// Find/create node.
-			for (size_t m = 0; m < entry.nameSpace.identifiers.size(); m++) {
-				std::string & identifier = entry.nameSpace.identifiers[m];
-				nameSpace += prefix + identifier;
-				std::string thisNs = ns + prefix + (m < entry.nameSpace.identifiers.size() - 1 ? identifier.substr(0, 1) : identifier);
-				ns += prefix + identifier.substr(0, 1);
-				prefix = ".";
-				node = &node->findOrAddChild(
-					LoggerHolder(
-						std::shared_ptr<Logger>(
-							new Logger(std::move(identifier), std::string(nameSpace), std::move(thisNs))
-						)
-					)
-				);
-			}
-		}
-
-		for (auto & property : entry.properties.properties) {
-			node->value.getLogger()->properties[property.name] = property.value;
-		}
-	}
-
-	return configuration;
+	Resource::StringUri input(configurationText);
+	Lang::Property::AST::Properties properties = Lang::Property::PropertyParserService::parse(input);
+	LoggerPropertyVisitor visitor;
+	LoggerPropertyAstPayload payload;
+	visitor.visit(payload, properties);
+	return payload.configuration;
 }
 
 void LoggingState::setLevels(LoggerTree & theLoggers) {

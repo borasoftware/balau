@@ -344,8 +344,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Logging/Impl/LoggerItems.cpp
 	src/main/cpp/Balau/Logging/Impl/LoggerItems.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggerMessageItems.hpp
-	src/main/cpp/Balau/Logging/Impl/LoggingConfigurationParsing.cpp
-	src/main/cpp/Balau/Logging/Impl/LoggingConfigurationParsing.hpp
+	src/main/cpp/Balau/Logging/Impl/LoggerPropertyVisitor.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggingState.cpp
 	src/main/cpp/Balau/Logging/Impl/LoggingState.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggingStreams.cpp
@@ -676,8 +675,8 @@ add_custom_command(
 	TARGET BalauTests
 	POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy
-	${CMAKE_SOURCE_DIR}/src/test/resources/Logging/balau-logging.conf
-	${CMAKE_BINARY_DIR}/bin/balau-logging.conf
+	${CMAKE_SOURCE_DIR}/src/test/resources/Logging/balau-logging.hconf
+	${CMAKE_BINARY_DIR}/bin/balau-logging.hconf
 )
 
 ############################## BALAU TEST RUNNER ##############################

@@ -2053,14 +2053,10 @@ template <typename T> class ObjectTrie {
 	///
 	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
 	ObjectTrieNode<T> * findNearest(const ContainerT<U, UC ...> & values, CompareT compare, bool skipRoot = true) {
-		if (values.empty()) {
-			return nullptr;
-		}
-
 		auto iter = values.begin();
 
 		if (!skipRoot) {
-			if (!compare(trieRoot.value, *iter)) {
+			if (iter == values.end() || !compare(trieRoot.value, *iter)) {
 				return nullptr;
 			}
 
@@ -2104,13 +2100,9 @@ template <typename T> class ObjectTrie {
 	///
 	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
 	const ObjectTrieNode<T> * findNearest(const ContainerT<U, UC ...> & values, CompareT compare, bool skipRoot = true) const {
-		if (values.empty()) {
-			return nullptr;
-		}
-
 		auto iter = values.begin();
 
-		if (!skipRoot) {
+		if (iter == values.end() || !skipRoot) {
 			if (!compare(trieRoot.value, *iter)) {
 				return nullptr;
 			}

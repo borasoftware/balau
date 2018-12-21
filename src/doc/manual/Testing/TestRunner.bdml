@@ -404,7 +404,7 @@
 		<para>An alternative technique of logging test messages is to use the Balau <ref url="Logging/Logger">logging framework</ref> and construct the test runner to log test results to a Balau logger. This allows the full parameter parsing of the logging framework to be used within the test class log messages. There are two ways of configuring the logging system for the test application.</para>
 
 		<list>
-			<entry>Implicitly configure the logging system with a <emph>balau-logging.conf</emph> file in the test application binary directory (a CMake custom command will be required to copy the logging configuration file to the build folder - see the Balau CMakeLists.txt for an example).</entry>
+			<entry>Implicitly configure the logging system with a <emph>balau-logging.hconf</emph> file in the test application binary directory (a CMake custom command will be required to copy the logging configuration file to the build folder - see the Balau CMakeLists.txt for an example).</entry>
 
 			<entry>Explicitly configure the logging system by calling <emph>Logger::configure(std::string)</emph> from within the test application main function, before running the tests.</entry>
 		</list>

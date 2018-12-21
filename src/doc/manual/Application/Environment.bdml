@@ -57,7 +57,7 @@
 		<bullets>
 			<entry>derive from the <emph>EnvironmentConfiguration</emph> class and hard wire hierarchical property type specifications inside the configure() method of the derived class;</entry>
 
-			<entry>instantiate an <emph>EnvironmentConfiguration</emph> instance directly, by specifying one or more hierarchical property type specification sources in addition to the input environment properties source.</entry>
+			<entry>instantiate an <emph>EnvironmentConfiguration</emph> instance directly, by specifying one or more hierarchical property type specification sources in addition to the input environment properties sources.</entry>
 
 			<entry>derive from the <emph>EnvironmentConfiguration</emph> class, hard wire hierarchical property type specification declarations inside the configure() method of the derived class, and specify one or more hierarchical property type specification sources in addition to the input environment properties source.</entry>
 		</bullets>
