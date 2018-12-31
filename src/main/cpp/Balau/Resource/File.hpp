@@ -225,11 +225,11 @@ class File : public Uri {
 		return true;
 	}
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() override {
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
 		return std::unique_ptr<ByteReadResource>(new FileByteReadResource(*this));
 	}
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() override {
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
 		return std::unique_ptr<Utf8To32ReadResource>(new FileUtf8To32ReadResource(*this));
 	}
 
@@ -246,7 +246,7 @@ class File : public Uri {
 	///
 	/// @return a file byte read resource
 	///
-	public: FileByteReadResource getByteReadResource() {
+	public: FileByteReadResource getByteReadResource() const {
 		return FileByteReadResource(*this);
 	}
 
@@ -255,7 +255,7 @@ class File : public Uri {
 	///
 	/// @return a file UTF-8 to UTF-32 read resource
 	///
-	public: FileUtf8To32ReadResource getUtf8To32ReadResource() {
+	public: FileUtf8To32ReadResource getUtf8To32ReadResource() const {
 		return FileUtf8To32ReadResource(*this);
 	}
 
@@ -264,7 +264,7 @@ class File : public Uri {
 	///
 	/// @return a file byte write resource
 	///
-	public: FileByteWriteResource getByteWriteResource() {
+	public: FileByteWriteResource getByteWriteResource() const {
 		return FileByteWriteResource(*this);
 	}
 
@@ -273,7 +273,7 @@ class File : public Uri {
 	///
 	/// @return a file UTF-8 to UTF-32 write resource
 	///
-	public: FileUtf32To8WriteResource getUtf32To8WriteResource() {
+	public: FileUtf32To8WriteResource getUtf32To8WriteResource() const {
 		return FileUtf32To8WriteResource(*this);
 	}
 
@@ -281,7 +281,7 @@ class File : public Uri {
 		return isRegularDirectory();
 	}
 
-	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() override {
+	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
 		if (!isRegularDirectory()) {
 			ThrowBalauException(Exception::NotImplementedException, "Plain files do not have a recursive iterator.");
 		}
@@ -441,7 +441,7 @@ class File : public Uri {
 	/// @return true if one or more of the directories were created, false otherwise
 	/// @throw filesystem_error when there was an error attempting to create one or more of the directories
 	///
-	public: bool createDirectories() {
+	public: bool createDirectories() const {
 		return boost::filesystem::create_directories(entry);
 	}
 
@@ -450,7 +450,7 @@ class File : public Uri {
 	///
 	/// @return true if the file was removed
 	///
-	public: bool removeFile() {
+	public: bool removeFile() const {
 		return boost::filesystem::remove(entry);
 	}
 
@@ -478,6 +478,10 @@ class File : public Uri {
 
 	public: std::string toRawString() const override {
 		return entry.path().string();
+	}
+
+	public: template <typename AllocatorT> Balau::U8String<AllocatorT> toRawString() const {
+		return ::toString<AllocatorT>(entry.path().string());
 	}
 
 	public: size_t hashcode() const noexcept override {
@@ -602,6 +606,16 @@ class File : public Uri {
 ///
 /// @return a UTF-8 string representing the file URI
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const File & file) {
+	return file.toRawString<AllocatorT>();
+}
+
+///
+/// Print the file URI as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the file URI
+///
 inline std::string toString(const File & file) {
 	return file.toRawString();
 }
@@ -616,6 +630,16 @@ inline void fromString(File & destination, const std::string & value) {
 }
 
 } // namespace Balau::Resource
+
+///
+/// Print the file URI as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the file URI
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Resource::File & file) {
+	return file.toRawString<AllocatorT>();
+}
 
 ///
 /// Print the file URI as a UTF-8 string.

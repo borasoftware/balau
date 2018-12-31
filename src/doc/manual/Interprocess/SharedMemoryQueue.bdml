@@ -41,7 +41,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Interprocess/SharedMemoryQueue.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Interprocess/SharedMemoryQueue.hpp</para>
 
 		<para>The queue is used in the same way as any other <emph>BlockingQueue</emph> implementation.</para>
 

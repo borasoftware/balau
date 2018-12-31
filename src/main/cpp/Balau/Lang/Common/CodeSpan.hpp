@@ -190,16 +190,51 @@ class CodeSpan {
 ///
 /// Print the supplied code span as a UTF-8 string.
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const CodeSpan & codeSpan) {
+	return ::toString<AllocatorT>(
+		  "[L", codeSpan.start.line
+		, "C",  codeSpan.start.column
+		, ":L", codeSpan.end.line
+		, "C",  codeSpan.end.column
+		, "]"
+	);
+}
+
+///
+/// Print the supplied code span as a UTF-8 string.
+///
 inline std::string toString(const CodeSpan & codeSpan) {
-	return "[L" + ::toString(codeSpan.start.line) + "C" + ::toString(codeSpan.start.column)
-	     + ":L" + ::toString(codeSpan.end.line) + "C" + ::toString(codeSpan.end.column) + "]";
+	return ::toString(
+		  "[L", codeSpan.start.line
+		, "C",  codeSpan.start.column
+		, ":L", codeSpan.end.line
+		, "C",  codeSpan.end.column
+		, "]"
+	);
 }
 
 } // namespace Balau::Lang
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Lang::CodeSpan & codeSpan) {
+	return toString<AllocatorT>(
+		  "[L", codeSpan.start.line
+		, "C",  codeSpan.start.column
+		, ":L", codeSpan.end.line
+		, "C",  codeSpan.end.column
+		, "]"
+	);
+}
+
 inline std::string toString(const Balau::Lang::CodeSpan & codeSpan) {
-	return "[L" + ::toString(codeSpan.start.line) + "C" + ::toString(codeSpan.start.column)
-	     + ":L" + ::toString(codeSpan.end.line) + "C" + ::toString(codeSpan.end.column) + "]";
+	return toString(
+		  "[L", codeSpan.start.line
+		, "C",  codeSpan.start.column
+		, ":L", codeSpan.end.line
+		, "C",  codeSpan.end.column
+		, "]"
+	);
 }
 
 #endif // COM_BORA_SOFTWARE__BALAU_LANG__CODE_SPAN

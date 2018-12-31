@@ -20,7 +20,7 @@
 		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
 		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
 
-		<title text="Balau core C++ library - http.server -> mime.types" />
+		<title text="Balau core C++ library - http.server -> mime.types - environment configuration specification" />
 
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
 		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
@@ -36,10 +36,6 @@
 		<para class="short-desc">The list of MIME types to use in the HTTP server.</para>
 
 		<para>The MIME type list consists of a MIME type key and a space delimited list of file extensions which identify as this MIME type.</para>
-
-		<h1 toc='false'>Ancestor</h1>
-
-		<para>The <emph>http</emph> composite property is contained within  <ref url="Environment/http.server">http.server</ref>.</para>
 
 		<h1 toc='false'>Simple configuration</h1>
 

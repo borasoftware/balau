@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - Balau environment configuration specification" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Balau environment configuration specification">
+		<h1 toc='false'>Description</h1>
+
+		<para class="short-desc">Balau provides the following environment configuration specifications for consumption by downstream applications.</para>
+
+		<h1 toc='false'>Simple configuration</h1>
+
+		<para>Balau does not specify any value properties in the configuration root.</para>
+
+		<h1 toc='false'>Composite configuration</h1>
+
+		<table class="bdml-table20L80">
+			<head>
+				<cell>Name</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell><ref url="Environment/logging">logging</ref></cell>
+					<cell>The logging configuration specification.</cell>
+				</row>
+
+				<row>
+					<cell><ref url="Environment/http.server">http.server</ref></cell>
+					<cell>The HTTP server configuration specification.</cell>
+				</row>
+			</body>
+		</table>
+	</chapter>
+</document>

@@ -10,6 +10,8 @@
 
 #include "LoggingState.hpp"
 #include "LoggerPropertyVisitor.hpp"
+#include "LoggerConfigurationVisitor.hpp"
+#include "../../Application/Impl/PropertyBindingBuilderFactory.hpp"
 #include "../../System/SystemClock.hpp"
 #include "../../Util/User.hpp"
 #include "../../Util/Vectors.hpp"
@@ -208,7 +210,8 @@ void LoggingState::flushAll() {
 	performFlushAll();
 }
 
-void LoggingState::configure(std::string_view configurationText) {
+void LoggingState::configure(std::string_view configurationText,
+                             const std::map<std::string, std::string> & placeholders) {
 	std::lock_guard<std::mutex> lock(loggingStateHolder().mutex);
 
 	if (locked) {
@@ -220,7 +223,47 @@ void LoggingState::configure(std::string_view configurationText) {
 	}
 
 	performFlushAll();
-	LoggerTree newLoggers = manualConfigure(configurationText);
+
+	// Encase the placeholders.
+	std::map<std::string, std::string> encasedPlaceholders;
+
+	std::for_each(
+		  placeholders.begin()
+		, placeholders.end()
+		, [&encasedPlaceholders] (const auto & p) { encasedPlaceholders.insert(std::pair("${" + p.first + "}", p.second)); }
+	);
+
+	LoggerTree newLoggers = manualConfigure(configurationText, encasedPlaceholders);
+
+	wipeProperties(loggerTree);
+	cascadeAndConfigureLoggers(loggerTree, newLoggers);
+}
+
+void LoggingState::configure(const EnvironmentProperties & configuration,
+                             const std::map<std::string, std::string> & placeholders) {
+	std::lock_guard<std::mutex> lock(loggingStateHolder().mutex);
+
+	if (locked) {
+		if (noisy) {
+			ThrowBalauException(Exception::LoggingConfigurationException, "Attempt to reconfigure locked logging system.");
+		}
+
+		return;
+	}
+
+	performFlushAll();
+
+	// Encase the placeholders.
+	std::map<std::string, std::string> encasedPlaceholders;
+
+	std::for_each(
+		  placeholders.begin()
+		, placeholders.end()
+		, [&encasedPlaceholders] (const auto & p) { encasedPlaceholders.insert(std::pair("${" + p.first + "}", p.second)); }
+	);
+
+	LoggerTree newLoggers = manualConfigure(configuration, encasedPlaceholders);
+
 	wipeProperties(loggerTree);
 	cascadeAndConfigureLoggers(loggerTree, newLoggers);
 }
@@ -337,7 +380,7 @@ LoggerTree LoggingState::autoConfigure() noexcept {
 			}
 		}
 
-		return manualConfigure(configurationText);
+		return manualConfigure(configurationText, std::map<std::string, std::string>());
 	} catch (const std::exception & e) {
 		fprintf(stderr, "FATAL: The logging configuration threw an exception:\n");
 		fprintf(stderr, "FATAL: %s\n", e.what());
@@ -366,12 +409,13 @@ LoggerTree LoggingState::autoConfigure() noexcept {
 	return LoggerTree(LoggerHolder(std::shared_ptr<Logger>()));
 }
 
-LoggerTree LoggingState::manualConfigure(std::string_view configurationText) {
+LoggerTree LoggingState::manualConfigure(std::string_view configurationText,
+                                         const std::map<std::string, std::string> & encasedPlaceholders) {
 	printLoggingDebugMessage("manualConfigure called");
 	LoggerTree theLoggers = createDefaultConfiguration();
 
 	if (!configurationText.empty()) {
-		std::string configurationTextExpanded = expandConfigurationTextMacros(configurationText);
+		std::string configurationTextExpanded = expandConfigurationTextMacros(configurationText, encasedPlaceholders);
 		LoggerTree newLoggers = parseConfiguration(configurationTextExpanded);
 		cascadeAndConfigureLoggers(theLoggers, newLoggers);
 	} else {
@@ -381,16 +425,131 @@ LoggerTree LoggingState::manualConfigure(std::string_view configurationText) {
 	return theLoggers;
 }
 
-std::string LoggingState::expandConfigurationTextMacros(std::string_view configurationText) {
-	boost::filesystem::path exeLocation = boost::dll::program_location();
+LoggerTree LoggingState::manualConfigure(const EnvironmentProperties & configuration,
+                                         const std::map<std::string, std::string> & encasedPlaceholders) {
+	printLoggingDebugMessage("manualConfigure called");
+	LoggerTree theLoggers = createDefaultConfiguration();
 
+	if (configuration.begin() != configuration.end()) {
+		const EnvironmentProperties configurationExpanded = expandConfigurationTextMacros(configuration, encasedPlaceholders);
+		LoggerTree newLoggers = parseConfiguration(configurationExpanded);
+		cascadeAndConfigureLoggers(theLoggers, newLoggers);
+	} else {
+		configureLoggers(theLoggers);
+	}
+
+	return theLoggers;
+}
+
+std::string LoggingState::expandConfigurationTextMacros(std::string_view configurationText,
+                                                        const std::map<std::string, std::string> & encasedPlaceholders) {
+	const boost::filesystem::path exeLocation = boost::dll::program_location();
 	const std::string homeDir = User::getHomeDirectory().toUriString();
 	const std::string executableName = exeLocation.filename().string();
 
-	return Strings::replaceAll(
-		  Strings::replaceAll(configurationText, "${user.home}", homeDir)
-		, "${executable}"
-		, executableName
+	return expandConfigurationTextMacros(configurationText, exeLocation, homeDir, executableName, encasedPlaceholders);
+}
+
+std::string LoggingState::expandConfigurationTextMacros(std::string_view configurationText,
+                                                        const boost::filesystem::path & exeLocation,
+                                                        const std::string & homeDir,
+                                                        const std::string & executableName,
+                                                        const std::map<std::string, std::string> & encasedPlaceholders) {
+	bool modded;
+	size_t count;
+	auto text = std::string(configurationText);
+
+	// The supplied encasedPlaceholders are expanded first.
+
+	do {
+		modded = false;
+
+		for (const auto & p : encasedPlaceholders) {
+			text = Strings::replaceAll(text, p.first, p.second, &count);
+			modded |= count != 0;
+		}
+	} while (modded);
+
+	// The default encasedPlaceholders are expanded last.
+	// This allows the supplied placeholders to take precedence.
+
+	do {
+		modded = false;
+		text = Strings::replaceAll(text, "${user.home}", homeDir, &count);
+		modded |= count != 0;
+		text = Strings::replaceAll(text, "${executable}", executableName, &count);
+		modded |= count != 0;
+	} while (modded);
+
+	return text;
+}
+
+EnvironmentProperties LoggingState::expandConfigurationTextMacros(const EnvironmentProperties & configuration,
+                                                                  const std::map<std::string, std::string> & encasedPlaceholders) {
+	const boost::filesystem::path exeLocation = boost::dll::program_location();
+	const std::string homeDir = User::getHomeDirectory().toUriString();
+	const std::string executableName = exeLocation.filename().string();
+
+	auto bindings = std::make_unique<Impl::BindingMap>();
+
+	for (auto item : configuration) {
+		std::string_view name = item.getName();
+
+		if (item.isComposite()) {
+			auto composite = item.getComposite();
+
+			bindings->put(
+				  item.getKey()
+				, expandConfigurationValueTextMacros(
+					item.getKey(), composite, exeLocation, homeDir, executableName, encasedPlaceholders
+				)
+			);
+		} else {
+			fprintf(stderr, "WARN: ignoring root value property in logging configuration: %s\n", std::string(name).c_str());
+		}
+	}
+
+	return EnvironmentProperties(std::move(bindings));
+}
+
+std::unique_ptr<Impl::AbstractBinding>
+LoggingState::expandConfigurationValueTextMacros(Impl::BindingKey key,
+                                                 const std::shared_ptr<EnvironmentProperties> & configuration,
+                                                 const boost::filesystem::path & exeLocation,
+                                                 const std::string & homeDir,
+                                                 const std::string & executableName,
+                                                 const std::map<std::string, std::string> & encasedPlaceholders) {
+	auto bindings = std::make_unique<Impl::BindingMap>();
+
+	for (auto item : *configuration) {
+		std::string_view name = item.getName();
+
+		if (item.isComposite()) {
+			fprintf(stderr, "WARN: ignoring descendant composite property in logging configuration: %s\n", std::string(name).c_str());
+		} else if (item.isValue<std::string>()) {
+			auto value = item.getValue<std::string>();
+
+			value = expandConfigurationTextMacros(value, exeLocation, homeDir, executableName, encasedPlaceholders);
+
+			bindings->put(
+				  item.getKey()
+				, std::unique_ptr<Impl::AbstractBinding>(new Impl::PrototypeBinding<std::string>(item.getKey(), value))
+			);
+		} else if (item.isValue<bool>()) {
+			auto value = item.getValue<bool>();
+			bindings->put(
+				  item.getKey()
+				, std::unique_ptr<Impl::AbstractBinding>(new Impl::PrototypeBinding<bool>(item.getKey(), value))
+			);
+		} else {
+			fprintf(stderr, "WARN: unknown logging configuration value property: %s\n", std::string(name).c_str());
+		}
+	}
+
+	return std::unique_ptr<Impl::AbstractBinding>(
+		new Impl::ProvidedSingletonBinding<EnvironmentProperties>(
+			std::move(key), std::make_shared<EnvironmentProperties>(std::move(bindings))
+		)
 	);
 }
 
@@ -740,9 +899,13 @@ LoggerTree LoggingState::parseConfiguration(const std::string & configurationTex
 	Resource::StringUri input(configurationText);
 	Lang::Property::AST::Properties properties = Lang::Property::PropertyParserService::parse(input);
 	LoggerPropertyVisitor visitor;
-	LoggerPropertyAstPayload payload;
-	visitor.visit(payload, properties);
-	return payload.configuration;
+	return visitor.visit(properties);
+}
+
+LoggerTree LoggingState::parseConfiguration(const EnvironmentProperties & configuration) {
+	printLoggingDebugMessage("parseConfiguration called with environment properties object\n");
+	LoggerConfigurationVisitor visitor;
+	return visitor.visit(configuration);
 }
 
 void LoggingState::setLevels(LoggerTree & theLoggers) {
@@ -778,12 +941,8 @@ void LoggingState::setShouldFlush(LoggerTree & theLoggers) {
 	for (LoggerTreeNode & node : theLoggers) {
 		auto & shouldFlush = node.value.getLogger()->shouldFlush;
 		const auto iter = node.value.getLogger()->properties.find("flush");
-
-		if (iter != node.value.getLogger()->properties.end() && Strings::toLower(iter->second) == "false") {
-			shouldFlush.store(false);
-		} else {
-			shouldFlush.store(true);
-		}
+		const auto sf = iter != node.value.getLogger()->properties.end() && Strings::toLower(iter->second) == "false";
+		shouldFlush.store(!sf);
 	}
 }
 

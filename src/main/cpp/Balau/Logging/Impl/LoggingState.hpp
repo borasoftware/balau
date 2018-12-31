@@ -21,7 +21,15 @@
 
 #include <mutex>
 
-namespace Balau::LoggingSystem {
+namespace Balau {
+
+namespace Impl {
+
+class AbstractBinding;
+
+} // namespace Impl
+
+namespace LoggingSystem {
 
 class LoggingStateHolder;
 
@@ -48,7 +56,10 @@ class LoggingState final {
 	void flushAll();
 
 	// Reconfigure the logging system from the supplied configuration text.
-	void configure(std::string_view configurationText);
+	void configure(std::string_view configurationText, const std::map<std::string, std::string> & placeholders);
+
+	// Reconfigure the logging system from the supplied configuration.
+	void configure(const EnvironmentProperties & configuration, const std::map<std::string, std::string> & placeholders);
 
 	// Reconfigure the logging system to the base configuration.
 	void resetConfigure();
@@ -79,10 +90,35 @@ class LoggingState final {
 	LoggerTree autoConfigure() noexcept;
 
 	// Configure explicitly from the supplied configuration text.
-	LoggerTree manualConfigure(std::string_view configurationText);
+	LoggerTree manualConfigure(std::string_view configurationText,
+	                           const std::map<std::string, std::string> & encasedPlaceholders);
+
+	// Configure explicitly from the supplied configuration.
+	LoggerTree manualConfigure(const EnvironmentProperties & configuration,
+	                           const std::map<std::string, std::string> & encasedPlaceholders);
+
+	// Expands the placeholders.
+	std::string expandConfigurationTextMacros(std::string_view configurationText,
+	                                          const std::map<std::string, std::string> & encasedPlaceholders);
+
+	// Utility method for placeholder expansion.
+	std::string expandConfigurationTextMacros(std::string_view configurationText,
+	                                          const boost::filesystem::path & exeLocation,
+	                                          const std::string & homeDir,
+	                                          const std::string & executableName,
+	                                          const std::map<std::string, std::string> & encasedPlaceholders);
 
 	// Expands the ${user.home} and ${executable} placeholders.
-	std::string expandConfigurationTextMacros(std::string_view configurationText);
+	EnvironmentProperties expandConfigurationTextMacros(const EnvironmentProperties & configuration,
+	                                                    const std::map<std::string, std::string> & encasedPlaceholders);
+
+	// Expands the ${user.home} and ${executable} placeholders.
+	std::unique_ptr<Impl::AbstractBinding> expandConfigurationValueTextMacros(Impl::BindingKey key,
+	                                                                          const std::shared_ptr<EnvironmentProperties> & configuration,
+	                                                                          const boost::filesystem::path & exeLocation,
+	                                                                          const std::string & homeDir,
+	                                                                          const std::string & executableName,
+	                                                                          const std::map<std::string, std::string> & encasedPlaceholders);
 
 	// Creates a tree containing the default properties.
 	LoggerTree createDefaultConfiguration();
@@ -127,8 +163,11 @@ class LoggingState final {
 	//
 	void setFormats(LoggerTree & theLoggers);
 
-	// Parse the supplied configuration text and create a configured logger tree.
+	// Parse and visit the supplied configuration text and create a configured logger tree.
 	LoggerTree parseConfiguration(const std::string & configurationText);
+
+	// Visit the supplied configuration and create a configured logger tree.
+	LoggerTree parseConfiguration(const EnvironmentProperties & configuration);
 
 	// Sets the level variables in the loggers.
 	void setLevels(LoggerTree & theLoggers);
@@ -184,6 +223,8 @@ class LoggingState final {
 	LoggerTree loggerTree;
 };
 
-} // namespace Balau::LoggingSystem
+} // namespace LoggingSystem
+
+} // namespace Balau
 
 #endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STATE

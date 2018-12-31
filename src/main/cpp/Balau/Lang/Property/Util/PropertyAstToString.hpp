@@ -132,6 +132,20 @@ inline std::string toString(const PropertyNode & object) {
 	return stream.str();
 }
 
+///
+/// The property AST toString<AllocatorT> function.
+///
+/// Pretty print the supplied AST and return as a UTF-8 string.
+///
+/// @return a string containing the represented properties
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const PropertyNode & object) {
+	U8OStringStream<AllocatorT> stream;
+	stream << object;
+	return stream.str();
+}
+
 } // namespace Balau::Lang::Property::AST
 
 #endif // COM_BORA_SOFTWARE__BALAU_LANG_CSS_UTIL__PROPERTY_AST_TO_STRING

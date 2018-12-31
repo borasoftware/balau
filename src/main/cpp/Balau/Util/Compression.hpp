@@ -212,6 +212,27 @@ inline bool operator == (const ZipEntryInfo & lhs, const ZipEntryInfo & rhs) {
 ///
 /// @return a UTF-8 string representing the zip entry info
 ///
+template <typename AllocatorT>
+inline U8String<AllocatorT> toString(const ZipEntryInfo & info) {
+	return "{ " + Strings::join<AllocatorT>(
+		  ", "
+		, info.name
+		, info.index
+		, info.uncompressedSize
+		, info.compressedSize
+		// TODO
+//		, info.modificationTime
+		, info.crc
+		, info.compressionMethod
+		, info.encryptionMethod
+	) + " }";
+}
+
+///
+/// Print the zip entry info as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the zip entry info
+///
 inline std::string toString(const ZipEntryInfo & info) {
 	return "{ " + Strings::join(
 		  ", "

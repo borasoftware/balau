@@ -80,6 +80,11 @@ class NoBindingException : public BindingException {
 		: BindingException("", 0, "", "NoBinding", bindingKey_) {}
 };
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const NoBindingException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const NoBindingException & e) {
 	return e.what();
 }
@@ -95,6 +100,11 @@ class MissingDependencyException : public BindingException {
 	                                   const Impl::BindingKey & independentKey_)
 		: BindingException(file, line, st, "MissingDependency", ::toString(independentKey_, " is required by "), dependentKey_) {}
 };
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const MissingDependencyException & e) {
+	return toString<AllocatorT>(e.what());
+}
 
 inline std::string toString(const MissingDependencyException & e) {
 	return e.what();
@@ -124,30 +134,65 @@ class EnvironmentConfigurationException : public BalauException {
 		: BalauException(file, line, st, "EnvironmentConfiguration", text) {}
 };
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const SharedInjectorException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const SharedInjectorException & e) {
 	return e.what();
 }
 
 } // namespace Balau::Exception
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::CyclicDependencyException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::CyclicDependencyException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::DuplicateBindingException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::DuplicateBindingException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::NoBindingException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::NoBindingException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::MissingDependencyException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::MissingDependencyException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::SharedInjectorException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::SharedInjectorException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::EnvironmentConfigurationException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::EnvironmentConfigurationException & e) {

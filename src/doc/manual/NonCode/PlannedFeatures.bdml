@@ -74,9 +74,9 @@
 		<h3>Environment</h3>
 
 		<bullets>
-			<entry><emph>[high priority]</emph> Implement composite property arrays via multiple specification of the same composite property.</entry>
+			<entry>Add documentation describing how to construct custom type specification hierarchies from existing type specification files.</entry>
 
-			<entry><emph>[high priority]</emph> Allow duplicate environment properties to be specified within an environment properties file and across multiple bound environment properties files.</entry>
+			<entry>Consider the implementation of composite property arrays via multiple specification of the same composite property.</entry>
 
 			<entry>Create a web application that serves environment configuration property specifications, given a list of type specification source files.</entry>
 		</bullets>
@@ -85,12 +85,6 @@
 
 		<bullets>
 			<entry>Improve the help text printer.</entry>
-		</bullets>
-
-		<h2>Test runner</h2>
-
-		<bullets>
-			<entry>Add test case serialisation via dependency keys.</entry>
 		</bullets>
 
 		<h2>Concurrent</h2>
@@ -121,6 +115,8 @@
 
 		<bullets>
 			<entry>Create a threaded writer in order to offload writing to another thread.</entry>
+
+			<entry>Add thread local string allocator that reuses thread local memory for all toString calls that occur during a logging call (requires templated versions of toString). Add build option BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR to turn this on/off (document that when enabled, all objects passed to log message calls will need corresponding toString&lt;Allocator> functions).</entry>
 
 			<entry>Decide whether to support descendant composite properties in the logging configuration instead of the current flat logging configuration format.</entry>
 		</bullets>
@@ -163,7 +159,14 @@
 
 		<bullets>
 			<entry>Add selective test running via command line test specifications.</entry>
+			<entry>Add test case serialisation via dependency keys.</entry>
 			<entry>Integrate with common C++ unit test running frameworks.</entry>
+		</bullets>
+
+		<h2>Type</h2>
+
+		<bullets>
+			<entry>Clean up templated (typename AllocatorT) versions of the toString, toString16, and toString32 functions.</entry>
 		</bullets>
 
 		<h2>Util</h2>

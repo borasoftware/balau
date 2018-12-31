@@ -30,6 +30,11 @@ class NetworkException : public BalauException {
 		: BalauException(file, line, st, "Network", text) {}
 };
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::NetworkException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::NetworkException & e) {
 	return e.what();
 }

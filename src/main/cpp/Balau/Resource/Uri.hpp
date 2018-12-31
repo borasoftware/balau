@@ -109,7 +109,7 @@ class Uri {
 	///  - If the URI path ends with a forward slash (or is a directory for file URIs), the
 	///    base path is the URI path.
 	///
-	///  - Otherwise, the rightermost path element is stripped from the URI path to form
+	///  - Otherwise, the rightmost path element is stripped from the URI path to form
 	///    the base path.
 	///
 	/// @param path a relative or absolute path, or a full URI
@@ -169,7 +169,7 @@ class Uri {
 	/// @throw NotImplementedException if the URI does not support reading
 	/// @throw ResourceException if the resource could not be created
 	///
-	public: virtual std::unique_ptr<ByteReadResource> byteReadResource() = 0;
+	public: virtual std::unique_ptr<ByteReadResource> byteReadResource() const = 0;
 
 	///
 	/// Get a UTF-8 to UTF-32 read resource for the URI.
@@ -177,7 +177,7 @@ class Uri {
 	/// @throw NotImplementedException if the URI does not support reading
 	/// @throw ResourceException if the resource could not be created
 	///
-	public: virtual std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() = 0;
+	public: virtual std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const = 0;
 
 	///
 	/// Get a byte write resource for the URI.
@@ -205,7 +205,7 @@ class Uri {
 	///
 	/// This will throw a NotImplementedException if the URI does not have a recursive iterator.
 	///
-	public: virtual std::unique_ptr<RecursiveUriIterator> recursiveIterator() = 0;
+	public: virtual std::unique_ptr<RecursiveUriIterator> recursiveIterator() const = 0;
 
 	///
 	/// Compare the supplied URI to the current URI.

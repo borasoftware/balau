@@ -13,7 +13,7 @@
 
 namespace Balau::Resource {
 
-ZipEntryByteReadResource::ZipEntryByteReadResource(ZipEntry & entry_)
+ZipEntryByteReadResource::ZipEntryByteReadResource(const ZipEntry & entry_)
 	: entry(entry_)
 	, stream(Impl::ZipEntrySource(entry.archive, entry.entryIndex)) {}
 

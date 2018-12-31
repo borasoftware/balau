@@ -41,7 +41,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Random.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Util/Random.hpp</para>
 
 		<h2>Construction</h2>
 

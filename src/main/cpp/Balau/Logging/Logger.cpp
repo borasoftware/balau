@@ -47,8 +47,14 @@ void Logger::flushAll() {
 	LoggingState::loggingSystemState().flushAll();
 }
 
-void Logger::configure(const std::string & configurationText) {
-	LoggingState::loggingSystemState().configure(configurationText);
+void Logger::configure(const std::string & configurationText,
+                       const std::map<std::string, std::string> & placeholders) {
+	LoggingState::loggingSystemState().configure(configurationText, placeholders);
+}
+
+void Logger::configure(const std::shared_ptr<EnvironmentProperties> & configuration,
+                       const std::map<std::string, std::string> & placeholders) {
+	LoggingState::loggingSystemState().configure(*configuration, placeholders);
 }
 
 void Logger::resetConfiguration() {
@@ -223,7 +229,7 @@ void Logger::logMessage(const SourceCodeLocation & location,
 	}
 
 	auto timePoint = System::SystemClock().now();
-	std::ostringstream fullTextStream;
+	LoggerOStringStream fullTextStream;
 
 	LoggerItemParameters loggerItemParameters(
 		  fullTextStream
@@ -252,7 +258,7 @@ void Logger::logMessage(const SourceCodeLocation & location,
                         LoggingLevel level,
                         const Logger & logger,
                         std::string_view message,
-                        const std::vector<std::string> & parameters) {
+                        const LoggerStringVector & parameters) {
 	// Apart from compiler ordering restrictions, these atomic reads are free on x86/x64.
 	const LogItemVector * const loggerItems = logger.logItems.load(std::memory_order_acquire);
 	LoggingStream * const stream = logger.streams[Enums::toUnderlying(level)].load(std::memory_order_relaxed);
@@ -264,12 +270,12 @@ void Logger::logMessage(const SourceCodeLocation & location,
 	size_t parameterCount = 0;
 	auto timePoint = System::SystemClock().now();
 	auto messageItems = textToMessageItems(message, parameterCount);
-	std::ostringstream messageTextStream;
-	const std::vector<std::string> * finalParameters;
+	LoggerOStringStream messageTextStream;
+	const LoggerStringVector * finalParameters;
 
 	if (parameters.size() < parameterCount) {
 		// The logging message does not have enough parameters.
-		std::vector<std::string> replacementParameters = parameters;
+		LoggerStringVector replacementParameters = parameters;
 
 		while (parameterCount < parameters.size()) {
 			replacementParameters.emplace_back("????");
@@ -286,8 +292,8 @@ void Logger::logMessage(const SourceCodeLocation & location,
 		messageTextStream << item->get(message, parameterIterator);
 	}
 
-	std::string messageText = messageTextStream.str();
-	std::ostringstream fullTextStream;
+	LoggerString messageText = messageTextStream.str();
+	LoggerOStringStream fullTextStream;
 
 	LoggerItemParameters loggerItemParameters(
 		  fullTextStream

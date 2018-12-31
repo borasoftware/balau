@@ -170,22 +170,22 @@ class StringUri : public Uri {
 	///
 	/// Get a byte read resource for the HTTP source.
 	///
-	public: StringUriByteReadResource getByteReadResource() {
+	public: StringUriByteReadResource getByteReadResource() const {
 		return StringUriByteReadResource(*this);
 	}
 
 	///
 	/// Get a UTF-8 to UTF-32 read resource for the HTTP source.
 	///
-	public: StringUriUtf8To32ReadResource getUtf8To32ReadResource() {
+	public: StringUriUtf8To32ReadResource getUtf8To32ReadResource() const {
 		return StringUriUtf8To32ReadResource(*this);
 	}
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() override {
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
 		return std::unique_ptr<ByteReadResource>(new StringUriByteReadResource(*this));
 	}
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() override {
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
 		return std::unique_ptr<Utf8To32ReadResource>(new StringUriUtf8To32ReadResource(*this));
 	}
 
@@ -201,7 +201,7 @@ class StringUri : public Uri {
 		return false;
 	}
 
-	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() override {
+	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
 		ThrowBalauException(Exception::NotImplementedException, "String URIs do not have a recursive iterator");
 	}
 

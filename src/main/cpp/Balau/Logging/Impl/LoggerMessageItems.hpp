@@ -11,14 +11,13 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__MESSAGE_ITEMS
 #define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__MESSAGE_ITEMS
 
-#include <string>
-#include <vector>
+#include <Balau/Logging/Impl/LoggerAllocator.hpp>
 
 namespace Balau::LoggingSystem {
 
 ///////////////////////// Message text format classes /////////////////////////
 
-using ParameterList = std::vector<std::string>;
+using ParameterList = LoggerStringVector;
 using ParameterListIterator = ParameterList::const_iterator;
 
 class MessageItem {

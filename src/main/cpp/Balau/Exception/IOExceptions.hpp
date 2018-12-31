@@ -32,6 +32,11 @@ class IOException : public BalauException {
 
 } // namespace Balau::Exception
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::IOException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::IOException & e) {
 	return e.what();
 }

@@ -43,19 +43,6 @@ HttpServerRegisterBuiltInWeApps httpServerRegisterBuiltInWeApps;
 //////////////////// Constructors with injector parameter /////////////////////
 
 HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
-                       std::shared_ptr<EnvironmentProperties> configuration,
-                       bool registerSignalHandler)
-	: state(createState(clock, configuration))
-	, threadNamePrefix("")
-	, workerCount(1)
-	, ioContext(1)
-	, signalSet(ioContext) {
-	if (registerSignalHandler) {
-		doRegisterSignalHandler();
-	}
-}
-
-HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
                        const std::string & serverId,
                        const TCP::endpoint & endpoint,
                        std::string threadNamePrefix_,
@@ -160,9 +147,15 @@ void HttpServer::run() {
 	}
 
 	// Last worker is on this thread.
+	const std::string previousThreadName = System::ThreadName::getName();
+
 	workerThreadFunction(workerCount - 1, true);
 
 	stop(false);
+
+	if (!previousThreadName.empty()) {
+		System::ThreadName::setName(previousThreadName);
+	}
 }
 
 bool HttpServer::isRunning() {
@@ -399,7 +392,9 @@ void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
 }
 
 void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
-	System::ThreadName::setName(threadNamePrefix + "-" + ::toString(workerIndex));
+	if (!threadNamePrefix.empty()) {
+		System::ThreadName::setName(threadNamePrefix + "-" + ::toString(workerIndex));
+	}
 
 	BalauBalauLogInfo(
 		  state->logger

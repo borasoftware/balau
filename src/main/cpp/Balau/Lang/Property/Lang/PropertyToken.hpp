@@ -17,7 +17,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_LANG__PROPERTY_TOKEN
 #define COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_LANG__PROPERTY_TOKEN
 
-#include <string>
+#include <Balau/Type/ToString.hpp>
 
 namespace Balau::Lang::Property {
 
@@ -64,6 +64,16 @@ enum class PropertyToken : unsigned char {
 /// @return a UTF-8 string representing the token
 ///
 std::string toString(const PropertyToken & token);
+
+///
+/// Print the property token as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the token
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const PropertyToken & token) {
+	return toString<AllocatorT>(toString(token));
+}
 
 } // namespace Balau::Lang::Css
 

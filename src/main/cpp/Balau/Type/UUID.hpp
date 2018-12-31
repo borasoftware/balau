@@ -17,6 +17,8 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TYPE__UUID
 #define COM_BORA_SOFTWARE__BALAU_TYPE__UUID
 
+#include <Balau/Type/ToString.hpp>
+
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -57,6 +59,17 @@ class UUID {
 	///
 	public: const unsigned char * asBytes() const {
 		return uuid.data;
+	}
+
+	///
+	/// Get the UUID as a UTF-8 string.
+	///
+	/// This allocates a string stream and string object.
+	///
+	public: template <typename AllocatorT> Balau::U8String<AllocatorT> asString() const {
+		Balau::U8OStringStream<AllocatorT> stream;
+		stream << uuid;
+		return stream.str();
 	}
 
 	///
@@ -125,6 +138,16 @@ class UUID {
 
 	private: const boost::uuids::uuid uuid;
 };
+
+///
+/// Print the UUID as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the UUID
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const UUID & uuid) {
+	return uuid.asString<AllocatorT>();
+}
 
 ///
 /// Print the UUID as a UTF-8 string.

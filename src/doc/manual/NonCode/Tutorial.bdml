@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+		<toc />
+
+		<title text="Balau core C++ library - tutorial" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Tutorial">
+		<h1>Introduction</h1>
+
+		<para><emph>Work in progress.</emph></para>
+
+		<para>This tutorial illustrates the use of the main structural functionality of the Balau library, via the construction of an HTTP server application. The following items are covered:</para>
+
+		<bullets>
+			<entry>command line parser;</entry>
+			<entry>injector;</entry>
+			<entry>application configuration;</entry>
+			<entry>environment configuration;</entry>
+			<entry>logging configuration;</entry>
+			<entry>HTTP server;</entry>
+			<entry>HTTP web application configuration;</entry>
+			<entry>unit testing.</entry>
+		</bullets>
+
+		<para>The tutorial application provides an HTTP web server that serves files from the local file system and also provides a web application handler to forward POST requests via email. This simple server implementation can be extended with additional/alternative web applications, according to your requirements.</para>
+
+		<h1>Main function</h1>
+
+		<para>The application's main function will perform the following tasks:</para>
+
+		<bullets>
+			<entry>parse the command line using a suitably configured <emph>CommandLine</emph> instance;</entry>
+
+			<entry>identify the locations of the environment configuration and environment specification files;</entry>
+
+			<entry>create the application and environment configurations;</entry>
+
+			<entry>instantiate the injector;</entry>
+
+			<entry>reconfigure the logging system from the environment configuration;</entry>
+
+			<entry>start the HTTP server.</entry>
+		</bullets>
+
+		<para>As application is intended to run as a service, the main function will call the blocking method <emph>httpServer->run()</emph>, and will shut down when a <emph>SIGINT</emph> or <emph>SIGTERM</emph> is received. The HTTP server's default signal handler is thus left enabled.</para>
+
+		<para>The tutorial's main function is presented with a minimum of validation code. A production ready application should provide additional validation.</para>
+
+		<code lang="C++">
+			int main(int argc, char * argv[]) {
+				using namespace Balau;
+
+				System::ThreadName::setName("Main");
+				Logger &amp; log = Logger::getLogger("main");
+				log.info("Starting up server.");
+
+				const std::string defaultEnvPrefix  = "environment";
+				const std::string defaultSpecPrefix = "specification";
+				const std::string envFilename       = "env.hconf";
+				const std::string credsFilename     = "creds.hconf";
+				const std::string specsFilename     = "tutorial.thconf";
+
+				enum CommandLineKey { EnvPrefix, SpecPrefix, Env, Help };
+
+				const std::string pHelp = "Environment configurations location, default = environment";
+				const std::string sHelp = "Environment specifications location, default = specification";
+
+				auto cl = CommandLine&lt;CommandLineKey>()
+					.withOption(EnvPrefix,  "p", "env-prefix",  true, pHelp)
+					.withOption(SpecPrefix, "s", "spec-prefix", true, sHelp)
+					.withOption(Env,        "e", "env",         true, "Environment folder name")
+					.withHelpOption(Help,   "h", "help",              "Display help");
+
+				try {
+					cl.parse(argc, argv, true);
+				} catch (...) {
+					log.error("Invalid arguments\n\n{}", cl.getHelpText(4, 80));
+					return 1;
+				}
+
+				if (cl.hasOption(Help)) {
+					log.info("{}", cl.getHelpText(4, 80));
+					return 0;
+				}
+
+				if (!cl.hasOption(Env)) {
+					log.error("Please specify the environment folder name (--env option).");
+					return 1;
+				}
+
+				const auto envRoot = Resource::File(cl.getOptionOrDefault(EnvPrefix, defaultEnvPrefix));
+				const auto specRoot = Resource::File(cl.getOptionOrDefault(SpecPrefix, defaultSpecPrefix));
+
+				const auto envFolderName = cl.getOption(Env);
+				const auto envPath = envRoot / envFolderName;
+
+				if (!envPath.exists() || !specRoot.exists() || resourcesRootPath.exists()) {
+					log.error("Environment configuration path not found.");
+					return 1;
+				}
+
+				const auto env   = envPath / envFilename;
+				const auto creds = envPath / credsFilename;
+				const auto specs = specRoot / specsFilename;
+
+				if (!env.exists() || !specs.exists() || !creds.exists()) {
+					log.error("Environment configuration file not found.");
+					return 1;
+				}
+
+				// Register custom environment types.
+				EnvironmentConfiguration::registerValueType&lt;Network::Endpoint>("endpoint");
+				EnvironmentConfiguration::registerUnsignedTypes();
+
+				try {
+					log.info("Creating injector.");
+					// The injection configuration creation is placed inside a function
+					// in order to allow it to be tested via a unit test.
+					auto configuration = Configuration::getConfiguration(env, creds, specs);
+					auto injector = Injector::create(configuration);
+
+					// Configure the logging system from the environment configuration.
+					log.info("Configuring logging system.");
+
+					const std::map&lt;std::string, std::string> placeholderExpansions = {
+						{ "env.path", envPath.toAbsolutePath().toUriString() }
+					};
+
+					auto loggingConf = injector->getShared&lt;EnvironmentProperties>("logging");
+					Logger::configure(loggingConf, placeholderExpansions);
+
+					log.info("Starting HTTP server.");
+					auto server = injector->getShared&lt;Network::Http::HttpServer>();
+
+					// This will block until SIGINT/SIGTERM is received.
+					server->run();
+					return 0;
+				} catch (const std::exception &amp; e) {
+					log.error("Error: {}", e.what());
+					return 1;
+				} catch (...) {
+					log.error("An unknown error occurred.");
+					return 1;
+				}
+			}
+		</code>
+
+		<h1>Configuration</h1>
+
+		<para>The complete injector configuration is contained within a single function. This allows a unit test to call the same configuration code, in order to validate the application's wiring.</para>
+
+		<code lang="C++">
+			struct Configuration {
+				static std::vector&lt;std::shared_ptr&lt;InjectorConfiguration>>
+				getConfiguration(const Resource::File &amp; env,
+				                 const Resource::File &amp; creds,
+				                 const Resource::File &amp; specs) {
+					std::vector&lt;std::shared_ptr&lt;InjectorConfiguration>> conf;
+					conf.emplace_back(new AppConfig());
+					conf.emplace_back(new EnvironmentConfiguration({ env, creds }, { specs }));
+					return conf;
+				}
+			};
+		</code>
+
+		<h2>Application configuration</h2>
+
+		<para>The <emph>ApplicationConfiguration</emph> defined for the tutorial application contains a system clock and the HTTP server, both bound via lazy singletons.</para>
+
+		<code lang="C++">
+			class AppConfig : public ApplicationConfiguration {
+				public: void configure() const override {
+					bind&lt;System::Clock>().toSingleton&lt;System::SystemClock>();
+					bind&lt;Network::Http::HttpServer>().toSingleton();
+				}
+			};
+		</code>
+
+		<h2>Environment configuration</h2>
+
+		<para></para>
+
+		<h3>Logging</h3>
+
+		<para></para>
+
+		<code lang="Properties">
+			logging {
+				. {
+					stream: ${env.path}/logs/app.log
+					level: debug
+				}
+			}
+		</code>
+
+		<h3>Web applications</h3>
+
+		<para></para>
+
+		<code lang="Properties">
+			http.server {
+				info.log     = file:///var/log/MyApp/access.log
+				error.log    = file:///var/log/MyApp/error.log
+				server.id    = MyServer
+				worker.count = 4
+				listen       = 8080
+
+				@file:mime.types.hconf
+
+				thread.name.prefix = Http
+
+				http {
+					files {
+						location = /
+
+						root     = file:///var/www
+					}
+
+					email.sender {
+						location   = /1/contact
+
+						host       = smtp.example.com
+						port       = 465
+						user       = info
+						subject    = message
+						from       = info@example.com
+						to         = info@example.com
+						user-agent = MyAgent
+						success    = /success.html
+						failure    = /failure.html
+
+						# These must be synchronised with the form.
+						parameters {
+							Name    = 1
+							Email   = 2
+							Message = 3
+						}
+					}
+				}
+			}
+		</code>
+
+		<h1>Testing</h1>
+
+		<para>TODO</para>
+
+	</chapter>
+</document>

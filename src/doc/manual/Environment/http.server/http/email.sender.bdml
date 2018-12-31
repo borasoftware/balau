@@ -20,7 +20,7 @@
 		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
 		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
 
-		<title text="Balau core C++ library - http.server -> http -> email.sender" />
+		<title text="Balau core C++ library - http.server -> http -> email.sender - environment configuration specification" />
 
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
 		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
@@ -34,10 +34,6 @@
 		<h1 toc='false'>Description</h1>
 
 		<para class="short-desc">Handles website contact POST requests and sends an email after mapping the contact request to an email body.</para>
-
-		<h1 toc='false'>Ancestor</h1>
-
-		<para>The <emph>email.sender</emph> composite property is contained within  <ref url="Environment/http.server/http">http</ref>.</para>
 
 		<h1 toc='false'>Simple configuration</h1>
 

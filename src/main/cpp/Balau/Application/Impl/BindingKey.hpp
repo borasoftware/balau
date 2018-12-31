@@ -13,7 +13,6 @@
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Util/Enums.hpp>
-#include <Balau/Util/Strings.hpp>
 
 #include <typeindex>
 
@@ -46,7 +45,8 @@ enum class BindingMetaType : unsigned int {
 	, Unset = 5
 };
 
-inline std::string toString(const BindingMetaType metaType) {
+template <typename AllocatorT>
+inline U8String<AllocatorT> toString(const BindingMetaType metaType) {
 	switch (metaType) {
 		case BindingMetaType::Value:         return "Value";
 		case BindingMetaType::Unique:        return "Unique";
@@ -57,6 +57,10 @@ inline std::string toString(const BindingMetaType metaType) {
 
 		default: ThrowBalauException(Exception::BugException, "Unhandled BindingMetaType token in switch statement.");
 	}
+}
+
+inline std::string toString(const BindingMetaType metaType) {
+	return toString<std::allocator<char>>(metaType);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,7 +192,7 @@ class BindingKey final {
 	}
 
 	public: size_t hashcode() const noexcept {
-		return std::hash<std::type_index>()(type) ^ std::hash<std::string>()(name);
+		return std::hash<std::type_index>()(type) ^ (41 * std::hash<std::string>()(name));
 	}
 
 	friend class BindingBuilderBase;
@@ -209,14 +213,19 @@ class BindingKey final {
 	#endif
 };
 
-inline std::string toString(const BindingKey & bindingKey) {
-	return ::toString(
+template <typename AllocatorT>
+inline U8String<AllocatorT> toString(const BindingKey & bindingKey) {
+	return ::toString<AllocatorT>(
 		"{ "
 		, demangleBindingKeyTypeString(boost::core::demangle(bindingKey.getType().name()))
 		, ", \""
 		, bindingKey.getName()
 		, "\" }"
 	);
+}
+
+inline std::string toString(const BindingKey & bindingKey) {
+	return toString<std::allocator<char>>(bindingKey);
 }
 
 inline bool operator == (const BindingKey & lhs, const BindingKey & rhs) {
@@ -363,7 +372,7 @@ struct BindingKeyView {
 	// and s is an object of type S, then std::hash<S>()(s) == std::hash<SV>()(SV(s)).
 	//
 	size_t hashcode() const noexcept {
-		return std::hash<std::type_index>()(type) ^ std::hash<std::string_view>()(name);
+		return std::hash<std::type_index>()(type) ^ (41 * std::hash<std::string_view>()(name));
 	}
 
 	BindingKey toKey() const {
@@ -390,8 +399,18 @@ inline bool operator == (const BindingKeyView & lhs, const BindingKeyView & rhs)
 
 } // namespace Balau
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Impl::BindingKey & bindingKey) {
+	return Balau::Impl::toString<AllocatorT>(bindingKey);
+}
+
 inline std::string toString(const Balau::Impl::BindingKey & bindingKey) {
 	return Balau::Impl::toString(bindingKey);
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Impl::BindingMetaType metaType) {
+	return Balau::Impl::toString<AllocatorT>(metaType);
 }
 
 inline std::string toString(const Balau::Impl::BindingMetaType metaType) {

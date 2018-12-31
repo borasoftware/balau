@@ -20,16 +20,20 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGER
 #define COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGER
 
+#include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Logging/LoggingLevel.hpp>
+#include <Balau/Logging/Impl/LoggerAllocator.hpp>
 #include <Balau/Logging/Impl/LoggerForwardDeclarations.hpp>
-#include <Balau/Util/Vectors.hpp>
 
 #include <functional>
 
 namespace Balau {
 
+class EnvironmentProperties;
+
 namespace LoggingSystem {
 
+class LoggerConfigurationVisitor;
 class LoggerPropertyVisitor;
 
 } // namespace LoggingSystem
@@ -54,7 +58,7 @@ class LoggingStream {
 	///
 	/// This method must be thread safe.
 	///
-	public: virtual void write(const std::string & str) = 0;
+	public: virtual void write(const LoggingSystem::LoggerString & str) = 0;
 
 	///
 	/// Flush the logging stream.
@@ -106,13 +110,32 @@ class Logger {
 	public: static void flushAll();
 
 	///
-	/// Flush all current logging streams and configure the logging system with the supplied configuration.
+	/// Flush all current logging streams and configure the logging system with the supplied configuration text.
+	///
+	/// Any placeholders supplied in the placeholders map will be used to expand any macros found in the configuration text.
 	///
 	/// This call will obtain a lock on the logging system mutex.
 	///
+	/// @param configurationText the unparsed logging configuration
+	/// @param placeholders zero or more placeholders to be used to expand any macros present in the string value properties
 	/// @throw LoggingConfigurationException if logging reconfiguration has previously been locked.
 	///
-	public: static void configure(const std::string & configurationText);
+	public: static void configure(const std::string & configurationText,
+	                              const std::map<std::string, std::string> & placeholders = std::map<std::string, std::string>());
+
+	///
+	/// Flush all current logging streams and configure the logging system with the supplied configuration.
+	///
+	/// Any placeholders supplied in the placeholders map will be used to expand any macros found in the configuration.
+	///
+	/// This call will obtain a lock on the logging system mutex.
+	///
+	/// @param configuration the pre-parsed logging configuration (normally from the injector)
+	/// @param placeholders zero or more placeholders to be used to expand any macros present in the string value properties
+	/// @throw LoggingConfigurationException if logging reconfiguration has previously been locked.
+	///
+	public: static void configure(const std::shared_ptr<EnvironmentProperties> & configuration,
+	                              const std::map<std::string, std::string> & placeholders = std::map<std::string, std::string>());
 
 	///
 	/// Flush all current logging streams and reconfigure the logging system to the default configuration.
@@ -243,6 +266,7 @@ class Logger {
 	///
 	public: void trace(const char * message) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message);
 		}
 	}
@@ -252,6 +276,7 @@ class Logger {
 	///
 	public: void trace(std::string_view message) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message);
 		}
 	}
@@ -262,7 +287,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void trace(const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
-			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -272,7 +298,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void trace(std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
-			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -281,6 +308,7 @@ class Logger {
 	///
 	public: void trace(const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(SourceCodeLocation(), LoggingLevel::TRACE, *this, message);
 		}
@@ -291,6 +319,7 @@ class Logger {
 	///
 	public: void trace(const SourceCodeLocation & location, const char * message) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::TRACE, *this, message);
 		}
 	}
@@ -300,6 +329,7 @@ class Logger {
 	///
 	public: void trace(const SourceCodeLocation & location, std::string_view message) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::TRACE, *this, message);
 		}
 	}
@@ -310,7 +340,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void trace(const SourceCodeLocation & location, const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
-			logMessage(location, LoggingLevel::TRACE, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::TRACE, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -320,7 +351,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void trace(const SourceCodeLocation & location, std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
-			logMessage(location, LoggingLevel::TRACE, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::TRACE, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -329,6 +361,7 @@ class Logger {
 	///
 	public: void trace(const SourceCodeLocation & location, const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::TRACE) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(location, LoggingLevel::TRACE, *this, message);
 		}
@@ -341,6 +374,7 @@ class Logger {
 	///
 	public: void debug(const char * message) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message);
 		}
 	}
@@ -350,6 +384,7 @@ class Logger {
 	///
 	public: void debug(std::string_view message) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message);
 		}
 	}
@@ -360,7 +395,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void debug(const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
-			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -370,7 +406,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void debug(std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
-			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -379,6 +416,7 @@ class Logger {
 	///
 	public: void debug(const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(SourceCodeLocation(), LoggingLevel::DEBUG, *this, message);
 		}
@@ -389,6 +427,7 @@ class Logger {
 	///
 	public: void debug(const SourceCodeLocation & location, const char * message) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::DEBUG, *this, message);
 		}
 	}
@@ -398,6 +437,7 @@ class Logger {
 	///
 	public: void debug(const SourceCodeLocation & location, std::string_view message) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::DEBUG, *this, message);
 		}
 	}
@@ -408,7 +448,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void debug(const SourceCodeLocation & location, const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
-			logMessage(location, LoggingLevel::DEBUG, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::DEBUG, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -418,7 +459,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void debug(const SourceCodeLocation & location, std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
-			logMessage(location, LoggingLevel::DEBUG, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::DEBUG, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -427,6 +469,7 @@ class Logger {
 	///
 	public: void debug(const SourceCodeLocation & location, const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::DEBUG) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(location, LoggingLevel::DEBUG, *this, message);
 		}
@@ -439,6 +482,7 @@ class Logger {
 	///
 	public: void info(const char * message) const {
 		if (getLevel() >= LoggingLevel::INFO) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message);
 		}
 	}
@@ -448,6 +492,7 @@ class Logger {
 	///
 	public: void info(std::string_view message) const {
 		if (getLevel() >= LoggingLevel::INFO) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message);
 		}
 	}
@@ -458,7 +503,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void info(const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::INFO) {
-			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -468,7 +514,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void info(std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::INFO) {
-			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -477,6 +524,7 @@ class Logger {
 	///
 	public: void info(const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::INFO) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(SourceCodeLocation(), LoggingLevel::INFO, *this, message);
 		}
@@ -487,6 +535,7 @@ class Logger {
 	///
 	public: void info(const SourceCodeLocation & location, const char * message) const {
 		if (getLevel() >= LoggingLevel::INFO) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::INFO, *this, message);
 		}
 	}
@@ -496,6 +545,7 @@ class Logger {
 	///
 	public: void info(const SourceCodeLocation & location, std::string_view message) const {
 		if (getLevel() >= LoggingLevel::INFO) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::INFO, *this, message);
 		}
 	}
@@ -506,7 +556,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void info(const SourceCodeLocation & location, const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::INFO) {
-			logMessage(location, LoggingLevel::INFO, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::INFO, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -516,7 +567,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void info(const SourceCodeLocation & location, std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::INFO) {
-			logMessage(location, LoggingLevel::INFO, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::INFO, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -525,6 +577,7 @@ class Logger {
 	///
 	public: void info(const SourceCodeLocation & location, const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::INFO) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(location, LoggingLevel::INFO, *this, message);
 		}
@@ -537,6 +590,7 @@ class Logger {
 	///
 	public: void warn(const char * message) const {
 		if (getLevel() >= LoggingLevel::WARN) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message);
 		}
 	}
@@ -546,6 +600,7 @@ class Logger {
 	///
 	public: void warn(std::string_view message) const {
 		if (getLevel() >= LoggingLevel::WARN) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message);
 		}
 	}
@@ -556,7 +611,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void warn(const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::WARN) {
-			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -566,7 +622,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void warn(std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::WARN) {
-			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -575,6 +632,7 @@ class Logger {
 	///
 	public: void warn(const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::WARN) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(SourceCodeLocation(), LoggingLevel::WARN, *this, message);
 		}
@@ -585,6 +643,7 @@ class Logger {
 	///
 	public: void warn(const SourceCodeLocation & location, const char * message) const {
 		if (getLevel() >= LoggingLevel::WARN) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::WARN, *this, message);
 		}
 	}
@@ -594,6 +653,7 @@ class Logger {
 	///
 	public: void warn(const SourceCodeLocation & location, std::string_view message) const {
 		if (getLevel() >= LoggingLevel::WARN) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::WARN, *this, message);
 		}
 	}
@@ -604,7 +664,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void warn(const SourceCodeLocation & location, const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::WARN) {
-			logMessage(location, LoggingLevel::WARN, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::WARN, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -614,7 +675,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void warn(const SourceCodeLocation & location, std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::WARN) {
-			logMessage(location, LoggingLevel::WARN, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::WARN, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -623,6 +685,7 @@ class Logger {
 	///
 	public: void warn(const SourceCodeLocation & location, const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::WARN) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(location, LoggingLevel::WARN, *this, message);
 		}
@@ -635,6 +698,7 @@ class Logger {
 	///
 	public: void error(const char * message) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message);
 		}
 	}
@@ -644,6 +708,7 @@ class Logger {
 	///
 	public: void error(std::string_view message) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
+			LoggingSystem::startLogAllocation();
 			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message);
 		}
 	}
@@ -654,7 +719,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void error(const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
-			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -664,7 +730,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void error(std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
-			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -673,6 +740,7 @@ class Logger {
 	///
 	public: void error(const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(SourceCodeLocation(), LoggingLevel::ERROR, *this, message);
 		}
@@ -683,6 +751,7 @@ class Logger {
 	///
 	public: void error(const SourceCodeLocation & location, const char * message) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::ERROR, *this, message);
 		}
 	}
@@ -692,6 +761,7 @@ class Logger {
 	///
 	public: void error(const SourceCodeLocation & location, std::string_view message) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
+			LoggingSystem::startLogAllocation();
 			logMessage(location, LoggingLevel::ERROR, *this, message);
 		}
 	}
@@ -702,7 +772,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void error(const SourceCodeLocation & location, const char * message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
-			logMessage(location, LoggingLevel::ERROR, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::ERROR, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -712,7 +783,8 @@ class Logger {
 	public: template <typename ... ObjectT>
 	void error(const SourceCodeLocation & location, std::string_view message, const ObjectT & ... object) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
-			logMessage(location, LoggingLevel::ERROR, *this, message, ebm(::toString(object) ... ));
+			LoggingSystem::startLogAllocation();
+			logMessage(location, LoggingLevel::ERROR, *this, message, LoggingSystem::makeStringVector(object ... ));
 		}
 	}
 
@@ -721,6 +793,7 @@ class Logger {
 	///
 	public: void error(const SourceCodeLocation & location, const std::function<std::string ()> & function) const {
 		if (getLevel() >= LoggingLevel::ERROR) {
+			LoggingSystem::startLogAllocation();
 			const std::string message = function();
 			logMessage(location, LoggingLevel::ERROR, *this, message);
 		}
@@ -783,6 +856,7 @@ class Logger {
 	//
 	private: std::array<std::atomic<LoggingStream *>, _BalauLoggingLevelCount> streams {};
 
+	friend class LoggingSystem::LoggerConfigurationVisitor;
 	friend class LoggingSystem::LoggerPropertyVisitor;
 
 	//
@@ -810,12 +884,6 @@ class Logger {
 
 	private: void inheritConfiguration(const Logger & copy);
 
-	// Shortened version of emplace back multiple.
-	private: template <typename ... StringT>
-	static std::vector<std::string> ebm(std::string && first, StringT && ... remaining) {
-		return Util::Vectors::pushBack(std::move(first), std::forward<StringT>(remaining) ...);
-	}
-
 	// Non-parameter version.
 	private: static void logMessage(const SourceCodeLocation & location,
 	                                LoggingLevel level,
@@ -827,7 +895,7 @@ class Logger {
 	                                LoggingLevel level,
 	                                const Logger & logger,
 	                                std::string_view message,
-	                                const std::vector<std::string> & parameters);
+	                                const LoggingSystem::LoggerStringVector & parameters);
 
 	friend class LoggingSystem::LoggerHolder;
 	friend class LoggingSystem::LoggingState;

@@ -41,6 +41,17 @@ namespace boost::asio::ip {
 ///
 /// @return a UTF-8 string representing the IP address
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const address & a) {
+	// Currently not possible to avoid std::allocator.
+	return ::toString<AllocatorT>(a.to_string());
+}
+
+///
+/// Print the IP address as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the IP address
+///
 inline std::string toString(const address & a) {
 	return a.to_string();
 }
@@ -220,6 +231,17 @@ inline std::shared_ptr<Endpoint> newEndpoint(const char * address, unsigned shor
 ///
 /// @return a UTF-8 string representing the IP address
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Address & a) {
+	// Currently not possible to avoid std::allocator.
+	return ::toString<AllocatorT>(a.to_string());
+}
+
+///
+/// Print the IP address as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the IP address
+///
 inline std::string toString(const Address & a) {
 	return a.to_string();
 }
@@ -229,8 +251,30 @@ inline std::string toString(const Address & a) {
 ///
 /// @return a UTF-8 string representing the endpoint
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Endpoint & endpoint) {
+	// Currently not possible to avoid std::allocator.
+	return ::toString<AllocatorT>(endpoint.address().to_string(), ":", endpoint.port());
+}
+
+///
+/// Print the endpoint as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the endpoint
+///
 inline std::string toString(const Endpoint & endpoint) {
-	return endpoint.address().to_string() + ":" + ::toString(endpoint.port());
+	return ::toString(endpoint.address().to_string(), ":", endpoint.port());
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Status & s) {
+	auto u = Balau::Util::Enums::toUnderlying(s);
+	return Balau::U8String<AllocatorT>(boost::beast::http::detail::status_to_string<>((unsigned int) u));
 }
 
 ///
@@ -248,6 +292,16 @@ inline std::string toString(const Status & s) {
 ///
 /// @return a UTF-8 string representing the network status
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Method & method) {
+	return Balau::U8String<AllocatorT>(to_string(method));
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
 inline std::string toString(const Method & method) {
 	return std::string(to_string(method));
 }
@@ -257,8 +311,29 @@ inline std::string toString(const Method & method) {
 ///
 /// @return a UTF-8 string representing the network status
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Field & field) {
+	return Balau::U8String<AllocatorT>(to_string(field));
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
 inline std::string toString(const Field & field) {
 	return std::string(to_string(field));
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const BoostSystemErrorCode & errorCode) {
+	// Currently not possible to avoid std::allocator.
+	return Balau::U8String<AllocatorT>(errorCode.message());
 }
 
 ///
@@ -277,6 +352,17 @@ inline std::string toString(const BoostSystemErrorCode & errorCode) {
 ///
 /// @return a UTF-8 string representing the IP address
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Network::Address & a) {
+	// Currently not possible to avoid std::allocator.
+	return toString<AllocatorT>(a.to_string());
+}
+
+///
+/// Print the IP address as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the IP address
+///
 inline std::string toString(const Balau::Network::Address & a) {
 	return a.to_string();
 }
@@ -286,8 +372,30 @@ inline std::string toString(const Balau::Network::Address & a) {
 ///
 /// @return a UTF-8 string representing the endpoint
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Network::Endpoint & endpoint) {
+	// Currently not possible to avoid std::allocator.
+	return toString<AllocatorT>(endpoint.address().to_string(), ":", endpoint.port());
+}
+
+///
+/// Print the endpoint as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the endpoint
+///
 inline std::string toString(const Balau::Network::Endpoint & endpoint) {
 	return endpoint.address().to_string() + ":" + toString(endpoint.port());
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Network::Status & s) {
+	auto u = Balau::Util::Enums::toUnderlying(s);
+	return toString<AllocatorT>(boost::beast::http::detail::status_to_string<>((unsigned int) u));
 }
 
 ///
@@ -305,8 +413,28 @@ inline std::string toString(const Balau::Network::Status & s) {
 ///
 /// @return a UTF-8 string representing the network status
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Network::Field & field) {
+	return toString<AllocatorT>(to_string(field));
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
 inline std::string toString(const Balau::Network::Field & field) {
 	return std::string(to_string(field));
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Network::Method & method) {
+	return toString<AllocatorT>(to_string(method));
 }
 
 ///
@@ -323,11 +451,33 @@ inline std::string toString(const Balau::Network::Method & method) {
 ///
 /// @return a UTF-8 string representing the network status
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Network::BoostSystemErrorCode & errorCode) {
+	// Currently not possible to avoid std::allocator.
+	return toString<AllocatorT>(errorCode.message());
+}
+
+///
+/// Print the network status as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the network status
+///
 inline std::string toString(const Balau::Network::BoostSystemErrorCode & errorCode) {
 	return errorCode.message();
 }
 
 namespace boost::asio::ip {
+
+///
+/// Print the endpoint as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the endpoint
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const tcp::endpoint & endpoint) {
+	// Currently not possible to avoid std::allocator.
+	return toString<AllocatorT>(endpoint.address().to_string(), ":", endpoint.port());
+}
 
 ///
 /// Print the endpoint as a UTF-8 string.

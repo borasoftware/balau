@@ -105,11 +105,11 @@ class Https : public Url {
 		return HttpsUtf8To32ReadResource(*this);
 	}
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() override {
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
 		return std::unique_ptr<ByteReadResource>(new HttpsByteReadResource(*this));
 	}
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() override {
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
 		return std::unique_ptr<Utf8To32ReadResource>(new HttpsUtf8To32ReadResource(*this));
 	}
 
@@ -125,7 +125,7 @@ class Https : public Url {
 		return false;
 	}
 
-	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() override {
+	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
 		ThrowBalauException(Exception::NotImplementedException, "HTTPS URIs do not have a recursive iterator");
 	}
 

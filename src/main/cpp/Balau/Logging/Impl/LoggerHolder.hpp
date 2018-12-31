@@ -29,8 +29,6 @@ class LoggerHolder {
 
 	private: std::shared_ptr<Logger> logger;
 
-	friend class LoggerPropertyVisitor;
-
 	private: std::shared_ptr<Logger> getLogger() {
 		return logger;
 	}
@@ -61,6 +59,8 @@ class LoggerHolder {
 	}
 
 	friend class LoggingState;
+	friend class LoggerPropertyVisitor;
+	friend class LoggerConfigurationVisitor;
 	friend class ::Balau::Logger;
 	friend class ::Balau::Container::ObjectTrie<LoggerHolder>;
 	friend class ::Balau::Container::ObjectTrieNode<LoggerHolder>;

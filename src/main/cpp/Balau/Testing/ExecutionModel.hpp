@@ -88,14 +88,24 @@ enum ExecutionModel {
 ///
 /// @return a UTF-8 string representing the execution model value
 ///
-inline std::string toString(ExecutionModel model) {
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(ExecutionModel model) {
 	switch (model) {
 		case SingleThreaded:  return "SingleThreaded";
 		case WorkerThreads:   return "WorkerThreads";
 		case WorkerProcesses: return "WorkerProcesses";
 		case ProcessPerTest:  return "ProcessPerTest";
-		default: ThrowBalauException(Exception::BugException, "Unknown execution model: " + ::toString(static_cast<int>(model)));
+		default: ThrowBalauException(Exception::BugException, "Unknown execution model: " + ::toString<AllocatorT>(static_cast<int>(model)));
 	}
+}
+
+///
+/// Print the execution model value as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the execution model value
+///
+inline std::string toString(ExecutionModel model) {
+	return toString<std::allocator<char>>(model);
 }
 
 ///

@@ -83,7 +83,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Application/EnvironmentConfiguration.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Application/EnvironmentConfiguration.hpp</para>
 
 		<h2>Properties</h2>
 

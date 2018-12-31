@@ -63,7 +63,7 @@ class ZipFile : public File {
 				);
 			}
 
-			entryCount = archive.entryCount();
+			entryCount = (unsigned long long) archive.entryCount();
 		}
 
 		private: Util::Unzipper archive;
@@ -88,7 +88,7 @@ class ZipFile : public File {
 
 		friend class ZipFile;
 
-		private: explicit RecursiveZipFileUriIterator(ZipFile & zipFile, bool verify, const std::string & pw)
+		private: explicit RecursiveZipFileUriIterator(const ZipFile & zipFile, bool verify, const std::string & pw)
 			: nextEntryIndex(0) {
 			archive.open(zipFile, verify, pw);
 
@@ -98,7 +98,7 @@ class ZipFile : public File {
 				);
 			}
 
-			entryCount = archive.entryCount();
+			entryCount = (unsigned long long) archive.entryCount();
 		}
 
 		private: Util::Unzipper archive;
@@ -174,11 +174,11 @@ class ZipFile : public File {
 		return false;
 	}
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() override {
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
 		ThrowBalauException(Exception::NotImplementedException, "ZipFile URIs do not have a byte read resource.");
 	}
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() override {
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
 		ThrowBalauException(Exception::NotImplementedException, "ZipFile URIs do not have a Unicode read resource.");
 	}
 
@@ -194,7 +194,7 @@ class ZipFile : public File {
 		return true;
 	}
 
-	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() override {
+	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
 		return std::unique_ptr<RecursiveUriIterator>(new RecursiveZipFileUriIterator(*this, false, ""));
 	}
 
@@ -252,6 +252,16 @@ template <> struct equal_to<Balau::Resource::ZipFile> {
 };
 
 } // namespace std
+
+///
+/// Print the zip file URI as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the zip file URI
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Resource::ZipFile & zipFile) {
+	return zipFile.toRawString<AllocatorT>();
+}
 
 ///
 /// Print the zip file URI as a UTF-8 string.

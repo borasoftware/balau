@@ -12,6 +12,7 @@
 #define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEM_PARAMETERS
 
 #include <Balau/Logging/Logger.hpp>
+#include <Balau/Logging/Impl/LoggerAllocator.hpp>
 
 #include <chrono>
 
@@ -19,7 +20,7 @@ namespace Balau::LoggingSystem {
 
 // Parameters passed as single reference to log items during logging.
 struct LoggerItemParameters {
-	std::ostringstream & builder;
+	LoggerOStringStream & builder;
 	const std::string & nameSpace; // NOLINT
 	const std::string & ns; // NOLINT
 	const LoggingLevel level;
@@ -28,7 +29,7 @@ struct LoggerItemParameters {
 	const std::string_view message;
 	const std::chrono::system_clock::time_point & timePoint;
 
-	LoggerItemParameters(std::ostringstream & builder_,
+	LoggerItemParameters(LoggerOStringStream & builder_,
 	                     const std::string & nameSpace_,
 	                     const std::string & ns_,
 	                     const LoggingLevel level_,

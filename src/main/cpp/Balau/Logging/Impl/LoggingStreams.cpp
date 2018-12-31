@@ -84,15 +84,19 @@ void FileLoggingStream::createNewStream() {
 	currentPath = newPathStr;
 
 	boost::filesystem::path newPath(newPathStr);
+	auto parentPath = newPath.parent_path();
 
-	try {
-		boost::filesystem::create_directories(newPath.parent_path());
-	} catch (const boost::filesystem::filesystem_error & e) {
-		ThrowBalauException(
-			  Exception::CouldNotCreateException
-			, "Failed to create parent directory of logging file"
-			, Resource::File(newPath)
-		);
+	if (!boost::filesystem::exists(parentPath)) {
+		try {
+			std::cout << "Attempting to create logging folder: " << parentPath << std::endl;
+			boost::filesystem::create_directories(parentPath);
+		} catch (const boost::filesystem::filesystem_error & e) {
+			ThrowBalauException(
+				  Exception::CouldNotCreateException
+				, "Failed to create parent directory of logging file"
+				, Resource::File(newPath)
+			);
+		}
 	}
 
 	if (boost::filesystem::is_directory(newPath)) {

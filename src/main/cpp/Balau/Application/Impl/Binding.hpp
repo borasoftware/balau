@@ -16,7 +16,6 @@
 #include <Balau/Concurrent/LazyValue.hpp>
 #include <Balau/Concurrent/ThreadLocalInstance.hpp>
 #include <Balau/Exception/InjectorExceptions.hpp>
-#include <Balau/Type/StdTypes.hpp>
 
 // Avoid false positives.
 #pragma clang diagnostic push
@@ -27,6 +26,12 @@ namespace Balau {
 class Injector;
 class ApplicationConfiguration;
 class EnvironmentConfiguration;
+
+namespace LoggingSystem {
+
+class LoggingState;
+
+} // namespace LoggingSystem
 
 namespace Impl {
 
@@ -545,6 +550,7 @@ class BindingBuilderBase {
 	friend class ::Balau::Injector;
 	friend class ::Balau::EnvironmentConfiguration;
 	friend class EnvironmentConfigurationBuilder;
+	friend class ::Balau::LoggingSystem::LoggingState;
 
 	// Called by the injector in order to convert the candidate into a binding.
 	private: virtual std::unique_ptr<AbstractBinding> build() = 0;

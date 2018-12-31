@@ -412,13 +412,13 @@ void ToStringTest::toString32_parameter_pack() {
 	assertThat(toString32(1, ",", u"qwerty", ",", 42U), is(std::u32string(U"1,qwerty,42")));
 }
 
-template <typename C> class ToStringCTestClass {
-	public: std::basic_string<C> getIntAsString() const {
-		return ToString<C>()(42);
+template <typename CharT> class ToStringCTestClass {
+	public: std::basic_string<CharT> getIntAsString() const {
+		return ToString<CharT>()(42);
 	}
 
-	public: std::basic_string<C> getDoubleAsString() const {
-		return ToString<C>()(123.456);
+	public: std::basic_string<CharT> getDoubleAsString() const {
+		return ToString<CharT>()(123.456);
 	}
 };
 

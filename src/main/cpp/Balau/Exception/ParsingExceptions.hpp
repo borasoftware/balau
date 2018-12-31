@@ -41,11 +41,21 @@ inline bool operator == (const SyntaxErrorException & lhs, const SyntaxErrorExce
 	return lhs.message == rhs.message && lhs.codeSpan == rhs.codeSpan;
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const SyntaxErrorException & e) {
+	return toString<AllocatorT>(e.message, " - ", e.codeSpan);
+}
+
 inline std::string toString(const SyntaxErrorException & e) {
 	return e.message + " - " + toString(e.codeSpan);
 }
 
 } // namespace Balau::Exception
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::SyntaxErrorException & e) {
+	return toString<AllocatorT>(e.message, " - ", e.codeSpan);
+}
 
 inline std::string toString(const Balau::Exception::SyntaxErrorException & e) {
 	return e.message + " - " + ::toString(e.codeSpan);

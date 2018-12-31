@@ -38,7 +38,7 @@ void BalauLogger::logMessage(const SourceCodeLocation & location,
 void BalauLogger::logMessage(const SourceCodeLocation & location,
                              LoggingLevel level,
                              std::string_view message,
-                             const std::vector<std::string> & parameters) const {
+                             const LoggingSystem::LoggerStringVector & parameters) const {
 	Logger::logMessage(location, level, logger, message, parameters);
 }
 

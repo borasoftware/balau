@@ -441,7 +441,7 @@ std::ostringstream customLoggingStreamStream;
 
 // A custom logging stream which logs to the test string stream.
 class CustomLoggingStream : public LoggingStream {
-	public: void write(const std::string & str) override {
+	public: void write(const LoggingSystem::LoggerString & str) override {
 		customLoggingStreamStream << str;
 	}
 

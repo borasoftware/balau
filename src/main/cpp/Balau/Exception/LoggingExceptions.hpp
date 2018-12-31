@@ -34,6 +34,11 @@ class LoggingConfigurationException : public BalauException {
 
 } // namespace Balau::Exception
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::LoggingConfigurationException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::LoggingConfigurationException & e) {
 	return e.what();
 }

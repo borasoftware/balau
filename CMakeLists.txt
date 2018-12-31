@@ -63,6 +63,12 @@ add_definitions("-DBALAU_SOURCE_TEST_RESOURCES_FOLDER_=${CMAKE_SOURCE_DIR}/src/t
 add_definitions("-DBALAU_TARGET_FOLDER_=${CMAKE_BINARY_DIR}")
 add_definitions("-DBALAU_TEST_RESULTS_FOLDER_=${CMAKE_BINARY_DIR}/testResults")
 
+add_definitions("-DBALAU_LOGGING_THREAD_LOCAL_ALLOCATOR=${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR}")
+
+if (DEFINED BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB)
+	add_definitions("-DBALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB=${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB}")
+endif ()
+
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testResults)
 
 include_directories(src/main/cpp)
@@ -337,6 +343,9 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Logging/LoggingLevel.hpp
 	src/main/cpp/Balau/Logging/Impl/BalauLogger.cpp
 	src/main/cpp/Balau/Logging/Impl/BalauLogger.hpp
+	src/main/cpp/Balau/Logging/Impl/LoggerAllocator.cpp
+	src/main/cpp/Balau/Logging/Impl/LoggerAllocator.hpp
+	src/main/cpp/Balau/Logging/Impl/LoggerConfigurationVisitor.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggerForwardDeclarations.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggerHolder.cpp
 	src/main/cpp/Balau/Logging/Impl/LoggerHolder.hpp
@@ -352,6 +361,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Network/Http/Client/HttpClient.cpp
 	src/main/cpp/Balau/Network/Http/Client/HttpClient.hpp
 	src/main/cpp/Balau/Network/Http/Client/HttpsClient.hpp
+	src/main/cpp/Balau/Network/Http/Client/WsClient.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpRequest.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpResponse.hpp
 	src/main/cpp/Balau/Network/Http/Server/HttpServer.cpp
@@ -496,8 +506,11 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Type/StdTypes.cpp
 	src/main/cpp/Balau/Type/StdTypes.hpp
 	src/main/cpp/Balau/Type/ToString.hpp
+	src/main/cpp/Balau/Type/ToStringA.hpp
+	src/main/cpp/Balau/Type/ToStringS.hpp
 	src/main/cpp/Balau/Type/UUID.hpp
 	src/main/cpp/Balau/Type/Impl/FromStringImpl.hpp
+	src/main/cpp/Balau/Type/Impl/ToStringImpl.hpp
 	src/main/cpp/Balau/Util/Compression.cpp
 	src/main/cpp/Balau/Util/Compression.hpp
 	src/main/cpp/Balau/Util/Containers.hpp
@@ -612,6 +625,8 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.hpp
 	src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.cpp
 	src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.hpp
+	src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.hpp
 	src/test/cpp/Balau/Resource/FileByteReadResourceTest.cpp
 	src/test/cpp/Balau/Resource/FileByteReadResourceTest.hpp
 	src/test/cpp/Balau/Resource/FileByteWriteResourceTest.cpp
@@ -684,7 +699,7 @@ add_custom_command(
 add_custom_target(
 	RunBalauTests
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-	COMMAND BalauTests
+	COMMAND BalauTests all
 )
 
 add_dependencies(RunBalauTests BalauTests)

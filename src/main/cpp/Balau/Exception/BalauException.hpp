@@ -112,6 +112,16 @@ inline bool operator == (const BalauException & lhs, const BalauException & rhs)
 }
 
 ///
+/// Base class toString<AllocatorT> function for Balau exceptions.
+///
+/// This should be overloaded for exceptions that have data to print.
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const BalauException & e) {
+	return toString<AllocatorT>(e.fullMessage);
+}
+
+///
 /// Base class toString function for Balau exceptions.
 ///
 /// This should be overloaded for exceptions that have data to print.
@@ -155,6 +165,16 @@ class BugException : public BalauException {
 } // namespace Balau::Exception
 
 ///
+/// Base class toString<AllocatorT> function for Balau exceptions.
+///
+/// This should be overloaded for exceptions that have data to print.
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::BalauException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
+///
 /// Base class toString function for Balau exceptions.
 ///
 /// This should be overloaded for exceptions that have data to print.
@@ -163,12 +183,27 @@ inline std::string toString(const Balau::Exception::BalauException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::IllegalArgumentException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::IllegalArgumentException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::NotImplementedException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::NotImplementedException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::BugException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::BugException & e) {

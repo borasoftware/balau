@@ -108,7 +108,13 @@ template <typename E, typename F> class ThrowExpectationWithFunction {
 	}
 };
 
-template <typename E, typename F> inline std::string toString(const ThrowExpectationWithFunction<E, F> & e) {
+template <typename AllocatorT, typename E, typename F>
+inline Balau::U8String<AllocatorT> toString(const ThrowExpectationWithFunction<E, F> & e) {
+	return ::toString<AllocatorT>(e.expectedException);
+}
+
+template <typename E, typename F>
+inline std::string toString(const ThrowExpectationWithFunction<E, F> & e) {
 	return ::toString(e.expectedException);
 }
 

@@ -37,13 +37,13 @@
 
 		<h1>Assert</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Dev/Assert.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Dev/Assert.hpp</para>
 
 		<para>The <emph>Assert</emph> namespace class contains a set of runtime assertions used for development purposes. The assertions use the standard <emph>assert()</emph> call.</para>
 
 		<h1>Enums</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Enums.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Util/Enums.hpp</para>
 
 		<para>The <emph>Enums</emph> namespace class currently contains a single static method:</para>
 
@@ -61,7 +61,7 @@
 
 		<h1>Hashing</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Hashing.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Util/Hashing.hpp</para>
 
 		<para>The <emph>Hashing</emph> class is a namespace class used to hold hashing functions. There are three versions of each function, one accepting a <emph>File</emph>, another accepting a <emph>string</emph>, and a third accepting an <emph>istream</emph>.</para>
 
@@ -78,7 +78,7 @@
 
 		<h1>Macros</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/Macros.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Util/Macros.hpp</para>
 
 		<para>The <emph>Macros.hpp</emph> header file contains some low level macros used in Balau.</para>
 
@@ -110,13 +110,13 @@
 
 		<h1>UUID</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Type/UUID.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Type/UUID.hpp</para>
 
 		<para>The <emph>UUID</emph> class provides a convenient API for generating and manipulating UUIDs.</para>
 
 		<h1>User</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Util/User.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Util/User.hpp</para>
 
 		<para>The <emph>User</emph> class is a namespace class destined for functions that provide information on operating system users.</para>
 

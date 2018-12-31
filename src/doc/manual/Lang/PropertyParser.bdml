@@ -104,7 +104,7 @@
 
 	<h2>Parsing</h2>
 
-	<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Lang/Property/PropertyParsingService.hpp></strong></emph></para>
+	<para class="cpp-define-statement">#include &lt;Balau/Lang/Property/PropertyParsingService.hpp</para>
 
 	<para>Creating a hierarchical properties parser and parsing some input text involves a single line of code.</para>
 
@@ -125,7 +125,7 @@
 
 	<h2>Visiting</h2>
 
-	<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Lang/Property/Util/PropertyVisitor.hpp></strong></emph></para>
+	<para class="cpp-define-statement">#include &lt;Balau/Lang/Property/Util/PropertyVisitor.hpp</para>
 
 	<para>Once the input properties text has been parsed into an AST, it can be visited by implementing the <emph>PropertyVisitor</emph> interface.</para>
 

@@ -69,6 +69,24 @@ constexpr size_t _BalauLoggingLevelCount = 5;
 ///
 /// @return a UTF-8 string representing the logging level
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(LoggingLevel level) {
+	switch (level) {
+		case LoggingLevel::TRACE:    return "TRACE";
+		case LoggingLevel::DEBUG:    return "DEBUG";
+		case LoggingLevel::INFO:     return "INFO";
+		case LoggingLevel::WARN:     return "WARN";
+		case LoggingLevel::ERROR:    return "ERROR";
+		case LoggingLevel::NONE:     return "NONE";
+		default: ThrowBalauException(Exception::BugException, "Unhandled LoggingLevel in switch statement.");
+	}
+}
+
+///
+/// Print the logging level as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the logging level
+///
 inline std::string toString(LoggingLevel level) {
 	switch (level) {
 		case LoggingLevel::TRACE:    return "TRACE";
@@ -101,6 +119,11 @@ struct SourceCodeLocation {
 };
 
 } // namespace Balau
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(Balau::LoggingLevel level) {
+	return Balau::toString<AllocatorT>(level);
+}
 
 inline std::string toString(Balau::LoggingLevel level) {
 	return Balau::toString(level);

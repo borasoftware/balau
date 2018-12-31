@@ -48,9 +48,9 @@ class ZipEntryByteReadResource : public ByteReadResource {
 
 	friend class ZipEntry;
 
-	private: explicit ZipEntryByteReadResource(ZipEntry & entry_);
+	private: explicit ZipEntryByteReadResource(const ZipEntry & entry_);
 
-	private: ZipEntry & entry;
+	private: const ZipEntry & entry;
 	private: boost::iostreams::stream<Impl::ZipEntrySource> stream;
 };
 

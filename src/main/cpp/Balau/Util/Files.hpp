@@ -49,6 +49,16 @@ namespace boost::filesystem {
 ///
 /// @return a UTF-8 string representing the file system path
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const boost::filesystem::path & path) {
+	return toString<AllocatorT>(path.string());
+}
+
+///
+/// Print the file system path as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the file system path
+///
 inline std::string toString(const boost::filesystem::path & path) {
 	return path.string();
 }

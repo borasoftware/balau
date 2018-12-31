@@ -20,7 +20,7 @@
 		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
 		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
 
-		<title text="Balau core C++ library - http.server" />
+		<title text="Balau core C++ library - http.server - environment configuration specification" />
 
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
 		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
@@ -36,10 +36,6 @@
 		<para class="short-desc">Contains the configuration for the <ref url="Network/HttpServer">HTTP server</ref>.</para>
 
 		<para>All the configuration for the HTTP server is contained within an <emph>http.server</emph> composite property.</para>
-
-		<h1 toc='false'>Ancestor</h1>
-
-		<para>The <emph>http.server</emph> composite property is an environment configuration root.</para>
 
 		<h1 toc='false'>Simple configuration</h1>
 

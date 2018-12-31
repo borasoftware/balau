@@ -71,6 +71,15 @@ class EnvironmentProperties {
 		}
 
 		///
+		/// Get the key of the item.
+		///
+		/// @return the key of the item
+		///
+		public: Impl::BindingKey getKey() const {
+			return key.toKey();
+		}
+
+		///
 		/// Returns true if the item is a value binding matching the specified type and name.
 		///
 		/// @tparam ValueT the value binding type
@@ -79,6 +88,17 @@ class EnvironmentProperties {
 		///
 		public: template <typename ValueT> bool isValue() const {
 			return key == Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Value, ValueT>), key.name);
+		}
+
+		///
+		/// Returns true if the item is a unique pointer binding matching the specified type and name.
+		///
+		/// @tparam BaseT the binding's type
+		/// @param name the name of the binding
+		/// @return true if the item is a unique pointer binding matching the specified type and name
+		///
+		public: template <typename BaseT> bool isUnique() const {
+			return key == Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), key.name);
 		}
 
 		///
@@ -441,6 +461,13 @@ class EnvironmentProperties {
 	///
 	public: const_iterator end() const {
 		return const_iterator(*this, bindings->end());
+	}
+
+	///
+	/// Returns true if the environment properties object is empty.
+	///
+	public: bool empty() const {
+		return bindings->begin() == bindings->end();
 	}
 
 	///

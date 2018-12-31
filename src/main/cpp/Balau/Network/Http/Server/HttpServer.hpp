@@ -107,7 +107,16 @@ class HttpServer {
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
 	                   std::shared_ptr<EnvironmentProperties> configuration,
-	                   bool registerSignalHandler = true);
+	                   bool registerSignalHandler = true)
+		: state(createState(clock, configuration))
+		, threadNamePrefix(configuration->getValue<std::string>("thread.name.prefix", ""))
+		, workerCount((size_t) configuration->getValue<int>("worker.count", 1))
+		, ioContext(configuration->getValue<int>("worker.count", 1))
+		, signalSet(ioContext) {
+		if (registerSignalHandler) {
+			doRegisterSignalHandler();
+		}
+	}
 
 	///
 	/// Create an HTTP server with HTTP and optional WebSocket handlers.

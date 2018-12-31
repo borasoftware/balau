@@ -38,6 +38,21 @@ struct DateTime final {
 	///
 	/// Example format: "%Y-%m-%d %H:%M:%S"
 	///
+	template <typename AllocatorT, typename Clock, typename Dur>
+	static U8String<AllocatorT> toString(const char * format, const std::chrono::time_point<Clock, Dur> & tp) {
+		U8OStringStream<AllocatorT> str;
+		Date::to_stream(str, format, tp);
+		return str.str();
+	}
+
+	///
+	/// Format the time point as a string with the specified format.
+	///
+	/// Refer to the formatting documentation at https://howardhinnant.github.io/date/date.html
+	/// for details on the format placeholders.
+	///
+	/// Example format: "%Y-%m-%d %H:%M:%S"
+	///
 	template <typename Clock, typename Dur>
 	static std::string toString(const char * format, const std::chrono::time_point<Clock, Dur> & tp) {
 		std::ostringstream str;
@@ -56,6 +71,24 @@ struct DateTime final {
 	template <typename Clock, typename Dur>
 	static void toString(std::ostream & stream, const char * format, const std::chrono::time_point<Clock, Dur> & tp) {
 		Date::to_stream(stream, format, tp);
+	}
+
+	///
+	/// Format the duration as a string with the specified format.
+	///
+	/// Refer to the formatting documentation at https://howardhinnant.github.io/date/date.html
+	/// for details on the format placeholders.
+	///
+	/// Example format: "%Y-%m-%d %H:%M:%S"
+	///
+	template <typename AllocatorT, typename Rep, typename Period>
+	static U8String<AllocatorT> toString(const char * format, const std::chrono::duration<Rep, Period> & d) {
+		U8OStringStream<AllocatorT> str;
+
+		// TODO??
+		// The HH date library appears to do an abs(d), so
+		Date::to_stream(str, format, d);
+		return str.str();
 	}
 
 	///

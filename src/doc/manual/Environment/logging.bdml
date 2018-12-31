@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2018 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - logging - environment configuration specification" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/PropertiesHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="logging">
+		<h1 toc='false'>Description</h1>
+
+		<para class="short-desc">Configuration for the <ref url="Logging/Logger">logging system</ref>.</para>
+
+		<h1 toc='false'>Simple configuration</h1>
+
+		<para>Logging system configuration does not contain any root value properties.</para>
+
+		<h1 toc='false'>Composite configuration</h1>
+
+		<para>Logging system configuration can contain any conforming composite property. The name of each composite property is the logging namespace being configured.</para>
+
+		<para>A conforming composite property is a composite property that contains a valid set of value properties, according to the value property specifications given in the <emph>logging namespace configuration</emph> section below.</para>
+
+		<h1 toc='false'>Logging namespace configuration</h1>
+
+		<para>A logging namespace environment configuration entry is a composite property that occurs within the root <emph>logging</emph> composite property. Logging namespace environment configuration composite properties may contain the following value properties.</para>
+
+		<para>All logging configuration value properties are optional. All default values given below are applied by the logging system and are not present in the logging environment configuration specification.</para>
+
+		<table class="bdml-table151515L55">
+			<head>
+				<cell>Name</cell>
+				<cell>Type</cell>
+				<cell>Default value*</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>level</cell>
+					<cell>string</cell>
+					<cell><emph>INFO</emph></cell>
+					<cell>Logging level</cell>
+				</row>
+
+				<row>
+					<cell>format</cell>
+					<cell>string</cell>
+					<cell><emph>see below</emph></cell>
+					<cell>Message format specification</cell>
+				</row>
+
+				<row>
+					<cell>flush</cell>
+					<cell>boolean</cell>
+					<cell><emph>true</emph></cell>
+					<cell>Whether to automatically flush after each message</cell>
+				</row>
+
+				<row>
+					<cell>stream</cell>
+					<cell>string</cell>
+					<cell></cell>
+					<cell>Output stream specification for all logging levels</cell>
+				</row>
+
+				<row>
+					<cell>trace-stream</cell>
+					<cell>string</cell>
+					<cell></cell>
+					<cell>Output stream specification for trace logging</cell>
+				</row>
+
+				<row>
+					<cell>debug-stream</cell>
+					<cell>string</cell>
+					<cell></cell>
+					<cell>Output stream specification for debug logging</cell>
+				</row>
+
+				<row>
+					<cell>info-stream</cell>
+					<cell>string</cell>
+					<cell><emph>stdout</emph></cell>
+					<cell>Output stream specification for info logging</cell>
+				</row>
+
+				<row>
+					<cell>warn-stream</cell>
+					<cell>string</cell>
+					<cell><emph>stderr</emph></cell>
+					<cell>Output stream specification for warn logging</cell>
+				</row>
+
+				<row>
+					<cell>error-stream</cell>
+					<cell>string</cell>
+					<cell></cell>
+					<cell>Output stream specification for error logging</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>* All default values are set by the logging system.</para>
+
+		<para>The default format specification (set by the logging system) if none is supplied or inherited for a particular namespace is:</para>
+
+		<code>
+			%Y-%m-%d %H:%M:%S [%thread] %LEVEL - %namespace - %message
+		</code>
+
+		<para>Default values for the <emph>info-stream</emph> and <emph>debug-stream</emph> properties are set by the logging system for a particular namespace if no other stream specifications have been explicitly provided for the logging namespace and its ancestors.</para>
+	</chapter>
+</document>

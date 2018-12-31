@@ -813,7 +813,38 @@ struct Strings final {
 	          template <typename ...> class StringT,
 	          typename MatchT,
 	          typename ReplacementT>
-	static std::basic_string<CharT> replaceAll(const StringT<CharT, T ...> & input,
+	static std::basic_string<CharT>
+	replaceAll(const StringT<CharT, T ...> & input, const MatchT & match, const ReplacementT & replacement) {
+		return replaceAll(
+			  std::basic_string_view<CharT>{input}
+			, std::basic_string_view<CharT>{match}
+			, std::basic_string_view<CharT>{replacement}
+		);
+	}
+
+	///
+	/// Replace all occurrences of the specified string with the supplied replacement (specified allocator version).
+	///
+	template <typename CharT,
+	          typename AllocatorT,
+	          typename ... T,
+	          template <typename ...> class StringT,
+	          typename MatchT,
+	          typename ReplacementT>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>
+	replaceAll(const StringT<CharT, T ...> & input, const MatchT & match, const ReplacementT & replacement) {
+		return replaceAll(
+			  std::basic_string_view<CharT>{input}
+			, std::basic_string_view<CharT>{match}
+			, std::basic_string_view<CharT>{replacement}
+		);
+	}
+
+	///
+	/// Replace all occurrences of the specified string with the supplied replacement.
+	///
+	template <typename CharT, typename AllocatorT, typename MatchT, typename ReplacementT>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> replaceAll(const CharT * input,
 	                                           const MatchT & match,
 	                                           const ReplacementT & replacement) {
 		return replaceAll(
@@ -826,26 +857,51 @@ struct Strings final {
 	///
 	/// Replace all occurrences of the specified string with the supplied replacement.
 	///
-	template <typename CharT, typename MatchT, typename ReplacementT>
-	static std::basic_string<CharT> replaceAll(const CharT * input,
-	                                           const MatchT & match,
-	                                           const ReplacementT & replacement) {
-		return replaceAll(
-			  std::basic_string_view<CharT>{input}
-			, std::basic_string_view<CharT>{match}
-			, std::basic_string_view<CharT>{replacement}
-		);
+	template <typename CharT, typename AllocatorT>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>
+	replaceAll(std::basic_string_view<CharT> input,
+	           std::basic_string_view<CharT> match,
+	           std::basic_string_view<CharT> replacement,
+	           size_t * count = nullptr) {
+		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> ret(input);
+		replaceAllImpl(ret, match, replacement, count);
+		return ret;
 	}
 
 	///
 	/// Replace all occurrences of the specified string with the supplied replacement.
 	///
 	template <typename CharT>
-	static std::basic_string<CharT> replaceAll(const std::basic_string_view<CharT> & input,
-	                                           const std::basic_string_view<CharT> & match,
-	                                           const std::basic_string_view<CharT> & replacement) {
+	static std::basic_string<CharT> replaceAll(std::basic_string_view<CharT> input,
+	                                           std::basic_string_view<CharT> match,
+	                                           std::basic_string_view<CharT> replacement,
+	                                           size_t * count = nullptr) {
 		std::basic_string<CharT> ret(input);
-		replaceAllImpl(ret, match, replacement);
+		replaceAllImpl(ret, match, replacement, count);
+		return ret;
+	}
+
+	///
+	/// Replace all occurrences of the specified string with the supplied replacement.
+	///
+	static std::string replaceAll(std::string_view input,
+	                              std::string_view match,
+	                              std::string_view replacement,
+	                              size_t * count = nullptr) {
+		std::string ret(input);
+		replaceAllImpl(ret, match, replacement, count);
+		return ret;
+	}
+
+	///
+	/// Replace all occurrences of the specified string with the supplied replacement.
+	///
+	static std::u32string replaceAll(std::u32string_view input,
+	                                 std::u32string_view match,
+	                                 std::u32string_view replacement,
+	                                 size_t * count = nullptr) {
+		std::u32string ret(input);
+		replaceAllImpl(ret, match, replacement, count);
 		return ret;
 	}
 
@@ -899,9 +955,33 @@ struct Strings final {
 	/// @param p1 the first object
 	/// @param p subsequent objects
 	///
+	template <typename AllocatorT, typename CharT, typename ... T, template <typename ...> class StringT, typename P1, typename ... P>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> join(StringT<CharT, T ...> delimiter, const P1 & p1, const P & ... p) {
+		return (::ToString<CharT, AllocatorT>()(p1) + ... + (delimiter + ::ToString<CharT, AllocatorT>()(p)));
+	}
+
+	///
+	/// Call to-string on each of the objects and join the resulting strings together with the delimiter.
+	///
+	/// @param delimiter the string delimiter
+	/// @param p1 the first object
+	/// @param p subsequent objects
+	///
 	template <typename CharT, typename ... T, template <typename ...> class StringT, typename P1, typename ... P>
 	static std::basic_string<CharT> join(StringT<CharT, T ...> delimiter, const P1 & p1, const P & ... p) {
-		return (::ToString<CharT>()(p1) + ... + (delimiter + ::ToString<CharT>()(p)));
+		return (::ToString<CharT, std::allocator<CharT>>()(p1) + ... + (delimiter + ::ToString<CharT, std::allocator<CharT>>()(p)));
+	}
+
+	///
+	/// Call to-string on each of the objects and join the resulting strings together with the delimiter.
+	///
+	/// @param delimiter the string delimiter
+	/// @param p1 the first object
+	/// @param p subsequent objects
+	///
+	template <typename AllocatorT, typename CharT, typename P1, typename ... P>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> join(const CharT * delimiter, const P1 & p1, const P & ... p) {
+		return (::ToString<CharT, AllocatorT>()(p1) + ... + (delimiter + ::ToString<CharT, AllocatorT>()(p)));
 	}
 
 	///
@@ -913,7 +993,7 @@ struct Strings final {
 	///
 	template <typename CharT, typename P1, typename ... P>
 	static std::basic_string<CharT> join(const CharT * delimiter, const P1 & p1, const P & ... p) {
-		return (::ToString<CharT>()(p1) + ... + (delimiter + ::ToString<CharT>()(p)));
+		return (::ToString<CharT, std::allocator<CharT>>()(p1) + ... + (delimiter + ::ToString<CharT, std::allocator<CharT>>()(p)));
 	}
 
 	///
@@ -926,8 +1006,40 @@ struct Strings final {
 	/// @param container the container of objects
 	/// @param delimiter the UTF-8 string delimiter
 	///
-	template <typename CharT, typename ... T, template <typename ...> class C>
-	static std::basic_string<CharT> joinContainer(const CharT * delimiter, const C<T ...> & container) {
+	template <typename AllocatorT, typename CharT, typename ... T, template <typename ...> class C>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>
+	joinContainer(const CharT * delimiter, const C<T ...> & container) {
+		return joinContainer(std::basic_string_view<CharT>(delimiter), container);
+	}
+
+	///
+	/// Call to-string on each of the objects in the container and join the resulting strings together with the delimiter.
+	///
+	/// Note that the delimiter in the parameter list of this function is reversed
+	/// compared to the other join functions. This is done merely to ensure the
+	/// correct template function is selected for containers.
+	///
+	/// @param container the container of objects
+	/// @param delimiter the UTF-8 string delimiter
+	///
+	template <typename CharT, typename ... T, template <typename ...> class C> static std::basic_string<CharT>
+	joinContainer(const CharT * delimiter, const C<T ...> & container) {
+		return joinContainer(std::basic_string_view<CharT>(delimiter), container);
+	}
+
+	///
+	/// Call to-string on each of the objects in the container and join the resulting strings together with the delimiter.
+	///
+	/// Note that the delimiter in the parameter list of this function is reversed
+	/// compared to the other join functions. This is done merely to ensure the
+	/// correct template function is selected for containers.
+	///
+	/// @param container the container of objects
+	/// @param delimiter the UTF-8 string delimiter
+	///
+	template <typename AllocatorT, typename CharT, typename ... T, template <typename ...> class C>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>
+	joinContainer(const std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> & delimiter, const C<T ...> & container) {
 		return joinContainer(std::basic_string_view<CharT>(delimiter), container);
 	}
 
@@ -952,6 +1064,26 @@ struct Strings final {
 	/// @param container the container of objects
 	/// @param delimiter the UTF-8 string view delimiter
 	///
+	template <typename AllocatorT, typename CharT, typename ... T, template <typename ...> class C>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> joinContainer(std::basic_string_view<CharT> delimiter, const C<T ...> & container) {
+		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> builder;
+		std::basic_string_view<CharT> d;
+
+		for (const auto & e : container) {
+			builder += d;
+			builder += ::ToString<CharT, AllocatorT>()(e);
+			d = delimiter;
+		}
+
+		return builder;
+	}
+
+	///
+	/// Call to-string on each of the objects in the container and join the resulting strings together with the delimiter.
+	///
+	/// @param container the container of objects
+	/// @param delimiter the UTF-8 string view delimiter
+	///
 	template <typename CharT, typename ... T, template <typename ...> class C>
 	static std::basic_string<CharT> joinContainer(std::basic_string_view<CharT> delimiter, const C<T ...> & container) {
 		std::basic_string<CharT> builder;
@@ -959,7 +1091,7 @@ struct Strings final {
 
 		for (const auto & e : container) {
 			builder += d;
-			builder += ::ToString<CharT>()(e);
+			builder += ::ToString<CharT, std::allocator<CharT>>()(e);
 			d = delimiter;
 		}
 
@@ -967,6 +1099,34 @@ struct Strings final {
 	}
 
 	///////////////////////////////////
+
+	///
+	/// Call to-string on each of the objects in the container and join the resulting strings together with the prefix and suffix.
+	///
+	/// Print the prefix before each string and the suffix after each string.
+	///
+	/// @param container the container of objects
+	/// @param prefix the string prefix
+	/// @param suffix the string suffix
+	///
+	template <typename AllocatorT,
+	          typename CharT,
+	          typename ... T,
+	          template <typename ...> class C,
+	          typename ... U,
+	          template <typename ...> class PrefixT,
+	          typename ... V,
+	          template <typename ...> class SuffixT>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>
+	prefixSuffixJoin(const C<T ...> & container, const PrefixT<CharT, U ...> & prefix, const SuffixT<CharT, V ...> & suffix) {
+		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> builder;
+
+		for (const auto & e : container) {
+			builder += prefix + ::ToString<CharT, AllocatorT>()(e) + suffix;
+		}
+
+		return builder;
+	}
 
 	///
 	/// Call to-string on each of the objects in the container and join the resulting strings together with the prefix and suffix.
@@ -987,10 +1147,25 @@ struct Strings final {
 	static std::string prefixSuffixJoin(const C<T ...> & container,
 	                                    const PrefixT<CharT, U ...> & prefix,
 	                                    const SuffixT<CharT, V ...> & suffix) {
-		std::basic_string<CharT> builder;
+		return prefixSuffixJoin<std::allocator<CharT>>(container, prefix, suffix);
+	}
+
+	///
+	/// Call to-string on each of the objects in the container and join the resulting strings together with the prefix and suffix.
+	///
+	/// Print the prefix before each string and the suffix after each string.
+	///
+	/// @param container the container of objects
+	/// @param prefix the string prefix
+	/// @param suffix the string suffix
+	///
+	template <typename AllocatorT, typename CharT, typename ... T, template <typename ...> class C>
+	static std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>
+	prefixSuffixJoin(const C<T ...> & container, const CharT * prefix, const CharT * suffix) {
+		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> builder;
 
 		for (const auto & e : container) {
-			builder += prefix + ::ToString<CharT>()(e) + suffix;
+			builder += std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>{prefix} + ::ToString<CharT, AllocatorT>()(e) + suffix;
 		}
 
 		return builder;
@@ -1006,14 +1181,8 @@ struct Strings final {
 	/// @param suffix the string suffix
 	///
 	template <typename CharT, typename ... T, template <typename ...> class C>
-	static std::string prefixSuffixJoin(const C<T ...> & container, const CharT * prefix, const CharT * suffix) {
-		std::basic_string<CharT> builder;
-
-		for (const auto & e : container) {
-			builder += std::basic_string<CharT>{prefix} + ::ToString<CharT>()(e) + suffix;
-		}
-
-		return builder;
+	static std::basic_string<CharT> prefixSuffixJoin(const C<T ...> & container, const CharT * prefix, const CharT * suffix) {
+		return prefixSuffixJoin<std::allocator<CharT>>(container, prefix, suffix);
 	}
 
 	///////////////////////////////////
@@ -1164,6 +1333,19 @@ struct Strings final {
 		return elements;
 	}
 
+	//////////////////////////////// Conversion ///////////////////////////////
+
+	///
+	/// Convert the container of string views to a container of strings.
+	///
+	///
+	template <typename CharT, typename ... T, template <typename ...> class ContainerT>
+	static ContainerT<std::basic_string<CharT>> toStringContainer(const ContainerT<std::basic_string_view<CharT>, T ...> & input) {
+		ContainerT<std::basic_string<CharT>> ret;
+		std::transform(input.begin(), input.end(), std::back_inserter(ret), [] (auto s) { return std::string(s); });
+		return ret;
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	Strings() = delete;
@@ -1178,10 +1360,15 @@ struct Strings final {
 	                   typename ReplacementT>
 	static void replaceAllImpl(StringT<CharT, T ...> & input,
 	                           const MatchT & match,
-	                           const ReplacementT & replacement) {
+	                           const ReplacementT & replacement,
+	                           size_t * count) {
 		const size_t matchLength = length(match);
 		const size_t replacementLength = length(replacement);
 		size_t pos = 0;
+
+		if (count) {
+			*count = 0;
+		}
 
 		while (true) {
 			pos = input.find(match, pos);
@@ -1193,13 +1380,17 @@ struct Strings final {
 			input.erase(pos, matchLength);
 			input.insert(pos, replacement);
 
+			if (count) {
+				++*count;
+			}
+
 			pos += replacementLength;
 		}
 	}
 
 	private: template <typename CharT>
-	static std::vector<std::basic_string_view<CharT>> splitImpl(const std::basic_string_view<CharT> & input,
-	                                                            const std::basic_string_view<CharT> & delimiter,
+	static std::vector<std::basic_string_view<CharT>> splitImpl(std::basic_string_view<CharT> input,
+	                                                            std::basic_string_view<CharT> delimiter,
 	                                                            bool compress = true) {
 		std::vector<std::basic_string_view<CharT>> elements;
 		const size_t delimiterLength = length(delimiter);
@@ -1260,7 +1451,7 @@ struct Strings final {
 		return std::char_traits<CharT>::length(str);
 	}
 
-	private: template <typename CharT> static auto begin(const std::basic_string<CharT> & str) {
+	private: template <typename CharT, typename AllocatorT> static auto begin(const std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> & str) {
 		return str.data();
 	}
 
@@ -1268,11 +1459,11 @@ struct Strings final {
 		return str;
 	}
 
-	private: template <typename CharT> static auto begin(const std::basic_string_view<CharT> & str) {
+	private: template <typename CharT> static auto begin(std::basic_string_view<CharT> str) {
 		return str.data();
 	}
 
-	private: template <typename CharT> static auto end(const std::basic_string<CharT> & str) {
+	private: template <typename CharT, typename AllocatorT> static auto end(const std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> & str) {
 		return str.data() + str.length();
 	}
 
@@ -1280,7 +1471,7 @@ struct Strings final {
 		return str + length(str);
 	}
 
-	private: template <typename CharT> static auto end(const std::basic_string_view<CharT> & str) {
+	private: template <typename CharT> static auto end(std::basic_string_view<CharT> str) {
 		return str.data() + str.length();
 	}
 

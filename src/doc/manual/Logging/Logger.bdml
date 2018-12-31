@@ -36,11 +36,13 @@
 
 		<para>A logging framework, with configurable loggers via logging namespaces. Loggers output to C++ streams specified via the logging namespace configuration. Logging namespaces inherit their parent configuration via a cascading inheritance.</para>
 
-		<para>Logging namespaces are configured by supplying standard <ref url="Application/Environment">environment configuration</ref>.</para>
+		<para>Logging namespaces are configured via standard <ref url="Application/Environment">environment configuration</ref> syntax. This can be supplied statically (via a logging configuration file), or dynamically by calling the logging system <emph>configure</emph> method.</para>
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Logging/Logger.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Logging/Logger.hpp</para>
+
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/logging">logging</ref></para>
 
 		<h2>Logging messages</h2>
 
@@ -341,6 +343,10 @@
 		<h2>Overview</h2>
 
 		<para>The configuration file format is standard <ref url="Application/Environment">environment configuration</ref>. Each composite property defines a namespace key and a set of configuration value properties within.</para>
+
+		<para>The logging system can be configured via a standalone configuration file, or can be configured from the injector's loaded environment configuration by obtaining a suitable <emph>EnvironmentProperties</emph> instance from the injector and calling the <emph>Logger::configure(EnvironmentProperties)</emph> function.</para>
+
+		<para>In addition to the following documentation, the <ref url="Environment/logging">logging environment configuration</ref> pages provide reference documentation on each logging value property.</para>
 
 		<para>The global logging namespace is specified via the special "." key. This namespace can be configured in the same way as any other namespace, and forms the global ancestor to all namespaces. It is thus useful to place any configuration applicable to all loggers in the global namespace.</para>
 

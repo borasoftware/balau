@@ -31,6 +31,7 @@
 #include "Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.hpp"
 #include "Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.hpp"
 #include "Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.hpp"
+#include "Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.hpp"
 #include "Balau/Resource/FileByteReadResourceTest.hpp"
 #include "Balau/Resource/FileByteWriteResourceTest.hpp"
 #include "Balau/Resource/FileTest.hpp"
@@ -61,43 +62,51 @@
 using namespace Balau;
 
 //
-// Set SINGLE_RUN to 1 in order to perform a single test run of the chosen model.
-// This will allow breakpoints to be hit if one of the in-process models is chosen.
+// Runs the Balau tests:
+//  - as a single run with the single threaded execution model if no arguments are supplied;
+//  - with all four execution models in turn if argv[1] == all;
+//  - as a single run with the specified execution model otherwise.
 //
-// If SINGLE_RUN is set to 0, four sequential test runs will be performed, one for
-// each model, in a separate process for each run.
-//
-#define SINGLE_RUN 1
-
-// Runs the Balau tests with all four execution models in turn.
 int main(int argc, char * argv[]) {
 	System::ThreadName::setName("TestMain");
 	Testing::ExecutionModel model;
 
-	if (!SINGLE_RUN && argc == 1) {
-		std::cout << "Running tests with all execution models in turn.\n";
+	if (argc > 1) {
+		if (Util::Strings::toLower(argv[1]) == "all") {
+			std::cout << "Running tests with all execution models in turn.\n";
 
-		struct RunTests {
-			// Runs the test for a single execution model.
-			void runTests(const char * executable, Testing::ExecutionModel model) {
-				const int exitStatus = boost::process::system(executable, toString(model));
-				std::ostream & stream = exitStatus == 0 ? std::cout : std::cerr;
-				stream << "\n\n***** Test run for execution model " << toString(model)
-				       << " returned exit status " << exitStatus << " *****\n" << std::endl;
-			}
-		};
+			struct RunTests {
+				// Runs the test for a single execution model.
+				int runTests(const char * executable, Testing::ExecutionModel model) {
+					const int exitStatus = boost::process::system(executable, toString(model));
+					std::ostream & stream = exitStatus == 0 ? std::cout : std::cerr;
+					stream << "\n\n***** Test run for execution model " << toString(model)
+					       << " returned exit status " << exitStatus << " *****\n" << std::endl;
+					return exitStatus;
+				}
+			};
 
-		RunTests().runTests(argv[0], Testing::SingleThreaded);
-		RunTests().runTests(argv[0], Testing::WorkerThreads);
-		RunTests().runTests(argv[0], Testing::WorkerProcesses);
-		RunTests().runTests(argv[0], Testing::ProcessPerTest);
-		std::cout << "Finished running tests with all execution models in turn.\n";
-		return 0;
-	} else if (argc > 1) {
-		model = Testing::executionModelFromString(argv[1]);
+			int thisExitStatus;
+			int exitStatus = 0;
 
-		std::cout << "\n\n***** Running tests for command line specified execution model "
-		          << toString(model) << " *****\n\n" << std::flush;
+			thisExitStatus = RunTests().runTests(argv[0], Testing::SingleThreaded);
+			exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
+			thisExitStatus = RunTests().runTests(argv[0], Testing::WorkerThreads);
+			exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
+			thisExitStatus = RunTests().runTests(argv[0], Testing::WorkerProcesses);
+			exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
+			thisExitStatus = RunTests().runTests(argv[0], Testing::ProcessPerTest);
+			exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
+
+			std::cout << "Finished running tests with all execution models in turn.\n";
+
+			return exitStatus;
+		} else {
+			model = Testing::executionModelFromString(argv[1]);
+
+			std::cout << "\n\n***** Running tests for command line specified execution model "
+			          << toString(model) << " *****\n\n" << std::flush;
+		}
 	} else {
 		model =
 			Testing::SingleThreaded;
@@ -128,11 +137,12 @@ int main(int argc, char * argv[]) {
 		.registerGroup<LoggerTest>()
 		.registerGroup<Network::Http::HttpClientTest>()
 		.registerGroup<Network::Http::HttpsClientTest>()
+		.registerGroup<Network::Http::HttpServerTest>()
 		.registerGroup<Network::Http::HttpWebApps::EmailSendingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpWebApps::FileServingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpWebApps::RedirectingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpWebApps::RoutingHttpWebAppTest>()
-		.registerGroup<Network::Http::HttpServerTest>()
+		.registerGroup<Network::Http::WsWebApps::EchoingWsWebAppTest>()
 		.registerGroup<Resource::FileByteReadResourceTest>()
 		.registerGroup<Resource::FileByteWriteResourceTest>()
 		.registerGroup<Resource::FileTest>()

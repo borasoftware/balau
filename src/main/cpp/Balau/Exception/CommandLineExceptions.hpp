@@ -64,26 +64,56 @@ class OptionValueException : public CommandlineException {
 		: CommandlineException(file, line, st, "OptionValue", key) {}
 };
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const OptionValueException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const OptionValueException & e) {
 	return e.what();
 }
 
 } // namespace Balau::Exception
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::CommandlineException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::CommandlineException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::OptionNotFoundException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::OptionNotFoundException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::MissingOptionValueException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::MissingOptionValueException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::MissingFinalValueException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::MissingFinalValueException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::OptionValueException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::OptionValueException & e) {

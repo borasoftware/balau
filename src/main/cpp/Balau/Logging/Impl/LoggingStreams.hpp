@@ -30,7 +30,7 @@ class OStreamLoggingStream : public LoggingStream {
 
 	public: explicit OStreamLoggingStream(std::ostream & stream_) : stream(stream_) {}
 
-	public: void write(const std::string & str) override {
+	public: void write(const LoggingSystem::LoggerString & str) override {
 		stream << str;
 	}
 
@@ -60,7 +60,7 @@ class FileLoggingStream : public LoggingStream {
 	public: FileLoggingStream(std::shared_ptr<System::Clock> clock_, std::string_view uri);
 	public: ~FileLoggingStream() override;
 
-	public: void write(const std::string & str) override {
+	public: void write(const LoggingSystem::LoggerString & str) override {
 		std::shared_ptr<boost::filesystem::ofstream> s = stream;
 		*s << str;
 	}

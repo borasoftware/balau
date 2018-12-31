@@ -18,6 +18,7 @@
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_COMPONENTS
 
 #include <Balau/Dev/Assert.hpp>
+#include <Balau/Type/ToString.hpp>
 
 namespace Balau::Resource {
 
@@ -328,6 +329,18 @@ struct UriComponents {
 ///
 inline bool operator == (const UriComponents & lhs, const UriComponents & rhs) {
 	return lhs.uri == rhs.uri;
+}
+
+///
+/// Print the URI components as a UTF-8 string.
+///
+/// This function does not normalise the URI.
+///
+/// @return a UTF-8 string representing the URI components
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const UriComponents & uriComponents) {
+	return ::toString<AllocatorT>(uriComponents.uri);
 }
 
 ///

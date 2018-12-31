@@ -27,9 +27,27 @@
 ///
 /// Read all the text into a UTF-8 string from the supplied UTF-8 input stream.
 ///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(std::istream & inputStream) {
+	std::istreambuf_iterator<char> eof;
+	return Balau::U8String<AllocatorT>(std::istreambuf_iterator<char>(inputStream), eof);
+}
+
+///
+/// Read all the text into a UTF-8 string from the supplied UTF-8 input stream.
+///
 inline std::string toString(std::istream & inputStream) {
 	std::istreambuf_iterator<char> eof;
 	return std::string(std::istreambuf_iterator<char>(inputStream), eof);
+}
+
+///
+/// Read all the text into a UTF-32 string from the supplied UTF-32 input stream.
+///
+template <typename AllocatorT>
+inline Balau::U32String<AllocatorT> toString32(std::u32istream & inputStream) {
+	std::istreambuf_iterator<char32_t> eof;
+	return Balau::U32String<AllocatorT>(std::istreambuf_iterator<char32_t>(inputStream), eof);
 }
 
 ///

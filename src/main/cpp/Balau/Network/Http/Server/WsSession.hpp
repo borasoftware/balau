@@ -60,8 +60,8 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 		return *serverConfiguration;
 	}
 
-	public: template <class Body, class Allocator>
-	void doAccept(HTTP::request<Body, HTTP::basic_fields<Allocator>> req) {
+	public: template <typename Body, typename AllocatorT>
+	void doAccept(HTTP::request<Body, HTTP::basic_fields<AllocatorT>> req) {
 
 
 		// TODO

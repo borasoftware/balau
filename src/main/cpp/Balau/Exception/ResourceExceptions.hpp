@@ -143,24 +143,54 @@ inline bool operator == (const ZipException & lhs, const ZipException & rhs) {
 
 } // namespace Balau::Exception
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::InvalidUriException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::InvalidUriException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::NotFoundException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::NotFoundException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::FileNotFoundException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::FileNotFoundException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::CouldNotOpenException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::CouldNotOpenException & e) {
 	return e.what();
 }
 
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::CouldNotCreateException & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 inline std::string toString(const Balau::Exception::CouldNotCreateException & e) {
 	return e.what();
+}
+
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Balau::Exception::ZipException & e) {
+	return toString<AllocatorT>(e.what());
 }
 
 inline std::string toString(const Balau::Exception::ZipException & e) {

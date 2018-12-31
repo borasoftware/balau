@@ -11,6 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__ENVIRONMENT_CONFIGURATION_BUILDER
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__ENVIRONMENT_CONFIGURATION_BUILDER
 
+#include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Application/Impl/EnvironmentConfigurationBuilderUtils.hpp>
 
 namespace Balau {
@@ -23,9 +24,9 @@ namespace Impl {
 // The environment configuration build() method delegates to the build method of this class.
 //
 class EnvironmentConfigurationBuilder {
-	public: using PropertyStringHierarchy = Container::ObjectTrie<Impl::PropertyString>;
-	public: using PropertyBindingBuilderFactoryPtrVector = std::vector<Impl::PropertyBindingBuilderFactoryPtr>;
-	public: using BuilderVector = std::vector<std::shared_ptr<Impl::BindingBuilderBase>>;
+	public: using PropertyStringHierarchy = Container::ObjectTrie<PropertyString>;
+	public: using PropertyBindingBuilderFactoryPtrVector = std::vector<PropertyBindingBuilderFactoryPtr>;
+	public: using BuilderVector = std::vector<std::shared_ptr<BindingBuilderBase>>;
 
 	friend class ::Balau::EnvironmentConfiguration;
 	friend struct EnvironmentConfigurationBuilderTest;
@@ -38,8 +39,8 @@ class EnvironmentConfigurationBuilder {
 
 		// Create factories for all type specification source files.
 		for (auto & uri : typeSpecificationsUris) {
-			Impl::PropertyTypeSpecificationVisitorPayload payload;
-			Impl::PropertyTypeSpecificationVisitor visitor(uri);
+			PropertyTypeSpecificationVisitorPayload payload;
+			PropertyTypeSpecificationVisitor visitor(uri);
 			visitor.execute(payload);
 
 			for (auto & factory : payload.bindingBuilderFactoriesVector) {
@@ -68,7 +69,7 @@ class EnvironmentConfigurationBuilder {
 		// or an untyped binding otherwise.
 		//
 		// Subsequently, each of the type specifications that have a default value
-		// and have not been used already to create a binding will be converted
+		// and have not already been used to create a binding will be converted
 		// into a typed binding.
 		//
 
@@ -83,7 +84,7 @@ class EnvironmentConfigurationBuilder {
 	// This call is for the root level.
 	//
 	private: static void appendFactories(PropertyBindingBuilderFactoryPtrVector & bindingBuilderFactoryVector,
-	                                     const Impl::PropertyBindingBuilderFactoryPtr & factory) {
+	                                     const PropertyBindingBuilderFactoryPtr & factory) {
 		if (!factory->isComposite()) {
 			// Simple factory.
 
@@ -114,8 +115,8 @@ class EnvironmentConfigurationBuilder {
 	// Cascading of a source composite builder onto an existing destination composite builder.
 	// This is a recursive operation.
 	//
-	private: static void cascade(Impl::PropertyBindingBuilderFactoryPtr & dst,
-	                             const Impl::PropertyBindingBuilderFactoryPtr & src) {
+	private: static void cascade(PropertyBindingBuilderFactoryPtr & dst,
+	                             const PropertyBindingBuilderFactoryPtr & src) {
 		auto & dstComposite = *static_cast<CompositePropertyBindingBuilderFactory *>(dst.get());
 		const auto & srcComposite = *static_cast<const CompositePropertyBindingBuilderFactory *>(src.get());
 
@@ -179,16 +180,16 @@ class EnvironmentConfigurationBuilder {
 	}
 
 	// A binding builder for environment properties instances.
-	private: class EnvironmentPropertiesBuilder : public Impl::BindingBuilderBase {
+	private: class EnvironmentPropertiesBuilder : public BindingBuilderBase {
 		public: EnvironmentPropertiesBuilder(std::string name, std::shared_ptr<EnvironmentProperties> & instance_)
 			: BindingBuilderBase(std::move(name))
 			, instance(std::move(instance_)) {
-			setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, EnvironmentProperties>>();
+			setKeyType<BindingKeyType<BindingMetaType::Shared, EnvironmentProperties>>();
 		}
 
-		private: std::unique_ptr<Impl::AbstractBinding> build() override {
-			return std::unique_ptr<Impl::AbstractBinding>(
-				new Impl::ProvidedSingletonBinding<EnvironmentProperties>(std::move(key), instance)
+		private: std::unique_ptr<AbstractBinding> build() override {
+			return std::unique_ptr<AbstractBinding>(
+				new ProvidedSingletonBinding<EnvironmentProperties>(std::move(key), instance)
 			);
 		}
 
@@ -202,8 +203,8 @@ class EnvironmentConfigurationBuilder {
 	                                                  const PropertyStringHierarchy & propertyStringsHierarchy) {
 		BuilderVector newBuilders;
 
-		std::deque<const Container::ObjectTrieNode<Impl::PropertyString> *> nodeHierarchy;
-		const Container::ObjectTrieNode<Impl::PropertyString> & node = propertyStringsHierarchy.root();
+		std::deque<const Container::ObjectTrieNode<PropertyString> *> nodeHierarchy;
+		const Container::ObjectTrieNode<PropertyString> & node = propertyStringsHierarchy.root();
 
 		for (size_t m = 0; m < node.count(); m++) {
 			const auto & childNode = node[m];
@@ -219,26 +220,26 @@ class EnvironmentConfigurationBuilder {
 			);
 
 			switch (object.type) {
-				case Impl::PropertyString::Type::Value: {
+				case PropertyString::Type::Value: {
 					if (factoryNodeIter != bindingBuilderFactoryVector.end()) {
 						newBuilders.emplace_back((*factoryNodeIter)->create(object.value));
 					} else {
-						newBuilders.emplace_back(Impl::ValuePropertyBindingBuilderFactory<std::string>{object.name}.create(object.value));
+						newBuilders.emplace_back(ValuePropertyBindingBuilderFactory<std::string>{object.name}.create(object.value));
 					}
 
 					break;
 				}
 
-				case Impl::PropertyString::Type::Composite: {
+				case PropertyString::Type::Composite: {
 					if (factoryNodeIter != bindingBuilderFactoryVector.end() && !(*factoryNodeIter)->isComposite()) {
-						Impl::InjectorLogger::log.warn(
+						InjectorLogger::log.warn(
 							"Typed property factory declaration found for composite environment configuration"
 							"node (property name hierarchy = {}). Please remove this typed property factory "
 							"declaration from the associated environment configuration class in order to avoid "
 							"this warning message."
 							, ::toString(
-								Util::Containers::map<std::string, const Container::ObjectTrieNode<Impl::PropertyString> *>(
-									nodeHierarchy, [] (const Container::ObjectTrieNode<Impl::PropertyString> * node) {
+								Util::Containers::map<std::string, const Container::ObjectTrieNode<PropertyString> *>(
+									nodeHierarchy, [] (const Container::ObjectTrieNode<PropertyString> * node) {
 										return node->value.name;
 									}
 								)
@@ -247,24 +248,24 @@ class EnvironmentConfigurationBuilder {
 					}
 
 					if (factoryNodeIter != bindingBuilderFactoryVector.end()) {
-						auto childLevel = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);
+						auto childLevel = std::unique_ptr<BindingMap>(new BindingMap);
 						auto & ptr = *factoryNodeIter;
 						const auto & compositeBindingBuilderFactory = *static_cast<const CompositePropertyBindingBuilderFactory *>(ptr.get());
 						Util::Vectors::move(newBuilders, buildProvidedValues(compositeBindingBuilderFactory.children, childLevel, nodeHierarchy));
 						auto instance = std::shared_ptr<EnvironmentProperties>(new EnvironmentProperties(std::move(childLevel)));
-						newBuilders.emplace_back(std::shared_ptr<Impl::BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance)));
+						newBuilders.emplace_back(std::shared_ptr<BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance)));
 					} else {
 						// No composite factory is defined. All descendant value properties will be created as strings.
-						auto childLevel = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);
+						auto childLevel = std::unique_ptr<BindingMap>(new BindingMap);
 						Util::Vectors::move(newBuilders, buildProvidedValues(PropertyBindingBuilderFactoryPtrVector(), childLevel, nodeHierarchy));
 						auto instance = std::shared_ptr<EnvironmentProperties>(new EnvironmentProperties(std::move(childLevel)));
-						newBuilders.emplace_back(std::shared_ptr<Impl::BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance)));
+						newBuilders.emplace_back(std::shared_ptr<BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance)));
 					}
 
 					break;
 				}
 
-				case Impl::PropertyString::Type::NotSet: {
+				case PropertyString::Type::NotSet: {
 					ThrowBalauException(
 						Exception::BugException
 					, "Unset property string type occurred during environment configuration processing."
@@ -280,8 +281,8 @@ class EnvironmentConfigurationBuilder {
 
 	// Create the builders for an intermediate level from property values.
 	private: static BuilderVector buildProvidedValues(const PropertyBindingBuilderFactoryPtrVector & bindingBuilderFactoryVector,
-	                                                  std::unique_ptr<Impl::BindingMap> & level,
-	                                                  std::deque<const Container::ObjectTrieNode<Impl::PropertyString> *> & nodeHierarchy) {
+	                                                  std::unique_ptr<BindingMap> & level,
+	                                                  std::deque<const Container::ObjectTrieNode<PropertyString> *> & nodeHierarchy) {
 		BuilderVector newBuilders;
 
 		const auto & node = *nodeHierarchy.back();
@@ -300,9 +301,9 @@ class EnvironmentConfigurationBuilder {
 			);
 
 			switch (object.type) {
-				case Impl::PropertyString::Type::Value: {
+				case PropertyString::Type::Value: {
 					if (factoryNodeIter == bindingBuilderFactoryVector.end()) {
-						auto builder = Impl::ValuePropertyBindingBuilderFactory<std::string>{object.name}.create(object.value);
+						auto builder = ValuePropertyBindingBuilderFactory<std::string>{object.name}.create(object.value);
 						auto key = builder->getKey();
 						level->put(key, builder->build());
 					} else {
@@ -314,16 +315,16 @@ class EnvironmentConfigurationBuilder {
 					break;
 				}
 
-				case Impl::PropertyString::Type::Composite: {
+				case PropertyString::Type::Composite: {
 					if (factoryNodeIter != bindingBuilderFactoryVector.end() && !(*factoryNodeIter)->isComposite()) {
-						Impl::InjectorLogger::log.warn(
+						InjectorLogger::log.warn(
 							"Typed property factory declaration found for composite environment configuration"
 							"node (property name hierarchy = {}). Please remove this typed property factory "
 							"declaration from the associated environment configuration class in order to avoid "
 							"this warning message."
 							, ::toString(
-								Util::Containers::map<std::string, const Container::ObjectTrieNode<Impl::PropertyString> *>(
-									nodeHierarchy, [] (const Container::ObjectTrieNode<Impl::PropertyString> * node) {
+								Util::Containers::map<std::string, const Container::ObjectTrieNode<PropertyString> *>(
+									nodeHierarchy, [] (const Container::ObjectTrieNode<PropertyString> * node) {
 										return node->value.name;
 									}
 								)
@@ -332,20 +333,20 @@ class EnvironmentConfigurationBuilder {
 					}
 
 					if (factoryNodeIter != bindingBuilderFactoryVector.end()) {
-						auto childLevel = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);
+						auto childLevel = std::unique_ptr<BindingMap>(new BindingMap);
 						auto & ptr = *factoryNodeIter;
 						const auto & compositeBindingBuilderFactory = *static_cast<const CompositePropertyBindingBuilderFactory *>(ptr.get());
 						Util::Vectors::move(newBuilders, buildProvidedValues(compositeBindingBuilderFactory.children, childLevel, nodeHierarchy));
 						auto instance = std::shared_ptr<EnvironmentProperties>(new EnvironmentProperties(std::move(childLevel)));
-						auto builder = std::shared_ptr<Impl::BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance));
+						auto builder = std::shared_ptr<BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance));
 						auto key = builder->getKey();
 						level->put(key, builder->build());
 					} else {
 						// No composite factory is defined. All descendant value properties will be created as strings.
-						auto childLevel = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);
+						auto childLevel = std::unique_ptr<BindingMap>(new BindingMap);
 						Util::Vectors::move(newBuilders, buildProvidedValues(PropertyBindingBuilderFactoryPtrVector(), childLevel, nodeHierarchy));
 						auto instance = std::shared_ptr<EnvironmentProperties>(new EnvironmentProperties(std::move(childLevel)));
-						auto builder = std::shared_ptr<Impl::BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance));
+						auto builder = std::shared_ptr<BindingBuilderBase>(new EnvironmentPropertiesBuilder(childNode.value.name, instance));
 						auto key = builder->getKey();
 						level->put(key, builder->build());
 					}
@@ -353,7 +354,7 @@ class EnvironmentConfigurationBuilder {
 					break;
 				}
 
-				case Impl::PropertyString::Type::NotSet: {
+				case PropertyString::Type::NotSet: {
 					ThrowBalauException(
 						Exception::BugException
 					, "Unset property string type occurred during environment configuration processing."
@@ -394,7 +395,7 @@ class EnvironmentConfigurationBuilder {
 	// Create the builders for an intermediate level from default values.
 	private: static BuilderVector buildDefaultValues(BuilderVector & builders,
 	                                                 std::deque<std::string> & nameHierarchy,
-	                                                 const Impl::PropertyBindingBuilderFactoryPtr & f) {
+	                                                 const PropertyBindingBuilderFactoryPtr & f) {
 		BuilderVector newBuilders;
 
 		const auto & compositeFactory = *static_cast<const CompositePropertyBindingBuilderFactory *>(f.get());
@@ -429,7 +430,7 @@ class EnvironmentConfigurationBuilder {
 						compositeInstance = builder->instance.get();
 					} else {
 						// Create a new environment properties instance.
-						auto level = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);
+						auto level = std::unique_ptr<BindingMap>(new BindingMap);
 
 						std::shared_ptr<EnvironmentProperties> newCompositeInstance = std::shared_ptr<EnvironmentProperties>(
 							new EnvironmentProperties(std::move(level))
@@ -438,7 +439,7 @@ class EnvironmentConfigurationBuilder {
 						compositeInstance = newCompositeInstance.get();
 
 						builders.emplace_back(
-							std::shared_ptr<Impl::BindingBuilderBase>(
+							std::shared_ptr<BindingBuilderBase>(
 								new EnvironmentPropertiesBuilder(firstName, newCompositeInstance)
 							)
 						);
@@ -454,27 +455,27 @@ class EnvironmentConfigurationBuilder {
 							compositeInstance = compositeInstance->getComposite(name).get();
 						} else {
 							// Create a new environment properties instance.
-							auto childLevel = std::unique_ptr<Impl::BindingMap>(new Impl::BindingMap);
+							auto childLevel = std::unique_ptr<BindingMap>(new BindingMap);
 
 							auto newCompositeInstance = std::shared_ptr<EnvironmentProperties>(
 								new EnvironmentProperties(std::move(childLevel))
 							);
 
-							auto binding = std::unique_ptr<Impl::AbstractBinding>(
-								new Impl::ProvidedSingletonBinding<EnvironmentProperties>(
-									Impl::BindingKey::createSharedKey<EnvironmentProperties>(name), newCompositeInstance
+							auto binding = std::unique_ptr<AbstractBinding>(
+								new ProvidedSingletonBinding<EnvironmentProperties>(
+									BindingKey::createSharedKey<EnvironmentProperties>(name), newCompositeInstance
 								)
 							);
 
-							auto * bindingMap = const_cast<Impl::BindingMap *>(compositeInstance->bindings.get());
+							auto * bindingMap = const_cast<BindingMap *>(compositeInstance->bindings.get());
 							compositeInstance = newCompositeInstance.get();
-							bindingMap->put(Impl::BindingKey::createSharedKey<EnvironmentProperties>(name), std::move(binding));
+							bindingMap->put(BindingKey::createSharedKey<EnvironmentProperties>(name), std::move(binding));
 						}
 
 						++iter;
 					}
 
-					auto * bindingMap = const_cast<Impl::BindingMap *>(compositeInstance->bindings.get());
+					auto * bindingMap = const_cast<BindingMap *>(compositeInstance->bindings.get());
 					bindingMap->put(factory->createKey(), factory->createDefault()->build());
 				}
 			} else {

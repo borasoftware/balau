@@ -93,9 +93,9 @@
 
 		<h2>File server</h2>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.hpp</para>
 
-		<para>Environment configuration property name: <ref url="Environment/http.server/http/files">files</ref></para>
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server/http/files">files</ref></para>
 
 		<para>The file serving HTTP web application serves files from a directory on the local file system.</para>
 
@@ -103,9 +103,9 @@
 
 		<h2>Email sender</h2>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp</para>
 
-		<para>Environment configuration property name: <ref url="Environment/http.server/http/email.sender">email.sender</ref></para>
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server/http/email.sender">email.sender</ref></para>
 
 		<para>The email sending HTTP web application sends an email with a body generated from the form parameters of a POST request. This can be useful for creating a contact page.</para>
 
@@ -113,9 +113,9 @@
 
 		<h2>Redirector</h2>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebApp.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebApp.hpp</para>
 
-		<para>Environment configuration property name: <ref url="Environment/http.server/http/redirections">redirections</ref></para>
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server/http/redirections">redirections</ref></para>
 
 		<para>The redirecting HTTP web application performs 301 or 302 redirections for specified locations.</para>
 
@@ -123,9 +123,9 @@
 
 		<h2>Canned</h2>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/CannedHttpWebApp.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpWebApps/CannedHttpWebApp.hpp</para>
 
-		<para>Environment configuration property name: <ref url="Environment/http.server/http/canned">canned</ref></para>
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server/http/canned">canned</ref></para>
 
 		<para>The canned HTTP web application serves fixed responses for GET, HEAD, and POST requests.</para>
 
@@ -133,9 +133,9 @@
 
 		<h2>Failing</h2>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/FailingHttpWebApp.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpWebApps/FailingHttpWebApp.hpp</para>
 
-		<para>Environment configuration property name: <ref url="Environment/http.server/http/failing">failing</ref></para>
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server/http/failing">failing</ref></para>
 
 		<para>The failing HTTP web application returns HTTP 404 responses for all requests.</para>
 
@@ -143,9 +143,9 @@
 
 		<h1>Routing</h1>
 
-		<para class="cpp-define-statement"><emph><strong>#include &lt;Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.hpp></strong></emph></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.hpp</para>
 
-		<para>Environment configuration property name: <emph><strong class="cpp-define-statement">n/a</strong></emph></para>
+		<para class="cpp-define-statement">Environment configuration: n/a</para>
 
 		<para><emph>The current routing web application may be replaced by a regular expression based routing web application in the future.</emph></para>
 

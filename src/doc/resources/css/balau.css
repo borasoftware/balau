@@ -26,6 +26,8 @@
 
 .cpp-define-statement {
 	color: #880;
+	font-weight: bold;
+	font-style: italic;
 }
 
 h3 {

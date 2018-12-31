@@ -143,7 +143,7 @@ class ZipEntry : public Uri {
 	///
 	/// @throw ZipException if the resource could not be created
 	///
-	public: ZipEntryByteReadResource getByteReadResource() {
+	public: ZipEntryByteReadResource getByteReadResource() const {
 		return ZipEntryByteReadResource(*this);
 	}
 
@@ -152,15 +152,15 @@ class ZipEntry : public Uri {
 	///
 	/// @throw ZipException if the resource could not be created
 	///
-	public: ZipEntryUtf8To32ReadResource getUtf8To32ReadResource() {
+	public: ZipEntryUtf8To32ReadResource getUtf8To32ReadResource() const {
 		return ZipEntryUtf8To32ReadResource(*this);
 	}
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() override {
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
 		return std::unique_ptr<ByteReadResource>(new ZipEntryByteReadResource(*this));
 	}
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() override {
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
 		return std::unique_ptr<Utf8To32ReadResource>(new ZipEntryUtf8To32ReadResource(*this));
 	}
 
@@ -176,7 +176,7 @@ class ZipEntry : public Uri {
 		return false;
 	}
 
-	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() override {
+	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
 		ThrowBalauException(Exception::NotImplementedException, "Zip entry URIs do not have a recursive iterator");
 	}
 

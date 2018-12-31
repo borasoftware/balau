@@ -20,7 +20,7 @@
 		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
 		<copyright>Copyright (C) 2018 Bora Software (contact@borasoftware.com)</copyright>
 
-		<title text="Balau core C++ library - http.server -> ws" />
+		<title text="Balau core C++ library - http.server -> ws - environment configuration specification" />
 
 		<script src="../bdml/js/Comments.js" type="text/javascript" />
 		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
@@ -37,13 +37,9 @@
 
 		<para>The configuration of each specified WebSockets web application must have a <emph>location</emph> property (of type string). The <emph>location</emph> property corresponds to the path or set of paths which will trigger the HTTP upgrade request which will subsequently be handled by the specified web application.</para>
 
-		<h1 toc='false'>Ancestor</h1>
-
-		<para>The <emph>ws</emph> composite property is contained within  <ref url="Environment/http.server">http.server</ref>.</para>
-
 		<h1 toc='false'>Simple configuration</h1>
 
-		<para>The <emph>ws</emph> composite property does not contain any simple configuration properties.</para>
+		<para>The <emph>ws</emph> composite property does not contain any value properties.</para>
 
 		<h1 toc='false'>Composite configuration</h1>
 
