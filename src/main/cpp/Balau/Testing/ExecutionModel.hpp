@@ -120,24 +120,18 @@ inline std::string toString(ExecutionModel model) {
 /// The string is parsed in order to obtain the execution model enum value.
 /// The case is ignored.
 ///
-inline ExecutionModel executionModelFromString(const std::string & model) {
-	if (Util::Strings::equalsIgnoreCase(model, "SingleThreaded")) {
-		return SingleThreaded;
+inline void fromString(ExecutionModel & model, const std::string & value) {
+	if (Util::Strings::equalsIgnoreCase(value, "SingleThreaded")) {
+		model = SingleThreaded;
+	} else if (Util::Strings::equalsIgnoreCase(value, "WorkerThreads")) {
+		model = WorkerThreads;
+	} else if (Util::Strings::equalsIgnoreCase(value, "WorkerProcesses")) {
+		model = WorkerProcesses;
+	} else if (Util::Strings::equalsIgnoreCase(value, "ProcessPerTest")) {
+		model = ProcessPerTest;
+	} else {
+		ThrowBalauException(Exception::BugException, "Unknown execution model: " + value);
 	}
-
-	if (Util::Strings::equalsIgnoreCase(model, "WorkerThreads")) {
-		return WorkerThreads;
-	}
-
-	if (Util::Strings::equalsIgnoreCase(model, "WorkerProcesses")) {
-		return WorkerProcesses;
-	}
-
-	if (Util::Strings::equalsIgnoreCase(model, "ProcessPerTest")) {
-		return ProcessPerTest;
-	}
-
-	ThrowBalauException(Exception::BugException, "Unknown execution model: " + model);
 }
 
 } // namespace Balau::Testing

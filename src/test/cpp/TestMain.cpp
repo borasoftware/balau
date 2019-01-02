@@ -102,7 +102,7 @@ int main(int argc, char * argv[]) {
 
 			return exitStatus;
 		} else {
-			model = Testing::executionModelFromString(argv[1]);
+			fromString(model, argv[1]);
 
 			std::cout << "\n\n***** Running tests for command line specified execution model "
 			          << toString(model) << " *****\n\n" << std::flush;
