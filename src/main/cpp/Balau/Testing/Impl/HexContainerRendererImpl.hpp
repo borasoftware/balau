@@ -31,7 +31,7 @@ std::string renderAsHex(const ContainerA<A> & actual, const ContainerE<E> & expe
 	for (size_t m = 0; m < size; m++) {
 		size_t len;
 
-		len = toString(m).length();
+		len = ::toString(m).length();
 		if (firstColumnWidth < len) {
 			firstColumnWidth = len;
 		}

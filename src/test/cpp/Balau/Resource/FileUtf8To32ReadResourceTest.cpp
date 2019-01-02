@@ -33,8 +33,8 @@ void FileUtf8To32ReadResourceTest::test() {
 	const std::u32string expectedStart = U"# @formatter:off\n";
 	const std::u32string expectedEnd = U"balau.network   = level: debug\n";
 
-	auto actualFileData = ::toString32(fileReadStream);
-	auto actualUriData = ::toString32(uriReadStream);
+	auto actualFileData = toString32(fileReadStream);
+	auto actualUriData = toString32(uriReadStream);
 
 	assertThat(actualFileData, startsWith(expectedStart));
 	assertThat(actualUriData, startsWith(expectedStart));

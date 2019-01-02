@@ -38,8 +38,8 @@ void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_, const 
 	std::u32istream & httpsReadStream = httpsReadResource.readStream();
 	std::u32istream & uriReadStream = uriReadResource->readStream();
 
-	auto actualHttpsData = ::toString32(httpsReadStream);
-	auto actualUriData = ::toString32(uriReadStream);
+	auto actualHttpsData = toString32(httpsReadStream);
+	auto actualUriData = toString32(uriReadStream);
 
 	assertThat(actualHttpsData, startsWith(expectedStart));
 	assertThat(actualUriData, startsWith(expectedStart));

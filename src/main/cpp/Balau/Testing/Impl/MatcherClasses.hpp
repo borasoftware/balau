@@ -110,12 +110,16 @@ template <typename E, typename F> class ThrowExpectationWithFunction {
 
 template <typename AllocatorT, typename E, typename F>
 inline Balau::U8String<AllocatorT> toString(const ThrowExpectationWithFunction<E, F> & e) {
-	return ::toString<AllocatorT>(e.expectedException);
+	using ::toString;
+
+	return toString<AllocatorT>(e.expectedException);
 }
 
 template <typename E, typename F>
 inline std::string toString(const ThrowExpectationWithFunction<E, F> & e) {
-	return ::toString(e.expectedException);
+	using ::toString;
+
+	return toString(e.expectedException);
 }
 
 // Holds an exception type for the Hamcrest like API.

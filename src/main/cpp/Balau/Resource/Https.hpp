@@ -39,6 +39,16 @@ class Https : public Url {
 	public: explicit Https(std::string uri_) : Url(std::move(uri_)) {}
 
 	///
+	/// Create an HTTPS URI from the supplied URI string.
+	///
+	public: explicit Https(std::string_view uri_) : Url(uri_) {}
+
+	///
+	/// Create an HTTPS URI from the supplied URI string.
+	///
+	public: explicit Https(const char * uri_) : Url(uri_) {}
+
+	///
 	/// Create an HTTPS URI by copying the supplied instance.
 	///
 	public: Https(const Https & copy) = default;
@@ -91,6 +101,10 @@ class Https : public Url {
 		return false;
 	}
 
+	public: template <typename AllocatorT> Balau::U8String<AllocatorT> toRawString() const {
+		return ::toString<AllocatorT>(uri);
+	}
+
 	///
 	/// Get a byte read resource for the HTTPS source.
 	///
@@ -133,6 +147,16 @@ class Https : public Url {
 		dispatcher.dispatch(*this);
 	}
 };
+
+///
+/// Print the HTTPs URL as a UTF-8 string.
+///
+/// @return a UTF-8 string containing the HTTPs URL
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Https & https) {
+	return https.toRawString<AllocatorT>();
+}
 
 } // namespace Balau::Resource
 

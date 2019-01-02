@@ -323,9 +323,35 @@
 
 		<para>To use any of the Balau universal to-string functions, include the <emph>&lt;ToString.hpp&gt;</emph> header file in your code. As this header is already included in the <emph>&lt;BalauException.hpp&gt;</emph> header which is subsequently included in the <emph>&lt;Logger.hpp&gt;</emph> header, use of the logger or features that throw Balau exceptions will automatically include the <emph>&lt;ToString.hpp&gt;</emph> header file.</para>
 
-		<para>In order to provide universal to-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>toString</emph>, <emph>toString16</emph>, or <emph>toString32</emph> function overload in the same namespace as your custom type. The C++ name resolution system will resolve the function overload via the parameter type of the call.</para>
+		<para>In order to provide universal to-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>toString</emph>, <emph>toString16</emph>, or <emph>toString32</emph> function overload in the same namespace as your custom type. C++ argument-dependent lookup will resolve the function overload via the parameter type in the call.</para>
 
-		<para>When calling the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> functions from a namespace that contains to-string function definitions, it may be necessary to call the functions with the global namespace prefix (<emph>::toString</emph>, <emph>::toString16</emph>, and <emph>::toString32</emph>), in order to ensure the correct overload is picked up from the local context.</para>
+		<para>When calling the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> functions from a namespace that contains to-string function definitions in the namespace or a intermediate parent namespace, it may be necessary to import the the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
+
+		<code lang="C++">
+			// Example of using the toString function with a using directive.
+
+			struct G {};
+
+			std::string toString(G) { return "G"; }
+
+			namespace N {
+
+			class L {};
+
+			std::string toString(L) { return "L"; }
+
+			void foo() {
+				using ::toString;
+
+				std::cout &lt;&lt; toString(L())     // Local scope.
+				          &lt;&lt; toString(G())     // ADL.
+				          &lt;&lt; toString(2)       // Requires using directive.
+				          &lt;&lt; toString("hello") // Requires using directive.
+				          &lt;&lt; "\n";
+			}
+
+			} // namespace N
+		</code>
 
 		<h2>Container to-string</h2>
 
@@ -404,9 +430,9 @@
 		<para>The signatures of the universal UTF-8, UTF-16, and UTF-32 from-string functions are:</para>
 
 		<code lang="C++">
-			void fromString(T &amp; destination, const std::string &amp; value);
-			void fromString16(T &amp; destination, const std::u16string &amp; value);
-			void fromString32(T &amp; destination, const std::u32string &amp; value);
+			void fromString(T &amp; destination, std::string_view value);
+			void fromString16(T &amp; destination, std::u16string_view value);
+			void fromString32(T &amp; destination, std::u32string_view value);
 		</code>
 
 		<para>where <emph>T</emph> is the parameter type.</para>
@@ -417,9 +443,9 @@
 
 		<para>To use any of the Balau universal from-string functions, include the <emph>&lt;FromString.hpp&gt;</emph> header file in your code.</para>
 
-		<para>In order to provide universal from-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>fromString</emph>, <emph>fromString16</emph>, or <emph>fromString32</emph> function overload in the same namespace as your custom type. The C++ name resolution system will resolve the function overload via the parameter type of the call.</para>
+		<para>In order to provide universal from-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>fromString</emph>, <emph>fromString16</emph>, or <emph>fromString32</emph> function overload in the same namespace as your custom type. C++ argument-dependent lookup will resolve the function overload via the parameter type in the call.</para>
 
-		<para>When calling the <emph>fromString</emph>, <emph>fromString16</emph>, and <emph>fromString32</emph> functions from a namespace that contains from-string function definitions, it may be necessary to call the functions with the global namespace prefix (<emph>::fromString</emph>, <emph>::fromString16</emph>, and <emph>::fromString32</emph>), in order to ensure the correct overload is picked up from the local context.</para>
+		<para>When calling the <emph>fromString</emph>, <emph>fromString16</emph>, and <emph>fromString32</emph> functions from a namespace that contains from-string function definitions in the namespace or a intermediate parent namespace, it may be necessary to import the the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
 
 		<h2>From-string template class</h2>
 

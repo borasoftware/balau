@@ -444,17 +444,19 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	}
 
 	private: static std::shared_ptr<Resource::Uri> verifyPropertyFileExists(const Resource::File & propertyFile) {
+		using ::toString;
+
 		if (!propertyFile.exists()) {
 			ThrowBalauException(
 				  Exception::EnvironmentConfigurationException
-				, ::toString("The property file does not exist: ", propertyFile)
+				, toString("The property file does not exist: ", propertyFile)
 			);
 		}
 
 		if (!propertyFile.isRegularFile()) {
 			ThrowBalauException(
 				  Exception::EnvironmentConfigurationException
-				, ::toString("The property file is not a regular file: ", propertyFile)
+				, toString("The property file is not a regular file: ", propertyFile)
 			);
 		}
 

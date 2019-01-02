@@ -402,8 +402,8 @@ void LoggerTest::functionBasedLogging() {
 
 	log1.trace([&i, &j] () { return ::toString("TR i + j = ", i * j); });
 	log1.debug([&i, &j] () { return ::toString("DE i + j = ", i * j); });
-	log1.info([&i, &j] () { return ::toString("IN i + j = ", i * j); });
-	log1.warn([&i, &j] () { return ::toString("WA i + j = ", i * j); });
+	log1.info([&i, &j] ()  { return ::toString("IN i + j = ", i * j); });
+	log1.warn([&i, &j] ()  { return ::toString("WA i + j = ", i * j); });
 	log1.error([&i, &j] () { return ::toString("ER i + j = ", i * j); });
 
 	Logger::flushAll();

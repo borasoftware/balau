@@ -51,6 +51,10 @@ class Url : public Uri {
 
 	protected: explicit Url(std::string && uri_) : uri(std::move(uri_)) {}
 
+	protected: explicit Url(std::string_view uri_) : uri(std::string(uri_)) {}
+
+	protected: explicit Url(const char * uri_) : uri(std::string(uri_)) {}
+
 	protected: Url(const Url & copy) : uri(copy.uri) {}
 
 	protected: Url(Url && rhs) noexcept : uri(std::move(rhs.uri)) {}

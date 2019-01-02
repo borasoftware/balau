@@ -244,7 +244,7 @@ inline std::string toString(const Uri & uri) {
 /// @param uri the unique pointer container to place the new URI instance into
 /// @param value the input string
 ///
-void fromString(std::unique_ptr<Uri> & uri, const std::string & value);
+void fromString(std::unique_ptr<Uri> & uri, std::string_view value);
 
 ///
 /// Create a shared pointer URI from the supplied string.
@@ -252,7 +252,7 @@ void fromString(std::unique_ptr<Uri> & uri, const std::string & value);
 /// @param uri the shared pointer container to place the new URI instance into
 /// @param value the input string
 ///
-inline void fromString(std::shared_ptr<Uri> & uri, const std::string & value) {
+inline void fromString(std::shared_ptr<Uri> & uri, std::string_view value) {
 	std::unique_ptr<Uri> ptr;
 	fromString(ptr, value);
 	uri = std::shared_ptr<Uri>(std::move(ptr));
@@ -264,23 +264,12 @@ inline void fromString(std::shared_ptr<Uri> & uri, const std::string & value) {
 /// @param uri the shared pointer container to place the new URI instance into
 /// @param value the input string
 ///
-inline void fromString(std::shared_ptr<const Uri> & uri, const std::string & value) {
+inline void fromString(std::shared_ptr<const Uri> & uri, std::string_view value) {
 	std::unique_ptr<Uri> ptr;
 	fromString(ptr, value);
 	uri = std::shared_ptr<const Uri>(std::move(ptr));
 }
 
 } // namespace Balau::Resource
-
-///
-/// Print the URI as a UTF-8 string.
-///
-/// This function does not normalise the URI.
-///
-/// @return a UTF-8 string representing the URI
-///
-inline std::string toString(const Balau::Resource::Uri & uri) {
-	return uri.toRawString();
-}
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI

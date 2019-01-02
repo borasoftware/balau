@@ -235,6 +235,25 @@ class ZipFile : public File {
 	private: std::string password;
 };
 
+///
+/// Print the zip file URI as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the zip file URI
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const ZipFile & zipFile) {
+	return zipFile.toRawString<AllocatorT>();
+}
+
+///
+/// Print the zip file URI as a UTF-8 string.
+///
+/// @return a UTF-8 string representing the zip file URI
+///
+inline std::string toString(const ZipFile & zipFile) {
+	return zipFile.toRawString();
+}
+
 } // namespace Balau::Resource
 
 namespace std { // NOLINT
@@ -252,24 +271,5 @@ template <> struct equal_to<Balau::Resource::ZipFile> {
 };
 
 } // namespace std
-
-///
-/// Print the zip file URI as a UTF-8 string.
-///
-/// @return a UTF-8 string representing the zip file URI
-///
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Resource::ZipFile & zipFile) {
-	return zipFile.toRawString<AllocatorT>();
-}
-
-///
-/// Print the zip file URI as a UTF-8 string.
-///
-/// @return a UTF-8 string representing the zip file URI
-///
-inline std::string toString(const Balau::Resource::ZipFile & zipFile) {
-	return zipFile.toRawString();
-}
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE

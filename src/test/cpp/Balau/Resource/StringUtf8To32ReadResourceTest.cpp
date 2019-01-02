@@ -23,7 +23,7 @@ namespace Resource {
 
 void StringUtf8To32ReadResourceTest::test() {
 	const std::string text = "some random text";
-	const std::u32string expected = ::toString32("some random text");
+	const std::u32string expected = toString32("some random text");
 
 	StringUri uri("string: " + text);
 
@@ -33,8 +33,8 @@ void StringUtf8To32ReadResourceTest::test() {
 	std::u32istream & stringReadStream = stringReadResource.readStream();
 	std::u32istream & uriReadStream = uriReadResource->readStream();
 
-	auto actualStringData = ::toString32(stringReadStream);
-	auto actualUriData = ::toString32(uriReadStream);
+	auto actualStringData = toString32(stringReadStream);
+	auto actualUriData = toString32(uriReadStream);
 
 	assertThat(actualStringData, is(expected));
 	assertThat(actualUriData, is(expected));

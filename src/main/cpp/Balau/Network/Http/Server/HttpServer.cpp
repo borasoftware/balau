@@ -371,7 +371,7 @@ void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
 	if (!listener->isOpen()) {
 		ThrowBalauException(
 			  Exception::NetworkException
-			, "Listener on " + ::toString(state->endpoint.address()) + ":"
+			, "Listener on " + toString(state->endpoint.address()) + ":"
 			+ ::toString(state->endpoint.port()) + " did not initialise correctly."
 		);
 	}

@@ -120,13 +120,4 @@ struct SourceCodeLocation {
 
 } // namespace Balau
 
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(Balau::LoggingLevel level) {
-	return Balau::toString<AllocatorT>(level);
-}
-
-inline std::string toString(Balau::LoggingLevel level) {
-	return Balau::toString(level);
-}
-
 #endif // COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGING_LEVEL

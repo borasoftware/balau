@@ -106,7 +106,7 @@ class TestRunnerExecutor {
 		std::string outputStr = output.str();
 		const auto ns = (long long) duration.count();
 
-		//writer << ("CHILD " + toString(getpid()) + " enqueue result for index " + toString(testToRun.testIndex) + "\n");
+		//writer << ("CHILD " + ::toString(getpid()) + " enqueue result for index " + ::toString(testToRun.testIndex) + "\n");
 
 		resultQueue->enqueue(
 			  TestResult(ns, testToRun.group->groupIndex, testToRun.testIndex, success, std::move(outputStr))

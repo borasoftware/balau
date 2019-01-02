@@ -215,7 +215,9 @@ class BindingKey final {
 
 template <typename AllocatorT>
 inline U8String<AllocatorT> toString(const BindingKey & bindingKey) {
-	return ::toString<AllocatorT>(
+	using ::toString;
+
+	return toString<AllocatorT>(
 		"{ "
 		, demangleBindingKeyTypeString(boost::core::demangle(bindingKey.getType().name()))
 		, ", \""
@@ -398,24 +400,6 @@ inline bool operator == (const BindingKeyView & lhs, const BindingKeyView & rhs)
 } // namespace Impl
 
 } // namespace Balau
-
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Impl::BindingKey & bindingKey) {
-	return Balau::Impl::toString<AllocatorT>(bindingKey);
-}
-
-inline std::string toString(const Balau::Impl::BindingKey & bindingKey) {
-	return Balau::Impl::toString(bindingKey);
-}
-
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Impl::BindingMetaType metaType) {
-	return Balau::Impl::toString<AllocatorT>(metaType);
-}
-
-inline std::string toString(const Balau::Impl::BindingMetaType metaType) {
-	return Balau::Impl::toString(metaType);
-}
 
 namespace std { // NOLINT
 

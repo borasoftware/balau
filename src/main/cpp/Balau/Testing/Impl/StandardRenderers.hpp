@@ -34,10 +34,12 @@ std::string render(const A & actual, const E & expected) {
 		return output;
 	};
 
+	using ::toString;
+
 	// If compilation fails here, define a toString function in the
 	// global namespace for the type that is failing to resolve.
-	const std::string actualString = ::toString(actual);
-	const std::string expectedString = ::toString(expected);
+	const std::string actualString = toString(actual);
+	const std::string expectedString = toString(expected);
 
 	std::istringstream actualStream(actualString);
 	std::istringstream expectedStream(expectedString);
@@ -58,7 +60,7 @@ std::string render(const A & actual, const E & expected) {
 
 		++actualLineCount;
 
-		size_t lineNumberWidth = ::toString(actualLineCount).length();
+		size_t lineNumberWidth = toString(actualLineCount).length();
 		if (maxLineNumberWidth < lineNumberWidth) {
 			maxLineNumberWidth = lineNumberWidth;
 		}
@@ -67,7 +69,7 @@ std::string render(const A & actual, const E & expected) {
 	while (std::getline(expectedStream, expectedLine)) {
 		++expectedLineCount;
 
-		size_t lineNumberWidth = ::toString(expectedLineCount).length();
+		size_t lineNumberWidth = toString(expectedLineCount).length();
 		if (maxLineNumberWidth < lineNumberWidth) {
 			maxLineNumberWidth = lineNumberWidth;
 		}
@@ -110,11 +112,11 @@ std::string render(const A & actual, const E & expected) {
 		std::getline(actualStream, actualLine);
 		std::getline(expectedStream, expectedLine);
 
-		builder << std::right << std::setw((int) maxLineNumberWidth) << ::toString(lineCount)
+		builder << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
 		        << "  "
 		        << std::left << std::setw((int) maxActualWidth) << replaceNonPrintableCharacters(actualLine)
 		        << "  " << (actualLine == expectedLine ? "==" : "!=") << "  "
-		        << std::right << std::setw((int) maxLineNumberWidth) << ::toString(lineCount)
+		        << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
 		        << "  "
 		        << replaceNonPrintableCharacters(expectedLine) << std::endl;
 
@@ -122,11 +124,11 @@ std::string render(const A & actual, const E & expected) {
 	}
 
 	while (std::getline(actualStream, actualLine)) {
-		builder << std::right << std::setw((int) maxLineNumberWidth) << ::toString(lineCount)
+		builder << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
 		        << "  "
 		        << std::left << std::setw((int) maxActualWidth) << replaceNonPrintableCharacters(actualLine)
 		        << "  !=  "
-		        << std::right << std::setw((int) maxLineNumberWidth) << ::toString(lineCount)
+		        << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
 		        << "  "
 		        << std::endl;
 
@@ -136,7 +138,7 @@ std::string render(const A & actual, const E & expected) {
 	while (std::getline(expectedStream, expectedLine)) {
 		builder << std::right
 		        << std::setw((int) maxLineNumberWidth)
-		        << ::toString(lineCount++)
+		        << toString(lineCount++)
 		        << "  ";
 
 		for (size_t m = 0; m < maxActualWidth; m++) {
@@ -165,6 +167,8 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 		return output;
 	};
 
+	using ::toString;
+
 	const size_t actualCount = actual.size();
 	const size_t expectedCount = expected.size();
 
@@ -183,17 +187,17 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 
 		size_t len;
 
-		len = ::toString(m).length();
+		len = toString(m).length();
 		if (columnWidths[0] < len) {
 			columnWidths[0] = len;
 		}
 
-		len = replaceNonPrintableCharacters(::toString(actualElement)).length();
+		len = replaceNonPrintableCharacters(toString(actualElement)).length();
 		if (columnWidths[1] < len) {
 			columnWidths[1] = len;
 		}
 
-		len = replaceNonPrintableCharacters(::toString(expectedElement)).length();
+		len = replaceNonPrintableCharacters(toString(expectedElement)).length();
 		if (columnWidths[2] < len) {
 			columnWidths[2] = len;
 		}
@@ -204,12 +208,12 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 
 		size_t len;
 
-		len = ::toString(m).length();
+		len = toString(m).length();
 		if (columnWidths[0] < len) {
 			columnWidths[0] = len;
 		}
 
-		len = replaceNonPrintableCharacters(::toString(actualElement)).length();
+		len = replaceNonPrintableCharacters(toString(actualElement)).length();
 		if (columnWidths[1] < len) {
 			columnWidths[1] = len;
 		}
@@ -220,12 +224,12 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 
 		size_t len;
 
-		len = ::toString(m).length();
+		len = toString(m).length();
 		if (columnWidths[0] < len) {
 			columnWidths[0] = len;
 		}
 
-		len = replaceNonPrintableCharacters(::toString(expectedElement)).length();
+		len = replaceNonPrintableCharacters(toString(expectedElement)).length();
 		if (columnWidths[2] < len) {
 			columnWidths[2] = len;
 		}
@@ -246,7 +250,7 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 		builder << std::right << std::setw((int) columnWidths[0]) << m << ":  ";
 
 		builder << std::right << std::setw((int) columnWidths[1])
-		        << replaceNonPrintableCharacters(::toString(actualElement));
+		        << replaceNonPrintableCharacters(toString(actualElement));
 
 		if (actualElement == expectedElement) {
 			builder << "    ==    ";
@@ -255,7 +259,7 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 		}
 
 		builder << std::left << std::setw((int) columnWidths[2])
-		        << replaceNonPrintableCharacters(::toString(expectedElement));
+		        << replaceNonPrintableCharacters(toString(expectedElement));
 
 		builder << "\n";
 	}
@@ -266,7 +270,7 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 		builder << std::right << std::setw((int) columnWidths[0]) << m << ":  ";
 
 		builder << std::right << std::setw((int) columnWidths[1])
-		        << replaceNonPrintableCharacters(::toString(actualElement));
+		        << replaceNonPrintableCharacters(toString(actualElement));
 
 		builder << "    !=    \n";
 	}
@@ -279,7 +283,7 @@ std::string renderHelper(const ContainerA<A ...> & actual, const ContainerE<E ..
 		builder << "    !=    ";
 
 		builder << std::left << std::setw((int) columnWidths[2])
-		        << replaceNonPrintableCharacters(::toString(expectedElement));
+		        << replaceNonPrintableCharacters(toString(expectedElement));
 
 		builder << "\n";
 	}

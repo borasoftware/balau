@@ -35,8 +35,8 @@ unsigned short NetworkTesting::initialiseWithFreeTcpPort(std::function<unsigned 
 
 	if (attemptsLeft == 0) {
 		ThrowBalauException(
-			Exception::NetworkException
-		, ::toString("Failed to obtain free port within ", attempts, " attempts.")
+			  Exception::NetworkException
+			, ::toString("Failed to obtain free port within ", attempts, " attempts.")
 		);
 	}
 

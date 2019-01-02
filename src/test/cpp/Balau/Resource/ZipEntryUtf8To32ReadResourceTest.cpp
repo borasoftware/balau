@@ -59,8 +59,8 @@ void ZipEntryUtf8To32ReadResourceTest::test() {
 			std::u32istream & zipEntryReadStream = zipEntryReadResource.readStream();
 			std::u32istream & uriReadStream = uriReadResource->readStream();
 
-			auto actualZipEntryData = ::toString32(zipEntryReadStream);
-			auto actualUriData = ::toString32(uriReadStream);
+			auto actualZipEntryData = toString32(zipEntryReadStream);
+			auto actualUriData = toString32(uriReadStream);
 
 			assertThat(actualZipEntryData, is(expected));
 			assertThat(actualUriData, is(expected));

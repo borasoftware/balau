@@ -48,7 +48,9 @@ class TestWriter {
 	/// @param value the object to write
 	///
 	public: template<typename T> void write(T value) {
-		writeString(::toString(value));
+		using ::toString;
+
+		writeString(toString(value));
 	}
 
 	///

@@ -37,7 +37,17 @@ class Http : public Url {
 	///
 	/// Create an HTTP URI from the supplied URI string.
 	///
-	public: explicit Http(std::string uri_) : Url(std::move(uri_)) {}
+	public: explicit Http(std::string && uri_) : Url(std::move(uri_)) {}
+
+	///
+	/// Create an HTTP URI from the supplied URI string.
+	///
+	public: explicit Http(std::string_view uri_) : Url(uri_) {}
+
+	///
+	/// Create an HTTP URI from the supplied URI string.
+	///
+	public: explicit Http(const char * uri_) : Url(uri_) {}
 
 	///
 	/// Create an HTTP URI by copying the supplied instance.
@@ -92,6 +102,10 @@ class Http : public Url {
 		return false;
 	}
 
+	public: template <typename AllocatorT> Balau::U8String<AllocatorT> toRawString() const {
+		return ::toString<AllocatorT>(uri);
+	}
+
 	///
 	/// Get a byte read resource for the HTTP source.
 	///
@@ -134,6 +148,16 @@ class Http : public Url {
 		dispatcher.dispatch(*this);
 	}
 };
+
+///
+/// Print the HTTP URL as a UTF-8 string.
+///
+/// @return a UTF-8 string containing the HTTP URL
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const Http & http) {
+	return http.toRawString<AllocatorT>();
+}
 
 } // namespace Balau::Resource
 

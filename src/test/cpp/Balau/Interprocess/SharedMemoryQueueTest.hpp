@@ -50,10 +50,6 @@ inline bool operator != (const SMT & lhs, const SMT & rhs) {
 
 } // namespace Balau
 
-inline std::string toString(const Balau::Interprocess::SMT & object) {
-	return "{ " + toString(object.d) + ", " + toString(object.i) + " }";
-}
-
 #include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau {

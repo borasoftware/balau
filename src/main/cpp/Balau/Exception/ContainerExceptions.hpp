@@ -80,49 +80,4 @@ template <typename T> class ItemDoesNotExistException : public BalauException {
 
 } // namespace Balau::Exception
 
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::IndexOutOfRangeException & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-inline std::string toString(const Balau::Exception::IndexOutOfRangeException & e) {
-	return e.what();
-}
-
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::EmptyException & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-inline std::string toString(const Balau::Exception::EmptyException & e) {
-	return e.what();
-}
-
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::SizeException & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-inline std::string toString(const Balau::Exception::SizeException & e) {
-	return e.what();
-}
-
-template <typename AllocatorT, typename T>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::ItemExistsException<T> & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-template <typename T> inline std::string toString(const Balau::Exception::ItemExistsException<T> & e) {
-	return e.what();
-}
-
-template <typename AllocatorT, typename T>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::ItemDoesNotExistException<T> & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-template <typename T> inline std::string toString(const Balau::Exception::ItemDoesNotExistException<T> & e) {
-	return e.what();
-}
-
 #endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS

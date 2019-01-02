@@ -286,7 +286,7 @@ std::string Unzipper::readEntryAsStringImpl(const ZipEntryInfo & info, const std
 		if (cleanName.empty()) {
 			ThrowBalauException(
 				  Exception::ZipException
-				  , "LibZip could not open the entry with index " + ::toString(info.index)
+				, "LibZip could not open the entry with index " + ::toString(info.index)
 				, path
 			);
 		} else {

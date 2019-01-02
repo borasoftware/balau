@@ -81,31 +81,4 @@ class WaitException : public ErrNoException {
 
 } // namespace Balau::Exception
 
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::ErrNoException & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-inline std::string toString(const Balau::Exception::ErrNoException & e) {
-	return e.what();
-}
-
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::ForkException & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-inline std::string toString(const Balau::Exception::ForkException & e) {
-	return e.what();
-}
-
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::WaitException & e) {
-	return toString<AllocatorT>(e.what());
-}
-
-inline std::string toString(const Balau::Exception::WaitException & e) {
-	return e.what();
-}
-
 #endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__SYSTEM_EXCEPTIONS

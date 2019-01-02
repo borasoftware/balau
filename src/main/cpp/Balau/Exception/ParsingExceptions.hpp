@@ -52,13 +52,4 @@ inline std::string toString(const SyntaxErrorException & e) {
 
 } // namespace Balau::Exception
 
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Exception::SyntaxErrorException & e) {
-	return toString<AllocatorT>(e.message, " - ", e.codeSpan);
-}
-
-inline std::string toString(const Balau::Exception::SyntaxErrorException & e) {
-	return e.message + " - " + ::toString(e.codeSpan);
-}
-
 #endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__PARSING_EXCEPTIONS

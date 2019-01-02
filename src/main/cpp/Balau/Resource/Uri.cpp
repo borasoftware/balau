@@ -18,8 +18,8 @@
 
 namespace Balau::Resource {
 
-void fromString(std::unique_ptr<Uri> & uri, const std::string & value) {
-	const std::string scheme = value.substr(0, value.find(':'));
+void fromString(std::unique_ptr<Uri> & uri, std::string_view value) {
+	const auto scheme = value.substr(0, value.find(':'));
 	std::string path;
 
 	if (scheme == "http") {

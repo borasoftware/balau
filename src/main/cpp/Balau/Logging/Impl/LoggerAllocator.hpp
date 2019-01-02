@@ -145,9 +145,11 @@ using LoggerStringVector = std::vector<LoggerString, LoggerAllocator<LoggerStrin
 using LoggerOStringStream = std::basic_ostringstream<char, std::char_traits<char>, LoggerAllocator<char>>;
 
 template <typename T> inline LoggerString toLoggerString(const T & value) {
+	using ::toString;
+
 	// Compilation error? Ensure that a suitable toString<Allocator> function
 	// is available before the logger header file is included.
-	return ::toString<LoggerAllocator<char>>(value);
+	return toString<LoggerAllocator<char>>(value);
 }
 
 inline void startLogAllocationImpl() {
@@ -168,9 +170,11 @@ using LoggerOStringStream = std::ostringstream;
 
 template <typename T>
 inline LoggerString toLoggerString(const T & value) {
+	using ::toString;
+
 	// Compilation error? Ensure that a suitable toString function
 	// is available before the logger header file is included.
-	return ::toString(value);
+	return toString(value);
 }
 
 inline void startLogAllocationImpl() {

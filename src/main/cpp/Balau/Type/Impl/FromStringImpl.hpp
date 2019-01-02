@@ -21,7 +21,7 @@ namespace Balau {
 namespace Impl {
 
 // Checks that the string is not empty and throws a conversion exception if it is.
-inline void validateFromStringValue(const std::string & value) {
+inline void validateFromStringValue(std::string_view value) {
 	if (value.empty()) {
 		ThrowBalauException(
 			Balau::Exception::ConversionException, "Attempt to convert value from empty UTF-8 string."
@@ -30,7 +30,7 @@ inline void validateFromStringValue(const std::string & value) {
 }
 
 // Checks that the string is not empty and throws a conversion exception if it is.
-inline void validateFromString16Value(const std::u16string & value) {
+inline void validateFromString16Value(std::u16string_view value) {
 	if (value.empty()) {
 		ThrowBalauException(
 			Balau::Exception::ConversionException, "Attempt to convert value from empty UTF-16 string."
@@ -39,7 +39,7 @@ inline void validateFromString16Value(const std::u16string & value) {
 }
 
 // Checks that the string is not empty and throws a conversion exception if it is.
-inline void validateFromString32Value(const std::u32string & value) {
+inline void validateFromString32Value(std::u32string_view value) {
 	if (value.empty()) {
 		ThrowBalauException(
 			Balau::Exception::ConversionException, "Attempt to convert value from empty UTF-32 string."
@@ -58,10 +58,12 @@ inline void validateCharacter(char32_t c) {
 }
 
 inline void validateIntegerConversion(const std::string & value, const char * strEnd) {
+	using ::toString;
+
 	if (strEnd != value.c_str() + value.length()) {
 		ThrowBalauException(
 			  Balau::Exception::ConversionException
-			, ::toString("String to integer conversion of \"", value, "\" failed.")
+			, toString("String to integer conversion of \"", value, "\" failed.")
 		);
 	}
 }
@@ -106,59 +108,71 @@ template <typename DstT, typename SrcT> inline DstT safeNumericCast(SrcT n) {
 	return static_cast<DstT>(n);
 }
 
-inline long stringToLong(const std::string & value) {
+//
+// TODO These will be updated with std::from_chars calls such as:
+//   std::from_chars_result result = std::from_chars(value.data(), value.data() + value.length(), n);
+//
+
+inline long stringToLong(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	long n = std::strtol(value.c_str(), &strEnd, 10);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	long n = std::strtol(s.c_str(), &strEnd, 10);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 
-inline long long stringToLongLong(const std::string & value) {
+inline long long stringToLongLong(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	long long n = std::strtoll(value.c_str(), &strEnd, 10);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	long long n = std::strtoll(s.c_str(), &strEnd, 10);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 
-inline unsigned long stringToUnsignedLong(const std::string & value) {
+inline unsigned long stringToUnsignedLong(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	unsigned long n = std::strtoul(value.c_str(), &strEnd, 10);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	unsigned long n = std::strtoul(s.c_str(), &strEnd, 10);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 
-inline unsigned long long stringToUnsignedLongLong(const std::string & value) {
+inline unsigned long long stringToUnsignedLongLong(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	unsigned long long n = std::strtoull(value.c_str(), &strEnd, 10);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	unsigned long long n = std::strtoull(s.c_str(), &strEnd, 10);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 
-inline float stringToFloat(const std::string & value) {
+inline float stringToFloat(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	float n = std::strtof(value.c_str(), &strEnd);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	float n = std::strtof(s.c_str(), &strEnd);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 
-inline double stringToDouble(const std::string & value) {
+inline double stringToDouble(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	double n = std::strtod(value.c_str(), &strEnd);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	double n = std::strtod(s.c_str(), &strEnd);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 
-inline long double stringToLongDouble(const std::string & value) {
+inline long double stringToLongDouble(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
-	long double n = std::strtold(value.c_str(), &strEnd);
-	Impl::validateIntegerConversion(value, strEnd);
+	const auto s = std::string(value);
+	long double n = std::strtold(s.c_str(), &strEnd);
+	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
 

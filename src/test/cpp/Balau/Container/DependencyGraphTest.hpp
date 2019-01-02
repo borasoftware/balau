@@ -25,17 +25,13 @@ inline bool operator == (const Dep & lhs, const Dep & rhs) {
 	return lhs.name == rhs.name;
 }
 
-inline std::string toString(const Balau::Container::Dep & obj) {
+inline std::string toString(const Dep & obj) {
 	return std::string(obj.name);
 }
 
 } // namespace Container
 
 } // namespace Balau
-
-inline std::string toString(const Balau::Container::Dep & obj) {
-	return std::string(obj.name);
-}
 
 namespace std {
 

@@ -675,8 +675,4 @@ class Zipper : public Unzipper {
 
 } // namespace Balau
 
-inline std::string toString(const Balau::Util::ZipEntryInfo & info) {
-	return Balau::Util::toString(info);
-}
-
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION

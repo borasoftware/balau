@@ -226,7 +226,7 @@ class HttpServer {
 	/// Get the address being listened on.
 	///
 	public: std::string getAddress() const {
-		return ::toString(state->endpoint.address());
+		return toString(state->endpoint.address());
 	}
 
 	///

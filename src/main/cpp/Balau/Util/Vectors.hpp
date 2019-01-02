@@ -154,8 +154,10 @@ struct Vectors final {
 		std::vector<std::string> ret;
 		ret.reserve(vector.size());
 
+		using ::toString;
+
 		for (size_t m = 0; m < vector.size(); m++) {
-			ret.emplace_back(::toString(vector[m]));
+			ret.emplace_back(toString(vector[m]));
 		}
 
 		return ret;
@@ -169,7 +171,7 @@ struct Vectors final {
 		ret.reserve(vector.size());
 
 		for (size_t m = 0; m < vector.size(); m++) {
-			ret.emplace_back(::toString32(vector[m]));
+			ret.emplace_back(toString32(vector[m]));
 		}
 
 		return ret;

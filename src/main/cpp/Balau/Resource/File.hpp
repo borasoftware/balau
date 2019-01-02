@@ -116,7 +116,7 @@ class File : public Uri {
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(std::string path) : entry(boost::filesystem::directory_entry(path)) {}
+	public: explicit File(const std::string & path) : entry(boost::filesystem::directory_entry(path)) {}
 
 	///
 	/// Create a file path with the supplied path string.
@@ -124,6 +124,13 @@ class File : public Uri {
 	/// The path must be formatted correctly for the platform.
 	///
 	public: explicit File(const char * path) : entry(boost::filesystem::directory_entry(path)) {}
+
+	///
+	/// Create a file path with the supplied path string.
+	///
+	/// The path must be formatted correctly for the platform.
+	///
+	public: explicit File(std::string_view path) : entry(boost::filesystem::directory_entry(std::string(path))) {}
 
 	///
 	/// Create a file path with the supplied path string and filename string.
@@ -191,8 +198,10 @@ class File : public Uri {
 			if (hasFileScheme) {
 				// Invalid?
 				if (sPath.length() < 3 || sPath.substr(0, 3) != "///") {
+					using ::toString;
+
 					ThrowBalauException(
-						Exception::IllegalArgumentException, ::toString("Illegal path string in file URI: ", path)
+						Exception::IllegalArgumentException, toString("Illegal path string in file URI: ", path)
 					);
 				}
 
@@ -612,43 +621,15 @@ inline Balau::U8String<AllocatorT> toString(const File & file) {
 }
 
 ///
-/// Print the file URI as a UTF-8 string.
-///
-/// @return a UTF-8 string representing the file URI
-///
-inline std::string toString(const File & file) {
-	return file.toRawString();
-}
-
-///
 /// Overwrite the supplied file URI by assignment by converting the supplied UTF-8 string to a file URI.
 ///
 /// @return a file URI
 ///
-inline void fromString(File & destination, const std::string & value) {
+inline void fromString(File & destination, std::string_view value) {
 	destination = File(value);
 }
 
 } // namespace Balau::Resource
-
-///
-/// Print the file URI as a UTF-8 string.
-///
-/// @return a UTF-8 string representing the file URI
-///
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Resource::File & file) {
-	return file.toRawString<AllocatorT>();
-}
-
-///
-/// Print the file URI as a UTF-8 string.
-///
-/// @return a UTF-8 string representing the file URI
-///
-inline std::string toString(const Balau::Resource::File & file) {
-	return file.toRawString();
-}
 
 namespace std { // NOLINT
 

@@ -27,7 +27,7 @@
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString(std::string & destination, const std::string & value) {
+inline void fromString(std::string & destination, std::string_view value) {
 	destination = value;
 }
 
@@ -37,8 +37,8 @@ inline void fromString(std::string & destination, const std::string & value) {
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString(std::u16string & destination, const std::string & value) {
-	destination = boost::locale::conv::utf_to_utf<char16_t, char>(value);
+inline void fromString(std::u16string & destination, std::string_view value) {
+	destination = boost::locale::conv::utf_to_utf<char16_t, char>(std::string(value));
 }
 
 ///
@@ -47,8 +47,8 @@ inline void fromString(std::u16string & destination, const std::string & value) 
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString(std::u32string & destination, const std::string & value) {
-	destination = boost::locale::conv::utf_to_utf<char32_t, char>(value);
+inline void fromString(std::u32string & destination, std::string_view value) {
+	destination = boost::locale::conv::utf_to_utf<char32_t, char>(std::string(value));
 }
 
 ///
@@ -63,7 +63,7 @@ inline void fromString(std::u32string & destination, const std::string & value) 
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(char & destination, const std::string & value) {
+inline void fromString(char & destination, std::string_view value) {
 	Balau::Impl::validateFromStringValue(value);
 	int offset = 0;
 	char32_t c = Balau::Character::getNextUtf8Safe(value, offset);
@@ -90,7 +90,7 @@ inline void fromString(char & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(char32_t & destination, const std::string & value) {
+inline void fromString(char32_t & destination, std::string_view value) {
 	Balau::Impl::validateFromStringValue(value);
 	int offset = 0;
 	destination = Balau::Character::getNextUtf8Safe(value, offset);
@@ -109,7 +109,7 @@ inline void fromString(char32_t & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(signed char & destination, const std::string & value) {
+inline void fromString(signed char & destination, std::string_view value) {
 	long n = Balau::Impl::stringToLong(value);
 	destination = Balau::Impl::safeNumericCast<signed char>(n);
 }
@@ -126,7 +126,7 @@ inline void fromString(signed char & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(short & destination, const std::string & value) {
+inline void fromString(short & destination, std::string_view value) {
 	long n = Balau::Impl::stringToLong(value);
 	destination = Balau::Impl::safeNumericCast<short>(n);
 }
@@ -143,7 +143,7 @@ inline void fromString(short & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(int & destination, const std::string & value) {
+inline void fromString(int & destination, std::string_view value) {
 	long n = Balau::Impl::stringToLong(value);
 	destination = Balau::Impl::safeNumericCast<int>(n);
 }
@@ -160,7 +160,7 @@ inline void fromString(int & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(long & destination, const std::string & value) {
+inline void fromString(long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToLong(value);
 }
 
@@ -176,7 +176,7 @@ inline void fromString(long & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(long long & destination, const std::string & value) {
+inline void fromString(long long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToLongLong(value);
 }
 
@@ -192,7 +192,7 @@ inline void fromString(long long & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(unsigned char & destination, const std::string & value) {
+inline void fromString(unsigned char & destination, std::string_view value) {
 	unsigned long n = Balau::Impl::stringToUnsignedLong(value);
 	destination = Balau::Impl::safeNumericCast<unsigned char>(n);
 }
@@ -209,7 +209,7 @@ inline void fromString(unsigned char & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(unsigned short & destination, const std::string & value) {
+inline void fromString(unsigned short & destination, std::string_view value) {
 	unsigned long n = Balau::Impl::stringToUnsignedLong(value);
 	destination = Balau::Impl::safeNumericCast<unsigned short>(n);
 }
@@ -226,7 +226,7 @@ inline void fromString(unsigned short & destination, const std::string & value) 
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(unsigned int & destination, const std::string & value) {
+inline void fromString(unsigned int & destination, std::string_view value) {
 	unsigned long n = Balau::Impl::stringToUnsignedLong(value);
 	destination = Balau::Impl::safeNumericCast<unsigned int>(n);
 }
@@ -243,7 +243,7 @@ inline void fromString(unsigned int & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(unsigned long & destination, const std::string & value) {
+inline void fromString(unsigned long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToUnsignedLong(value);
 }
 
@@ -259,7 +259,7 @@ inline void fromString(unsigned long & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(unsigned long long & destination, const std::string & value) {
+inline void fromString(unsigned long long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToUnsignedLongLong(value);
 }
 
@@ -275,7 +275,7 @@ inline void fromString(unsigned long long & destination, const std::string & val
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(float & destination, const std::string & value) {
+inline void fromString(float & destination, std::string_view value) {
 	destination = Balau::Impl::stringToFloat(value);
 }
 
@@ -291,7 +291,7 @@ inline void fromString(float & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(double & destination, const std::string & value) {
+inline void fromString(double & destination, std::string_view value) {
 	destination = Balau::Impl::stringToDouble(value);
 }
 
@@ -307,7 +307,7 @@ inline void fromString(double & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(long double & destination, const std::string & value) {
+inline void fromString(long double & destination, std::string_view value) {
 	destination = Balau::Impl::stringToLongDouble(value);
 }
 
@@ -321,7 +321,7 @@ inline void fromString(long double & destination, const std::string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString(bool & destination, const std::string & value) {
+inline void fromString(bool & destination, std::string_view value) {
 	const std::string lower = Balau::Util::Strings::toLower(value);
 
 	if (lower == "true") {
@@ -344,8 +344,8 @@ inline void fromString(bool & destination, const std::string & value) {
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString16(std::string & destination, const std::u16string & value) {
-	destination = boost::locale::conv::utf_to_utf<char, char16_t>(value);
+inline void fromString16(std::string & destination, std::u16string_view value) {
+	destination = boost::locale::conv::utf_to_utf<char, char16_t>(std::u16string(value));
 }
 
 ///
@@ -354,7 +354,7 @@ inline void fromString16(std::string & destination, const std::u16string & value
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString16(std::u16string & destination, const std::u16string & value) {
+inline void fromString16(std::u16string & destination, std::u16string_view value) {
 	destination = value;
 }
 
@@ -364,8 +364,8 @@ inline void fromString16(std::u16string & destination, const std::u16string & va
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString16(std::u32string & destination, const std::u16string & value) {
-	destination = boost::locale::conv::utf_to_utf<char32_t, char16_t>(value);
+inline void fromString16(std::u32string & destination, std::u16string_view value) {
+	destination = boost::locale::conv::utf_to_utf<char32_t, char16_t>(std::u16string(value));
 }
 
 ///
@@ -379,7 +379,7 @@ inline void fromString16(std::u32string & destination, const std::u16string & va
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(char & destination, const std::u16string & value) {
+inline void fromString16(char & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -394,7 +394,7 @@ inline void fromString16(char & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(char32_t & destination, const std::u16string & value) {
+inline void fromString16(char32_t & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -411,7 +411,7 @@ inline void fromString16(char32_t & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(signed char & destination, const std::u16string & value) {
+inline void fromString16(signed char & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	long n = Balau::Impl::stringToLong(valueStr);
 	destination = Balau::Impl::safeNumericCast<signed char>(n);
@@ -429,7 +429,7 @@ inline void fromString16(signed char & destination, const std::u16string & value
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(short & destination, const std::u16string & value) {
+inline void fromString16(short & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -446,7 +446,7 @@ inline void fromString16(short & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(int & destination, const std::u16string & value) {
+inline void fromString16(int & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -463,7 +463,7 @@ inline void fromString16(int & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(long & destination, const std::u16string & value) {
+inline void fromString16(long & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -480,7 +480,7 @@ inline void fromString16(long & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(long long & destination, const std::u16string & value) {
+inline void fromString16(long long & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -497,7 +497,7 @@ inline void fromString16(long long & destination, const std::u16string & value) 
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(unsigned char & destination, const std::u16string & value) {
+inline void fromString16(unsigned char & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -514,7 +514,7 @@ inline void fromString16(unsigned char & destination, const std::u16string & val
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(unsigned short & destination, const std::u16string & value) {
+inline void fromString16(unsigned short & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -531,7 +531,7 @@ inline void fromString16(unsigned short & destination, const std::u16string & va
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(unsigned int & destination, const std::u16string & value) {
+inline void fromString16(unsigned int & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -548,7 +548,7 @@ inline void fromString16(unsigned int & destination, const std::u16string & valu
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(unsigned long & destination, const std::u16string & value) {
+inline void fromString16(unsigned long & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -565,7 +565,7 @@ inline void fromString16(unsigned long & destination, const std::u16string & val
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(unsigned long long & destination, const std::u16string & value) {
+inline void fromString16(unsigned long long & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -582,7 +582,7 @@ inline void fromString16(unsigned long long & destination, const std::u16string 
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(float & destination, const std::u16string & value) {
+inline void fromString16(float & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -599,7 +599,7 @@ inline void fromString16(float & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(double & destination, const std::u16string & value) {
+inline void fromString16(double & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -616,7 +616,7 @@ inline void fromString16(double & destination, const std::u16string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(long double & destination, const std::u16string & value) {
+inline void fromString16(long double & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -631,7 +631,7 @@ inline void fromString16(long double & destination, const std::u16string & value
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString16(bool & destination, const std::u16string & value) {
+inline void fromString16(bool & destination, std::u16string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -644,8 +644,8 @@ inline void fromString16(bool & destination, const std::u16string & value) {
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString32(std::string & destination, const std::u32string & value) {
-	destination = boost::locale::conv::utf_to_utf<char, char32_t>(value);
+inline void fromString32(std::string & destination, std::u32string_view value) {
+	destination = boost::locale::conv::utf_to_utf<char, char32_t>(std::u32string(value));
 }
 
 ///
@@ -654,8 +654,8 @@ inline void fromString32(std::string & destination, const std::u32string & value
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString32(std::u16string & destination, const std::u32string & value) {
-	destination = boost::locale::conv::utf_to_utf<char16_t, char32_t>(value);
+inline void fromString32(std::u16string & destination, std::u32string_view value) {
+	destination = boost::locale::conv::utf_to_utf<char16_t, char32_t>(std::u32string(value));
 }
 
 ///
@@ -664,7 +664,7 @@ inline void fromString32(std::u16string & destination, const std::u32string & va
 /// @param destination the destination value that is set via assignment
 /// @param value the string input
 ///
-inline void fromString32(std::u32string & destination, const std::u32string & value) {
+inline void fromString32(std::u32string & destination, std::u32string_view value) {
 	destination = value;
 }
 
@@ -679,7 +679,7 @@ inline void fromString32(std::u32string & destination, const std::u32string & va
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(char & destination, const std::u32string & value) {
+inline void fromString32(char & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -694,7 +694,7 @@ inline void fromString32(char & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(char32_t & destination, const std::u32string & value) {
+inline void fromString32(char32_t & destination, std::u32string_view value) {
 	Balau::Impl::validateFromString32Value(value);
 	destination = value[0];
 }
@@ -711,7 +711,7 @@ inline void fromString32(char32_t & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(signed char & destination, const std::u32string & value) {
+inline void fromString32(signed char & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -728,7 +728,7 @@ inline void fromString32(signed char & destination, const std::u32string & value
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(short & destination, const std::u32string & value) {
+inline void fromString32(short & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -745,7 +745,7 @@ inline void fromString32(short & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(int & destination, const std::u32string & value) {
+inline void fromString32(int & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -762,7 +762,7 @@ inline void fromString32(int & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(long & destination, const std::u32string & value) {
+inline void fromString32(long & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -779,7 +779,7 @@ inline void fromString32(long & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(long long & destination, const std::u32string & value) {
+inline void fromString32(long long & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -796,7 +796,7 @@ inline void fromString32(long long & destination, const std::u32string & value) 
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(unsigned char & destination, const std::u32string & value) {
+inline void fromString32(unsigned char & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -813,7 +813,7 @@ inline void fromString32(unsigned char & destination, const std::u32string & val
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(unsigned short & destination, const std::u32string & value) {
+inline void fromString32(unsigned short & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -830,7 +830,7 @@ inline void fromString32(unsigned short & destination, const std::u32string & va
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(unsigned int & destination, const std::u32string & value) {
+inline void fromString32(unsigned int & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -847,7 +847,7 @@ inline void fromString32(unsigned int & destination, const std::u32string & valu
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(unsigned long & destination, const std::u32string & value) {
+inline void fromString32(unsigned long & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -864,7 +864,7 @@ inline void fromString32(unsigned long & destination, const std::u32string & val
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(unsigned long long & destination, const std::u32string & value) {
+inline void fromString32(unsigned long long & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -881,7 +881,7 @@ inline void fromString32(unsigned long long & destination, const std::u32string 
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(float & destination, const std::u32string & value) {
+inline void fromString32(float & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -898,7 +898,7 @@ inline void fromString32(float & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(double & destination, const std::u32string & value) {
+inline void fromString32(double & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -915,7 +915,7 @@ inline void fromString32(double & destination, const std::u32string & value) {
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(long double & destination, const std::u32string & value) {
+inline void fromString32(long double & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -930,7 +930,7 @@ inline void fromString32(long double & destination, const std::u32string & value
 /// @param value the string input
 /// @throw ConversionException when the conversion fails
 ///
-inline void fromString32(bool & destination, const std::u32string & value) {
+inline void fromString32(bool & destination, std::u32string_view value) {
 	std::string valueStr = toString(value);
 	fromString(destination, valueStr);
 }
@@ -953,7 +953,7 @@ template <> struct FromString<char> {
 	/// @param value the string input
 	/// @throw ConversionException when the conversion fails
 	///
-	template <typename T> void operator () (T & destination, const std::string & value) const {
+	template <typename T> void operator () (T & destination, std::string_view value) const {
 		fromString(destination, value);
 	}
 };
@@ -969,7 +969,7 @@ template <> struct FromString<char16_t> {
 	/// @param value the string input
 	/// @throw ConversionException when the conversion fails
 	///
-	template <typename T> void operator () (T & destination, const std::u16string & value) const {
+	template <typename T> void operator () (T & destination, std::u16string_view value) const {
 		fromString16(destination, value);
 	}
 };
@@ -985,7 +985,7 @@ template <> struct FromString<char32_t> {
 	/// @param value the string input
 	/// @throw ConversionException when the conversion fails
 	///
-	template <typename T> void operator () (T & destination, const std::u32string & value) const {
+	template <typename T> void operator () (T & destination, std::u32string_view value) const {
 		fromString32(destination, value);
 	}
 };

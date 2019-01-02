@@ -231,13 +231,15 @@ class EnvironmentConfigurationBuilder {
 				}
 
 				case PropertyString::Type::Composite: {
+					using ::toString;
+
 					if (factoryNodeIter != bindingBuilderFactoryVector.end() && !(*factoryNodeIter)->isComposite()) {
 						InjectorLogger::log.warn(
 							"Typed property factory declaration found for composite environment configuration"
 							"node (property name hierarchy = {}). Please remove this typed property factory "
 							"declaration from the associated environment configuration class in order to avoid "
 							"this warning message."
-							, ::toString(
+							, toString(
 								Util::Containers::map<std::string, const Container::ObjectTrieNode<PropertyString> *>(
 									nodeHierarchy, [] (const Container::ObjectTrieNode<PropertyString> * node) {
 										return node->value.name;
@@ -316,13 +318,15 @@ class EnvironmentConfigurationBuilder {
 				}
 
 				case PropertyString::Type::Composite: {
+					using ::toString;
+
 					if (factoryNodeIter != bindingBuilderFactoryVector.end() && !(*factoryNodeIter)->isComposite()) {
 						InjectorLogger::log.warn(
 							"Typed property factory declaration found for composite environment configuration"
 							"node (property name hierarchy = {}). Please remove this typed property factory "
 							"declaration from the associated environment configuration class in order to avoid "
 							"this warning message."
-							, ::toString(
+							, toString(
 								Util::Containers::map<std::string, const Container::ObjectTrieNode<PropertyString> *>(
 									nodeHierarchy, [] (const Container::ObjectTrieNode<PropertyString> * node) {
 										return node->value.name;

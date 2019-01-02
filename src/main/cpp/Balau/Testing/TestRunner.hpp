@@ -560,7 +560,9 @@ inline void TestGroup<TestClassT>::logLine(const std::string & string) {
 template <typename TestClassT>
 template <typename S, typename ... SR>
 inline void TestGroup<TestClassT>::logLine(const S & p, const SR & ... pRest) {
-	logLine(::toString(p, pRest ...));
+	using ::toString;
+
+	logLine(toString(p, pRest ...));
 }
 
 template <typename TestClassT>

@@ -123,7 +123,7 @@ void numericValueImpl(int argc, const char * argv[], CommandLineStyle style) {
 	assertThat(commandLine.getOption(KEY7), is(fValueStr));
 	assertThat(commandLine.getOption(KEY8), is(dValueStr));
 
-	assertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, "", ::toString(KEY9))));
+	assertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, "", toString(KEY9))));
 
 	assertThat([&] () { commandLine.getOption(KEY9); }, throws<Exception::OptionNotFoundException>());
 

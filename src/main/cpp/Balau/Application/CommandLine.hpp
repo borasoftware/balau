@@ -209,6 +209,8 @@ template <typename KeyT> class CommandLine {
 	/// @throw MissingOptionValueException if an option with a required value was specified and no value was provided
 	///
 	public: void parse(const std::vector<std::string> & args, bool ignoreFirst) {
+		using ::toString;
+
 		parsedValuesByKey.clear();
 
 		if (args.empty() || (ignoreFirst && args.size() == 1)) {
@@ -268,14 +270,14 @@ template <typename KeyT> class CommandLine {
 				}
 
 				m++;
-				parsedValuesByKey[key] = ::toString(Util::Strings::trim(cleanedArgs[m]));
+				parsedValuesByKey[key] = toString(Util::Strings::trim(cleanedArgs[m]));
 			} else {
 				parsedValuesByKey[key] = "";
 			}
 		}
 
 		if (commandLineHasFinalValue) {
-			finalValue = ::toString(Util::Strings::trim(cleanedArgs.back()));
+			finalValue = toString(Util::Strings::trim(cleanedArgs.back()));
 		}
 	}
 
@@ -303,8 +305,10 @@ template <typename KeyT> class CommandLine {
 	/// @throw OptionNotFoundException if no such option was provided in the command line
 	///
 	public: std::string getOption(KeyT key) const {
+		using ::toString;
+
 		if (parsedValuesByKey.find(key) == parsedValuesByKey.end()) {
-			ThrowBalauException(Exception::OptionNotFoundException, ::toString(key));
+			ThrowBalauException(Exception::OptionNotFoundException, toString(key));
 		}
 
 		return parsedValuesByKey.at(key);
@@ -685,7 +689,8 @@ template <typename KeyT> class CommandLine {
 
 	// Determine the switch to lookup, given the derived style.
 	private: static std::string determineSwitch(CommandLineStyle derivedStyle, const std::string & rawSwitch) {
-		std::string sw = ::toString(Util::Strings::trim(rawSwitch));
+		using ::toString;
+		std::string sw = toString(Util::Strings::trim(rawSwitch));
 
 		if (derivedStyle == CommandLineStyle::SwitchSpaceValue) {
 			// Full switches must start with "--", abbreviated switches must start with "-".
@@ -720,9 +725,11 @@ template <typename KeyT> class CommandLine {
 				return defaultValue;
 			}
 
+			using ::toString;
+
 			ThrowBalauException(
 				  Exception::OptionNotFoundException
-				, std::string("No option with key ") + ::toString(key) + " was supplied on the command line."
+				, std::string("No option with key ") + toString(key) + " was supplied on the command line."
 			);
 		}
 
@@ -732,17 +739,21 @@ template <typename KeyT> class CommandLine {
 			const C value = parse(str);
 			return boost::numeric_cast<T>(value);
 		} catch (const std::invalid_argument &) {
+			using ::toString;
+
 			ThrowBalauException(Exception::OptionValueException
 				, std::string(
-					"Option value of key '" + ::toString(key) + "' is not of type " + typeAsString + ": "
+					"Option value of key '" + toString(key) + "' is not of type " + typeAsString + ": "
 					+ parsedValuesByKey.at(key)
 				)
 			);
 		} catch (...) {
+			using ::toString;
+
 			ThrowBalauException(
 				  Exception::OptionValueException
 				, std::string(
-					"Option value of key '" + ::toString(key) + "' is not in the valid range for " + typeAsString + ": "
+					"Option value of key '" + toString(key) + "' is not in the valid range for " + typeAsString + ": "
 					+ parsedValuesByKey.at(key)
 				)
 			);

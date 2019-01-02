@@ -457,7 +457,7 @@ template <typename T> class DependencyGraph {
 			auto vertex = *vertexIter;
 			auto value = graph[vertex];
 
-			builder << std::right << std::setw(indexLength) << vertex << ": " << ::toString(value) << "\n";
+			builder << std::right << std::setw(indexLength) << vertex << ": " << toString(value) << "\n";
 
 			std::string_view prefix = "    deps: ";
 			for (boost::tie(edgeIter, edgeEnd) = in_edges(vertex, graph); edgeIter != edgeEnd; ++edgeIter) {

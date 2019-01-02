@@ -167,6 +167,8 @@
 
 		<bullets>
 			<entry>Clean up templated (typename AllocatorT) versions of the toString, toString16, and toString32 functions.</entry>
+
+			<entry>Migrate fromString numeric conversions from c-string type <emph>strtol</emph> etc. to C++17 <emph>from_chars</emph> functions. This will avoid the need to allocate strings from string views.</entry>
 		</bullets>
 
 		<h2>Util</h2>

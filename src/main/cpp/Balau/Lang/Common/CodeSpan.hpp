@@ -216,25 +216,4 @@ inline std::string toString(const CodeSpan & codeSpan) {
 
 } // namespace Balau::Lang
 
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const Balau::Lang::CodeSpan & codeSpan) {
-	return toString<AllocatorT>(
-		  "[L", codeSpan.start.line
-		, "C",  codeSpan.start.column
-		, ":L", codeSpan.end.line
-		, "C",  codeSpan.end.column
-		, "]"
-	);
-}
-
-inline std::string toString(const Balau::Lang::CodeSpan & codeSpan) {
-	return toString(
-		  "[L", codeSpan.start.line
-		, "C",  codeSpan.start.column
-		, ":L", codeSpan.end.line
-		, "C",  codeSpan.end.column
-		, "]"
-	);
-}
-
 #endif // COM_BORA_SOFTWARE__BALAU_LANG__CODE_SPAN

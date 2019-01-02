@@ -39,8 +39,8 @@ void HttpUtf8To32ReadResourceTest::performTest(const std::string & url_) {
 
 	const std::u32string expectedStart = U"<html>\r\n<head><title>301 Moved Permanently</title></head>";
 
-	auto actualHttpData = ::toString32(httpReadStream);
-	auto actualUriData = ::toString32(uriReadStream);
+	auto actualHttpData = toString32(httpReadStream);
+	auto actualUriData = toString32(uriReadStream);
 
 	assertThat(actualHttpData, startsWith(expectedStart));
 	assertThat(actualUriData, startsWith(expectedStart));

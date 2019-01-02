@@ -327,14 +327,16 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 			const std::vector<size_t> lineLengths = Util::Strings::lineLengths(thisText);
 			const bool hasCurrentLine = !std::regex_search(thisText, endLineBreakRegex);
 
+			using ::toString;
+
 			Assert::assertion(
 				  !lineLengths.empty()
 				, [&] () { return std::string(
 					"A line break token was supplied in the determineNewEnd function"
 					"call but no line end was found in the supplied text. "
 					"Start offset = "
-				) + ::toString(thisOffset) + ", end offset = " +
-					::toString(nextOffset) + ", token text = " + thisText; }
+				) + toString(thisOffset) + ", end offset = " +
+					toString(nextOffset) + ", token text = " + thisText; }
 			);
 
 			// The first line length is added to the current line length, then
@@ -384,14 +386,16 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 		if (token == TokenT::LineBreak || token == TokenT::CommentLine || token == TokenT::CommentBlock) {
 			const unsigned int lineBreaks = (unsigned int) Util::Strings::occurrences(fullText.substr(thisOffset, nextOffset - thisOffset), lineBreakRegex);
 
+			using ::toString;
+
 			Assert::assertion(
 				  lineBreaks != 0
 				, [&] () { return std::string(
 					"A line break token was supplied in the determineNewStart function"
 					"call but no line end was found in the supplied text. "
 					"Start offset = "
-				) + ::toString(thisOffset) + ", end offset = " +
-				::toString(nextOffset) + ", token text = " + fullText.substr(thisOffset, nextOffset - thisOffset); }
+				) + toString(thisOffset) + ", end offset = " +
+				toString(nextOffset) + ", token text = " + fullText.substr(thisOffset, nextOffset - thisOffset); }
 			);
 
 			for (size_t m = 0; m < lineBreaks; m++) {
@@ -587,7 +591,7 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	///
 	/// @throw SyntaxErrorException if the token was not found
 	///
-	public: void expect(const TokenT token, const char * errorMessage) {
+	public: void expect(const TokenT token, std::string_view errorMessage) {
 		get();
 
 		if (scannedTokens.tokens[currentIndex] == token) {
@@ -595,7 +599,7 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 				advanceCurrentIndex();
 			}
 		} else {
-			ThrowBalauException(Exception::SyntaxErrorException, errorMessage, getCurrentCodeSpan());
+			ThrowBalauException(Exception::SyntaxErrorException, std::string(errorMessage), getCurrentCodeSpan());
 		}
 	}
 
@@ -607,7 +611,7 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	///
 	/// @throw SyntaxErrorException if one of the tokens was not found
 	///
-	public: void expect(const std::vector<TokenT> & tokens, const char * errorMessage) {
+	public: void expect(const std::vector<TokenT> & tokens, std::string_view errorMessage) {
 		get();
 
 		if (std::find(tokens.begin(), tokens.end(), scannedTokens.tokens[currentIndex]) != tokens.end()) {
@@ -615,7 +619,7 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 				advanceCurrentIndex();
 			}
 		} else {
-			ThrowBalauException(Exception::SyntaxErrorException, errorMessage, getCurrentCodeSpan());
+			ThrowBalauException(Exception::SyntaxErrorException, std::string(errorMessage), getCurrentCodeSpan());
 		}
 	}
 

@@ -340,7 +340,7 @@ inline bool operator == (const UriComponents & lhs, const UriComponents & rhs) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const UriComponents & uriComponents) {
-	return ::toString<AllocatorT>(uriComponents.uri);
+	return toString<AllocatorT>(uriComponents.uri);
 }
 
 ///
