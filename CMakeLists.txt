@@ -12,7 +12,7 @@
 ## on building the Balau library and its dependencies.
 ##
 
-cmake_minimum_required(VERSION 3.6.3)
+cmake_minimum_required(VERSION 3.10.2)
 
 #
 # When updating the version, do a global search in order to update the references to the
@@ -21,14 +21,6 @@ cmake_minimum_required(VERSION 3.6.3)
 # Also, the BalauConfigVersion.cmake file needs updating to the correct version components.
 #
 project(Balau VERSION 2018.9.1)
-
-######################### TEST ENVIRONMENT VARIABLES ##########################
-
-add_definitions("-DBALAU_TEST_EMAIL_HOST_=$ENV{BALAU_TEST_EMAIL_HOST}")
-add_definitions("-DBALAU_TEST_EMAIL_PORT_=$ENV{BALAU_TEST_EMAIL_PORT}")
-add_definitions("-DBALAU_TEST_EMAIL_SENDER_USER_=$ENV{BALAU_TEST_EMAIL_SENDER_USER}")
-add_definitions("-DBALAU_TEST_EMAIL_SENDER_PASSWORD_=$ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD}")
-add_definitions("-DBALAU_TEST_EMAIL_TO_=$ENV{BALAU_TEST_EMAIL_TO}")
 
 ############################# CMAKE CONFIGURATION #############################
 
@@ -52,6 +44,74 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+############################## USER CONFIGURATION #############################
+
+#
+# Default user prefix path, install path, include and lib directories if not already set.
+#
+# By default, the project uses the user's $ENV{HOME}/usr directory.
+#
+#   CMAKE_PREFIX_PATH    : Used by the FIND_XXX() commands (default = $ENV{HOME}/usr)
+#   CMAKE_INSTALL_PREFIX : Location to install the library (default = $ENV{HOME}/usr)
+#   USER_INCLUDE_DIR     : Additional include directories  (default = $ENV{HOME}/usr/include)
+#   USER_LIB_DIR         : Additional library directories  (default = $ENV{HOME}/usr/lib)
+#
+
+if (NOT DEFINED CMAKE_PREFIX_PATH)
+	set(CMAKE_PREFIX_PATH $ENV{HOME}/usr)
+endif ()
+
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/usr" CACHE PATH "..." FORCE)
+endif()
+
+if (NOT DEFINED USER_INCLUDE_DIR)
+	set(USER_INCLUDE_DIR $ENV{HOME}/usr/include)
+endif ()
+
+if (NOT DEFINED USER_LIB_DIR)
+	set(USER_LIB_DIR $ENV{HOME}/usr/lib)
+endif ()
+
+include_directories(${USER_INCLUDE_DIR})
+link_directories(${USER_LIB_DIR})
+
+message(STATUS "CMAKE_PREFIX_PATH:    ${CMAKE_PREFIX_PATH}")
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "USER_INCLUDE_DIR:     ${USER_INCLUDE_DIR}")
+message(STATUS "USER_LIB_DIR:         ${USER_LIB_DIR}")
+
+#
+# Turn on thread local logging allocator if user has this set.
+#
+if (NOT DEFINED BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR)
+    string(TOLOWER "$ENV{BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR}" BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_LOWER)
+	if ("${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_LOWER}" STREQUAL "true")
+		set(BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR 1)
+	else ()
+		set(BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR 0)
+	endif ()
+else ()
+	string(TOLOWER "${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR}" BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_LOWER)
+	if ("${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_LOWER}" STREQUAL "true")
+		set(BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR 1)
+	else ()
+		set(BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR 0)
+	endif ()
+endif ()
+
+message(STATUS "Thread local logging allocator: ${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR}")
+
+#
+# Balau test app variables
+#
+
+add_definitions("-DBALAU_TEST_EMAIL_HOST_=$ENV{BALAU_TEST_EMAIL_HOST}")
+add_definitions("-DBALAU_TEST_EMAIL_PORT_=$ENV{BALAU_TEST_EMAIL_PORT}")
+add_definitions("-DBALAU_TEST_EMAIL_SENDER_USER_=$ENV{BALAU_TEST_EMAIL_SENDER_USER}")
+add_definitions("-DBALAU_TEST_EMAIL_SENDER_PASSWORD_=$ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD}")
+add_definitions("-DBALAU_TEST_EMAIL_TO_=$ENV{BALAU_TEST_EMAIL_TO}")
+
 ################################## DEFINITIONS ################################
 
 add_definitions("-DBALAU_VERSION_=${PROJECT_VERSION}")
@@ -73,27 +133,6 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testResults)
 
 include_directories(src/main/cpp)
 include_directories(${CMAKE_BINARY_DIR})
-
-#
-# For devs..
-# Default user include and lib directories if not already set.
-#
-if (NOT DEFINED USER_INCLUDE_DIR)
-	set(USER_INCLUDE_DIR $ENV{HOME}/usr/include)
-endif ()
-
-if (NOT DEFINED USER_LIB_DIR)
-	set(USER_LIB_DIR $ENV{HOME}/usr/lib)
-endif ()
-
-#
-# Directories in which the compiling user has custom libraries.
-#
-include_directories(${USER_INCLUDE_DIR})
-link_directories(${USER_LIB_DIR})
-
-message(STATUS "User include dirs: ${USER_INCLUDE_DIR}")
-message(STATUS "User lib dirs: ${USER_LIB_DIR}")
 
 ################################### COMPILER ##################################
 
@@ -146,15 +185,20 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-	message("Debug mode: adding libbacktrace to link libraries.")
-	find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+	find_package(Boost 1.68.0 COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
 
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBOOST_STACKTRACE_LINK -DBOOST_STACKTRACE_USE_BACKTRACE")
-
-	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES} backtrace)
+	if (Boost_STACKTRACE_BACKTRACE_FOUND)
+		find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+		message(STATUS "DEBUG MODE: adding libbacktrace to link libraries.")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBOOST_STACKTRACE_LINK -DBOOST_STACKTRACE_USE_BACKTRACE")
+		set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES} backtrace)
+	else ()
+		find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+		set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
+	endif ()
 else ()
 	find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
-	message("Release mode: no stack traces will be available.")
+	message(STATUS "Release mode: no stack traces will be available.")
 	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
 endif ()
 
@@ -209,7 +253,6 @@ set(ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
 message(STATUS "ZLIB include dir: ${ZLIB_INCLUDE_DIR}")
 message(STATUS "ZLIB libraries: ${ZLIB_LIBRARIES}")
 
-set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})

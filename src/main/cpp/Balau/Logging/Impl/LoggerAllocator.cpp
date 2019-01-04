@@ -12,6 +12,10 @@
 
 namespace Balau::LoggingSystem {
 
+#if BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR == 1
+
 thread_local LoggerAllocatorState loggerAllocatorState;
+
+#endif
 
 } // namespace Balau::LoggingSystem

@@ -45,6 +45,51 @@
 
 		<para>The only other dependencies used are standard dependencies on each supported platform.</para>
 
+		<h2>Utility libraries</h2>
+
+		<h3>Debian/Ubuntu</h3>
+
+		<para>The following command is for Ubuntu 18.04 and OpenSSL.</para>
+
+		<code>
+			sudo apt install zlib1g-dev libzip-dev libcurl4-openssl-dev libssl-dev
+		</code>
+
+		<h3>RPM based distributions</h3>
+
+		<para>The following command is for CentOS 7.6 (excluding libzip).</para>
+
+		<code>
+			sudo yum install zlib-devel openssl-devel libcurl-devel
+		</code>
+
+		<para>The supplied version of libzip on CentOS 7.6 is <emph>0.10.1</emph>. A recent version of libzip must thus be compiled and installed. The following commands will download, build, and install libzip version <emph>1.5.1</emph> into the <emph>${HOME}/usr</emph> directory (this directory will be referenced later via <emph>CMAKE_PREFIX_PATH</emph>).</para>
+
+		<code>
+			mkdir Libs
+			cd Libs
+			wget https://libzip.org/download/libzip-1.5.1.tar.gz
+			tar zxvf libzip-1.5.1.tar.gz
+			cd libzip-1.5.1
+			mkdir build
+			cd build
+			cmake -DCMAKE_INSTALL_PREFIX=${HOME}/usr ..
+			make
+			make install
+		</code>
+
+		<para>Note that a C++17 capable compiler is required to build Balau. This can be achieved on CentOS 7.6 via the <emph>SCL</emph> command:</para>
+
+		<code>
+			scl enable devtoolset-7 bash
+		</code>
+
+		<para>CentOS 7.6 also ships with CMake version <emph>2.8.12.2</emph>. As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build must be done. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
+
+		<code>
+			scl enable devtoolset-7 bash
+		</code>
+
 		<h2>ICU</h2>
 
 		<h3>Linux</h3>
@@ -111,16 +156,6 @@
 		<h3>Windows</h3>
 
 		<para>This section will be filled in when the Windows port has been completed.</para>
-
-		<h2>Utility libraries</h2>
-
-		<h3>Debian/Ubuntu</h3>
-
-		<para>The following command is for Ubuntu 18.04 and OpenSSL.</para>
-
-		<code>
-			sudo apt install zlib1g-dev libzip-dev libcurl4-openssl-dev libssl-dev
-		</code>
 
 		<h1>CMake variables</h1>
 

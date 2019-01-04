@@ -548,6 +548,27 @@ class File : public Uri {
 	}
 
 	///
+	/// Append a sequence of path components to the path represented by the file.
+	///
+	/// @tparam T the string type in the container
+	/// @tparam Container the container type
+	/// @param container the container containing the components to append
+	/// @return a new file instance with the appended path components
+	///
+	public: template <typename ... T, template <typename ...> class Container>
+	File operator / (const Container<T ...> & container) const {
+		using ::toString;
+
+		boost::filesystem::path p = entry.path();
+
+		for (const auto & component : container) {
+			p /= toString(component);
+		}
+
+		return File(boost::filesystem::directory_entry(p));
+	}
+
+	///
 	/// Append a path component to the path represented by the file in place.
 	///
 	/// @return the current object

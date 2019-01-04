@@ -201,7 +201,7 @@ void EmailSendingHttpWebAppTest::injectedInstantiation() {
 
 			class EnvConfig : public EnvironmentConfiguration {
 				public: EnvConfig(const std::shared_ptr<Resource::Uri> & env, const std::shared_ptr<Resource::Uri> & creds)
-					: EnvironmentConfiguration({ env, creds }, {}) {}
+					: EnvironmentConfiguration(std::vector<std::shared_ptr<Resource::Uri>> { env, creds }, {}) {}
 
 				public: void configure() const override {
 					value<bool>("http.server.register.signal.handler", false);
