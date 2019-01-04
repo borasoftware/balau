@@ -86,10 +86,6 @@
 
 		<para>CentOS 7.6 also ships with CMake version <emph>2.8.12.2</emph>. As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build must be done. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
 
-		<code>
-			scl enable devtoolset-7 bash
-		</code>
-
 		<h2>ICU</h2>
 
 		<h3>Linux</h3>
