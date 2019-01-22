@@ -110,7 +110,7 @@ template <typename DstT, typename SrcT> inline DstT safeNumericCast(SrcT n) {
 
 //
 // TODO These will be updated with std::from_chars calls such as:
-//   std::from_chars_result result = std::from_chars(value.data(), value.data() + value.length(), n);
+//   std::from_chars_result result = std::from_chars(value.data(), value.data() + value.length(), base);
 //
 
 inline long stringToLong(std::string_view value) {
@@ -118,6 +118,15 @@ inline long stringToLong(std::string_view value) {
 	char * strEnd;
 	const auto s = std::string(value);
 	long n = std::strtol(s.c_str(), &strEnd, 10);
+	Impl::validateIntegerConversion(s, strEnd);
+	return n;
+}
+
+inline long stringToLong(std::string_view value, int base) {
+	Impl::validateFromStringValue(value);
+	char * strEnd;
+	const auto s = std::string(value);
+	long n = std::strtol(s.c_str(), &strEnd, base);
 	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }
@@ -131,6 +140,15 @@ inline long long stringToLongLong(std::string_view value) {
 	return n;
 }
 
+inline long long stringToLongLong(std::string_view value, int base) {
+	Impl::validateFromStringValue(value);
+	char * strEnd;
+	const auto s = std::string(value);
+	long long n = std::strtoll(s.c_str(), &strEnd, base);
+	Impl::validateIntegerConversion(s, strEnd);
+	return n;
+}
+
 inline unsigned long stringToUnsignedLong(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
@@ -140,11 +158,29 @@ inline unsigned long stringToUnsignedLong(std::string_view value) {
 	return n;
 }
 
+inline unsigned long stringToUnsignedLong(std::string_view value, int base) {
+	Impl::validateFromStringValue(value);
+	char * strEnd;
+	const auto s = std::string(value);
+	unsigned long n = std::strtoul(s.c_str(), &strEnd, base);
+	Impl::validateIntegerConversion(s, strEnd);
+	return n;
+}
+
 inline unsigned long long stringToUnsignedLongLong(std::string_view value) {
 	Impl::validateFromStringValue(value);
 	char * strEnd;
 	const auto s = std::string(value);
 	unsigned long long n = std::strtoull(s.c_str(), &strEnd, 10);
+	Impl::validateIntegerConversion(s, strEnd);
+	return n;
+}
+
+inline unsigned long long stringToUnsignedLongLong(std::string_view value, int base) {
+	Impl::validateFromStringValue(value);
+	char * strEnd;
+	const auto s = std::string(value);
+	unsigned long long n = std::strtoull(s.c_str(), &strEnd, base);
 	Impl::validateIntegerConversion(s, strEnd);
 	return n;
 }

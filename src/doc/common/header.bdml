@@ -113,9 +113,10 @@
 				<bullets>
 					<entry><ref url="NonCode/Building">Building</ref></entry>
 					<entry><ref url="NonCode/Tutorial">Tutorial</ref></entry>
+					<entry><ref url="NonCode/Releases">Release history</ref></entry>
+					<entry><ref url="NonCode/PlannedFeatures">Planned features</ref></entry>
 					<entry><ref url="NonCode/Contributing">Contributing</ref></entry>
 					<entry><ref url="NonCode/KnownIssues">Known issues</ref></entry>
-					<entry><ref url="NonCode/PlannedFeatures">Planned features</ref></entry>
 					<entry><ref url="NonCode/ReportingBugs">Reporting bugs</ref></entry>
 				</bullets>
 			</entry>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - release history" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Release history">
+		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
+
+		<h1>V2019.1.1</h1>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>hierarchical property format and parser;</entry>
+			<entry>environment configuration framework integrated with injector;</entry>
+			<entry>logging system now uses hierarchical properties configuration format;</entry>
+			<entry>client sessions in HTTP server connections;</entry>
+			<entry>new redirections HTTP web application;</entry>
+			<entry>new toString&lt;Allocator> functions;</entry>
+			<entry>optional thread local logger allocator using toString&lt;Allocator> functions;</entry>
+			<entry>optional stacktrace support in exceptions;</entry>
+			<entry>unified fromString function with std::basic_string_view API;</entry>
+			<entry>support for CentOS 7.6 with GCC 7;</entry>
+			<entry>draft tutorial added to documentation.</entry>
+		</bullets>
+
+		<para>Pending features not yet in this release:</para>
+
+		<bullets>
+			<entry>log rotation;</entry>
+			<entry>WebSocket application framework and documentation;</entry>
+			<entry>WebSocket client;</entry>
+			<entry>HTTP client keep alive;</entry>
+			<entry>tutorial application example.</entry>
+		</bullets>
+
+		<h1>V2018.9.1</h1>
+
+		<para>Initial import into GitHub repository. Main features in the initial import:</para>
+
+		<bullets>
+			<entry>dependency injection framework;</entry>
+			<entry>logging system;</entry>
+			<entry>test framework;</entry>
+			<entry>unified to-string functions;</entry>
+			<entry>unified from-string functions;</entry>
+			<entry>Unicode character and string utilities;</entry>
+			<entry>Unified resource identification and resource access;</entry>
+			<entry>data structures (ObjectTrie, DependencyGraph, BlockingArrayQueue);</entry>
+			<entry>shared memory data structures (SharedMemoryQueue, SharedMemoryObject);</entry>
+			<entry>hand written language parser utilities;</entry>
+			<entry>HTTP clients and server;</entry>
+			<entry>utilities (system, compression, files, hashing, streams, strings, etc.).</entry>
+		</bullets>
+	</chapter>
+</document>

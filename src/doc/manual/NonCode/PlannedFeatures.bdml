@@ -35,7 +35,11 @@
 
 		<h1>Platforms</h1>
 
-		<para>Port Balau to platforms other than GNU/Linux, initially Windows 7/10.</para>
+		<bullets>
+			<entry>Validate usage on Fedora 29.</entry>
+
+			<entry>Port to Windows 7/10.</entry>
+		</bullets>
 
 		<h1>General</h1>
 
@@ -115,10 +119,6 @@
 
 		<bullets>
 			<entry>Create a threaded writer in order to offload writing to another thread.</entry>
-
-			<entry>Add thread local string allocator that reuses thread local memory for all toString calls that occur during a logging call (requires templated versions of toString). Add build option BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR to turn this on/off (document that when enabled, all objects passed to log message calls will need corresponding toString&lt;Allocator> functions).</entry>
-
-			<entry>Decide whether to support descendant composite properties in the logging configuration instead of the current flat logging configuration format.</entry>
 		</bullets>
 
 		<h2>Network</h2>
@@ -128,7 +128,7 @@
 
 			<entry>Add features to the HTTP and HTTPS clients (start with chunked transfer and asynchronous API, redirects).</entry>
 
-			<entry>Add keep alive configuration support to the HTTP server.</entry>
+			<entry>Make HTTP server keep-alive configurable.</entry>
 
 			<entry>Add TLS support to the HTTP server.</entry>
 
@@ -166,7 +166,7 @@
 		<h2>Type</h2>
 
 		<bullets>
-			<entry>Clean up templated (typename AllocatorT) versions of the toString, toString16, and toString32 functions.</entry>
+			<entry>Clean up / improve templated (typename AllocatorT) versions of the toString, toString16, and toString32 functions.</entry>
 
 			<entry>Migrate fromString numeric conversions from c-string type <emph>strtol</emph> etc. to C++17 <emph>from_chars</emph> functions. This will avoid the need to allocate strings from string views.</entry>
 		</bullets>

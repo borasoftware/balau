@@ -37,6 +37,12 @@ class HttpSession;
 /// This class also contains some canned responses for use in handler implementations.
 ///
 class HttpWebApp {
+	///
+	/// Register an HTTP web application.
+	///
+	/// @tparam the HTTP web application type
+	/// @param name the name of the composite property that provides the web app's configuration
+	///
 	public: template <typename WebAppT> static void registerHttpWebApp(const std::string & name) {
 		Impl::HttpWebAppFactory::registerHttpWebApp<WebAppT>(name);
 	}

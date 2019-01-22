@@ -32,6 +32,7 @@
 #include "Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.hpp"
 #include "Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.hpp"
 #include "Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.hpp"
+#include "Balau/Network/Utilities/UrlDecodeTest.hpp"
 #include "Balau/Resource/FileByteReadResourceTest.hpp"
 #include "Balau/Resource/FileByteWriteResourceTest.hpp"
 #include "Balau/Resource/FileTest.hpp"
@@ -143,6 +144,7 @@ int main(int argc, char * argv[]) {
 		.registerGroup<Network::Http::HttpWebApps::RedirectingHttpWebAppTest>()
 		.registerGroup<Network::Http::HttpWebApps::RoutingHttpWebAppTest>()
 		.registerGroup<Network::Http::WsWebApps::EchoingWsWebAppTest>()
+		.registerGroup<Network::UrlDecodeTest>()
 		.registerGroup<Resource::FileByteReadResourceTest>()
 		.registerGroup<Resource::FileByteWriteResourceTest>()
 		.registerGroup<Resource::FileTest>()

@@ -437,7 +437,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Network/Http/Server/Impl/ClientSessions.hpp
 	src/main/cpp/Balau/Network/Http/Server/Impl/HttpSessions.hpp
 	src/main/cpp/Balau/Network/Http/Server/Impl/HttpWebAppFactory.hpp
-	src/main/cpp/Balau/Network/Http/Server/Impl/Listener.cpp
 	src/main/cpp/Balau/Network/Http/Server/Impl/Listener.hpp
 	src/main/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebApp.cpp
 	src/main/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebApp.hpp
@@ -446,7 +445,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Network/Utilities/MimeTypes.cpp
 	src/main/cpp/Balau/Network/Utilities/MimeTypes.hpp
 	src/main/cpp/Balau/Network/Utilities/root_certificates.hpp
-	src/main/cpp/Balau/Network/Utilities/UrlEncodeSplit.hpp
+	src/main/cpp/Balau/Network/Utilities/UrlDecode.hpp
 	src/main/cpp/Balau/Resource/ByteReadResource.hpp
 	src/main/cpp/Balau/Resource/ByteWriteResource.hpp
 	src/main/cpp/Balau/Resource/File.hpp
@@ -670,6 +669,8 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.hpp
 	src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.cpp
 	src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.hpp
+	src/test/cpp/Balau/Network/Utilities/UrlDecodeTest.cpp
+	src/test/cpp/Balau/Network/Utilities/UrlDecodeTest.hpp
 	src/test/cpp/Balau/Resource/FileByteReadResourceTest.cpp
 	src/test/cpp/Balau/Resource/FileByteReadResourceTest.hpp
 	src/test/cpp/Balau/Resource/FileByteWriteResourceTest.cpp

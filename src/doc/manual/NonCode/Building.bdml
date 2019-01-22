@@ -31,7 +31,19 @@
 	</metadata>
 
 	<chapter title="Building Balau">
-		<para>Perform the following steps to build the Balau library and link it into your CMake project.</para>
+		<para>This chapter discusses the preparatory steps, configuring, and building Balau.</para>
+
+		<h1>Defaults</h1>
+
+		<h2>CMAKE_PREFIX_PATH</h2>
+
+		<para>If the <emph>CMAKE_PREFIX_PATH</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. This setup allows the ICU, Boost, and optionally libzip dependencies to be installed in <emph>${HOME}/usr</emph>, to be picked up during CMake configuration automatically.</para>
+
+		<para>If the dependencies are located elsewhere, the <emph>CMAKE_PREFIX_PATH</emph> should be set, as discussed in the <emph>CMake variables</emph> section below.</para>
+
+		<h2>CMAKE_INSTALL_PREFIX</h2>
+
+		<para>If the <emph>CMAKE_INSTALL_PREFIX</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. If the library should be installed elsewhere (such as to <emph>/usr</emph>), the <emph>CMAKE_INSTALL_PREFIX</emph> should be set, as discussed in the <emph>CMake variables</emph> section below.</para>
 
 		<h1>Dependencies</h1>
 
@@ -57,13 +69,19 @@
 
 		<h3>RPM based distributions</h3>
 
-		<para>The following command is for CentOS 7.6 (excluding libzip).</para>
+		<h4>Fedora 28 / 29</h4>
+
+		<code>
+			sudo yum install zlib-devel openssl-devel libcurl-devel libzip-devel
+		</code>
+
+		<h4>RHEL 7.6 / CentOS 7.6</h4>
 
 		<code>
 			sudo yum install zlib-devel openssl-devel libcurl-devel
 		</code>
 
-		<para>The supplied version of libzip on CentOS 7.6 is <emph>0.10.1</emph>. A recent version of libzip must thus be compiled and installed. The following commands will download, build, and install libzip version <emph>1.5.1</emph> into the <emph>${HOME}/usr</emph> directory (this directory will be referenced later via <emph>CMAKE_PREFIX_PATH</emph>).</para>
+		<para>The supplied version of libzip on these distributions is <emph>0.10.1</emph>. A recent version of libzip must thus be compiled and installed. The following commands will download, build, and install libzip version <emph>1.5.1</emph> into the <emph>${HOME}/usr</emph> directory (this directory will be referenced later via <emph>CMAKE_PREFIX_PATH</emph>).</para>
 
 		<code>
 			mkdir Libs
@@ -78,13 +96,17 @@
 			make install
 		</code>
 
-		<para>Note that a C++17 capable compiler is required to build Balau. This can be achieved on CentOS 7.6 via the <emph>SCL</emph> command:</para>
+		<para>Note that a C++17 capable compiler is required to build Balau. This can be achieved via the <emph>SCL</emph> command:</para>
 
 		<code>
 			scl enable devtoolset-7 bash
 		</code>
 
-		<para>CentOS 7.6 also ships with CMake version <emph>2.8.12.2</emph>. As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build must be done. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
+		<para>RHEL 7.6 / CentOS 7.6 also ship with CMake version <emph>2.8.12.2</emph>. As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build must be done. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
+
+		<code>
+			scl enable devtoolset-7 bash
+		</code>
 
 		<h2>ICU</h2>
 
@@ -92,15 +114,17 @@
 
 		<para>Download the ICU version 60.2 sources <ref new="true" type="raw" url="http://download.icu-project.org/files/icu4c/60.2/icu4c-60_2-src.tgz">here</ref>.</para>
 
-		<para>To configure the ICU sources on Linux, open a command prompt and run the following commands. Replace <emph>/path/to/icu/code</emph> with the source code path and <emph>/path/to/icu/install/dir</emph> with the path where you wish to install the library. For example, this could be <emph>/home/&lt;user&gt;/usr</emph> for an installation in your home directory.</para>
+		<para>To configure the ICU sources on Linux, unzip the sources and run the following commands in the unzipped ICU source directory. If you intend to use a different install prefix that the Balau default, the <emph>--prefix</emph> option should be set to the required path.</para>
 
 		<code>
 			cd /path/to/icu/code
 			cd source
+
+			# Replace ${HOME}/usr to alternative path if required.
 			./runConfigureICU Linux --enable-static    \
 			                        --disable-shared   \
 			                        --disable-renaming \
-			                        --prefix=/path/to/icu/install/dir
+			                        --prefix=${HOME}/usr
 		</code>
 
 		<para>Then add the necessary ICU defines in the <emph>source/common/unicode/uconfig.h</emph> file. These additionally configure ICU's build.</para>
@@ -134,12 +158,11 @@
 
 		<para>Download the Boost version 1.68.0 sources <ref new="true" type="raw" url="https://dl.bintray.com/boostorg/release/1.68.0/source/boost_1_68_0.tar.bz2">here</ref>.</para>
 
-		<para>To configure the Boost sources on Linux, open a command prompt and run the following commands. Replace <emph>/path/to/boost_1_66_0</emph> with the source code path, <emph>/path/to/icu/install/dir</emph> with the path where you installed the ICU library, and <emph>/path/to/boost/install/dir</emph> with the path where you wish to install the library. For example, this could be <emph>$HOME/usr</emph> for an installation in your home directory.</para>
+		<para>To configure the Boost sources on Linux, unzip the sources and run the following commands in the unzipped Boost source directory. If you intend to use different install prefixes than the Balau default, the <emph>--prefix</emph> and <emph>--with-icu</emph> options should be set to the required path.</para>
 
 		<code>
-			cd path/to/boost_1_68_0
-			./bootstrap.sh --with-icu=/path/to/icu/install/dir \
-			               --prefix=/path/to/boost/install/dir
+			# Replace ${HOME}/usr ocurrances to alternative paths if required.
+			./bootstrap.sh --with-icu=${HOME}/usr --prefix=${HOME}/usr
 		</code>
 
 		<para>Then build and install Boost.</para>
@@ -155,7 +178,9 @@
 
 		<h1>CMake variables</h1>
 
-		<para>Balau relies on two CMake variables in order to find its dependencies and to specify where to install itself. These two variables must be set before building the library.</para>
+		<para>Balau relies on two CMake variables in order to find its dependencies and to specify where to install itself. These two variables may optionally be set before building the library.</para>
+
+		<para>If you use the default Balau installation location (<emph>${HOME}/usr</emph>), both these variables will default to this. Otherwise, these variables must be set before building the library.</para>
 
 		<para>The exact method for specifying these CMake variables depends on whether you use the command line or an IDE. Only the command line technique is covered in the build steps here. For IDEs that support CMake, these are typically set from within the settings/preferences of the IDE. Refer to the specific IDE's documentation for information.</para>
 
@@ -169,9 +194,9 @@
 
 		<h1>Environment variables</h1>
 
-		<para>The Balau test application uses a number of environment variables, imported via the CMakeLists.txt file. These environment variables are optional. If they are not defined, certain tests will be disabled.</para>
+		<para>The Balau test application uses a number of environment variables in the unit tests, imported via the CMakeLists.txt file. These environment variables are optional. If they are not defined, the unit tests that require them will be disabled.</para>
 
-		<para>Refer to the CMakeLists.txt file for details on each environment variables.</para>
+		<para>Refer to the CMakeLists.txt file for details on each environment variable if you wish to run the associated unit tests.</para>
 
 		<h1>Building Balau</h1>
 
@@ -179,13 +204,27 @@
 
 		<h2>Linux</h2>
 
-		<para>Open a command prompt and run the following commands. Replace <emph>${DEPS}</emph> with the installation locations of the dependencies you configured in the previous steps, and <emph>${BALAU_PREFIX}</emph> with the installation prefix where you wish to install the Balau library. These are often the same location, for example <emph>/home/&lt;user&gt;/usr</emph>.</para>
+		<para>Open a command prompt and prepare the build with the following commands.</para>
 
 		<code>
+			cd path/to/projects
+			git clone https://github.com/borasoftware/balau.git
 			cd path/to/balau/code
 			mkdir build-debug
 			cd build-debug
+		</code>
 
+		<para>If you are using the default prefix path and install prefix, execute the following commands.</para>
+
+		<code>
+			cmake -DCMAKE_BUILD_TYPE=Debug ..
+			make -j 4
+			make install
+		</code>
+
+		<para>If you are using a non-default prefix path and/or a non-default install prefix, run the following commands, replacing <emph>${DEPS}</emph> with the installation locations of the dependencies you configured in the previous steps, and <emph>${BALAU_PREFIX}</emph> with the installation prefix where you wish to install the Balau library.</para>
+
+		<code>
 			cmake -DCMAKE_PREFIX_PATH=${DEPS}            \
 			      -DCMAKE_INSTALL_PREFIX=${BALAU_PREFIX} \
 			      -DCMAKE_BUILD_TYPE=Debug               \
@@ -195,7 +234,7 @@
 			make install
 		</code>
 
-		<para>This set of commands:</para>
+		<para>The above set of commands:</para>
 
 		<bullets>
 			<entry>creates an out of source build directory <emph>build-debug</emph>;</entry>
@@ -204,21 +243,7 @@
 			<entry>installs the library to ${BALAU_PREFIX}.</entry>
 		</bullets>
 
-		<para>If you wish to have a release build, the following commands perform the same steps but with a release build installed.</para>
-
-		<code>
-			cd path/to/balau/code
-			mkdir build-release
-			cd build-release
-
-			cmake -DCMAKE_PREFIX_PATH=${DEPS}            \
-			      -DCMAKE_INSTALL_PREFIX=${BALAU_PREFIX} \
-			      -DCMAKE_BUILD_TYPE=Release             \
-			      ..
-
-			make -j 4
-			make install
-		</code>
+		<para>If you wish to have a release build, set <emph>CMAKE_BUILD_TYPE</emph> to <emph>Release</emph> instead.</para>
 
 		<h2>Windows</h2>
 

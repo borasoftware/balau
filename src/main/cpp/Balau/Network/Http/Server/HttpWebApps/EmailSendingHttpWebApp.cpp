@@ -10,7 +10,7 @@
 
 #include "EmailSendingHttpWebApp.hpp"
 #include "../HttpSession.hpp"
-#include "../../../Utilities/UrlEncodeSplit.hpp"
+#include "Balau/Network/Utilities/UrlDecode.hpp"
 #include "../../../../Application/EnvironmentProperties.hpp"
 #include "../../../../Logging/Impl/BalauLogger.hpp"
 
@@ -105,7 +105,7 @@ void EmailSendingHttpWebApp::handlePostRequest(HttpSession & session,
                                                const StringRequest & request,
                                                std::map<std::string, std::string> & variables) {
 	try {
-		const ParameterMap parameters = UrlEncodeSplit::split(request.body());
+		const ParameterMap parameters = UrlDecode::splitAndDecode(request.body());
 		const std::string body = bodyGenerator(session, request, variables, parameters);
 		emailSender.sendEmail(from, to, cc, subject, body);
 

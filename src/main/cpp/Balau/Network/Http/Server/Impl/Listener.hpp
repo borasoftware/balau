@@ -63,7 +63,26 @@ class Listener : public std::enable_shared_from_this<Listener> {
 		);
 	}
 
-	private: void onAccept(boost::system::error_code errorCode);
+	private: void onAccept(boost::system::error_code errorCode) {
+		if (errorCode == boost::system::errc::operation_canceled) {
+			BalauBalauLogInfo(
+				serverConfiguration->logger
+			, "Listener {}:{} stopping due to: {}"
+			, serverConfiguration->endpoint.address()
+			, serverConfiguration->endpoint.port()
+			, errorCode.message()
+			);
+
+			return;
+		} else {
+			httpSessions.start(
+				std::make_shared<HttpSession>(httpSessions, clientSessions, serverConfiguration, std::move(socket))
+			);
+		}
+
+		doAccept();
+	}
+
 
 	private: template <typename ErrorMessageCreator>
 	void checkError(const boost::system::error_code & errorCode, const ErrorMessageCreator & errorMessage) {

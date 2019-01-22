@@ -56,7 +56,7 @@
 
 		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpServer.hpp</para>
 
-<ref url="Environment/http.server">http.server</ref>
+		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server">http.server</ref></para>
 
 		<h2>Hardwired</h2>
 

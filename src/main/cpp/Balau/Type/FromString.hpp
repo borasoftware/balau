@@ -25,7 +25,7 @@
 /// Sets the destination value to the supplied value.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString(std::string & destination, std::string_view value) {
 	destination = value;
@@ -35,7 +35,7 @@ inline void fromString(std::string & destination, std::string_view value) {
 /// Sets the destination value to a UTF-16 version of the supplied UTF-8 string.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString(std::u16string & destination, std::string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char16_t, char>(std::string(value));
@@ -45,7 +45,7 @@ inline void fromString(std::u16string & destination, std::string_view value) {
 /// Sets the destination value to a UTF-32 version of the supplied UTF-8 string.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString(std::u32string & destination, std::string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char32_t, char>(std::string(value));
@@ -60,7 +60,7 @@ inline void fromString(std::u32string & destination, std::string_view value) {
 ///  - the code point does not fit in an ascii char.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(char & destination, std::string_view value) {
@@ -87,7 +87,7 @@ inline void fromString(char & destination, std::string_view value) {
 ///  - the string contains invalid UTF-8 text.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(char32_t & destination, std::string_view value) {
@@ -106,11 +106,29 @@ inline void fromString(char32_t & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(signed char & destination, std::string_view value) {
 	long n = Balau::Impl::stringToLong(value);
+	destination = Balau::Impl::safeNumericCast<signed char>(n);
+}
+
+///
+/// Converts the supplied string to a signed char value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(signed char & destination, std::string_view value, int base) {
+	long n = Balau::Impl::stringToLong(value, base);
 	destination = Balau::Impl::safeNumericCast<signed char>(n);
 }
 
@@ -123,11 +141,29 @@ inline void fromString(signed char & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(short & destination, std::string_view value) {
 	long n = Balau::Impl::stringToLong(value);
+	destination = Balau::Impl::safeNumericCast<short>(n);
+}
+
+///
+/// Converts the supplied string to a signed short value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(short & destination, std::string_view value, int base) {
+	long n = Balau::Impl::stringToLong(value, base);
 	destination = Balau::Impl::safeNumericCast<short>(n);
 }
 
@@ -140,11 +176,29 @@ inline void fromString(short & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(int & destination, std::string_view value) {
 	long n = Balau::Impl::stringToLong(value);
+	destination = Balau::Impl::safeNumericCast<int>(n);
+}
+
+///
+/// Converts the supplied string to a signed int value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(int & destination, std::string_view value, int base) {
+	long n = Balau::Impl::stringToLong(value, base);
 	destination = Balau::Impl::safeNumericCast<int>(n);
 }
 
@@ -157,11 +211,28 @@ inline void fromString(int & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToLong(value);
+}
+
+///
+/// Converts the supplied string to a signed long value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(long & destination, std::string_view value, int base) {
+	destination = Balau::Impl::stringToLong(value, base);
 }
 
 ///
@@ -173,11 +244,28 @@ inline void fromString(long & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(long long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToLongLong(value);
+}
+
+///
+/// Converts the supplied string to a signed long long value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(long long & destination, std::string_view value, int base) {
+	destination = Balau::Impl::stringToLongLong(value, base);
 }
 
 ///
@@ -189,11 +277,29 @@ inline void fromString(long long & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(unsigned char & destination, std::string_view value) {
 	unsigned long n = Balau::Impl::stringToUnsignedLong(value);
+	destination = Balau::Impl::safeNumericCast<unsigned char>(n);
+}
+
+///
+/// Converts the supplied string to a unsigned char value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(unsigned char & destination, std::string_view value, int base) {
+	unsigned long n = Balau::Impl::stringToUnsignedLong(value, base);
 	destination = Balau::Impl::safeNumericCast<unsigned char>(n);
 }
 
@@ -206,11 +312,29 @@ inline void fromString(unsigned char & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(unsigned short & destination, std::string_view value) {
 	unsigned long n = Balau::Impl::stringToUnsignedLong(value);
+	destination = Balau::Impl::safeNumericCast<unsigned short>(n);
+}
+
+///
+/// Converts the supplied string to a unsigned short value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(unsigned short & destination, std::string_view value, int base) {
+	unsigned long n = Balau::Impl::stringToUnsignedLong(value, base);
 	destination = Balau::Impl::safeNumericCast<unsigned short>(n);
 }
 
@@ -223,11 +347,29 @@ inline void fromString(unsigned short & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(unsigned int & destination, std::string_view value) {
 	unsigned long n = Balau::Impl::stringToUnsignedLong(value);
+	destination = Balau::Impl::safeNumericCast<unsigned int>(n);
+}
+
+///
+/// Converts the supplied string to a unsigned int value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(unsigned int & destination, std::string_view value, int base) {
+	unsigned long n = Balau::Impl::stringToUnsignedLong(value, base);
 	destination = Balau::Impl::safeNumericCast<unsigned int>(n);
 }
 
@@ -240,11 +382,28 @@ inline void fromString(unsigned int & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(unsigned long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToUnsignedLong(value);
+}
+
+///
+/// Converts the supplied string to a unsigned long value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(unsigned long & destination, std::string_view value, int base) {
+	destination = Balau::Impl::stringToUnsignedLong(value, base);
 }
 
 ///
@@ -256,11 +415,28 @@ inline void fromString(unsigned long & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(unsigned long long & destination, std::string_view value) {
 	destination = Balau::Impl::stringToUnsignedLongLong(value);
+}
+
+///
+/// Converts the supplied string to a unsigned long long value, using the specified numeric base.
+///
+/// A ConversionException will be thrown under the following circumstances:
+///  - the string is empty;
+///  - the string to number conversion fails;
+///  - the resulting numeric value is out of the valid range for the numeric type.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+/// @param base the base of the unsigned short in the supplied string view
+/// @throw ConversionException when the conversion fails
+///
+inline void fromString(unsigned long long & destination, std::string_view value, int base) {
+	destination = Balau::Impl::stringToUnsignedLongLong(value, base);
 }
 
 ///
@@ -272,7 +448,7 @@ inline void fromString(unsigned long long & destination, std::string_view value)
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(float & destination, std::string_view value) {
@@ -288,7 +464,7 @@ inline void fromString(float & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(double & destination, std::string_view value) {
@@ -304,7 +480,7 @@ inline void fromString(double & destination, std::string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(long double & destination, std::string_view value) {
@@ -318,7 +494,7 @@ inline void fromString(long double & destination, std::string_view value) {
 ///  - the string does not contain one of the case insensitive strings "false" or "true".
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString(bool & destination, std::string_view value) {
@@ -342,7 +518,7 @@ inline void fromString(bool & destination, std::string_view value) {
 /// Sets the destination value to a UTF-8 version of the supplied UTF-16 string.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString16(std::string & destination, std::u16string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char, char16_t>(std::u16string(value));
@@ -352,7 +528,7 @@ inline void fromString16(std::string & destination, std::u16string_view value) {
 /// Sets the destination value to the supplied value.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString16(std::u16string & destination, std::u16string_view value) {
 	destination = value;
@@ -362,7 +538,7 @@ inline void fromString16(std::u16string & destination, std::u16string_view value
 /// Sets the destination value to a UTF-32 version of the supplied UTF-16 string.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString16(std::u32string & destination, std::u16string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char32_t, char16_t>(std::u16string(value));
@@ -376,7 +552,7 @@ inline void fromString16(std::u32string & destination, std::u16string_view value
 ///  - the code point does not fit in an ascii char.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(char & destination, std::u16string_view value) {
@@ -391,7 +567,7 @@ inline void fromString16(char & destination, std::u16string_view value) {
 ///  - the string is empty.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(char32_t & destination, std::u16string_view value) {
@@ -408,7 +584,7 @@ inline void fromString16(char32_t & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(signed char & destination, std::u16string_view value) {
@@ -426,7 +602,7 @@ inline void fromString16(signed char & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(short & destination, std::u16string_view value) {
@@ -443,7 +619,7 @@ inline void fromString16(short & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(int & destination, std::u16string_view value) {
@@ -460,7 +636,7 @@ inline void fromString16(int & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(long & destination, std::u16string_view value) {
@@ -477,7 +653,7 @@ inline void fromString16(long & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(long long & destination, std::u16string_view value) {
@@ -494,7 +670,7 @@ inline void fromString16(long long & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(unsigned char & destination, std::u16string_view value) {
@@ -511,7 +687,7 @@ inline void fromString16(unsigned char & destination, std::u16string_view value)
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(unsigned short & destination, std::u16string_view value) {
@@ -528,7 +704,7 @@ inline void fromString16(unsigned short & destination, std::u16string_view value
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(unsigned int & destination, std::u16string_view value) {
@@ -545,7 +721,7 @@ inline void fromString16(unsigned int & destination, std::u16string_view value) 
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(unsigned long & destination, std::u16string_view value) {
@@ -562,7 +738,7 @@ inline void fromString16(unsigned long & destination, std::u16string_view value)
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(unsigned long long & destination, std::u16string_view value) {
@@ -579,7 +755,7 @@ inline void fromString16(unsigned long long & destination, std::u16string_view v
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(float & destination, std::u16string_view value) {
@@ -596,7 +772,7 @@ inline void fromString16(float & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(double & destination, std::u16string_view value) {
@@ -613,7 +789,7 @@ inline void fromString16(double & destination, std::u16string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(long double & destination, std::u16string_view value) {
@@ -628,7 +804,7 @@ inline void fromString16(long double & destination, std::u16string_view value) {
 ///  - the string does not contain one of the case insensitive strings "false" or "true".
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString16(bool & destination, std::u16string_view value) {
@@ -642,7 +818,7 @@ inline void fromString16(bool & destination, std::u16string_view value) {
 /// Sets the destination value to a UTF-8 version of the supplied UTF-32 string.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString32(std::string & destination, std::u32string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char, char32_t>(std::u32string(value));
@@ -652,7 +828,7 @@ inline void fromString32(std::string & destination, std::u32string_view value) {
 /// Sets the destination value to a UTF-16 version of the supplied UTF-32 string.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString32(std::u16string & destination, std::u32string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char16_t, char32_t>(std::u32string(value));
@@ -662,7 +838,7 @@ inline void fromString32(std::u16string & destination, std::u32string_view value
 /// Sets the destination value to the supplied value.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 ///
 inline void fromString32(std::u32string & destination, std::u32string_view value) {
 	destination = value;
@@ -676,7 +852,7 @@ inline void fromString32(std::u32string & destination, std::u32string_view value
 ///  - the code point does not fit in an ascii char.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(char & destination, std::u32string_view value) {
@@ -691,7 +867,7 @@ inline void fromString32(char & destination, std::u32string_view value) {
 ///  - the string is empty.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(char32_t & destination, std::u32string_view value) {
@@ -708,7 +884,7 @@ inline void fromString32(char32_t & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(signed char & destination, std::u32string_view value) {
@@ -725,7 +901,7 @@ inline void fromString32(signed char & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(short & destination, std::u32string_view value) {
@@ -742,7 +918,7 @@ inline void fromString32(short & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(int & destination, std::u32string_view value) {
@@ -759,7 +935,7 @@ inline void fromString32(int & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(long & destination, std::u32string_view value) {
@@ -776,7 +952,7 @@ inline void fromString32(long & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(long long & destination, std::u32string_view value) {
@@ -793,7 +969,7 @@ inline void fromString32(long long & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(unsigned char & destination, std::u32string_view value) {
@@ -810,7 +986,7 @@ inline void fromString32(unsigned char & destination, std::u32string_view value)
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(unsigned short & destination, std::u32string_view value) {
@@ -827,7 +1003,7 @@ inline void fromString32(unsigned short & destination, std::u32string_view value
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(unsigned int & destination, std::u32string_view value) {
@@ -844,7 +1020,7 @@ inline void fromString32(unsigned int & destination, std::u32string_view value) 
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(unsigned long & destination, std::u32string_view value) {
@@ -861,7 +1037,7 @@ inline void fromString32(unsigned long & destination, std::u32string_view value)
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(unsigned long long & destination, std::u32string_view value) {
@@ -878,7 +1054,7 @@ inline void fromString32(unsigned long long & destination, std::u32string_view v
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(float & destination, std::u32string_view value) {
@@ -895,7 +1071,7 @@ inline void fromString32(float & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(double & destination, std::u32string_view value) {
@@ -912,7 +1088,7 @@ inline void fromString32(double & destination, std::u32string_view value) {
 ///  - the resulting numeric value is out of the valid range for the numeric type.
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(long double & destination, std::u32string_view value) {
@@ -927,7 +1103,7 @@ inline void fromString32(long double & destination, std::u32string_view value) {
 ///  - the string does not contain one of the case insensitive strings "false" or "true".
 ///
 /// @param destination the destination value that is set via assignment
-/// @param value the string input
+/// @param value the string view input
 /// @throw ConversionException when the conversion fails
 ///
 inline void fromString32(bool & destination, std::u32string_view value) {
@@ -950,7 +1126,7 @@ template <typename> struct FromString;
 template <> struct FromString<char> {
 	///
 	/// @param destination the destination value that is set via assignment
-	/// @param value the string input
+	/// @param value the string view input
 	/// @throw ConversionException when the conversion fails
 	///
 	template <typename T> void operator () (T & destination, std::string_view value) const {
@@ -966,7 +1142,7 @@ template <> struct FromString<char> {
 template <> struct FromString<char16_t> {
 	///
 	/// @param destination the destination value that is set via assignment
-	/// @param value the string input
+	/// @param value the string view input
 	/// @throw ConversionException when the conversion fails
 	///
 	template <typename T> void operator () (T & destination, std::u16string_view value) const {
@@ -982,7 +1158,7 @@ template <> struct FromString<char16_t> {
 template <> struct FromString<char32_t> {
 	///
 	/// @param destination the destination value that is set via assignment
-	/// @param value the string input
+	/// @param value the string view input
 	/// @throw ConversionException when the conversion fails
 	///
 	template <typename T> void operator () (T & destination, std::u32string_view value) const {

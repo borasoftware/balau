@@ -146,6 +146,8 @@ void unzipperTestImpl(const Resource::File & file,
 		assertThat(indices.find(actualInfo.index) == indices.end(), is(true));
 		indices.insert(actualInfo.index);
 		actualInfo.index = 0;
+		actualInfo.modificationTime = std::chrono::system_clock::time_point();
+		expectedInfo.modificationTime = std::chrono::system_clock::time_point();
 
 		// Zero the encryption method in the expected if the test is not using encryption.
 		if (pw.empty()) {
