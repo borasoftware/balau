@@ -35,21 +35,18 @@ struct UrlDecode {
 	/// @return a hash map of split parameters, represented by strings
 	/// @throw NetworkException if the parameter list was invalid
 	///
-	static std::unordered_map<std::string_view, std::string_view> splitAndDecode(const std::string_view & data,
-	                                                                             bool validateUtf8 = true,
-	                                                                             bool throwOnError = false) {
-		std::unordered_map<std::string_view, std::string_view> decodedParameters;
+	static std::unordered_map<std::string, std::string> splitAndDecode(const std::string_view & data,
+	                                                                   bool validateUtf8 = true,
+	                                                                   bool throwOnError = false) {
+		std::unordered_map<std::string, std::string> decodedParameters;
 
 		const auto parameters = split(data);
 
 		for (auto iter = parameters.begin(); iter != parameters.end(); ++iter) {
-			auto key = iter->first;
-			auto value = iter->second;
+			auto decodedKey = decode(iter->first, validateUtf8, throwOnError);
+			auto decodedValue = decode(iter->second, validateUtf8, throwOnError);
 
-			auto decodedKey = decode(key, validateUtf8, throwOnError);
-			auto decodedValue = decode(value, validateUtf8, throwOnError);
-
-			decodedParameters[decodedKey] = decodedValue;
+			decodedParameters.insert(std::make_pair(std::move(decodedKey), std::move(decodedValue)));
 		}
 
 		return decodedParameters;

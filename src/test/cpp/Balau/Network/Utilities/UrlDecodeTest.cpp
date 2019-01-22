@@ -36,10 +36,12 @@ void UrlDecodeTest::splitAndDecodeTest() {
 		"=utf-8+%c2%a9%c3%a7%e0%a6%88+characters"
 	);
 
-	std::unordered_map<std::string_view, std::string_view> expected = {
+	std::unordered_map<std::string, std::string> expected = {
 		  std::make_pair("no-special-characters", "# beginning and space and other[@]characters")
 		, std::make_pair("all !#$&'()*+,/:;=?@[] reserved", "utf-8 ©çঈ characters")
 	};
+
+	assertThat(actual, is(expected));
 
 	// TODO add tests for boolean arguments.
 }

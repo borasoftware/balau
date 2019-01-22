@@ -53,7 +53,7 @@ class EmailSendingHttpWebApp : public HttpWebApp {
 	/// function supplied to the constructor is called to translate them into
 	/// the email body to be sent.
 	///
-	public: using ParameterMap = std::unordered_map<std::string_view, std::string_view> ;
+	public: using ParameterMap = std::unordered_map<std::string, std::string> ;
 
 	///
 	/// The type of the body generator function.
