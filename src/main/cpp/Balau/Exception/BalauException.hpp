@@ -164,4 +164,19 @@ class BugException : public BalauException {
 
 } // namespace Balau::Exception
 
+///
+/// Catch all to-string function for std::exception.
+///
+inline std::string toString(const std::exception & e) {
+	return e.what();
+}
+
+///
+/// Catch all to-string function for std::exception.
+///
+template <typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const std::exception & e) {
+	return toString<AllocatorT>(e.what());
+}
+
 #endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION

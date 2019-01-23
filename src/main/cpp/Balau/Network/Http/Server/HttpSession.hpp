@@ -89,10 +89,6 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 	public: template <typename BodyT> void sendResponse(Response<BodyT> && response,
 	                                                    const BalauLogger & log,
 	                                                    const std::string & extraLogging = "") {
-		// 2018-12-15 18:08:12.894435212 [-0] INFO - http.server -
-		//
-		// 127.0.0.1 - GET HTTP/1.1 - 302   bytes - "/redirect/message-sent.html" [Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0]
-
 		BalauBalauLogInfo(
 			  log
 			, "{} - {} {} {} - {} {} - \"{}\"{} - [{}]"
@@ -109,8 +105,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 
 		// Set the session cookie.
 		response.insert(
-			  Field::set_cookie
-			, serverConfiguration->sessionCookieName + "=" + clientSession->sessionId + "; HttpOnly"
+			Field::set_cookie, serverConfiguration->sessionCookieName + "=" + clientSession->sessionId + "; HttpOnly"
 		);
 
 		// Transfer ownership of the response in preparation for the asynchronous call.
@@ -153,29 +148,45 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 
 	// Dispatch the request to the appropriate handler method.
 	private: void handleRequest(const StringRequest & request) {
-		// The variables generated and consumed during this request.
-		std::map<std::string, std::string> variables;
+		try {
+			// The variables generated and consumed during this request.
+			std::map<std::string, std::string> variables;
 
-		switch (request.method()) {
-			case Method::get: {
-				serverConfiguration->httpHandler->handleGetRequest(*this, request, variables);
-				break;
-			}
+			switch (request.method()) {
+				case Method::get: {
+					serverConfiguration->httpHandler->handleGetRequest(*this, request, variables);
+					break;
+				}
 
-			case Method::head: {
-				serverConfiguration->httpHandler->handleHeadRequest(*this, request, variables);
-				break;
-			}
+				case Method::head: {
+					serverConfiguration->httpHandler->handleHeadRequest(*this, request, variables);
+					break;
+				}
 
-			case Method::post: {
-				serverConfiguration->httpHandler->handlePostRequest(*this, request, variables);
-				break;
-			}
+				case Method::post: {
+					serverConfiguration->httpHandler->handlePostRequest(*this, request, variables);
+					break;
+				}
 
-			default: {
-				sendResponse(HttpWebApp::createBadRequestResponse(*this, request, "Unsupported HTTP method."));
-				break;
+				default: {
+					sendResponse(HttpWebApp::createBadRequestResponse(*this, request, "Unsupported HTTP method."));
+					break;
+				}
 			}
+		} catch (const std::exception & e) {
+			BalauBalauLogError(serverConfiguration->logger, "Exception thrown during request: {}", e);
+			sendResponse(
+				HttpWebApp::createServerErrorResponse(
+					*this, request, "The server experienced an error during the request. A report has been logged."
+				)
+			);
+		} catch (...) {
+			BalauBalauLogError(serverConfiguration->logger, "Unknown exception thrown during request: {}");
+			sendResponse(
+				HttpWebApp::createServerErrorResponse(
+					*this, request, "The server experienced an error during the request. A report has been logged."
+				)
+			);
 		}
 	}
 
