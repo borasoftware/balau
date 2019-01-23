@@ -527,24 +527,26 @@ void EnvironmentConfigurationTest::includedFilesConfig() {
 	assertThat(abc->getValue<std::string>("fourth"), is("4"));
 }
 
-void EnvironmentConfigurationTest::customConfigurationTypes() {
-	const auto envSpec = Resource::StringUri("listen : endpoint");
-	const auto env     = Resource::StringUri("listen = 192.168.1.23:4567");
+void EnvironmentConfigurationTest::balauConfig() {
+	// Check custom configuration types registration.
+
+	const auto envSpec1 = Resource::StringUri("listen : endpoint");
+	const auto env1     = Resource::StringUri("listen = 192.168.1.23:4567");
 
 	// Injector instantiation without custom type registration.
 	assertThat(
-		  [env, envSpec] () { Injector::create(EnvironmentConfiguration(env, envSpec)); }
+		  [env1, envSpec1] () { Injector::create(EnvironmentConfiguration(env1, envSpec1)); }
 		, throws<Exception::EnvironmentConfigurationException>()
 	);
 
 	EnvironmentConfiguration::registerValueType<Endpoint>("endpoint");
 
-	auto injector = Injector::create(EnvironmentConfiguration(env, envSpec));
+	auto injector1 = Injector::create(EnvironmentConfiguration(env1, envSpec1));
 
-	assertThat(injector->getValue<Endpoint>("listen"), is(makeEndpoint("192.168.1.23", 4567U)));
-}
+	assertThat(injector1->getValue<Endpoint>("listen"), is(makeEndpoint("192.168.1.23", 4567U)));
 
-void EnvironmentConfigurationTest::balauConfig() {
+	// ///////////////// ///////////////// ///////////////// //
+
 	// The Balau environment configuration property specifications.
 	const auto srcFolder = TestResources::BalauSourceMainFolder;
 	Resource::File specs = srcFolder / "resources" / "BalauConfig" / "balau.thconf";
@@ -553,9 +555,6 @@ void EnvironmentConfigurationTest::balauConfig() {
 	const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
 	Resource::File env = resourceFolder / "Application" / "EnvironmentConfiguration" / "testenv" / "env.hconf";
 	Resource::File creds = resourceFolder / "Application" / "EnvironmentConfiguration" / "testenv" / "creds.hconf";
-
-	// Register non-standard type.
-	EnvironmentConfiguration::registerValueType<Endpoint>("endpoint");
 
 	auto injector = Injector::create(EnvironmentConfiguration({ env, creds }, { specs }));
 

@@ -44,7 +44,6 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 		registerTest(&EnvironmentConfigurationTest::mixedMultipleWithDefaults,    "mixedMultipleWithDefaults");
 
 		registerTest(&EnvironmentConfigurationTest::includedFilesConfig,          "includedFilesConfig");
-		registerTest(&EnvironmentConfigurationTest::customConfigurationTypes,     "customConfigurationTypes");
 
 		registerTest(&EnvironmentConfigurationTest::balauConfig,                  "balauConfig");
 	}
@@ -75,7 +74,6 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	void mixedMultipleWithDefaults();
 
 	void includedFilesConfig();
-	void customConfigurationTypes();
 
 	void balauConfig();
 };
