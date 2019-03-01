@@ -39,7 +39,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Container/SynchronizedQueue.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Container/SynchronizedQueue.hpp></para>
 
 		<para>The construction of a synchronised queue is made by the default constructor.</para>
 

@@ -48,7 +48,7 @@
 
 		<para>Note also that as shared memory is typically allocated in 4k pages, a whole page will be allocated even if your object size is a single byte. It is thus not efficient to create a large number of managed/unmanaged shared memory object instances each containing a small object. If a large number of small objects need to be shared across multiple processes, the efficient approach is to create a holder class of these objects and then to create a single managed/unmanaged shared memory object of the holder.</para>
 
-		<para>These template classes encapsulate calls to the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_66_0/doc/html/interprocess.html">Boost Interprocess library</ref> in order to manage the lifetime of a shared memory object, and provide a simple API to construct/open and use the object.</para>
+		<para>These template classes encapsulate calls to the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_68_0/doc/html/interprocess.html">Boost Interprocess library</ref> in order to manage the lifetime of a shared memory object, and provide a simple API to construct/open and use the object.</para>
 
 		<para>The shared memory object classes are useful when a simple approach to creating a typed shared memory object is desired. They can also act as a tutorial introduction into using shared memory via the Boost Interprocess library. More advance use of shared memory can then follow by direct use of the Boost library.</para>
 

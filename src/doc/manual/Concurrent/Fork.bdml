@@ -55,7 +55,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Concurrent/Fork.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Concurrent/Fork.hpp></para>
 
 		<h2>Forking</h2>
 

@@ -41,7 +41,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Concurrent/CyclicBarrier.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Concurrent/CyclicBarrier.hpp></para>
 
 		<para>Using the cyclic barrier is simple. The barrier is constructed or reconfigured with the number of threads that will wait before the barrier will release the threads and reset.</para>
 

@@ -35,13 +35,13 @@
 
 		<para>A blocking, shared memory queue that uses the Boost Interprocess library.</para>
 
-		<para>This class provides a shared memory backed blocking queue and implements the <emph>BlockingQueue</emph> API. The class encapsulates calls to the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_66_0/doc/html/interprocess.html">Boost Interprocess library</ref>, which create, use, and delete a shared memory queue, and has additional sequencing and chunking management logic. The sequencing and chunking logic manages the enqueueing and dequeueing of oversize objects, which require multiple shared memory queue send and receive operations that may be out of order and/or interleaved with other enqueued buffers.</para>
+		<para>This class provides a shared memory backed blocking queue and implements the <emph>BlockingQueue</emph> API. The class encapsulates calls to the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_68_0/doc/html/interprocess.html">Boost Interprocess library</ref>, which create, use, and delete a shared memory queue, and has additional sequencing and chunking management logic. The sequencing and chunking logic manages the enqueueing and dequeueing of oversize objects, which require multiple shared memory queue send and receive operations that may be out of order and/or interleaved with other enqueued buffers.</para>
 
-		<para>The implementation uses the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_66_0/libs/serialization/doc/index.html">Boost Serialization library</ref> for marshalling and unmarshalling of objects. In order to use the queue, the object type <emph>T</emph> must provide Boost <emph>serialize</emph> or <emph>save</emph>/<emph>load</emph> methods.</para>
+		<para>The implementation uses the <ref type="raw" new="true" url="https://www.boost.org/doc/libs/1_68_0/libs/serialization/doc/index.html">Boost Serialization library</ref> for marshalling and unmarshalling of objects. In order to use the queue, the object type <emph>T</emph> must provide Boost <emph>serialize</emph> or <emph>save</emph>/<emph>load</emph> methods.</para>
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Interprocess/SharedMemoryQueue.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Interprocess/SharedMemoryQueue.hpp></para>
 
 		<para>The queue is used in the same way as any other <emph>BlockingQueue</emph> implementation.</para>
 

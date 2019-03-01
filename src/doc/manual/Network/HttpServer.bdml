@@ -54,7 +54,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpServer.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/HttpServer.hpp></para>
 
 		<para class="cpp-define-statement">Environment configuration: <ref url="Environment/http.server">http.server</ref></para>
 

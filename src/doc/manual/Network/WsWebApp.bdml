@@ -37,7 +37,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/WsWebApp.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Network/Http/Server/WsWebApp.hpp></para>
 
 		<para>This documentation chapter is pending.</para>
 

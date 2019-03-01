@@ -37,7 +37,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/System/Sleep.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/System/Sleep.hpp></para>
 
 		<para>The following static methods are declared.</para>
 

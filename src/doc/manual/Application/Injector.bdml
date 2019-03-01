@@ -85,7 +85,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Application/Injector.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Application/Injector.hpp></para>
 
 		<para>The steps involved in creating a software application based on the Balau injector are:</para>
 

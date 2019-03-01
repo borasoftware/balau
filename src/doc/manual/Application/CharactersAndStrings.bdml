@@ -91,7 +91,7 @@
 
 		<h1>Character utilities</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Type/Character.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Type/Character.hpp></para>
 
 		<para>Character utility functions for the following themes are provided:</para>
 
@@ -281,7 +281,7 @@
 
 		<h1>Universal to-string</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Type/ToString.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Type/ToString.hpp></para>
 
 		<para>This section outlines a development approach and supporting code in the Balau library for a universal to-string function for each of the supported unicode encoding string types. These functions are used throughout the Balau library and will propagate to application code through the Balau header files. The implementation allows application developers to define additional to-string function overloads for their own types and any other types for which they require custom to-string function implementations.</para>
 
@@ -421,7 +421,7 @@
 
 		<h1>Universal from-string</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Type/FromString.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Type/FromString.hpp></para>
 
 		<para>This section outlines a development approach and supporting code in the Balau library for a universal from-string function for each of the supported unicode encoding string types. The universal <emph>from-string</emph> functions provide a standard way to define string to object type conversions that can be used within library components. Similarly to the universal to-string functions, these functions are used throughout the Balau library, will propagate to application code, and application developers can define additional to-string function overloads for their own types.</para>
 

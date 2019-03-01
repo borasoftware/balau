@@ -41,7 +41,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/System/ThreadName.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/System/ThreadName.hpp></para>
 
 		<para>The <emph>ThreadName</emph> namespace class provides two static methods, one for setting the current thread's name and another to get the current thread's name.</para>
 

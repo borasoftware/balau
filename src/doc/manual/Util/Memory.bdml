@@ -37,7 +37,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Util/Memory.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Util/Memory.hpp></para>
 
 		<para>The following utilities are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1Memory.html">API documentation</ref> page.</para>
 

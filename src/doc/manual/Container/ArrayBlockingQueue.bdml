@@ -39,7 +39,7 @@
 
 		<h1>Quick start</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Container/ArrayBlockingQueue.hpp</para>
+		<para class="cpp-define-statement">#include &lt;Balau/Container/ArrayBlockingQueue.hpp></para>
 
 		<para>To construct an array blocking queue, specify the capacity of the queue via the constructor.</para>
 
