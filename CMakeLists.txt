@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #
 # Also, the BalauConfigVersion.cmake file needs updating to the correct version components.
 #
-project(Balau VERSION 2019.1.1)
+project(Balau VERSION 2019.2.1)
 
 ############################# CMAKE CONFIGURATION #############################
 
