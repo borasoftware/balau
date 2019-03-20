@@ -18,7 +18,7 @@ namespace Balau {
 namespace Util {
 
 struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
-	explicit PrettyPrintTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	PrettyPrintTest() {
 		registerTest(&PrettyPrintTest::fixed,        "fixed");
 		registerTest(&PrettyPrintTest::scientific,   "scientific");
 		registerTest(&PrettyPrintTest::metricPrefix, "metricPrefix");

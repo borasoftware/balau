@@ -33,6 +33,17 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2019.3.1</h1>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>singleton test runner;</entry>
+			<entry>automatic instantiation and registration of test groups;</entry>
+			<entry>test runner run methods that parse argc/argv;</entry>
+			<entry>selective test running via globbed test name lists.</entry>
+		</bullets>
+
 		<h1>V2019.2.1</h1>
 
 		<para>New features in this release:</para>

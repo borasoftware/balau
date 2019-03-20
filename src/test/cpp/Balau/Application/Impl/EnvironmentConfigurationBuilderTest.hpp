@@ -18,7 +18,7 @@ namespace Balau {
 namespace Impl {
 
 struct EnvironmentConfigurationBuilderTest : public Testing::TestGroup<EnvironmentConfigurationBuilderTest> {
-	explicit EnvironmentConfigurationBuilderTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	EnvironmentConfigurationBuilderTest() {
 		registerTest(&EnvironmentConfigurationBuilderTest::empty,             "empty");
 		registerTest(&EnvironmentConfigurationBuilderTest::mixed,             "mixed");
 		registerTest(&EnvironmentConfigurationBuilderTest::mixedWithDefaults, "mixedWithDefaults");

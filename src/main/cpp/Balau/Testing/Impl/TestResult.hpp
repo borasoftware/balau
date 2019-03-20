@@ -24,41 +24,51 @@ namespace Balau::Testing::Impl {
 // be updated if this class is changed.
 //
 class TestResult {
+	public: enum class Result {
+		Success, Failure, Ignored
+	};
+
 	public: long long duration;
 	public: unsigned int groupIndex;
 	public: unsigned int testIndex;
-	public: bool success;
+	public: Result result;
 	public: std::string resultText;
 
 	public: TestResult()
 		: duration(-1)
 		, groupIndex(0)
 		, testIndex(0)
-		, success(false) {}
+		, result(Result::Ignored) {}
 
 	public: TestResult(long long duration_,
 	                   unsigned int groupIndex_,
 	                   unsigned int testIndex_,
-	                   bool success_,
+	                   Result result_,
 	                   std::string && resultText_)
 		: duration(duration_)
 		, groupIndex(groupIndex_)
 		, testIndex(testIndex_)
-		, success(success_)
+		, result(result_)
 		, resultText(std::move(resultText_)){}
+
+	public: TestResult(unsigned int groupIndex_, unsigned int testIndex_)
+		: duration(0)
+		, groupIndex(groupIndex_)
+		, testIndex(testIndex_)
+		, result(Result::Ignored) {}
 
 	public: TestResult(TestResult && rhs) noexcept
 		: duration(rhs.duration)
 		, groupIndex(rhs.groupIndex)
 		, testIndex(rhs.testIndex)
-		, success(rhs.success)
+		, result(rhs.result)
 		, resultText(std::move(rhs.resultText)) {}
 
 	public: TestResult & operator = (TestResult && rhs) noexcept {
 		duration = rhs.duration;
 		groupIndex = rhs.groupIndex;
 		testIndex = rhs.testIndex;
-		success = rhs.success;
+		result = rhs.result;
 		resultText = std::move(rhs.resultText);
 		return *this;
 	}
@@ -67,7 +77,7 @@ class TestResult {
 		duration = rhs.duration;
 		groupIndex = rhs.groupIndex;
 		testIndex = rhs.testIndex;
-		success = rhs.success;
+		result = rhs.result;
 		resultText += rhs.resultText;
 	}
 
@@ -77,7 +87,7 @@ class TestResult {
 			& BoostSerialization(duration)
 			& BoostSerialization(groupIndex)
 			& BoostSerialization(testIndex)
-			& BoostSerialization(success)
+			& BoostSerialization(result)
 			& BoostSerialization(resultText);
 	}
 }; // class TestResult

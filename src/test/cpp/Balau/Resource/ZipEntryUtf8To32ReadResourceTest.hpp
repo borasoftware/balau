@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct ZipEntryUtf8To32ReadResourceTest : public Testing::TestGroup<ZipEntryUtf8To32ReadResourceTest> {
-	explicit ZipEntryUtf8To32ReadResourceTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	explicit ZipEntryUtf8To32ReadResourceTest() {
 		registerTest(&ZipEntryUtf8To32ReadResourceTest::test, "test");
 	}
 

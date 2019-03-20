@@ -16,7 +16,7 @@
 namespace Balau {
 
 struct CharacterTest : public Testing::TestGroup<CharacterTest> {
-	explicit CharacterTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	CharacterTest() {
 		//// Classification ////
 
 		registerTest(&CharacterTest::isLower,                       "isLower");

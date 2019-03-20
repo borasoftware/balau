@@ -14,7 +14,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isNotNull;
 
@@ -34,24 +33,24 @@ void populateUIntTrie(UIntTrie & trie, unsigned int dataCounter = 0) {
 
 	UIntTrieNode & root2 = trie.root();
 
-	assertThat(&root1, is(&root2));
-	assertThat(root1.count(), is(3U));
+	AssertThat(&root1, is(&root2));
+	AssertThat(root1.count(), is(3U));
 
 	UIntTrieNode & child0 = root2[0];
 
-	assertThat(child0.count(), is(0U));
+	AssertThat(child0.count(), is(0U));
 
 	child0.add(dataCounter++);
 
-	assertThat(child0.count(), is(1U));
+	AssertThat(child0.count(), is(1U));
 
 	child0.add(dataCounter++);
 
-	assertThat(child0.count(), is(2U));
+	AssertThat(child0.count(), is(2U));
 
 	child0.add(dataCounter++);
 
-	assertThat(child0.count(), is(3U));
+	AssertThat(child0.count(), is(3U));
 
 	UIntTrieNode & child1 = root2[1];
 
@@ -97,23 +96,23 @@ void assertUIntTrie(const UIntTrie & trie, unsigned int dataCounter = 0) {
 	const UIntTrieNode & child1 = root[1];
 	const UIntTrieNode & child11 = child1[1];
 
-	assertThat("R", root.value, is(dataCounter++));
+	AssertThat("R", root.value, is(dataCounter++));
 
-	assertThat("C0", root[0].value, is(dataCounter++));
-	assertThat("C1", root[1].value, is(dataCounter++));
-	assertThat("C2", root[2].value, is(dataCounter++));
+	AssertThat("C0", root[0].value, is(dataCounter++));
+	AssertThat("C1", root[1].value, is(dataCounter++));
+	AssertThat("C2", root[2].value, is(dataCounter++));
 
-	assertThat("C00", child0[0].value, is(dataCounter++));
-	assertThat("C01", child0[1].value, is(dataCounter++));
-	assertThat("C02", child0[2].value, is(dataCounter++));
+	AssertThat("C00", child0[0].value, is(dataCounter++));
+	AssertThat("C01", child0[1].value, is(dataCounter++));
+	AssertThat("C02", child0[2].value, is(dataCounter++));
 
-	assertThat("C10", child1[0].value, is(dataCounter++));
-	assertThat("C11", child1[1].value, is(dataCounter++));
-	assertThat("C12", child1[2].value, is(dataCounter++));
+	AssertThat("C10", child1[0].value, is(dataCounter++));
+	AssertThat("C11", child1[1].value, is(dataCounter++));
+	AssertThat("C12", child1[2].value, is(dataCounter++));
 
-	assertThat("C110", child11[0].value, is(dataCounter++));
-	assertThat("C111", child11[1].value, is(dataCounter++));
-	assertThat("C112", child11[2].value, is(dataCounter));
+	AssertThat("C110", child11[0].value, is(dataCounter++));
+	AssertThat("C111", child11[1].value, is(dataCounter++));
+	AssertThat("C112", child11[2].value, is(dataCounter));
 }
 
 void ObjectTrieTest::uIntTrieBuild() {
@@ -177,7 +176,7 @@ void ObjectTrieTest::uIntTreeDepthIterate() {
 	size_t iterationCount = 0;
 
 	while (iter != end) {
-		assertThat(iter->value, is(UINT_DEPTH_ITERATION_DATA[iterationCount]));
+		AssertThat(iter->value, is(UINT_DEPTH_ITERATION_DATA[iterationCount]));
 		++iterationCount;
 		++iter;
 	}
@@ -189,7 +188,7 @@ void ObjectTrieTest::uIntTreeDepthIterateForLoop() {
 	size_t iterationCount = 0;
 
 	for (UIntTrieNode & node : trie) {
-		assertThat(node.value, is(UINT_DEPTH_ITERATION_DATA[iterationCount]));
+		AssertThat(node.value, is(UINT_DEPTH_ITERATION_DATA[iterationCount]));
 		++iterationCount;
 	}
 }
@@ -202,7 +201,7 @@ void ObjectTrieTest::uIntTreeBreadthIterate() {
 	size_t iterationCount = 0;
 
 	while (iter != end) {
-		assertThat(iter->value, is(UINT_BREADTH_ITERATION_DATA[iterationCount]));
+		AssertThat(iter->value, is(UINT_BREADTH_ITERATION_DATA[iterationCount]));
 		++iterationCount;
 		++iter;
 	}
@@ -235,41 +234,41 @@ void ObjectTrieTest::fluentBuild() {
 		, Node::child({ 'e', 35 })
 	);
 
-	assertThat(trie.root().count(), is(3U));
+	AssertThat(trie.root().count(), is(3U));
 
-	assertThat(trie.root().value, is(Value { '\0', 0 }));
+	AssertThat(trie.root().value, is(Value { '\0', 0 }));
 
 	auto & c0 = trie[0];
 	auto & c1 = trie[1];
 	auto & c2 = trie[2];
 
-	assertThat(c0.count(), is(4U));
-	assertThat(c1.count(), is(2U));
-	assertThat(c2.count(), is(5U));
+	AssertThat(c0.count(), is(4U));
+	AssertThat(c1.count(), is(2U));
+	AssertThat(c2.count(), is(5U));
 
-	assertThat(c0.value, is(Value { 'a', 1 }));
-	assertThat(c1.value, is(Value { 'b', 2 }));
-	assertThat(c2.value, is(Value { 'c', 3 }));
+	AssertThat(c0.value, is(Value { 'a', 1 }));
+	AssertThat(c1.value, is(Value { 'b', 2 }));
+	AssertThat(c2.value, is(Value { 'c', 3 }));
 
-	assertThat(c0[0].value, is(Value { 'a', 11 }));
-	assertThat(c0[1].value, is(Value { 'b', 12 }));
-	assertThat(c0[2].value, is(Value { 'c', 13 }));
-	assertThat(c0[3].value, is(Value { 'd', 14 }));
+	AssertThat(c0[0].value, is(Value { 'a', 11 }));
+	AssertThat(c0[1].value, is(Value { 'b', 12 }));
+	AssertThat(c0[2].value, is(Value { 'c', 13 }));
+	AssertThat(c0[3].value, is(Value { 'd', 14 }));
 
-	assertThat(c1[0].value, is(Value { 'a', 21 }));
-	assertThat(c1[1].value, is(Value { 'b', 22 }));
+	AssertThat(c1[0].value, is(Value { 'a', 21 }));
+	AssertThat(c1[1].value, is(Value { 'b', 22 }));
 
-	assertThat(c2[0].value, is(Value { 'a', 31 }));
-	assertThat(c2[1].value, is(Value { 'b', 32 }));
-	assertThat(c2[2].value, is(Value { 'c', 33 }));
-	assertThat(c2[3].value, is(Value { 'd', 34 }));
-	assertThat(c2[4].value, is(Value { 'e', 35 }));
+	AssertThat(c2[0].value, is(Value { 'a', 31 }));
+	AssertThat(c2[1].value, is(Value { 'b', 32 }));
+	AssertThat(c2[2].value, is(Value { 'c', 33 }));
+	AssertThat(c2[3].value, is(Value { 'd', 34 }));
+	AssertThat(c2[4].value, is(Value { 'e', 35 }));
 
-	assertThat(c1[1].count(), is(3U));
+	AssertThat(c1[1].count(), is(3U));
 
-	assertThat(c1[1][0].value, is(Value { 'a', 221 }));
-	assertThat(c1[1][1].value, is(Value { 'b', 222 }));
-	assertThat(c1[1][2].value, is(Value { 'c', 223 }));
+	AssertThat(c1[1][0].value, is(Value { 'a', 221 }));
+	AssertThat(c1[1][1].value, is(Value { 'b', 222 }));
+	AssertThat(c1[1][2].value, is(Value { 'c', 223 }));
 }
 
 } // namespace Container

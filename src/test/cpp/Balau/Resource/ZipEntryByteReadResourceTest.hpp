@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct ZipEntryByteReadResourceTest : public Testing::TestGroup<ZipEntryByteReadResourceTest> {
-	explicit ZipEntryByteReadResourceTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	ZipEntryByteReadResourceTest() {
 		registerTest(&ZipEntryByteReadResourceTest::test, "test");
 	}
 

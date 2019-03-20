@@ -734,6 +734,13 @@ template <typename T> class ObjectTrieNode {
 	}
 
 	///
+	/// Returns true if the trie node is empty.
+	///
+	public: bool empty() const {
+		return children.empty();
+	}
+
+	///
 	/// Get a depth iterator positioned at the beginning of the trie.
 	///
 	public: ObjectTrieNode<T> * begin() {
@@ -1676,6 +1683,13 @@ template <typename T> class ObjectTrie {
 	}
 
 	///
+	/// Returns true if the trie is empty.
+	///
+	public: bool empty() const {
+		return trieRoot.children.empty();
+	}
+
+	///
 	/// Get a depth iterator positioned at the beginning of the trie.
 	///
 	public: DepthIterator begin() {
@@ -1764,7 +1778,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The default operator == compare function is used to determine equality.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the exact node if all
 	/// values were found or nullptr if not all values were matched.
 	///
@@ -1782,7 +1796,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The default operator == compare function is used to determine equality.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the exact node if all
 	/// values were found or nullptr if not all values were matched.
 	///
@@ -1800,7 +1814,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The supplied search vector contains values that are used in the custom compare function.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the exact node if all
 	/// values were found or nullptr if not all values were matched.
 	///
@@ -1847,7 +1861,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The supplied search vector contains values that are used in the custom compare function.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the exact node if all
 	/// values were found or nullptr if not all values were matched.
 	///
@@ -1874,7 +1888,7 @@ template <typename T> class ObjectTrie {
 			++iter;
 		}
 
-		const ObjectTrieNode<T> * node = &trieRoot;
+		const ObjectTrieNode<T> * node = &trieRoot;;
 
 		while (iter != values.end()) {
 			node = node->template find<U, CompareT>(*iter, compare);
@@ -1895,7 +1909,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The default operator == compare function is used to determine equality.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Any nodes that are not found are created.
 	/// Returns the node that was found or the created node if the node or one or more of its
 	/// parent were not present.
@@ -1918,7 +1932,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The supplied search vector contains values that are used in the custom compare function.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Any nodes that are not found are created.
 	/// Returns the node that was found or the created node if the node or one or more of its
 	/// parent were not present.
@@ -1936,12 +1950,13 @@ template <typename T> class ObjectTrie {
 	///
 	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
 	ObjectTrieNode<T> & findOrAdd(const ContainerT<U, UC ...> & values, CompareT compare) {
-		auto iter = values.begin();
 		ObjectTrieNode<T> * node = &trieRoot;
 
 		if (values.empty()) {
 			return *node;
 		}
+
+		auto iter = values.begin();
 
 		while (iter != values.end()) {
 			node = &node->template findOrAddChild<U, CompareT>(*iter, compare);
@@ -1959,7 +1974,7 @@ template <typename T> class ObjectTrie {
 	/// The create function is used to create new nodes. The create function's argument
 	/// is the current value as supplied in the values container.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Any nodes that are not found are created.
 	/// Returns the node that was found or the created node if the node or one or more of its
 	/// parent were not present.
@@ -1978,12 +1993,13 @@ template <typename T> class ObjectTrie {
 	///
 	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT, typename Create>
 	ObjectTrieNode<T> & findOrAdd(const ContainerT<U, UC ...> & values, CompareT compare, Create create) {
-		auto iter = values.begin();
 		ObjectTrieNode<T> * node = &trieRoot;
 
 		if (values.empty()) {
 			return *node;
 		}
+
+		auto iter = values.begin();
 
 		while (iter != values.end()) {
 			node = &node->template findOrAddChild<U, CompareT>(*iter, compare, create);
@@ -1998,7 +2014,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The default operator == compare function is used to determine equality.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the last matched node
 	/// or the exact node if all values were found.
 	///
@@ -2018,7 +2034,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The default operator == compare function is used to determine equality.
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the last matched node
 	/// or the exact node if all values were found.
 	///
@@ -2038,7 +2054,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The supplied comparator is used to determine equality (true == equal).
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the last matched node
 	/// or the exact node if all values were found.
 	///
@@ -2053,31 +2069,38 @@ template <typename T> class ObjectTrie {
 	///
 	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
 	ObjectTrieNode<T> * findNearest(const ContainerT<U, UC ...> & values, CompareT compare, bool skipRoot = true) {
+		if (values.empty()) {
+			return nullptr;
+		}
+
 		auto iter = values.begin();
+		ObjectTrieNode<T> * nodeToSearch = &trieRoot;
+		ObjectTrieNode<T> * currentNode = nullptr;
 
 		if (!skipRoot) {
-			if (iter == values.end() || !compare(trieRoot.value, *iter)) {
+			if (!compare(trieRoot.value, *iter)) {
 				return nullptr;
 			}
 
 			++iter;
+			currentNode = &trieRoot;
 		}
 
-		ObjectTrieNode<T> * node = &trieRoot;
 		ObjectTrieNode<T> * nextNode;
 
 		while (iter != values.end()) {
-			nextNode = node->find(*iter, compare);
+			nextNode = nodeToSearch->find(*iter, compare);
 
 			if (nextNode == nullptr) {
-				return node;
+				return currentNode;
 			}
 
 			++iter;
-			node = nextNode;
+			currentNode = nextNode;
+			nodeToSearch = nextNode;
 		}
 
-		return node;
+		return currentNode;
 	}
 
 	///
@@ -2085,7 +2108,7 @@ template <typename T> class ObjectTrie {
 	///
 	/// The supplied comparator is used to determine equality (true == equal).
 	///
-	/// Descends into the trie, locating at each node the first child which matches
+	/// Descends into the trie, locating at each node the first child that matches
 	/// the next value in the supplied value chain. Returns the last matched node
 	/// or the exact node if all values were found.
 	///
@@ -2100,31 +2123,126 @@ template <typename T> class ObjectTrie {
 	///
 	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
 	const ObjectTrieNode<T> * findNearest(const ContainerT<U, UC ...> & values, CompareT compare, bool skipRoot = true) const {
-		auto iter = values.begin();
+		if (values.empty()) {
+			return nullptr;
+		}
 
-		if (iter == values.end() || !skipRoot) {
+		auto iter = values.begin();
+		const ObjectTrieNode<T> * nodeToSearch = &trieRoot;
+		const ObjectTrieNode<T> * currentNode = nullptr;
+
+		if (!skipRoot) {
 			if (!compare(trieRoot.value, *iter)) {
 				return nullptr;
 			}
 
 			++iter;
+			currentNode = &trieRoot;
 		}
 
-		const ObjectTrieNode<T> * node = &trieRoot;
 		const ObjectTrieNode<T> * nextNode;
 
 		while (iter != values.end()) {
-			nextNode = node->find(*iter, compare);
+			nextNode = nodeToSearch->find(*iter, compare);
 
 			if (nextNode == nullptr) {
-				return node;
+				return currentNode;
 			}
 
 			++iter;
-			node = nextNode;
+			currentNode = nextNode;
+			nodeToSearch = nextNode;
 		}
 
-		return node;
+		return currentNode;
+	}
+
+	///
+	/// Descend into the trie, locating matches of the supplied values.
+	///
+	/// The default operator == compare function is used to determine equality.
+	///
+	/// Descends into the trie, locating at each node the first child that matches
+	/// the next value in the supplied value chain. Returns the last matched node
+	/// if the node is a leaf node.
+	///
+	/// Returns nullptr if no matching leaf node was found.
+	///
+	/// @param values a vector of values to search for
+	/// @param skipRoot does not check the first value against the root node of the trie
+	/// @return a pointer to the matching node or nullptr if no node was found
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC>
+	ObjectTrieNode<T> * findNearestLeaf(const ContainerT<U, UC ...> & values, bool skipRoot = true) {
+		return findNearestLeaf(values, [] (auto & lhs, auto & rhs) { return lhs == rhs; }, skipRoot);
+	}
+
+	///
+	/// Descend into the trie, locating matches of the supplied values.
+	///
+	/// The default operator == compare function is used to determine equality.
+	///
+	/// Descends into the trie, locating at each node the first child that matches
+	/// the next value in the supplied value chain. Returns the last matched node
+	/// if the node is a leaf node.
+	///
+	/// Returns nullptr if no matching leaf node was found.
+	///
+	/// @param values a vector of values to search for
+	/// @param skipRoot does not check the first value against the root node of the trie
+	/// @return a pointer to the matching node or nullptr if no node was found
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC>
+	const ObjectTrieNode<T> * findNearestLeaf(const ContainerT<U, UC ...> & values, bool skipRoot = true) const {
+		return findNearestLeaf(values, [] (auto & lhs, auto & rhs) { return lhs == rhs; }, skipRoot);
+	}
+
+	///
+	/// Descend into the trie, locating matches of the supplied values.
+	///
+	/// The supplied comparator is used to determine equality (true == equal).
+	///
+	/// Descends into the trie, locating at each node the first child that matches
+	/// the next value in the supplied value chain. Returns the last matched node
+	/// if the node is a leaf node.
+	///
+	/// Returns nullptr if no matching leaf node was found.
+	///
+	/// @tparam U the type of the values used in the compare function
+	/// @tparam CompareT the compare function type
+	/// @param values a vector of values to search for
+	/// @param compare the compare function
+	/// @param skipRoot does not check the first value against the root node of the trie
+	/// @return a pointer to the matching node or nullptr if no node was found
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
+	ObjectTrieNode<T> * findNearestLeaf(const ContainerT<U, UC ...> & values, CompareT compare, bool skipRoot = true) {
+		auto node = findNearest(values, compare, skipRoot);
+		return node != nullptr && node->children.empty() ? node : nullptr;
+	}
+
+	///
+	/// Descend into the trie, locating matches of the supplied values.
+	///
+	/// The supplied comparator is used to determine equality (true == equal).
+	///
+	/// Descends into the trie, locating at each node the first child that matches
+	/// the next value in the supplied value chain. Returns the last matched node
+	/// if the node is a leaf node.
+	///
+	/// Returns nullptr if no matching leaf node was found.
+	///
+	/// @tparam U the type of the values used in the compare function
+	/// @tparam CompareT the compare function type
+	/// @param values a vector of values to search for
+	/// @param compare the compare function
+	/// @param skipRoot does not check the first value against the root node of the trie
+	/// @return a pointer to the matching node or nullptr if no node was found
+	///
+	public: template <typename U, template <typename ...> class ContainerT, typename ... UC, typename CompareT>
+	const ObjectTrieNode<T> * findNearestLeaf(const ContainerT<U, UC ...> & values, CompareT compare, bool skipRoot = true) const {
+		auto node = findNearest(values, compare, skipRoot);
+		return node != nullptr && node->children.empty() ? node : nullptr;
 	}
 
 	///

@@ -16,7 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Resource {
@@ -25,7 +24,7 @@ void StringUtf8To32ReadResourceTest::test() {
 	const std::string text = "some random text";
 	const std::u32string expected = toString32("some random text");
 
-	StringUri uri("string: " + text);
+	StringUri uri(text);
 
 	auto stringReadResource = uri.getUtf8To32ReadResource();
 	auto uriReadResource = uri.utf8To32ReadResource();
@@ -36,8 +35,8 @@ void StringUtf8To32ReadResourceTest::test() {
 	auto actualStringData = toString32(stringReadStream);
 	auto actualUriData = toString32(uriReadStream);
 
-	assertThat(actualStringData, is(expected));
-	assertThat(actualUriData, is(expected));
+	AssertThat(actualStringData, is(expected));
+	AssertThat(actualUriData, is(expected));
 }
 
 } // namespace Resource

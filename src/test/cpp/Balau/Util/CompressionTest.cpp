@@ -18,7 +18,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isNot;
 using Testing::isGreaterThan;
@@ -49,13 +48,13 @@ inline std::pair<std::string, std::string> mps(std::string s1, std::string s2) {
 }
 
 void CompressionTest::fingerprintTest() {
-	assertThat(
+	AssertThat(
 		  "ZipFileTest.zip has changed."
 		, Hashing::md5(zipFile)
 		, is("e4aab2f79683a428c7811f3492485320")
 	);
 
-	assertThat(
+	AssertThat(
 		  "EncryptedUnzipperTest.zip has changed."
 		, Hashing::md5(encryptedZipFile)
 		, is("1b55fc4799b7d9cf2ac5ad765c7d8040")
@@ -122,19 +121,19 @@ void unzipperTestImpl(const Resource::File & file,
 	Unzipper unzipper;
 	unzipper.open(file, true, pw);
 
-	assertThat(unzipper.isOpen(), is(true));
-	assertThat(unzipper.readArchiveComment(), is(""));
-	assertThat(unzipper.entryCount(), is((long long) expectedEntryNames.size()));
+	AssertThat(unzipper.isOpen(), is(true));
+	AssertThat(unzipper.readArchiveComment(), is(""));
+	AssertThat(unzipper.entryCount(), is((long long) expectedEntryNames.size()));
 
 	const auto names = unzipper.entryNames();
-	assertThat(std::set<std::string>(names.begin(), names.end()), is(expectedEntryNames));
+	AssertThat(std::set<std::string>(names.begin(), names.end()), is(expectedEntryNames));
 
 	for (auto & name : expectedEntryNames) {
-		assertThat(unzipper.hasEntry(name), is(true));
+		AssertThat(unzipper.hasEntry(name), is(true));
 	}
 
-	assertThat(unzipper.hasEntry("not-found"), is(false));
-	assertThat(unzipper.hasEntry("a/b/c/not-found"), is(false));
+	AssertThat(unzipper.hasEntry("not-found"), is(false));
+	AssertThat(unzipper.hasEntry("a/b/c/not-found"), is(false));
 
 	std::set<long long> indices;
 
@@ -143,7 +142,7 @@ void unzipperTestImpl(const Resource::File & file,
 		unzipper.getEntryInfo(expectedInfo.name, actualInfo);
 
 		// Zero out the index.. just check that all indices were returned.
-		assertThat(indices.find(actualInfo.index) == indices.end(), is(true));
+		AssertThat(indices.find(actualInfo.index) == indices.end(), is(true));
 		indices.insert(actualInfo.index);
 		actualInfo.index = 0;
 		actualInfo.modificationTime = std::chrono::system_clock::time_point();
@@ -154,21 +153,21 @@ void unzipperTestImpl(const Resource::File & file,
 			expectedInfo.encryptionMethod = 0;
 		}
 
-		assertThat(actualInfo, is(expectedInfo));
+		AssertThat(actualInfo, is(expectedInfo));
 	}
 
 	for (auto & name : expectedEntryNames) {
-		assertThat(unzipper.readEntryComment(name), is(""));
+		AssertThat(unzipper.readEntryComment(name), is(""));
 
 		if (!Strings::endsWith(name, "/")) {
-			assertThat(unzipper.readEntryAsBytes(name), is(expectedEntryBytes.at(name)));
-			assertThat(unzipper.readEntryAsString(name), is(expectedEntryStrings.at(name)));
+			AssertThat(unzipper.readEntryAsBytes(name), is(expectedEntryBytes.at(name)));
+			AssertThat(unzipper.readEntryAsString(name), is(expectedEntryStrings.at(name)));
 		}
 	}
 
 	unzipper.close();
 
-	assertThat(unzipper.isOpen(), is(false));
+	AssertThat(unzipper.isOpen(), is(false));
 }
 
 void CompressionTest::unzipperTest() {
@@ -230,45 +229,45 @@ void zipperTestImpl2(const Resource::File & file, bool commit, const std::string
 	Zipper zipper;
 	zipper.open(file, true);
 
-	assertThat(zipper.isOpen(), is(true));
-	assertThat(zipper.readArchiveComment(), is(""));
+	AssertThat(zipper.isOpen(), is(true));
+	AssertThat(zipper.readArchiveComment(), is(""));
 
 	zipper.putArchiveComment(archiveComment);
 
-	assertThat(zipper.readArchiveComment(), is(archiveComment));
+	AssertThat(zipper.readArchiveComment(), is(archiveComment));
 
 	zipper.deleteComment();
 
-	assertThat(zipper.readArchiveComment(), is(""));
-	assertThat(zipper.hasEntry(newDirectory), is(false));
+	AssertThat(zipper.readArchiveComment(), is(""));
+	AssertThat(zipper.hasEntry(newDirectory), is(false));
 
 	zipper.putDirectory(newDirectory);
 
-	assertThat(zipper.hasEntry(newDirectory), is(true));
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromFile), is(false));
+	AssertThat(zipper.hasEntry(newDirectory), is(true));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromFile), is(false));
 
 	zipper.putEntry(newEntryExistingDirectoryFromFile, zipFile);
 
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromFile), is(true));
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromBytes), is(false));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromFile), is(true));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromBytes), is(false));
 
 	zipper.putEntry(newEntryExistingDirectoryFromBytes, bytes);
 
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromBytes), is(true));
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(false));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromBytes), is(true));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(false));
 
 	zipper.putEntry(newEntryExistingDirectoryFromString, str);
 
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(true));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(true));
 
 	zipper.renameEntry(newEntryExistingDirectoryFromString, newEntryExistingDirectoryFromStringRenamed);
 
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(false));
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromStringRenamed), is(true));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(false));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromStringRenamed), is(true));
 
 	zipper.deleteEntry(newEntryExistingDirectoryFromStringRenamed);
 
-	assertThat(zipper.hasEntry(newEntryExistingDirectoryFromStringRenamed), is(false));
+	AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromStringRenamed), is(false));
 
 	if (commit) {
 		zipper.commit();
@@ -278,18 +277,18 @@ void zipperTestImpl2(const Resource::File & file, bool commit, const std::string
 		Unzipper unzipper;
 		unzipper.open(file, true);
 
-		assertThat(unzipper.hasEntry(newDirectory), is(true));
-		assertThat(unzipper.hasEntry(newEntryExistingDirectoryFromFile), is(true));
-		assertThat(unzipper.hasEntry(newEntryExistingDirectoryFromBytes), is(true));
+		AssertThat(unzipper.hasEntry(newDirectory), is(true));
+		AssertThat(unzipper.hasEntry(newEntryExistingDirectoryFromFile), is(true));
+		AssertThat(unzipper.hasEntry(newEntryExistingDirectoryFromBytes), is(true));
 
 		unzipper.close();
 
-		assertThat(unzipper.isOpen(), is(false));
+		AssertThat(unzipper.isOpen(), is(false));
 	} else {
 		zipper.close();
 	}
 
-	assertThat(zipper.isOpen(), is(false));
+	AssertThat(zipper.isOpen(), is(false));
 }
 
 void zipperTestImpl1(const Resource::File & srcFile, Resource::File dstFile, const std::string & pw) {
@@ -302,7 +301,7 @@ void zipperTestImpl1(const Resource::File & srcFile, Resource::File dstFile, con
 	dstFile.getParentDirectory().createDirectories();
 	Files::copy(srcFile, dstFile);
 
-	assertThat(dstFile.exists(), is(true));
+	AssertThat(dstFile.exists(), is(true));
 
 	auto md5Hash = Hashing::md5(dstFile);
 
@@ -312,14 +311,14 @@ void zipperTestImpl1(const Resource::File & srcFile, Resource::File dstFile, con
 	// Verify that the file is not modified.
 	auto newMd5Hash = Hashing::md5(dstFile);
 
-	assertThat(md5Hash, is(newMd5Hash));
+	AssertThat(md5Hash, is(newMd5Hash));
 
 	// Then try with commit.
 	zipperTestImpl2(dstFile, true, pw);
 
 	newMd5Hash = Hashing::md5(dstFile);
 
-	assertThat(md5Hash, isNot(newMd5Hash));
+	AssertThat(md5Hash, isNot(newMd5Hash));
 }
 
 void CompressionTest::zipperTest() {

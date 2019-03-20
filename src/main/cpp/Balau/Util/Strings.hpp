@@ -88,7 +88,7 @@ struct Strings final {
 	}
 
 	///
-	/// Does the string start with the specified regex?
+	/// Does the string start with the specified regular expression?
 	///
 	static bool startsWithRegex(const std::string & str, const std::regex & prefix) {
 		std::smatch match;
@@ -98,6 +98,16 @@ struct Strings final {
 		}
 
 		return match.position(0) == 0;
+	}
+
+	///////////////////////////////////
+
+	///
+	/// Does the string match the specified regular expression?
+	///
+	static bool matches(const std::string & str, const std::regex & re) {
+		std::smatch match;
+		return std::regex_match(str, match, re);
 	}
 
 	///////////////////////////////////

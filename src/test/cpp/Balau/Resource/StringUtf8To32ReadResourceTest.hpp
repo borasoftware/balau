@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct StringUtf8To32ReadResourceTest : public Testing::TestGroup<StringUtf8To32ReadResourceTest> {
-	explicit StringUtf8To32ReadResourceTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	explicit StringUtf8To32ReadResourceTest() {
 		registerTest(&StringUtf8To32ReadResourceTest::test, "test");
 	}
 

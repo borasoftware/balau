@@ -17,7 +17,7 @@
 namespace Balau {
 
 struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfigurationTest> {
-	explicit EnvironmentConfigurationTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	EnvironmentConfigurationTest() {
 		registerTest(&EnvironmentConfigurationTest::derivedEmpty,                 "derivedEmpty");
 		registerTest(&EnvironmentConfigurationTest::derivedSimple,                "derivedSimple");
 		registerTest(&EnvironmentConfigurationTest::derivedComposite,             "derivedComposite");

@@ -20,7 +20,6 @@ namespace Balau {
 
 using namespace Util;
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::startsWith;
 using Testing::contains;
@@ -47,7 +46,7 @@ const std::string STREAM_ENTRY = "_STREAM_ENTRY_";
 
 void assertContains(const std::string & actual, const std::vector<std::string> & expectedContains) {
 	for (auto expected : expectedContains) {
-		assertThat(actual, contains(expected));
+		AssertThat(actual, contains(expected));
 	}
 }
 
@@ -57,9 +56,9 @@ Resource::File LoggerTest::configureLoggerForTest(const std::string & testName) 
 	const std::string logFileUriStr = logFile.toUriString();
 
 	logFile.getParentDirectory().createDirectories();
-	assertThat(logFile.getParentDirectory().exists(), is(true));
+	AssertThat(logFile.getParentDirectory().exists(), is(true));
 	logFile.removeFile();
-	assertThat(logFile.exists(), is(false));
+	AssertThat(logFile.exists(), is(false));
 
 	const std::string configurationText = defaultConfigurationTextPrefix
 		+ "              stream = " + logFileUriStr + "\n"
@@ -78,9 +77,9 @@ Resource::File LoggerTest::configureLoggerForTest(const std::string & testName, 
 	const std::string logFileUriStr = logFile.toUriString();
 
 	logFile.getParentDirectory().createDirectories();
-	assertThat(logFile.getParentDirectory().exists(), is(true));
+	AssertThat(logFile.getParentDirectory().exists(), is(true));
 	logFile.removeFile();
-	assertThat(logFile.exists(), is(false));
+	AssertThat(logFile.exists(), is(false));
 
 	const std::string conf = Strings::replaceAll(configurationText, STREAM_ENTRY, logFileUriStr);
 
@@ -188,10 +187,10 @@ void LoggerTest::loggerMacros() {
 	Resource::File logFile = configureLoggerForTest("loggerMacros", configurationText);
 	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
 
-	assertThat(Logger::getLogger(".").getLevel(), is(LoggingLevel::TRACE));
-	assertThat(Logger::getLogger("com.borasoftware").getLevel(), is(LoggingLevel::TRACE));
-	assertThat(Logger::getLogger(".").getNamespace(), is(std::string("")));
-	assertThat(Logger::getLogger("com.borasoftware").getNamespace(), is(std::string("com.borasoftware")));
+	AssertThat(Logger::getLogger(".").getLevel(), is(LoggingLevel::TRACE));
+	AssertThat(Logger::getLogger("com.borasoftware").getLevel(), is(LoggingLevel::TRACE));
+	AssertThat(Logger::getLogger(".").getNamespace(), is(std::string("")));
+	AssertThat(Logger::getLogger("com.borasoftware").getNamespace(), is(std::string("com.borasoftware")));
 
 	Logger & log = Logger::getLogger("com.borasoftware");
 
@@ -269,7 +268,7 @@ com.borasoftware {
     level = trace
     stream = )RR";
 
-	assertThat(actual, startsWith(expectedConfigurationTextStart));
+	AssertThat(actual, startsWith(expectedConfigurationTextStart));
 }
 
 void LoggerTest::globalNamespace() {
@@ -290,7 +289,7 @@ void LoggerTest::globalNamespace() {
 	const std::string actual = Files::readToString(logFile);
 	const std::string expectedContains = " : - [TestMain] WARN -  - This is a test message with parameter 2";
 
-	assertThat(actual, contains(expectedContains));
+	AssertThat(actual, contains(expectedContains));
 }
 
 void LoggerTest::unconfiguredRootNamespace() {
@@ -342,7 +341,7 @@ abcd {
 	const std::string actual = Files::readToString(logFile);
 	const std::string expectedContains = " [TestMain] INFO - abcd - Hello newly configured namespace abcd";
 
-	assertThat(actual, contains(expectedContains));
+	AssertThat(actual, contains(expectedContains));
 }
 
 void LoggerTest::loggingWithLineAndFileName() {
@@ -395,7 +394,7 @@ void LoggerTest::functionBasedLogging() {
 	log1.info([] () { return "hello bob"; });
 
 	// Default flushing = true.
-	assertThat(log1.flushes(), is(true));
+	AssertThat(log1.flushes(), is(true));
 
 	int i = 2;
 	int j = 3;
@@ -433,8 +432,8 @@ void LoggerTest::flushing() {
 
 	log1.info([] () { return "hello bob"; });
 
-	assertThat(log1.getLevel(), is(LoggingLevel::INFO));
-	assertThat(log1.flushes(), is(false));
+	AssertThat(log1.getLevel(), is(LoggingLevel::INFO));
+	AssertThat(log1.flushes(), is(false));
 }
 
 std::ostringstream customLoggingStreamStream;

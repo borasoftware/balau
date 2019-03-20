@@ -14,7 +14,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 using Testing::throws;
@@ -44,29 +43,29 @@ void UriComponentsTest::uriComponentsAssertions(const UriComponents & actual,
 	const std::string_view fragment = actual.fragment();
 
 	// Private field assertions.
-	assertThat("uri",            actual.uri,            is(expected.uri));
-	assertThat("userinfoOffset", actual.userinfoOffset, is(expected.userinfoOffset));
-	assertThat("hostOffset",     actual.hostOffset,     is(expected.hostOffset));
-	assertThat("portOffset",     actual.portOffset,     is(expected.portOffset));
-	assertThat("pathOffset",     actual.pathOffset,     is(expected.pathOffset));
-	assertThat("queryOffset",    actual.queryOffset,    is(expected.queryOffset));
-	assertThat("fragmentOffset", actual.fragmentOffset, is(expected.fragmentOffset));
+	AssertThat("uri",            actual.uri,            is(expected.uri));
+	AssertThat("userinfoOffset", actual.userinfoOffset, is(expected.userinfoOffset));
+	AssertThat("hostOffset",     actual.hostOffset,     is(expected.hostOffset));
+	AssertThat("portOffset",     actual.portOffset,     is(expected.portOffset));
+	AssertThat("pathOffset",     actual.pathOffset,     is(expected.pathOffset));
+	AssertThat("queryOffset",    actual.queryOffset,    is(expected.queryOffset));
+	AssertThat("fragmentOffset", actual.fragmentOffset, is(expected.fragmentOffset));
 
 	// Public API assertions.
-	assertThat("hasAuthority", actual.hasAuthority(), is(hasAuthority));
-	assertThat("hasUserInfo",  actual.hasUserInfo(),  is(hasUserInfo));
-	assertThat("hasHost",      actual.hasHost(),      is(hasHost));
-	assertThat("hasPort",      actual.hasPort(),      is(hasPort));
-	assertThat("hasQuery",     actual.hasQuery(),     is(hasQuery));
-	assertThat("hasFragment",  actual.hasFragment(),  is(hasFragment));
+	AssertThat("hasAuthority", actual.hasAuthority(), is(hasAuthority));
+	AssertThat("hasUserInfo",  actual.hasUserInfo(),  is(hasUserInfo));
+	AssertThat("hasHost",      actual.hasHost(),      is(hasHost));
+	AssertThat("hasPort",      actual.hasPort(),      is(hasPort));
+	AssertThat("hasQuery",     actual.hasQuery(),     is(hasQuery));
+	AssertThat("hasFragment",  actual.hasFragment(),  is(hasFragment));
 
-	assertThat("scheme",   scheme,   is(expectedScheme));
-	assertThat("userInfo", userInfo, is(expectedUserInfo));
-	assertThat("host",     host,     is(expectedHost));
-	assertThat("port",     port,     is(expected.port()));
-	assertThat("path",     path,     is(expectedPath));
-	assertThat("query",    query,    is(expectedQuery));
-	assertThat("fragment", fragment, is(expectedFragment));
+	AssertThat("scheme",   scheme,   is(expectedScheme));
+	AssertThat("userInfo", userInfo, is(expectedUserInfo));
+	AssertThat("host",     host,     is(expectedHost));
+	AssertThat("port",     port,     is(expected.port()));
+	AssertThat("path",     path,     is(expectedPath));
+	AssertThat("query",    query,    is(expectedQuery));
+	AssertThat("fragment", fragment, is(expectedFragment));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -360,16 +359,16 @@ void UriComponentsTest::uriParse_full1000() {
 		sum += actual.port();
 	}
 
-	assertThat(sum, is(1000U * UriComponents(http).port()));
+	AssertThat(sum, is(1000U * UriComponents(http).port()));
 }
 
 void UriComponentsTest::uriParse_invalidUris() {
-	assertThat([] () { UriComponents(""); }, throws<Exception::InvalidUriException>());
-	assertThat([] () { UriComponents("0http://example.com"); }, throws<Exception::InvalidUriException>());
-	assertThat([] () { UriComponents("h$$p://example.com"); }, throws<Exception::InvalidUriException>());
-	assertThat([] () { UriComponents("https://[1::3"); }, throws<Exception::InvalidUriException>());
-	assertThat([] () { UriComponents("https://usr:password@example.com"); }, throws<Exception::InvalidUriException>());
-	assertThat([] () { UriComponents("http://:80"); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { UriComponents(""); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { UriComponents("0http://example.com"); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { UriComponents("h$$p://example.com"); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { UriComponents("https://[1::3"); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { UriComponents("https://usr:password@example.com"); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { UriComponents("http://:80"); }, throws<Exception::InvalidUriException>());
 }
 
 void UriComponentsTest::uriParse_RCF3986Example1() {
@@ -485,31 +484,31 @@ void UriComponentsTest::uriParse_RCF3986Example8() {
 }
 
 void UriComponentsTest::normalizePath() {
-	assertThat(UriComponents::normalizePath(""),                                       is(""));
-	assertThat(UriComponents::normalizePath("one"),                                    is("one"));
-	assertThat(UriComponents::normalizePath("one/two"),                                is("one/two"));
-	assertThat(UriComponents::normalizePath("one/../two"),                             is("two"));
-	assertThat(UriComponents::normalizePath("one/../two/.."),                          is(""));
-	assertThat(UriComponents::normalizePath("one/two/../.."),                          is(""));
-	assertThat(UriComponents::normalizePath("one/two/three/four/../../../five"),       is("one/five"));
-	assertThat(UriComponents::normalizePath("one/two/../three/four/five/../../six"),   is("one/three/six"));
+	AssertThat(UriComponents::normalizePath(""),                                       is(""));
+	AssertThat(UriComponents::normalizePath("one"),                                    is("one"));
+	AssertThat(UriComponents::normalizePath("one/two"),                                is("one/two"));
+	AssertThat(UriComponents::normalizePath("one/../two"),                             is("two"));
+	AssertThat(UriComponents::normalizePath("one/../two/.."),                          is(""));
+	AssertThat(UriComponents::normalizePath("one/two/../.."),                          is(""));
+	AssertThat(UriComponents::normalizePath("one/two/three/four/../../../five"),       is("one/five"));
+	AssertThat(UriComponents::normalizePath("one/two/../three/four/five/../../six"),   is("one/three/six"));
 
-  	assertThat(UriComponents::normalizePath("/"),                                      is("/"));
-	assertThat(UriComponents::normalizePath("/one"),                                   is("/one"));
-	assertThat(UriComponents::normalizePath("/one/two"),                               is("/one/two"));
-	assertThat(UriComponents::normalizePath("/one/../two"),                            is("/two"));
-	assertThat(UriComponents::normalizePath("/one/../two/.."),                         is("/"));
-	assertThat(UriComponents::normalizePath("/one/two/../.."),                         is("/"));
-	assertThat(UriComponents::normalizePath("/one/two/three/four/../../../five"),      is("/one/five"));
-	assertThat(UriComponents::normalizePath("/one/two/../three/four/five/../../six"),  is("/one/three/six"));
+  	AssertThat(UriComponents::normalizePath("/"),                                      is("/"));
+	AssertThat(UriComponents::normalizePath("/one"),                                   is("/one"));
+	AssertThat(UriComponents::normalizePath("/one/two"),                               is("/one/two"));
+	AssertThat(UriComponents::normalizePath("/one/../two"),                            is("/two"));
+	AssertThat(UriComponents::normalizePath("/one/../two/.."),                         is("/"));
+	AssertThat(UriComponents::normalizePath("/one/two/../.."),                         is("/"));
+	AssertThat(UriComponents::normalizePath("/one/two/three/four/../../../five"),      is("/one/five"));
+	AssertThat(UriComponents::normalizePath("/one/two/../three/four/five/../../six"),  is("/one/three/six"));
 
-	assertThat(UriComponents::normalizePath("/one/"),                                  is("/one"));
-	assertThat(UriComponents::normalizePath("/one/two/"),                              is("/one/two"));
-	assertThat(UriComponents::normalizePath("/one/../two/"),                           is("/two"));
-	assertThat(UriComponents::normalizePath("/one/../two/../"),                        is("/"));
-	assertThat(UriComponents::normalizePath("/one/two/../../"),                        is("/"));
-	assertThat(UriComponents::normalizePath("/one/two/three/four/../../../five/"),     is("/one/five"));
-	assertThat(UriComponents::normalizePath("/one/two/../three/four/five/../../six/"), is("/one/three/six"));
+	AssertThat(UriComponents::normalizePath("/one/"),                                  is("/one"));
+	AssertThat(UriComponents::normalizePath("/one/two/"),                              is("/one/two"));
+	AssertThat(UriComponents::normalizePath("/one/../two/"),                           is("/two"));
+	AssertThat(UriComponents::normalizePath("/one/../two/../"),                        is("/"));
+	AssertThat(UriComponents::normalizePath("/one/two/../../"),                        is("/"));
+	AssertThat(UriComponents::normalizePath("/one/two/three/four/../../../five/"),     is("/one/five"));
+	AssertThat(UriComponents::normalizePath("/one/two/../three/four/five/../../six/"), is("/one/three/six"));
 }
 
 } // namespace Resource

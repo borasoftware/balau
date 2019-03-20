@@ -21,7 +21,7 @@ namespace Network {
 namespace Http {
 
 struct HttpsClientTest : public Testing::TestGroup<HttpsClientTest> {
-	explicit HttpsClientTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	HttpsClientTest() {
 		registerTest(&HttpsClientTest::getRequest, "getRequest");
 		registerTest(&HttpsClientTest::headRequest, "headRequest");
 		registerTest(&HttpsClientTest::postRequest, "postRequest");

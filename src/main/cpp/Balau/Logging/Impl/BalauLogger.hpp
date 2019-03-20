@@ -15,6 +15,7 @@
 #include <Balau/Logging/LoggingLevel.hpp>
 #include <Balau/Logging/Impl/LoggerAllocator.hpp>
 #include <Balau/Logging/Impl/LoggerForwardDeclarations.hpp>
+#include <Balau/Type/SourceCodeLocation.hpp>
 
 #include <functional>
 
@@ -38,17 +39,17 @@ class BalauLogger {
 	//
 	// Construct a Balau library logger by specifying the logging namespace.
 	//
-	public: BalauLogger(const char * loggingNamespace);
+	public: explicit BalauLogger(const char * loggingNamespace);
 
 	//
 	// Construct a Balau library logger by specifying the logging namespace.
 	//
-	public: BalauLogger(const std::string & loggingNamespace);
+	public: explicit BalauLogger(const std::string & loggingNamespace);
 
 	//
 	// Construct a Balau library logger by providing the logger reference.
 	//
-	public: BalauLogger(const Logger & logger_);
+	public: explicit BalauLogger(const Logger & logger_);
 
 	//
 	// Construct a Balau library logger by copying another balau Balau library logger.

@@ -17,7 +17,7 @@
 namespace Balau {
 
 struct CommandLineTest : public Testing::TestGroup<CommandLineTest> {
-	explicit CommandLineTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	CommandLineTest() {
 		registerTest(&CommandLineTest::basicSsv,           "basicSsv");
 		registerTest(&CommandLineTest::finalValueSsv,      "finalValueSsv");
 		registerTest(&CommandLineTest::numericValueSsv,    "numericValueSsv");

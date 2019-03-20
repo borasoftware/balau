@@ -12,7 +12,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Lang {
@@ -40,7 +39,7 @@ void ScannedTokensTest::randomAccessBuilding() {
 
 	const std::vector<CodeSpan> & actualCodeSpans = sc.getCodeSpans();
 
-	assertThat(actualCodeSpans, is(codeSpans));
+	AssertThat(actualCodeSpans, is(codeSpans));
 }
 
 void ScannedTokensTest::scannerApiConsumeAndPutBack() {
@@ -60,16 +59,16 @@ void ScannedTokensTest::scannerApiConsumeAndPutBack() {
 			offsets[m], (m == tokens.size() - 1 ? text.length() : offsets[m + 1]) - offsets[m]
 		);
 
-		assertThat(token.token, is(expectedToken));
-		assertThat(token.codeSpan, is(expectedCodeSpan));
-		assertThat(token.text, is(expectedText));
+		AssertThat(token.token, is(expectedToken));
+		AssertThat(token.codeSpan, is(expectedCodeSpan));
+		AssertThat(token.text, is(expectedText));
 
 		sc.consume();
 		token = sc.get();
 	}
 
-	assertThat(token.token, is(Token::EndOfFile));
-	assertThat(token.codeSpan, is(CodeSpan::emptyCodeSpanEnd(codeSpans[codeSpans.size() - 1])));
+	AssertThat(token.token, is(Token::EndOfFile));
+	AssertThat(token.codeSpan, is(CodeSpan::emptyCodeSpanEnd(codeSpans[codeSpans.size() - 1])));
 
 	int m = (int) tokens.size() - 1;
 
@@ -87,9 +86,9 @@ void ScannedTokensTest::scannerApiConsumeAndPutBack() {
 			offsets[m], (m == (int) tokens.size() - 1 ? text.length() : offsets[m + 1]) - offsets[m]
 		);
 
-		assertThat(token.token, is(expectedToken));
-		assertThat(token.codeSpan, is(expectedCodeSpan));
-		assertThat(token.text, is(expectedText));
+		AssertThat(token.token, is(expectedToken));
+		AssertThat(token.codeSpan, is(expectedCodeSpan));
+		AssertThat(token.text, is(expectedText));
 	}
 }
 

@@ -17,7 +17,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 using Testing::startsWith;
@@ -81,10 +80,10 @@ void HttpClientTest::newClient() {
 	Resource::Https httpsWithPort("https://borasoftware.com:443");
 	auto httpsClient2 = HttpClient::newClient(httpsWithPort);
 
-	assertThat([] () { HttpClient::newClient("borasoftware.com"); }, throws<Exception::NetworkException>());
-	assertThat([] () { HttpClient::newClient("http://"); }, throws<Exception::NetworkException>());
-	assertThat([] () { HttpClient::newClient("http://:80"); }, throws<Exception::InvalidUriException>());
-	assertThat([] () { HttpClient::newClient("smtp://blah"); }, throws<Exception::NetworkException>());
+	AssertThat([] () { HttpClient::newClient("borasoftware.com"); }, throws<Exception::NetworkException>());
+	AssertThat([] () { HttpClient::newClient("http://"); }, throws<Exception::NetworkException>());
+	AssertThat([] () { HttpClient::newClient("http://:80"); }, throws<Exception::InvalidUriException>());
+	AssertThat([] () { HttpClient::newClient("smtp://blah"); }, throws<Exception::NetworkException>());
 }
 
 
@@ -101,23 +100,23 @@ void HttpClientTest::assertResponse(Response<CharVectorBody> & response,
 	auto needEof = response.need_eof();
 	auto version = response.version();
 
-	assertThat(reason, is(reasonStr));
-	assertThat(result, is(status));
-	assertThat(chunked, is(false));
-	assertThat(hasContentLength, is(true));
-	assertThat(keepAlive, is(true));
-	assertThat(needEof, is(false));
-	assertThat(version, is(11U));
+	AssertThat(reason, is(reasonStr));
+	AssertThat(result, is(status));
+	AssertThat(chunked, is(false));
+	AssertThat(hasContentLength, is(true));
+	AssertThat(keepAlive, is(true));
+	AssertThat(needEof, is(false));
+	AssertThat(version, is(11U));
 
 	if (bodyStart != nullptr) {
 		auto payloadSize = response.payload_size();
 
-		assertThat(payloadSize.is_initialized(), is(true));
-		assertThat(payloadSize.value(), isGreaterThan(0U));
+		AssertThat(payloadSize.is_initialized(), is(true));
+		AssertThat(payloadSize.value(), isGreaterThan(0U));
 
 		const std::vector<char> & actualBody = response.body();
 
-		assertThat(actualBody, startsWith(Util::Vectors::toCharVector(bodyStart)));
+		AssertThat(actualBody, startsWith(Util::Vectors::toCharVector(bodyStart)));
 	}
 }
 

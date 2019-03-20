@@ -21,23 +21,26 @@ class TestMethodBase;
 // Test case, flattened to contain the group and an overall test index.
 class FlattenedTestCase {
 	public: const unsigned int testIndex;
+	public: const unsigned int executionModels;
 	public: std::string preText;
 	public: std::string postText;
 	public: std::string testName;
-	public: std::shared_ptr<TestGroupBase> group;
+	public: TestGroupBase * group;
 	public: std::shared_ptr<TestMethodBase> method;
 
 	public: FlattenedTestCase(unsigned int testIndex_,
+	                          unsigned int executionModels_,
 	                          std::string preText_,
 	                          std::string postText_,
 	                          std::string testName_,
-	                          std::shared_ptr<TestGroupBase> group_,
+	                          TestGroupBase * group_,
 	                          std::shared_ptr<TestMethodBase> && method_)
 		: testIndex(testIndex_)
+		, executionModels(executionModels_)
 		, preText(std::move(preText_))
 		, postText(std::move(postText_))
 		, testName(std::move(testName_))
-		, group(std::move(group_))
+		, group(group_)
 		, method(std::move(method_)) {}
 };
 

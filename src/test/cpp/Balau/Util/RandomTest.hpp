@@ -18,7 +18,7 @@ namespace Balau {
 namespace Util {
 
 struct RandomTest : public Testing::TestGroup<RandomTest> {
-	explicit RandomTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	RandomTest() {
 		registerTest(&RandomTest::test, "test");
 	}
 

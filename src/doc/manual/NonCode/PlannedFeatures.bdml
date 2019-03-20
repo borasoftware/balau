@@ -36,8 +36,6 @@
 		<h1>Platforms</h1>
 
 		<bullets>
-			<entry>Validate usage on Fedora 29.</entry>
-
 			<entry>Port to Windows 7/10.</entry>
 		</bullets>
 
@@ -158,7 +156,6 @@
 		<h2>Testing</h2>
 
 		<bullets>
-			<entry>Add selective test running via command line test specifications.</entry>
 			<entry>Add test case serialisation via dependency keys.</entry>
 			<entry>Integrate with common C++ unit test running frameworks.</entry>
 		</bullets>

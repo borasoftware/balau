@@ -638,8 +638,8 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 
 		PendingBuffer(CharVector && buffer_, unsigned long receivedSize_, unsigned int priority_)
 			: buffer(std::move(buffer_))
-			  , receivedSize(receivedSize_)
-			  , priority(priority_) {}
+			, receivedSize(receivedSize_)
+			, priority(priority_) {}
 	};
 
 	private: const std::string name;

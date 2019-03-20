@@ -60,14 +60,16 @@ class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
 	private: Interprocess::MSharedMemoryObject<SharedState> sharedState;
 
 	protected: MultiProcessTestRunnerExecutor(CompositeWriter & writer_,
-	                                          bool printNamespaces_,
-	                                          GroupedTestCaseMap & testCases,
+	                                          bool useNamespaces_,
+	                                          GroupedTestCaseMap & testCasesByGroup,
+	                                          const std::string & testList,
 	                                          unsigned int concurrencyLevel_)
 		: TestRunnerExecutor(
 			  std::unique_ptr<TestResultQueue>(new MultiProcessTestResultQueue)
 			, writer_
-			, printNamespaces_
-			, testCases
+			, useNamespaces_
+			, testCasesByGroup
+			, testList
 			, true
 		)
 		, concurrencyLevel(concurrencyLevel_)
@@ -159,7 +161,13 @@ class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
 		std::string outputText = output.str();
 
 		resultQueue->enqueue(
-			  TestResult(0, testToRun.group->groupIndex, testToRun.testIndex, false, std::move(outputText))
+			TestResult(
+				  0
+				, testToRun.group->groupIndex
+				, testToRun.testIndex
+				, TestResult::Result::Failure
+				, std::move(outputText)
+			)
 		);
 	}
 

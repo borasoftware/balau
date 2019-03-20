@@ -21,7 +21,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Network::Http::WsWebApps {
@@ -64,7 +63,7 @@ void EchoingWsWebAppTest::test() {
 
 	Buffer response = client.send<Buffer>(path, data);
 
-	assertThat(std::string_view((char *) response.data().data(), response.size()), is(testData));
+	AssertThat(std::string_view((char *) response.data().data(), response.size()), is(testData));
 }
 
 } // namespace Network::Http::WsWebApps

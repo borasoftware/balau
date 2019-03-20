@@ -127,11 +127,13 @@ class RoutingHttpWebApp : public HttpWebApp {
 	//private: HttpWebApp * resolve(HttpSession & session, const StringRequest & request);
 	private: HttpWebApp * resolve(HttpSession & session, const StringRequest & request) {
 		const std::string_view & path = std::string_view(request.target().data(), request.target().length());
-		auto components = Util::Strings::split(path, "/");
+		auto pathComponents = Util::Strings::split(path, "/");
+		std::vector<std::string_view> components;
+		components.reserve(pathComponents.size() + 1);
+		components.emplace_back("");
+		Util::Vectors::append(components, pathComponents);
 
-		Node * node = !components.empty()
-			? routing.findNearest(components, [] (auto & lhs, auto & rhs) { return std::get<KeyIndex>(lhs) == rhs; })
-			: &routing.root();
+		Node * node = routing.findNearest(components, [] (auto & lhs, auto & rhs) { return std::get<KeyIndex>(lhs) == rhs; }, false);
 
 		if (node != nullptr) {
 			HttpWebApp * handler;

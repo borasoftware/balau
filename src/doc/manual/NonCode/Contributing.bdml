@@ -208,7 +208,7 @@
 
 		<h2>Spacing</h2>
 
-		<para>Spacing of source code tokens aims to maximise visual grouping of related tokens, whilst maintaining a compact representation. The spacing rules is specified as a subtractive list. All tokens should be surrounded by a space, with the exception of the following, which do not have space before and/or after them:</para>
+		<para>Spacing of source code tokens aims to maximise visual grouping of related tokens, whilst maintaining a compact representation. The spacing rules are specified as a subtractive list. All tokens should be surrounded by a space, with the exception of the following, which do not have space before and/or after them:</para>
 
 		<bullets>
 			<entry>after '(', '[', and before ']', ')';</entry>
@@ -308,13 +308,13 @@
 
 		<code lang="C++">
 			protected: MultiProcessTestRunnerExecutor(CompositeWriter &amp; writer_,
-			                                          bool printNamespaces_,
+			                                          bool useNamespaces_,
 			                                          GroupedTestCaseMap &amp; testCases,
 			                                          unsigned int concurrencyLevel_)
 				: TestRunnerExecutor(
 					  std::unique_ptr&lt;TestResultQueue>(new MultiProcessTestResultQueue)
 					, writer_
-					, printNamespaces_
+					, useNamespaces_
 					, testCases
 					, true
 				)
@@ -332,6 +332,7 @@
 			tests.emplace_back(
 				FlattenedTestCase(
 					  testIndex
+					, executionModels
 					, preText
 					, ""
 					, testCase.name

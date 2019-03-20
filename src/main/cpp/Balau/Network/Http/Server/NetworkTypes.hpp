@@ -86,7 +86,7 @@ inline void fromString(tcp::endpoint & endpoint, std::string_view value) {
 	// TODO improve implementation (ipv4 / ipv6).
 
 	const auto v = std::string(value);
-	static std::regex numeric("[0-9]+");
+	static const std::regex numeric("[0-9]+");
 
 	const bool isPortOnly = std::regex_match(v, numeric);
 

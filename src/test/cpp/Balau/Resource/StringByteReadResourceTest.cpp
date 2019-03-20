@@ -16,7 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Resource {
@@ -24,7 +23,7 @@ namespace Resource {
 void StringByteReadResourceTest::test() {
 	const std::string expected = "some random text";
 
-	StringUri uri("string: " + expected);
+	StringUri uri(expected);
 
 	auto stringReadResource = uri.getByteReadResource();
 	auto uriReadResource = uri.byteReadResource();
@@ -35,8 +34,8 @@ void StringByteReadResourceTest::test() {
 	auto actualStringData = ::toString(stringReadStream);
 	auto actualUriData = ::toString(uriReadStream);
 
-	assertThat(actualStringData, is(expected));
-	assertThat(actualUriData, is(expected));
+	AssertThat(actualStringData, is(expected));
+	AssertThat(actualUriData, is(expected));
 }
 
 } // namespace Resource

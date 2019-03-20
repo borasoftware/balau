@@ -18,7 +18,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 using Testing::isLessThan;

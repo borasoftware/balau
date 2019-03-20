@@ -20,7 +20,7 @@ namespace Lang {
 namespace Property {
 
 struct PropertyParserTest : public Testing::TestGroup<PropertyParserTest> {
-	explicit PropertyParserTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	PropertyParserTest() {
 		registerTest(&PropertyParserTest::simpleHierarchy,    "simpleHierarchy");
 		registerTest(&PropertyParserTest::specialSymbolNames, "specialSymbolNames");
 		registerTest(&PropertyParserTest::complexNames,       "complexNames");

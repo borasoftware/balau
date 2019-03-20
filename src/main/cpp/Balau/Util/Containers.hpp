@@ -32,11 +32,30 @@ struct Containers final {
 	///////////////////// Miscellaneous utility functions /////////////////////
 
 	///
+	/// Appends the source containers to the destination container.
+	///
+	template <template <typename ...> class DstT, typename ... D, template <typename ...> class SrcT, typename ... S, template <typename ...> class ... SrcMT, typename ... SM>
+	static void append(DstT<D ...> & dst, const SrcT<S ...> & src, const SrcMT<SM ...> & ... srcMore) {
+		dst.insert(std::end(dst), std::begin(src), std::end(src));
+		append(dst, srcMore ...);
+	}
+
+	///
 	/// Appends the source container to the destination container.
 	///
 	template <template <typename ...> class DstT, typename ... D, template <typename ...> class SrcT, typename ... S>
 	static void append(DstT<D ...> & dst, const SrcT<S ...> & src) {
 		dst.insert(std::end(dst), std::begin(src), std::end(src));
+	}
+
+	///
+	/// Concatenates the containers to form a new container. The type of the resulting container is the same as the first source container.
+	///
+	template <template <typename ...> class ContainerT, typename ... C, template <typename ...> class ... ContainerMT, typename ... M>
+	static ContainerT<C ...> concatenate(const ContainerT<C ...> & c, const ContainerMT<M ...> & ... cMore) {
+		ContainerT<C ...> dst;
+		append(dst, c, cMore ...);
+		return dst;
 	}
 
 	///

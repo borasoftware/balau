@@ -28,7 +28,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isNotNull;
 
@@ -266,10 +265,10 @@ void DependencyGraphTest::test() {
 	auto actualDependencyOrder = dependencyGraph.dependencyOrder();
 	auto actualParallelDependencyOrder = dependencyGraph.parallelDependencyOrder();
 
-	assertThat(dependencyGraph.hasCycles(), is(false));
-	assertThat(actualDirectDependenciesOf5, is(expectedDirectDependenciesOf5));
-	assertThat(actualDependencyOrder, is(expectedDependencyOrder));
-	assertThat(actualParallelDependencyOrder, is(expectedParallelDependencyOrder));
+	AssertThat(dependencyGraph.hasCycles(), is(false));
+	AssertThat(actualDirectDependenciesOf5, is(expectedDirectDependenciesOf5));
+	AssertThat(actualDependencyOrder, is(expectedDependencyOrder));
+	AssertThat(actualParallelDependencyOrder, is(expectedParallelDependencyOrder));
 
 	// Remove a dependency and perform assertions again.
 
@@ -293,10 +292,10 @@ void DependencyGraphTest::test() {
 	auto modifiedActualDependencyOrder = dependencyGraph.dependencyOrder();
 	auto modifiedActualParallelDependencyOrder = dependencyGraph.parallelDependencyOrder();
 
-	assertThat(dependencyGraph.hasCycles(), is(false));
-	assertThat(modifiedActualDirectDependenciesOf5, is(modifiedExpectedDirectDependenciesOf5));
-	assertThat(modifiedActualDependencyOrder, is(modifiedExpectedDependencyOrder));
-	assertThat(modifiedActualParallelDependencyOrder, is(modifiedExpectedParallelDependencyOrder));
+	AssertThat(dependencyGraph.hasCycles(), is(false));
+	AssertThat(modifiedActualDirectDependenciesOf5, is(modifiedExpectedDirectDependenciesOf5));
+	AssertThat(modifiedActualDependencyOrder, is(modifiedExpectedDependencyOrder));
+	AssertThat(modifiedActualParallelDependencyOrder, is(modifiedExpectedParallelDependencyOrder));
 }
 
 } // namespace Container

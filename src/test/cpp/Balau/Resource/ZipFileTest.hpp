@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct ZipFileTest : public Testing::TestGroup<ZipFileTest> {
-	explicit ZipFileTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	ZipFileTest() {
 		registerTest(&ZipFileTest::iteration, "iteration");
 	}
 

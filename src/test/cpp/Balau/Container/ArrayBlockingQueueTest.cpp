@@ -19,7 +19,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Container {
@@ -101,15 +100,15 @@ void ArrayBlockingQueueTest::fullQueue() {
 		queue.enqueue(Element(second));
 		executor.enqueueInThread(Element(third));
 
-		assertThat(queue.empty(), is(false));
-		assertThat(queue.full(), is(true));
+		AssertThat(queue.empty(), is(false));
+		AssertThat(queue.full(), is(true));
 
-		assertThat(queue.dequeue().value, is(first));
-		assertThat(queue.dequeue().value, is(second));
-		assertThat(queue.dequeue().value, is(third));
+		AssertThat(queue.dequeue().value, is(first));
+		AssertThat(queue.dequeue().value, is(second));
+		AssertThat(queue.dequeue().value, is(third));
 
-		assertThat(queue.empty(), is(true));
-		assertThat(queue.full(), is(false));
+		AssertThat(queue.empty(), is(true));
+		AssertThat(queue.full(), is(false));
 	}
 }
 

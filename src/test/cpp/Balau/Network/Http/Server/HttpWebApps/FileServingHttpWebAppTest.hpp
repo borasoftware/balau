@@ -23,7 +23,7 @@ namespace Http {
 namespace HttpWebApps {
 
 struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebAppTest> {
-	explicit FileServingHttpWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	FileServingHttpWebAppTest() {
 		registerTest(&FileServingHttpWebAppTest::getFile,             "getFile");
 		registerTest(&FileServingHttpWebAppTest::getNotFoundFile,     "getNotFoundFile");
 		registerTest(&FileServingHttpWebAppTest::headFile,            "headFile");

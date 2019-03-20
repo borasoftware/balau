@@ -19,7 +19,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 using Testing::isLessThan;
@@ -44,13 +43,13 @@ template <typename ResponseT> void assertResponse(const ResponseT & response,
 	auto needEof = response.need_eof();
 	auto version = response.version();
 
-	assertThat(reason, is(expectedReason));
-	assertThat(result, is(expectedStatus));
-	assertThat(chunked, is(false));
-	assertThat(hasContentLength, is(expectedHasContentLength));
-	assertThat(keepAlive, is(true));
-	assertThat(needEof, is(expectedNeedEof));
-	assertThat(version, is(11U));
+	AssertThat(reason, is(expectedReason));
+	AssertThat(result, is(expectedStatus));
+	AssertThat(chunked, is(false));
+	AssertThat(hasContentLength, is(expectedHasContentLength));
+	AssertThat(keepAlive, is(true));
+	AssertThat(needEof, is(expectedNeedEof));
+	AssertThat(version, is(11U));
 }
 
 void FileServingHttpWebAppTest::getFile() {
@@ -84,13 +83,13 @@ void FileServingHttpWebAppTest::getFile() {
 
 	auto payloadSize = response.payload_size();
 
-	assertThat(payloadSize.is_initialized(), is(true));
-	assertThat(payloadSize.value(), isGreaterThan(10000ULL));
+	AssertThat(payloadSize.is_initialized(), is(true));
+	AssertThat(payloadSize.value(), isGreaterThan(10000ULL));
 
 	const std::vector<char> & actualBody = response.body();
 	const std::vector<char> expectedBody = Util::Files::readToVector(documentRoot / path);
 
-	assertThat(actualBody, is(expectedBody));
+	AssertThat(actualBody, is(expectedBody));
 }
 
 
@@ -221,8 +220,8 @@ void FileServingHttpWebAppTest::getFile1000Serial() {
 		Response<CharVectorBody> response = client.get("/manual/index.bdml");
 
 		assertResponse(response, "OK", Status::ok, false, true);
-		assertThat(response.payload_size().is_initialized(), is(true));
-		assertThat(response.payload_size().value(), isGreaterThan(10000ULL));
+		AssertThat(response.payload_size().is_initialized(), is(true));
+		AssertThat(response.payload_size().value(), isGreaterThan(10000ULL));
 
 		bytesTransferred += response.payload_size().value();
 	}
@@ -250,8 +249,8 @@ void getFile1000ParallelClientFunction(GetFile1000ParallelClientState * state) {
 		Response<CharVectorBody> response = client.get("/manual/index.bdml");
 
 		assertResponse(response, "OK", Status::ok, false, true);
-		assertThat(response.payload_size().is_initialized(), is(true));
-		assertThat(response.payload_size().value(), isGreaterThan(10000ULL));
+		AssertThat(response.payload_size().is_initialized(), is(true));
+		AssertThat(response.payload_size().value(), isGreaterThan(10000ULL));
 
 		state->bytesTransferred += response.payload_size().value();
 	}
@@ -346,18 +345,18 @@ void FileServingHttpWebAppTest::getFiles() {
 			Response<CharVectorBody> response = client.get(urlPath);
 
 			assertResponse(response, "OK", Status::ok, false, true);
-			assertThat(response.payload_size().is_initialized(), is(true));
+			AssertThat(response.payload_size().is_initialized(), is(true));
 
 			++fileCount;
 			bytesTransferred += response.payload_size().value();
 		}
 	}
 
-	assertThat(fileCount, isGreaterThan(38U));
-	assertThat(fileCount, isLessThan(100U));
+	AssertThat(fileCount, isGreaterThan(38U));
+	AssertThat(fileCount, isLessThan(100U));
 
-	assertThat(bytesTransferred, isGreaterThan(100000U));
-	assertThat(bytesTransferred, isLessThan(100000000U));
+	AssertThat(bytesTransferred, isGreaterThan(100000U));
+	AssertThat(bytesTransferred, isLessThan(100000000U));
 }
 
 } // namespace HttpWebApps

@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct FileTest : public Testing::TestGroup<FileTest> {
-	explicit FileTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	FileTest() {
 		registerTest(&FileTest::iteration, "iteration");
 		registerTest(&FileTest::resolve,   "resolve");
 	}

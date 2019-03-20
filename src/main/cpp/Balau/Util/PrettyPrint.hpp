@@ -126,7 +126,9 @@ struct PrettyPrint final {
 
 		const long double fraction = totalSeconds - (long double) (unsigned long long) totalSeconds;
 
-		if (totalSeconds < 60.0) {
+		if (totalSeconds == 0.0) {
+			return "0s";
+		} else if (totalSeconds < 60.0) {
 			builder << metricPrefix(totalSeconds, decimalPlaces) <<  "s";
 			return builder.str();
 		} else if (totalSeconds < 60.0 * 60.0) { // print minutes::seconds.fraction

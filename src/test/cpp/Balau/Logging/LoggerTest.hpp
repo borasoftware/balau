@@ -19,7 +19,7 @@ namespace Balau {
 // The logger test cases are only run if the execution model is single threaded or process per test.
 // Otherwise, the logging results may be messed up by the other tests and the assertions will fail.
 struct LoggerTest : public Testing::TestGroup<LoggerTest> {
-	explicit LoggerTest(Testing::TestRunner & runner) : TestGroup(runner, Testing::SingleThreaded | Testing::ProcessPerTest) {
+	explicit LoggerTest() : TestGroup(Testing::SingleThreaded | Testing::ProcessPerTest) {
 		registerTest(&LoggerTest::stringMessages,                   "stringMessages");
 		registerTest(&LoggerTest::parameterisedMessages,            "parameterisedMessages");
 		registerTest(&LoggerTest::loggerMacros,                     "loggerMacros");

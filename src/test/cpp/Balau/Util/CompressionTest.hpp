@@ -13,8 +13,6 @@
 
 #include <Balau/Util/Compression.hpp>
 
-// For
-
 #include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau {
@@ -22,7 +20,7 @@ namespace Balau {
 namespace Util {
 
 struct CompressionTest : public Testing::TestGroup<CompressionTest> {
-	explicit CompressionTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	CompressionTest() {
 		registerTest(&CompressionTest::fingerprintTest,       "fingerprintTest");
 		registerTest(&CompressionTest::unzipperTest,          "unzipperTest");
 		registerTest(&CompressionTest::encryptedUnzipperTest, "encryptedUnzipperTest");

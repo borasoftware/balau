@@ -15,7 +15,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::startsWith;
 using Testing::endsWith;
 
@@ -41,8 +40,8 @@ void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_, const 
 	auto actualHttpsData = toString32(httpsReadStream);
 	auto actualUriData = toString32(uriReadStream);
 
-	assertThat(actualHttpsData, startsWith(expectedStart));
-	assertThat(actualUriData, startsWith(expectedStart));
+	AssertThat(actualHttpsData, startsWith(expectedStart));
+	AssertThat(actualUriData, startsWith(expectedStart));
 }
 
 } // namespace Resource

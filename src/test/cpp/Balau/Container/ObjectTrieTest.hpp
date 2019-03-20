@@ -33,7 +33,7 @@ namespace Balau {
 namespace Container {
 
 struct ObjectTrieTest : public Testing::TestGroup<ObjectTrieTest> {
-	explicit ObjectTrieTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	ObjectTrieTest() {
 		registerTest(&ObjectTrieTest::uIntTrieBuild,               "uIntTrieBuild");
 		registerTest(&ObjectTrieTest::uIntTrieCopy,                "uIntTrieCopy");
 		registerTest(&ObjectTrieTest::uIntTreeDepthIterate,        "uIntTreeDepthIterate");

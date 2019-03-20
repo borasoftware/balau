@@ -15,7 +15,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::startsWith;
 using Testing::endsWith;
 
@@ -36,11 +35,11 @@ void FileUtf8To32ReadResourceTest::test() {
 	auto actualFileData = toString32(fileReadStream);
 	auto actualUriData = toString32(uriReadStream);
 
-	assertThat(actualFileData, startsWith(expectedStart));
-	assertThat(actualUriData, startsWith(expectedStart));
+	AssertThat(actualFileData, startsWith(expectedStart));
+	AssertThat(actualUriData, startsWith(expectedStart));
 
-	assertThat(actualFileData, endsWith(expectedEnd));
-	assertThat(actualUriData, endsWith(expectedEnd));
+	AssertThat(actualFileData, endsWith(expectedEnd));
+	AssertThat(actualUriData, endsWith(expectedEnd));
 }
 
 } // namespace Resource

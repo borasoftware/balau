@@ -15,12 +15,13 @@
 cmake_minimum_required(VERSION 3.10.2)
 
 #
-# When updating the version, do a global search in order to update the references to the
-# version in the documentation.
+# When updating the version, also update:
+#  - BalauConfig.cmake
+#  - BalauConfigVersion.cmake
+#  - Doxyfile
+#  - title-page.bdml
 #
-# Also, the BalauConfigVersion.cmake file needs updating to the correct version components.
-#
-project(Balau VERSION 2019.2.1)
+project(Balau VERSION 2019.3.1)
 
 ############################# CMAKE CONFIGURATION #############################
 
@@ -142,6 +143,7 @@ include_directories(${CMAKE_BINARY_DIR})
 set(BALAU_CXX_FLAGS "-fPIC -Wall -pedantic -Wextra")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-missing-braces")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-deprecated-declarations")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -fno-omit-frame-pointer")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-result")
@@ -170,7 +172,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -Og")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -519,6 +521,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Impl/SingleThreadedTestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/StandardRenderers.hpp
 	src/main/cpp/Balau/Testing/Impl/TestCase.hpp
+	src/main/cpp/Balau/Testing/Impl/TestGroupBase.cpp
 	src/main/cpp/Balau/Testing/Impl/TestGroupBase.hpp
 	src/main/cpp/Balau/Testing/Impl/TestMethodBase.hpp
 	src/main/cpp/Balau/Testing/Impl/TestResult.hpp

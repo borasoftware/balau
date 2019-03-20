@@ -19,7 +19,7 @@ namespace Balau {
 namespace Lang {
 
 struct ScannedTokensTest : public Testing::TestGroup<ScannedTokensTest> {
-	explicit ScannedTokensTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	ScannedTokensTest() {
 		registerTest(&ScannedTokensTest::randomAccessBuilding, "randomAccessBuilding");
 		registerTest(&ScannedTokensTest::scannerApiConsumeAndPutBack, "scannerApiConsumeAndPutBack");
 	}

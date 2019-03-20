@@ -22,7 +22,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 
@@ -43,20 +42,20 @@ void assertResponse(const CharVectorResponse & response, const Resource::File & 
 	auto payloadSize = response.payload_size();
 	auto version = response.version();
 
-	assertThat(reason, is("OK"));
-	assertThat(result, is(Status::ok));
-	assertThat(chunked, is(false));
-	assertThat(hasContentLength, is(true));
-	assertThat(keepAlive, is(true));
-	assertThat(needEof, is(false));
-	assertThat(payloadSize.is_initialized(), is(true));
-	assertThat(payloadSize.value(), isGreaterThan(0ULL));
-	assertThat(version, is(11U));
+	AssertThat(reason, is("OK"));
+	AssertThat(result, is(Status::ok));
+	AssertThat(chunked, is(false));
+	AssertThat(hasContentLength, is(true));
+	AssertThat(keepAlive, is(true));
+	AssertThat(needEof, is(false));
+	AssertThat(payloadSize.is_initialized(), is(true));
+	AssertThat(payloadSize.value(), isGreaterThan(0ULL));
+	AssertThat(version, is(11U));
 
 	const std::vector<char> & actualBody = response.body();
 	const std::vector<char> expectedBody = Util::Files::readToVector(filePath);
 
-	assertThat(actualBody, is(expectedBody));
+	AssertThat(actualBody, is(expectedBody));
 }
 
 const unsigned short routingHttpWebAppTestPortStart = 43254;

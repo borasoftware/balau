@@ -22,7 +22,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 
@@ -44,13 +43,13 @@ template <typename ResponseT> void assertResponse(const ResponseT & response,
 	auto needEof = response.need_eof();
 	auto version = response.version();
 
-	assertThat(reason, is(expectedReason));
-	assertThat(result, is(expectedStatus));
-	assertThat(chunked, is(false));
-	assertThat(hasContentLength, is(expectedHasContentLength));
-	assertThat(keepAlive, is(true));
-	assertThat(needEof, is(expectedNeedEof));
-	assertThat(version, is(11U));
+	AssertThat(reason, is(expectedReason));
+	AssertThat(result, is(expectedStatus));
+	AssertThat(chunked, is(false));
+	AssertThat(hasContentLength, is(expectedHasContentLength));
+	AssertThat(keepAlive, is(true));
+	AssertThat(needEof, is(expectedNeedEof));
+	AssertThat(version, is(11U));
 }
 
 void HttpServerTest::injectedInstantiation() {
@@ -68,7 +67,7 @@ void HttpServerTest::injectedInstantiation() {
 			};
 
 			class EnvConfig : public EnvironmentConfiguration {
-				public: EnvConfig(const Resource::Uri & input) : EnvironmentConfiguration(input) {}
+				public: explicit EnvConfig(const Resource::Uri & input) : EnvironmentConfiguration(input) {}
 
 				public: void configure() const override {
 					const unsigned short testPortStart = 43270;
@@ -127,7 +126,7 @@ void HttpServerTest::injectedInstantiation() {
 
 	OnScopeExit stopServer([&server] () { server->stop(); });
 
-	assertThat(server->isRunning(), is(true));
+	AssertThat(server->isRunning(), is(true));
 
 	HttpClient client("localhost", port);
 
@@ -138,18 +137,18 @@ void HttpServerTest::injectedInstantiation() {
 
 	auto payloadSize = response.payload_size();
 
-	assertThat(payloadSize.is_initialized(), is(true));
-	assertThat(payloadSize.value(), isGreaterThan(0ULL));
+	AssertThat(payloadSize.is_initialized(), is(true));
+	AssertThat(payloadSize.value(), isGreaterThan(0ULL));
 
 	const std::vector<char> & actualBody = response.body();
 	const std::vector<char> expectedBody = Util::Files::readToVector(documentRoot / path);
 
-	assertThat(actualBody, is(expectedBody));
+	AssertThat(actualBody, is(expectedBody));
 
 	std::string path2 = "/";
 	Response<CharVectorBody> response2 = client.get(path2);
 
-	assertThat(response2.base().result(), is(Status::not_found));
+	AssertThat(response2.base().result(), is(Status::not_found));
 }
 
 } // namespace Http

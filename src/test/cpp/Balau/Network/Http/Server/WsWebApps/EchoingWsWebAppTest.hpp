@@ -17,7 +17,7 @@
 namespace Balau::Network::Http::WsWebApps {
 
 struct EchoingWsWebAppTest : public Testing::TestGroup<EchoingWsWebAppTest> {
-	explicit EchoingWsWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	EchoingWsWebAppTest() {
 		// WIP registerTest(&EchoingWsWebAppTest::test, "test");
 	}
 

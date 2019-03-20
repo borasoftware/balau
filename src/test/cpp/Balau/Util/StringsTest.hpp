@@ -18,7 +18,7 @@ namespace Balau {
 namespace Util {
 
 struct StringsTest : public Testing::TestGroup<StringsTest> {
-	explicit StringsTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	StringsTest() {
 		registerTest(&StringsTest::toUpper_string,                       "toUpper_string");
 		registerTest(&StringsTest::toUpper_u32string,                    "toUpper_u32string");
 		registerTest(&StringsTest::toLower_string,                       "toLower_string");

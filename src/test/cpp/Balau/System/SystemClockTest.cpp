@@ -15,7 +15,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 
@@ -26,7 +25,7 @@ void SystemClockTest::nanotime() {
 	Sleep::nanoSleep(100);
 	std::chrono::nanoseconds n2 = SystemClock().nanotime();
 
-	assertThat(n2, isGreaterThan(n1));
+	AssertThat(n2, isGreaterThan(n1));
 }
 
 void SystemClockTest::millitime() {
@@ -34,7 +33,7 @@ void SystemClockTest::millitime() {
 	Sleep::milliSleep(10);
 	std::chrono::milliseconds m2 = SystemClock().millitime();
 
-	assertThat(m2, isGreaterThan(m1));
+	AssertThat(m2, isGreaterThan(m1));
 
 	std::chrono::milliseconds m3 = SystemClock().millitime();
 	Sleep::milliSleep(10);
@@ -42,9 +41,9 @@ void SystemClockTest::millitime() {
 	Sleep::milliSleep(10);
 	std::chrono::milliseconds m4 = SystemClock().millitime();
 
-	assertThat(n, isGreaterThan(m3));
-	assertThat(m4, isGreaterThan(n));
-	assertThat(n, isGreaterThan(m3));
+	AssertThat(n, isGreaterThan(m3));
+	AssertThat(m4, isGreaterThan(n));
+	AssertThat(n, isGreaterThan(m3));
 }
 
 } // namespace System

@@ -24,7 +24,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 using Testing::startsWith;
@@ -45,23 +44,23 @@ void assertResponse(const CharVectorResponse & response, bool isRedirect) {
 	auto needEof = response.need_eof();
 	auto version = response.version();
 
-	assertThat(result, is(isRedirect ? boost::beast::http::status::found : boost::beast::http::status::ok));
+	AssertThat(result, is(isRedirect ? boost::beast::http::status::found : boost::beast::http::status::ok));
 	//std::cout << reason << std::endl;
-	assertThat(chunked, is(false));
-	assertThat(hasContentLength, is(!isRedirect));
-	assertThat(keepAlive, is(true));
-	assertThat(needEof, is(isRedirect));
-	assertThat(version, is(11U));
+	AssertThat(chunked, is(false));
+	AssertThat(hasContentLength, is(!isRedirect));
+	AssertThat(keepAlive, is(true));
+	AssertThat(needEof, is(isRedirect));
+	AssertThat(version, is(11U));
 
 	if (!isRedirect) {
 		auto payloadSize = response.payload_size();
 
-		assertThat(payloadSize.is_initialized(), is(true));
-		assertThat(payloadSize.value(), isGreaterThan(0ULL));
+		AssertThat(payloadSize.is_initialized(), is(true));
+		AssertThat(payloadSize.value(), isGreaterThan(0ULL));
 
 		const std::vector<char> & actualBody = response.body();
 
-		assertThat(actualBody, is(Util::Vectors::toCharVector("<html><body><p>Ok</p></body></html>")));
+		AssertThat(actualBody, is(Util::Vectors::toCharVector("<html><body><p>Ok</p></body></html>")));
 	}
 }
 
@@ -294,7 +293,7 @@ void EmailSendingHttpWebAppTest::injectedInstantiation() {
 
 	OnScopeExit stopServer([&server] () { server->stop(); });
 
-	assertThat(server->isRunning(), is(true));
+	AssertThat(server->isRunning(), is(true));
 
 	HttpClient client("localhost", port);
 	const std::string pagesPath = "/1/send-message";

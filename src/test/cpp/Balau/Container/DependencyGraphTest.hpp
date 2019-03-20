@@ -50,7 +50,7 @@ namespace Balau {
 namespace Container {
 
 struct DependencyGraphTest : public Testing::TestGroup<DependencyGraphTest> {
-	explicit DependencyGraphTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	DependencyGraphTest() {
 		registerTest(&DependencyGraphTest::test_prep, "test_prep");
 		registerTest(&DependencyGraphTest::test, "test");
 	}

@@ -30,31 +30,40 @@ class SingleThreadedTestRunnerExecutor : public TestRunnerExecutor {
 	};
 
 	public: SingleThreadedTestRunnerExecutor(CompositeWriter & writer_,
-	                                         bool printNamespaces_,
-	                                         GroupedTestCaseMap & testCasesByGroup)
+	                                         bool useNamespaces_,
+	                                         GroupedTestCaseMap & testCasesByGroup,
+	                                         const std::string & testList)
 		: TestRunnerExecutor(
 			  std::unique_ptr<TestResultQueue>(new SingleThreadedTestResultQueue)
 			, writer_
-			, printNamespaces_
+			, useNamespaces_
 			, testCasesByGroup
+			, testList
 			, false
 		) {}
 
 	public: void run() override {
 		resultQueue = std::unique_ptr<TestResultQueue>(new SingleThreadedTestResultQueue());
-		size_t testIndex = 0;
+		size_t committedRuns = 0;
 
-		while (testIndex < tests.size()) {
-			runTest("", tests[testIndex]);
+		while (committedRuns < tests.size()) {
+			runTest("", tests[committedRuns]);
 
 			TestResult testResult = resultQueue->tryDequeue();
 
-			if (testResult.duration != -1) {
+			if (testResult.duration != -1 && testResult.result == TestResult::Result::Ignored) {
+				// A valid test case was dequeued but was set to ignore.
+				++committedRuns;
+			} else if (testResult.duration != -1) {
+				// A valid test case was dequeued and was run.
 				processTestResultMessage(std::move(testResult));
+				++committedRuns;
 			}
-
-			++testIndex;
 		}
+	}
+
+	public: ExecutionModel getExecutionModel() const override {
+		return ExecutionModel::SingleThreaded;
 	}
 };
 

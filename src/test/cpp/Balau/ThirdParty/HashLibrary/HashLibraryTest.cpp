@@ -21,7 +21,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 using namespace HashLibrary;
@@ -342,7 +341,7 @@ void HashLibraryTest::test() {
                               hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
                               "9b09ffa71b942fcb27635fbcd5b0e944bfdc63644f0713938a7f51535c3a35e2");
 
-  assertThat(errors, is(0));
+  AssertThat(errors, is(0));
 }
 
 } // namespace Balau

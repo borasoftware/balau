@@ -14,7 +14,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Util {
@@ -37,7 +36,7 @@ void RandomTest::test() {
 
 	for (double expected : expectedValues) {
 		const double actual = gen();
-		assertThat(actual, is(expected));
+		AssertThat(actual, is(expected));
 	}
 }
 

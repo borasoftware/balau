@@ -21,7 +21,7 @@ namespace Balau {
 namespace System {
 
 struct SystemClockTest : public Testing::TestGroup<SystemClockTest> {
-	explicit SystemClockTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	SystemClockTest() {
 		registerTest(&SystemClockTest::nanotime,  "nanotime");
 		registerTest(&SystemClockTest::millitime, "millitime");
 	}

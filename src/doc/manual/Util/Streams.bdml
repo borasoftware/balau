@@ -39,7 +39,7 @@
 
 		<para class="cpp-define-statement">#include &lt;Balau/Util/Streams.hpp></para>
 
-		<para>The following functions are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1Streams.html">API documentation</ref> page.</para>
+		<para>The following functions are currently implemented. More information is available on the <ref type="raw" new="true" url="../../api/structBalau_1_1Util_1_1Streams.html">API documentation</ref> page.</para>
 
 		<table class="bdml-table20L80">
 			<head> <cell>Function name</cell> <cell>Description</cell> </head>

@@ -14,7 +14,7 @@
 #include <Balau/Testing/TestRunner.hpp>
 
 struct ToStringTest : public Balau::Testing::TestGroup<ToStringTest> {
-	explicit ToStringTest(Balau::Testing::TestRunner & runner) : TestGroup(runner) {
+	ToStringTest() {
 		registerTest(&ToStringTest::toString_string,                      "toString_string");
 		registerTest(&ToStringTest::toString_u16string,                   "toString_u16string");
 		registerTest(&ToStringTest::toString_u32string,                   "toString_u32string");

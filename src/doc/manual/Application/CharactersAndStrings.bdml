@@ -279,7 +279,7 @@
 			</body>
 		</table>
 
-		<h1>Universal to-string</h1>
+		<h1 id="universal-to-string">Universal to-string</h1>
 
 		<para class="cpp-define-statement">#include &lt;Balau/Type/ToString.hpp></para>
 

@@ -43,13 +43,13 @@ void basicImpl(int argc, const char * argv[], CommandLineStyle style) {
 
 	commandLine.parse(argc, argv, false);
 
-	assertThat(commandLine.getOption(KEY1), is(VALUE1));
-	assertThat(commandLine.getOption(KEY2), is(VALUE2));
-	assertThat(commandLine.hasOption(KEY3), is(true));
-	assertThat(commandLine.hasOption(KEY4), is(false));
+	AssertThat(commandLine.getOption(KEY1), is(VALUE1));
+	AssertThat(commandLine.getOption(KEY2), is(VALUE2));
+	AssertThat(commandLine.hasOption(KEY3), is(true));
+	AssertThat(commandLine.hasOption(KEY4), is(false));
 
-	assertThat(commandLine.getOptionOrDefault(KEY2, DEFAULT_VALUE), is(VALUE2));
-	assertThat(commandLine.getOptionOrDefault(KEY4, DEFAULT_VALUE), is(DEFAULT_VALUE));
+	AssertThat(commandLine.getOptionOrDefault(KEY2, DEFAULT_VALUE), is(VALUE2));
+	AssertThat(commandLine.getOptionOrDefault(KEY4, DEFAULT_VALUE), is(DEFAULT_VALUE));
 }
 
 void finalValueImpl(int argc, const char * argv[], CommandLineStyle style) {
@@ -63,21 +63,21 @@ void finalValueImpl(int argc, const char * argv[], CommandLineStyle style) {
 
 	commandLine.parse(argc, argv, false);
 
-	assertThat(commandLine.hasFinalValue(),                         is(true));
-	assertThat(commandLine.getOption(KEY1),                         is(VALUE1));
-	assertThat(commandLine.getOption(KEY2),                         is(VALUE2));
-	assertThat(commandLine.hasOption(KEY3),                         is(true));
-	assertThat(commandLine.hasOption(KEY4),                         is(false));
-	assertThat(commandLine.getOptionOrDefault(KEY1, DEFAULT_VALUE), is(VALUE1));
-	assertThat(commandLine.getOptionOrDefault(KEY4, DEFAULT_VALUE), is(DEFAULT_VALUE));
-	assertThat(commandLine.getFinalValue(),                         is(FINAL_VALUE));
+	AssertThat(commandLine.hasFinalValue(),                         is(true));
+	AssertThat(commandLine.getOption(KEY1),                         is(VALUE1));
+	AssertThat(commandLine.getOption(KEY2),                         is(VALUE2));
+	AssertThat(commandLine.hasOption(KEY3),                         is(true));
+	AssertThat(commandLine.hasOption(KEY4),                         is(false));
+	AssertThat(commandLine.getOptionOrDefault(KEY1, DEFAULT_VALUE), is(VALUE1));
+	AssertThat(commandLine.getOptionOrDefault(KEY4, DEFAULT_VALUE), is(DEFAULT_VALUE));
+	AssertThat(commandLine.getFinalValue(),                         is(FINAL_VALUE));
 
-	assertThat(commandLine.getFinalValue(),                                      is(FINAL_VALUE));
-	assertThat(commandLine.getFinalValueAsFloat(),                               is(FINAL_VALUE_AS_FLOAT));
-	assertThat(commandLine.getFinalValueAsDouble(),                              is(FINAL_VALUE_AS_DOUBLE));
-	assertThat(commandLine.getFinalValueOrDefault(DEFAULT_VALUE),                is(FINAL_VALUE));
-	assertThat(commandLine.getFinalValueAsFloatOrDefault(DEFAULT_FLOAT_VALUE),   is(FINAL_VALUE_AS_FLOAT));
-	assertThat(commandLine.getFinalValueAsDoubleOrDefault(DEFAULT_DOUBLE_VALUE), is(FINAL_VALUE_AS_DOUBLE));
+	AssertThat(commandLine.getFinalValue(),                                      is(FINAL_VALUE));
+	AssertThat(commandLine.getFinalValueAsFloat(),                               is(FINAL_VALUE_AS_FLOAT));
+	AssertThat(commandLine.getFinalValueAsDouble(),                              is(FINAL_VALUE_AS_DOUBLE));
+	AssertThat(commandLine.getFinalValueOrDefault(DEFAULT_VALUE),                is(FINAL_VALUE));
+	AssertThat(commandLine.getFinalValueAsFloatOrDefault(DEFAULT_FLOAT_VALUE),   is(FINAL_VALUE_AS_FLOAT));
+	AssertThat(commandLine.getFinalValueAsDoubleOrDefault(DEFAULT_DOUBLE_VALUE), is(FINAL_VALUE_AS_DOUBLE));
 }
 
 const signed short       sValue = -23;
@@ -112,56 +112,56 @@ void numericValueImpl(int argc, const char * argv[], CommandLineStyle style) {
 
 	commandLine.parse(argc, argv, true);
 
-	assertThat(commandLine.hasFinalValue(), is(false));
+	AssertThat(commandLine.hasFinalValue(), is(false));
 
-	assertThat(commandLine.getOption(KEY1), is(sValueStr));
-	assertThat(commandLine.getOption(KEY2), is(usValueStr));
-	assertThat(commandLine.getOption(KEY3), is(iValueStr));
-	assertThat(commandLine.getOption(KEY4), is(uiValueStr));
-	assertThat(commandLine.getOption(KEY5), is(lValueStr));
-	assertThat(commandLine.getOption(KEY6), is(ulValueStr));
-	assertThat(commandLine.getOption(KEY7), is(fValueStr));
-	assertThat(commandLine.getOption(KEY8), is(dValueStr));
+	AssertThat(commandLine.getOption(KEY1), is(sValueStr));
+	AssertThat(commandLine.getOption(KEY2), is(usValueStr));
+	AssertThat(commandLine.getOption(KEY3), is(iValueStr));
+	AssertThat(commandLine.getOption(KEY4), is(uiValueStr));
+	AssertThat(commandLine.getOption(KEY5), is(lValueStr));
+	AssertThat(commandLine.getOption(KEY6), is(ulValueStr));
+	AssertThat(commandLine.getOption(KEY7), is(fValueStr));
+	AssertThat(commandLine.getOption(KEY8), is(dValueStr));
 
-	assertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, "", toString(KEY9))));
+	AssertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, "", toString(KEY9))));
 
-	assertThat([&] () { commandLine.getOption(KEY9); }, throws<Exception::OptionNotFoundException>());
+	AssertThat([&] () { commandLine.getOption(KEY9); }, throws<Exception::OptionNotFoundException>());
 
-	assertThat(commandLine.getOptionOrDefault(KEY1, ""), is(sValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY2, ""), is(usValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY3, ""), is(iValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY4, ""), is(uiValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY5, ""), is(lValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY6, ""), is(ulValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY7, ""), is(fValueStr));
-	assertThat(commandLine.getOptionOrDefault(KEY8, ""), is(dValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY1, ""), is(sValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY2, ""), is(usValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY3, ""), is(iValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY4, ""), is(uiValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY5, ""), is(lValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY6, ""), is(ulValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY7, ""), is(fValueStr));
+	AssertThat(commandLine.getOptionOrDefault(KEY8, ""), is(dValueStr));
 
-	assertThat(commandLine.getOptionAsShort(KEY1),         is(std::stoi(sValueStr)));
-	assertThat(commandLine.getOptionAsUnsignedShort(KEY2), is(std::stoul(usValueStr)));
-	assertThat(commandLine.getOptionAsInt(KEY3),           is(std::stoi(iValueStr)));
-	assertThat(commandLine.getOptionAsUnsignedInt(KEY4),   is(std::stoul(uiValueStr)));
-	assertThat(commandLine.getOptionAsLong(KEY5),          is(std::stol(lValueStr)));
-	assertThat(commandLine.getOptionAsUnsignedLong(KEY6),  is(std::stoul(ulValueStr)));
-	assertThat(commandLine.getOptionAsFloat(KEY7),         is(std::stof(fValueStr)));
-	assertThat(commandLine.getOptionAsDouble(KEY8),        is(std::stod(dValueStr)));
+	AssertThat(commandLine.getOptionAsShort(KEY1),         is(std::stoi(sValueStr)));
+	AssertThat(commandLine.getOptionAsUnsignedShort(KEY2), is(std::stoul(usValueStr)));
+	AssertThat(commandLine.getOptionAsInt(KEY3),           is(std::stoi(iValueStr)));
+	AssertThat(commandLine.getOptionAsUnsignedInt(KEY4),   is(std::stoul(uiValueStr)));
+	AssertThat(commandLine.getOptionAsLong(KEY5),          is(std::stol(lValueStr)));
+	AssertThat(commandLine.getOptionAsUnsignedLong(KEY6),  is(std::stoul(ulValueStr)));
+	AssertThat(commandLine.getOptionAsFloat(KEY7),         is(std::stof(fValueStr)));
+	AssertThat(commandLine.getOptionAsDouble(KEY8),        is(std::stod(dValueStr)));
 
-	assertThat(commandLine.getOptionAsShortOrDefault(KEY1, 0),         is(std::stoi(sValueStr)));
-	assertThat(commandLine.getOptionAsUnsignedShortOrDefault(KEY2, 0), is(std::stoul(usValueStr)));
-	assertThat(commandLine.getOptionAsIntOrDefault(KEY3, 0),           is(std::stoi(iValueStr)));
-	assertThat(commandLine.getOptionAsUnsignedIntOrDefault(KEY4, 0),   is(std::stoul(uiValueStr)));
-	assertThat(commandLine.getOptionAsLongOrDefault(KEY5, 0),          is(std::stol(lValueStr)));
-	assertThat(commandLine.getOptionAsUnsignedLongOrDefault(KEY6, 0),  is(std::stoul(ulValueStr)));
-	assertThat(commandLine.getOptionAsFloatOrDefault(KEY7, 0),         is(std::stof(fValueStr)));
-	assertThat(commandLine.getOptionAsDoubleOrDefault(KEY8, 0),        is(std::stod(dValueStr)));
-	assertThat(commandLine.getOptionAsDoubleOrDefault(KEY9, -42.0),    is(-42.0));
+	AssertThat(commandLine.getOptionAsShortOrDefault(KEY1, 0),         is(std::stoi(sValueStr)));
+	AssertThat(commandLine.getOptionAsUnsignedShortOrDefault(KEY2, 0), is(std::stoul(usValueStr)));
+	AssertThat(commandLine.getOptionAsIntOrDefault(KEY3, 0),           is(std::stoi(iValueStr)));
+	AssertThat(commandLine.getOptionAsUnsignedIntOrDefault(KEY4, 0),   is(std::stoul(uiValueStr)));
+	AssertThat(commandLine.getOptionAsLongOrDefault(KEY5, 0),          is(std::stol(lValueStr)));
+	AssertThat(commandLine.getOptionAsUnsignedLongOrDefault(KEY6, 0),  is(std::stoul(ulValueStr)));
+	AssertThat(commandLine.getOptionAsFloatOrDefault(KEY7, 0),         is(std::stof(fValueStr)));
+	AssertThat(commandLine.getOptionAsDoubleOrDefault(KEY8, 0),        is(std::stod(dValueStr)));
+	AssertThat(commandLine.getOptionAsDoubleOrDefault(KEY9, -42.0),    is(-42.0));
 
-	assertThat([&] () { commandLine.getFinalValue();         }, throws<Exception::OptionNotFoundException>());
-	assertThat([&] () { commandLine.getFinalValueAsFloat();  }, throws<Exception::OptionNotFoundException>());
-	assertThat([&] () { commandLine.getFinalValueAsDouble(); }, throws<Exception::OptionNotFoundException>());
+	AssertThat([&] () { commandLine.getFinalValue();         }, throws<Exception::OptionNotFoundException>());
+	AssertThat([&] () { commandLine.getFinalValueAsFloat();  }, throws<Exception::OptionNotFoundException>());
+	AssertThat([&] () { commandLine.getFinalValueAsDouble(); }, throws<Exception::OptionNotFoundException>());
 
-	assertThat(commandLine.getFinalValueOrDefault(DEFAULT_VALUE),                is(DEFAULT_VALUE));
-	assertThat(commandLine.getFinalValueAsFloatOrDefault(DEFAULT_FLOAT_VALUE),   is(DEFAULT_FLOAT_VALUE));
-	assertThat(commandLine.getFinalValueAsDoubleOrDefault(DEFAULT_DOUBLE_VALUE), is(DEFAULT_DOUBLE_VALUE));
+	AssertThat(commandLine.getFinalValueOrDefault(DEFAULT_VALUE),                is(DEFAULT_VALUE));
+	AssertThat(commandLine.getFinalValueAsFloatOrDefault(DEFAULT_FLOAT_VALUE),   is(DEFAULT_FLOAT_VALUE));
+	AssertThat(commandLine.getFinalValueAsDoubleOrDefault(DEFAULT_DOUBLE_VALUE), is(DEFAULT_DOUBLE_VALUE));
 }
 
 ////////////////////////// Switch-space-value tests ///////////////////////////
@@ -233,7 +233,7 @@ void CommandLineTest::docOutputSsv() {
     -n, --key-four - The fourth key.
 )";
 
-	assertThat(actual, is(expected));
+	AssertThat(actual, is(expected));
 }
 
 ////////////////////////// Switch-equals-value tests //////////////////////////
@@ -324,7 +324,7 @@ void CommandLineTest::docOutputSev() {
     n, key-four - The fourth key.
 )";
 
-	assertThat(actual, is(expected));
+	AssertThat(actual, is(expected));
 }
 
 //////////////////////////////// Detect tests /////////////////////////////////

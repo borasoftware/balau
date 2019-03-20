@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct HttpsByteReadResourceTest : public Testing::TestGroup<HttpsByteReadResourceTest> {
-	explicit HttpsByteReadResourceTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	HttpsByteReadResourceTest() {
 		registerTest(&HttpsByteReadResourceTest::emptyPath, "emptyPath");
 		registerTest(&HttpsByteReadResourceTest::nonEmptyPath, "nonEmptyPath");
 	}

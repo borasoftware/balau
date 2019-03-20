@@ -17,7 +17,7 @@
 namespace Balau {
 
 struct InjectorTest : public Testing::TestGroup<InjectorTest> {
-	explicit InjectorTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	InjectorTest() {
 		registerTest(&InjectorTest::creationAndDeletion,       "creationAndDeletion");
 		registerTest(&InjectorTest::singletonCreation,         "singletonCreation");
 		registerTest(&InjectorTest::simpleTypeInjection,       "simpleTypeInjection");

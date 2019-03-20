@@ -16,7 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Resource {
@@ -27,9 +26,9 @@ File FileByteWriteResourceTest::prepWritePath(const std::string & testName, cons
 	const std::string fileUriStr = file.toUriString();
 
 	file.getParentDirectory().createDirectories();
-	assertThat(file.getParentDirectory().exists(), is(true));
+	AssertThat(file.getParentDirectory().exists(), is(true));
 	file.removeFile();
-	assertThat(file.exists(), is(false));
+	AssertThat(file.exists(), is(false));
 
 	return file;
 }
@@ -62,8 +61,8 @@ void FileByteWriteResourceTest::test() {
 	const std::string actualA = Util::Files::readToString(fileA);
 	const std::string actualB = Util::Files::readToString(fileA);
 
-	assertThat(actualA, is(expected));
-	assertThat(actualB, is(expected));
+	AssertThat(actualA, is(expected));
+	AssertThat(actualB, is(expected));
 }
 
 } // namespace Resource

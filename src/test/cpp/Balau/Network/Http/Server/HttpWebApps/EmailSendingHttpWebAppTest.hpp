@@ -23,7 +23,7 @@ namespace Http {
 namespace HttpWebApps {
 
 struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWebAppTest> {
-	explicit EmailSendingHttpWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	EmailSendingHttpWebAppTest() {
 		registerTest(&EmailSendingHttpWebAppTest::directInstantiation,   "directInstantiation");
 		registerTest(&EmailSendingHttpWebAppTest::injectedInstantiation, "injectedInstantiation");
 	}

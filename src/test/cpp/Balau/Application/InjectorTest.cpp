@@ -52,22 +52,22 @@ class TestCapture {
 	#endif
 
 	public: void assertSize(size_t expectedSize) {
-		assertThat(capturedText.size(), is(expectedSize));
+		AssertThat(capturedText.size(), is(expectedSize));
 	}
 
 	public: void assertEquals(std::vector<std::string> expectedStrings) {
-		assertThat(capturedText.size(), is(expectedStrings.size()));
+		AssertThat(capturedText.size(), is(expectedStrings.size()));
 
 		for (size_t m = count; m < expectedStrings.size(); m++) {
-			assertThat(capturedText[m], is(expectedStrings[m]));
+			AssertThat(capturedText[m], is(expectedStrings[m]));
 		}
 	}
 
 	public: void assertStartsWith(std::vector<std::string> expectedStrings) {
-		assertThat(capturedText.size(), isGreaterThanOrEqualTo(expectedStrings.size()));
+		AssertThat(capturedText.size(), isGreaterThanOrEqualTo(expectedStrings.size()));
 
 		for (size_t m = count; m < expectedStrings.size(); m++) {
-			assertThat(capturedText[m], is(expectedStrings[m]));
+			AssertThat(capturedText[m], is(expectedStrings[m]));
 		}
 	}
 
@@ -697,12 +697,12 @@ void InjectorTest::threadLocalScopeUsage() {
 
 	// The two instances of a thread function are the same.
 	for (auto & threadFunction : threadFunctions) {
-		assertThat(threadFunction.instance1.get(), is(threadFunction.instance2.get()));
+		AssertThat(threadFunction.instance1.get(), is(threadFunction.instance2.get()));
 	}
 
 	// The instances of different thread functions are different.
 	for (size_t m = 0; m < threadFunctions.size() - 1; m++) {
-		assertThat(threadFunctions[m].instance1.get(), isNot(threadFunctions[m + 1].instance1.get()));
+		AssertThat(threadFunctions[m].instance1.get(), isNot(threadFunctions[m + 1].instance1.get()));
 	}
 
 	// Nothing is created on this thread.
@@ -918,36 +918,36 @@ void InjectorTest::allBindings() {
 
 	auto a = injector->getShared<A>();
 
-	assertThat(a->s, is("test string"));
-	assertThat(a->i, is(1234567));
-	assertThat(a->g, is('g'));
-	assertThat(a->d, is(123.456));
-	assertThat(a->f, is(432.1f));
-	assertThat(a->ii->getValue(), is(1));
-	assertThat(a->jj->getValue(), is(100));
+	AssertThat(a->s, is("test string"));
+	AssertThat(a->i, is(1234567));
+	AssertThat(a->g, is('g'));
+	AssertThat(a->d, is(123.456));
+	AssertThat(a->f, is(432.1f));
+	AssertThat(a->ii->getValue(), is(1));
+	AssertThat(a->jj->getValue(), is(100));
 
 	auto b = injector->getValue<B>();
 
 	b.stream << "hello, world!";
 
-	assertThat(referencedStream.str(), is("hello, world!"));
+	AssertThat(referencedStream.str(), is("hello, world!"));
 
 	// Get the reference stream via getInstance.
 	auto & s = injector->getInstance<std::ostream &>("testStream");
 
 	s << " hello again!";
 
-	assertThat(referencedStream.str(), is("hello, world! hello again!"));
+	AssertThat(referencedStream.str(), is("hello, world! hello again!"));
 
 	// Get the const reference object. This must be auto &, not auto,
 	// because the type CC has a deleted copy constructor.
 	const auto & ccc = injector->getReference<const CC>();
 
-	assertThat(ccc.value, is(3.14159));
+	AssertThat(ccc.value, is(3.14159));
 
 	// Get non-const singleton?
 	// Only the const version of the CCS singleton has been bound.
-	assertThat(
+	AssertThat(
 		  [&injector] () { injector->getShared<CCS>(); }
 		, throws(
 			Exception::NoBindingException(
@@ -959,20 +959,20 @@ void InjectorTest::allBindings() {
 	// Get the const singleton.
 	auto ccs = injector->getShared<const CCS>();
 
-	assertThat(ccs->value, is(123.456));
+	AssertThat(ccs->value, is(123.456));
 
 	// Promote a new value to a const value.
 	// This just queries for the value binding without the const qualifier.
 	const auto cd = injector->getValue<const CD>();
 
-	assertThat(cd.ccsObj->value, is(123.456));
+	AssertThat(cd.ccsObj->value, is(123.456));
 
 	// Promote a new reference to a const reference.
 	// This queries for the const reference binding first, then it tries the non-const reference binding.
 	const auto & cStream = injector->getReference<const std::ostream>("testStream");
 
 	const auto & cStringStream = dynamic_cast<const std::ostringstream &>(cStream);
-	assertThat(cStringStream.str(), is(referencedStream.str()));
+	AssertThat(cStringStream.str(), is(referencedStream.str()));
 
 	// Promote a shared instance to a shared const instance .
 	// This queries for the shared const instance binding first, then it tries the shared non-const instance binding.
@@ -1016,8 +1016,8 @@ void InjectorTest::docTest() {
 	auto & a3 = injector->getReference<const AA>();
 	auto a4 = injector->getShared<const AA>();
 
-	assertThat(a3.value, is(543.2));
-	assertThat(a4->value, is(123.456));
+	AssertThat(a3.value, is(543.2));
+	AssertThat(a4->value, is(123.456));
 }
 
 class HasInjector {
@@ -1071,7 +1071,7 @@ void InjectorTest::sharedCycleChecks() {
 		}
 	};
 
-	assertThat(
+	AssertThat(
 		[] () {
 			Injector::create(Configuration1());
 		}
@@ -1106,7 +1106,7 @@ void InjectorTest::mixedCycleChecks() {
 		}
 	};
 
-	assertThat(
+	AssertThat(
 		[] () {
 			Injector::create(Conf());
 		}
@@ -1138,7 +1138,7 @@ void InjectorTest::injectorCycleAvoidance() {
 		}
 	};
 
-	assertThat([] () { Injector::create(Configuration1()); }, throws<Exception::SharedInjectorException>());
+	AssertThat([] () { Injector::create(Configuration1()); }, throws<Exception::SharedInjectorException>());
 
 	// Create a new instance binding with a shared pointer to the injector inside it.
 	// Does not throw an exception.
@@ -1193,7 +1193,7 @@ void InjectorTest::singletonProvider() {
 
 	auto provided = injector->getShared<int>();
 
-	assertThat(*provided, is(expected));
+	AssertThat(*provided, is(expected));
 }
 
 void InjectorTest::providedSingletonProvider() {
@@ -1213,7 +1213,7 @@ void InjectorTest::providedSingletonProvider() {
 
 	auto provided = injector->getShared<int>();
 
-	assertThat(*provided, is(expected));
+	AssertThat(*provided, is(expected));
 }
 
 } // namespace Balau

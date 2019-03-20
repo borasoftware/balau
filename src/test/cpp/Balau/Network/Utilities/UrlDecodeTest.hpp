@@ -19,7 +19,7 @@ namespace Balau {
 namespace Network {
 
 struct UrlDecodeTest : public Testing::TestGroup<UrlDecodeTest> {
-	explicit UrlDecodeTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	UrlDecodeTest() {
 		registerTest(&UrlDecodeTest::decodeTest, "decodeTest");
 		registerTest(&UrlDecodeTest::splitAndDecodeTest, "splitAndDecodeTest");
 	}

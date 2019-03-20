@@ -18,10 +18,17 @@ namespace Balau::Testing::Impl {
 // Test runner executor which implements the ProcessPerTest execution model.
 class ProcessPerTestTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
 	public: ProcessPerTestTestRunnerExecutor(CompositeWriter & writer_,
-	                                         bool printNamespaces_,
+	                                         bool useNamespaces_,
 	                                         GroupedTestCaseMap & testCasesByGroup,
+	                                         const std::string & testList,
 	                                         unsigned int concurrencyLevel_)
-		: MultiProcessTestRunnerExecutor(writer_, printNamespaces_, testCasesByGroup, concurrencyLevel_) {}
+		: MultiProcessTestRunnerExecutor(
+			  writer_
+			, useNamespaces_
+			, testCasesByGroup
+			, testList
+			, concurrencyLevel_
+		) {}
 
 	public: void run() override {
 		writer << ("Parent pid = " + ::toString(getpid()) + "\n");
@@ -41,7 +48,11 @@ class ProcessPerTestTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
 
 			TestResult testResult = resultQueue->tryDequeue();
 
-			if (testResult.duration != -1) {
+			if (testResult.duration != -1 && testResult.result == TestResult::Result::Ignored) {
+				// A valid test case was dequeued but was set to ignore.
+				++committedRuns;
+			} else if (testResult.duration != -1) {
+				// A valid test case was dequeued and was run.
 				processTestResultMessage(std::move(testResult));
 				++committedRuns;
 			}
@@ -50,6 +61,10 @@ class ProcessPerTestTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
 		} while (committedRuns < tests.size());
 
 		checkForChildProcessTermination(childPids, pidIndexByPid);
+	}
+
+	public: ExecutionModel getExecutionModel() const override {
+		return ExecutionModel::ProcessPerTest;
 	}
 
 	private: void reportChildProcessCompletion() const override {

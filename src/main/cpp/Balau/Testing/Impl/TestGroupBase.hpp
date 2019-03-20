@@ -11,6 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE
 #define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE
 
+#include <memory>
 #include <string>
 
 namespace Balau::Testing {
@@ -34,17 +35,26 @@ class TestGroupBase {
 	friend class WorkerProcessesTestRunnerExecutor;
 	friend class ProcessPerTestTestRunnerExecutor;
 
+	protected: TestGroupBase();
+
 	public: virtual ~TestGroupBase() = default;
 
 	private: virtual void setup() = 0;
 
 	private: virtual void teardown() = 0;
 
+	// Get the test class' full name.
+	private: virtual const std::string & getFullGroupName() const = 0;
+
 	// Get the test class' name during the test framework setup.
 	private: virtual const std::string & getGroupName() const = 0;
 
-	// Set by the test runner.
-	private: unsigned int groupIndex = 0;
+	// Set the test class' name following a useNamespace update.
+	private: virtual void setGroupName(std::string && name) = 0;
+
+	private: virtual unsigned int getExecutionModels() const = 0;
+
+	private: const unsigned int groupIndex;
 };
 
 } // namespace Impl

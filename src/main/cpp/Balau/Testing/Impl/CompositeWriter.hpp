@@ -18,11 +18,15 @@ namespace Balau::Testing::Impl {
 
 // Contains all the writers specified during test runner construction.
 class CompositeWriter {
-	private: std::vector<std::unique_ptr<TestWriter>> items;
+	public: CompositeWriter() {}
 
-	// Construct a writer that logs to the specified writer items.
 	public: template <typename ... WriterItemT> explicit CompositeWriter(const WriterItemT & ... items_)
-		: items(Util::Memory::makeUnique<TestWriter>([] (const TestWriter & item) { return item.clone(); }, items_ ...)) {}
+		: items(Util::Memory::makeShared<TestWriter>([] (const TestWriter & item) { return item.clone(); }, items_ ...)) {}
+
+	public: CompositeWriter & operator = (const CompositeWriter & copy) {
+		items = copy.items;
+		return *this;
+	}
 
 	public: template<typename T> CompositeWriter & operator << (T value) {
 		for (auto & item : items) {
@@ -31,6 +35,8 @@ class CompositeWriter {
 
 		return *this;
 	}
+
+	private: std::vector<std::shared_ptr<TestWriter>> items;
 };
 
 } // namespace Balau::Testing::Impl

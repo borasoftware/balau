@@ -24,6 +24,7 @@
 #include <Balau/Logging/LoggingLevel.hpp>
 #include <Balau/Logging/Impl/LoggerAllocator.hpp>
 #include <Balau/Logging/Impl/LoggerForwardDeclarations.hpp>
+#include <Balau/Type/SourceCodeLocation.hpp>
 
 #include <functional>
 

@@ -21,7 +21,7 @@ namespace Network {
 namespace Http {
 
 struct HttpServerTest : public Testing::TestGroup<HttpServerTest> {
-	explicit HttpServerTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	HttpServerTest() {
 		registerTest(&HttpServerTest::injectedInstantiation, "injectedInstantiation");
 	}
 

@@ -36,14 +36,16 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 	private: std::atomic_uint nextTestIndex;
 
 	public: WorkerThreadsTestRunnerExecutor(CompositeWriter & writer_,
-	                                        bool printNamespaces_,
+	                                        bool useNamespaces_,
 	                                        GroupedTestCaseMap & testCasesByGroup,
+	                                        const std::string & testList,
 	                                        unsigned int concurrencyLevel_)
 		: TestRunnerExecutor(
 			  std::unique_ptr<TestResultQueue>(new (WorkerThreadsTestResultQueue))
 			, writer_
-			, printNamespaces_
+			, useNamespaces_
 			, testCasesByGroup
+			, testList
 			, false
 		)
 		, concurrencyLevel(concurrencyLevel_)
@@ -61,7 +63,11 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 		do {
 			TestResult testResult = resultQueue->tryDequeue();
 
-			if (testResult.duration != -1) {
+			if (testResult.duration != -1 && testResult.result == TestResult::Result::Ignored) {
+				// A valid test case was dequeued but was set to ignore.
+				++committedRuns;
+			} else if (testResult.duration != -1) {
+				// A valid test case was dequeued and was run.
 				processTestResultMessage(std::move(testResult));
 				++committedRuns;
 			}
@@ -70,6 +76,10 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 		for (size_t m = 0; m < concurrencyLevel; m++) {
 			threads[m].join();
 		}
+	}
+
+	public: ExecutionModel getExecutionModel() const override {
+		return ExecutionModel::WorkerThreads;
 	}
 
 	private: static void childThreadLogic(WorkerThreadsTestRunnerExecutor * self) {

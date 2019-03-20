@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct StringByteReadResourceTest : public Testing::TestGroup<StringByteReadResourceTest> {
-	explicit StringByteReadResourceTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	StringByteReadResourceTest() {
 		registerTest(&StringByteReadResourceTest::test, "test");
 	}
 

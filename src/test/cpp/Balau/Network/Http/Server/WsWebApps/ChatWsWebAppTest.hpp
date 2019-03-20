@@ -17,7 +17,7 @@
 namespace Balau::Network::Http::WsWebApps {
 
 struct ChatWsWebAppTest : public Testing::TestGroup<ChatWsWebAppTest> {
-	explicit ChatWsWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	ChatWsWebAppTest() {
 		// Work in progress.
 		//registerTest(&ChatWsWebAppTest::test, "test");
 	}

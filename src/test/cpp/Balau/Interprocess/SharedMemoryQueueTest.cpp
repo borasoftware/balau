@@ -26,8 +26,6 @@ using namespace Balau::Concurrent;
 
 namespace Balau {
 
-using Testing::assertFail;
-using Testing::assertThat;
 using Testing::is;
 
 namespace Interprocess {
@@ -44,20 +42,20 @@ template <int childProcessCount> struct SharedTestState {
 ////////////// Common tests with different queue configurations ///////////////
 
 void runSPST(SharedMemoryQueue<SMT> & queue) {
-	assertThat(queue.tryDequeue(), is(SMT { 0.0, 0 }));
+	AssertThat(queue.tryDequeue(), is(SMT { 0.0, 0 }));
 
 	queue.enqueue({ 42.0, 34 });
 
-	assertThat(queue.dequeue(), is(SMT { 42.0, 34 }));
+	AssertThat(queue.dequeue(), is(SMT { 42.0, 34 }));
 }
 
 void runSISO(SharedMemoryQueue<SMT> & queue) {
 	const size_t messageCount = 1000;
 
 	// Single process.
-	assertThat(queue.tryDequeue(), is(SMT { 0.0, 0 }));
+	AssertThat(queue.tryDequeue(), is(SMT { 0.0, 0 }));
 	queue.enqueue({ 42.0, 34 });
-	assertThat(queue.dequeue(), is(SMT { 42.0, 34 }));
+	AssertThat(queue.dequeue(), is(SMT { 42.0, 34 }));
 
 	const int pid = Fork::performFork(
 		[&] () {
@@ -79,7 +77,7 @@ void runSISO(SharedMemoryQueue<SMT> & queue) {
 
 	Fork::TerminationReport report = Fork::waitOnProcess(pid);
 
-	assertThat("Child process did not exit correctly.", report.code, is((int) CLD_EXITED));
+	AssertThat("Child process did not exit correctly.", report.code, is((int) CLD_EXITED));
 }
 
 void runMISO(SharedMemoryQueueTest & self, SharedMemoryQueue<SMT> & queue) {
@@ -168,11 +166,11 @@ void runMISO(SharedMemoryQueueTest & self, SharedMemoryQueue<SMT> & queue) {
 	}
 
 	if (!failureMessage.empty()) {
-		assertFail(failureMessage);
+		AssertFail(failureMessage);
 	}
 
 	if (failed) {
-		assertFail("One or more child processes failed.");
+		AssertFail("One or more child processes failed.");
 	}
 }
 
@@ -262,7 +260,7 @@ void SharedMemoryQueueTest::singleBufferSIMO() {
 	}
 
 	if (failed) {
-		assertFail("One or more child processes failed.");
+		AssertFail("One or more child processes failed.");
 	}
 }
 
@@ -406,7 +404,7 @@ void SharedMemoryQueueTest::singleBufferMIMO() {
 	}
 
 	if (failed) {
-		assertFail("One or more child processes failed.");
+		AssertFail("One or more child processes failed.");
 	}
 }
 
@@ -485,7 +483,7 @@ void SharedMemoryQueueTest::multipleBufferPending() {
 	// object's marshal buffer being re-queued on the internal process local queue.
 	SMT object = queue.tryDequeue();
 
-	assertThat(object, is(SMT {}));
+	AssertThat(object, is(SMT {}));
 
 	// Send the last chunk.
 	queue.queue.send(chunkBuffers[chunkBuffers.size() - 1].data(), chunkBuffers[chunkBuffers.size() - 1].size(), 0);
@@ -493,12 +491,12 @@ void SharedMemoryQueueTest::multipleBufferPending() {
 	// Try to dequeue again. This should result in the object being returned.
 	SMT object2 = queue.tryDequeue();
 
-	assertThat(object2, is(SMT { 42.0, 34 }));
+	AssertThat(object2, is(SMT { 42.0, 34 }));
 
 	// Dequeue again. This should result in second enqueued object being returned.
 	SMT object3 = queue.tryDequeue();
 
-	assertThat(object3, is(SMT { 123.4, 12 }));
+	AssertThat(object3, is(SMT { 123.4, 12 }));
 }
 
 } // namespace Interprocess

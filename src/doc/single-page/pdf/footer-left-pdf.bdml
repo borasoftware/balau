@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  - Bora-Doc help file
+  - Balau core C++ library
   -
-  - Copyright 2009 Nicholas Smethurst (contact@borasoftware.com)
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Use of this file is subject to the Bora End User License Agreement, a copy
-  - of which can be seen at https://borasoftware.com/eula.html.
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
   -
   -->
 

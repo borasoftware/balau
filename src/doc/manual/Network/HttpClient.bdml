@@ -53,7 +53,7 @@
 			HttpsClient client("borasoftware.com");
 		</code>
 
-		<para>The default user agent used in the client is "<emph>Balau 2019.2.1</emph>", where <emph>2019.2.1</emph> is the version of the Balau library. The HTTP version in the above client is version 1.1.</para>
+		<para>The default user agent used in the client is "<emph>Balau &lt;version&gt;</emph>", where <emph>&lt;version&gt;</emph> is the version of the Balau library. The HTTP version in the above client is version 1.1.</para>
 
 		<para>If the required port, user agent and/or HTTP version are different to the default values, they can be specified in the constructor</para>
 

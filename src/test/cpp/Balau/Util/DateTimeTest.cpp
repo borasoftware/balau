@@ -15,7 +15,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 
@@ -33,7 +32,7 @@ const char * Format = "%H:%M:%S";
 void DateTimeTest::toStringString() {
 	for (const auto & element : testData) {
 		const std::string s = DateTime::toString(Format, element.first);
-		assertThat(s, is(std::string(element.second)));
+		AssertThat(s, is(std::string(element.second)));
 	}
 }
 
@@ -42,14 +41,14 @@ void DateTimeTest::toStringStream() {
 		std::ostringstream stream;
 		DateTime::toString(stream, Format, element.first);
 		const std::string actual = stream.str();
-		assertThat(actual, is(std::string(element.second)));
+		AssertThat(actual, is(std::string(element.second)));
 	}
 }
 
 void DateTimeTest::toDuration() {
 	for (const auto & element : testData) {
 		const auto d = DateTime::toDuration<int64_t, std::nano>(Format, std::string(element.second));
-		assertThat(d, is(element.first));
+		AssertThat(d, is(element.first));
 	}
 }
 

@@ -1,3 +1,5 @@
+#include <utility>
+
 // @formatter:off
 //
 // Balau core C++ library
@@ -86,7 +88,7 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
                        std::shared_ptr<MimeTypes> mimeTypes,
                        bool registerSignalHandler)
 	: HttpServer(
-		  clock
+		  std::move(clock)
 		, serverId
 		, endpoint
 		, std::move(threadNamePrefix_)
@@ -94,7 +96,7 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 		, std::make_shared<HttpWebApps::FileServingHttpWebApp>(documentRoot, defaultFile)
 		, std::shared_ptr<WsWebApp>(nullptr)
 		, loggingNamespace
-		, sessionCookieName
+		, std::move(sessionCookieName)
 		, std::move(mimeTypes)
 		, registerSignalHandler
 	) {}
@@ -184,8 +186,8 @@ void HttpServer::stop(bool warn) {
 		System::Sleep::milliSleep(10);
 	}
 
-	for (size_t m = 0; m < workers.size(); m++) {
-		workers[m].join();
+	for (auto & worker : workers) {
+		worker.join();
 	}
 
 	workers.clear();
@@ -328,7 +330,7 @@ void HttpServer::addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & 
                                       const std::string & locationStr,
                                       std::shared_ptr<HttpWebApp> & webApp) {
 	// Blank delimited list of locations.
-	static std::regex delimiter("[ \t]+");
+	static const std::regex delimiter("[ \t]+");
 
 	auto locations = Util::Strings::splitAndTrim(locationStr, delimiter);
 

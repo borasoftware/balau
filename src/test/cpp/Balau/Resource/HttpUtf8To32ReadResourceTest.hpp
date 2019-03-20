@@ -18,7 +18,7 @@ namespace Balau {
 namespace Resource {
 
 struct HttpUtf8To32ReadResourceTest : public Testing::TestGroup<HttpUtf8To32ReadResourceTest> {
-	explicit HttpUtf8To32ReadResourceTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	explicit HttpUtf8To32ReadResourceTest() {
 		registerTest(&HttpUtf8To32ReadResourceTest::emptyPath, "emptyPath");
 		registerTest(&HttpUtf8To32ReadResourceTest::nonEmptyPath, "nonEmptyPath");
 	}

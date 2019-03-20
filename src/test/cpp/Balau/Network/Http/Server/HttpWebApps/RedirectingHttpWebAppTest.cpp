@@ -19,7 +19,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 using Testing::isGreaterThan;
 using Testing::isLessThan;
@@ -34,8 +33,8 @@ static void assertResponse(const CharVectorResponse & response, Status expectedS
 	const auto & header = response.base();
 	auto result = header.result();
 
-	assertThat(result, is(expectedStatus));
-	assertThat(response[Field::location], is(redirectionPath));
+	AssertThat(result, is(expectedStatus));
+	AssertThat(response[Field::location], is(redirectionPath));
 }
 
 const size_t redirectingHttpWebAppTestPortStart = 13245;
@@ -110,7 +109,7 @@ void RedirectingHttpWebAppTest::injectedInstantiation() {
 
 	OnScopeExit stopServer([&server] () { server->stop(); });
 
-	assertThat(server->isRunning(), is(true));
+	AssertThat(server->isRunning(), is(true));
 
 	HttpClient client("localhost", port);
 

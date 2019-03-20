@@ -18,7 +18,7 @@ namespace Balau {
 namespace LoggingSystem {
 
 struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
-	explicit LoggingStreamsTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	LoggingStreamsTest() {
 		// Work in progress.
 		//registerTest(&LoggingStreamsTest::fileRotation, "fileRotation");
 	}

@@ -23,7 +23,7 @@ namespace Http {
 namespace HttpWebApps {
 
 struct RoutingHttpWebAppTest : public Testing::TestGroup<RoutingHttpWebAppTest> {
-	explicit RoutingHttpWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	RoutingHttpWebAppTest() {
 		registerTest(&RoutingHttpWebAppTest::test, "test");
 	}
 

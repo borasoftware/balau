@@ -15,7 +15,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Resource {
@@ -39,10 +38,10 @@ void ZipFileTest::iteration() {
 		}
 	}
 
-	assertThat(regularEntryCount, is(11U));
-	assertThat(directoryEntryCount, is(4U));
+	AssertThat(regularEntryCount, is(11U));
+	AssertThat(directoryEntryCount, is(4U));
 
-	assertThat(regularEntryCumulativeSize, is(95U));
+	AssertThat(regularEntryCumulativeSize, is(95U));
 }
 
 } // namespace Resource

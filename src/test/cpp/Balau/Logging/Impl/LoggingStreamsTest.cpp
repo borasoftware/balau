@@ -16,8 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertFail;
-using Testing::assertThat;
 using Testing::is;
 
 namespace LoggingSystem {
@@ -28,7 +26,7 @@ class TestClock : public System::Clock {
 	public: explicit TestClock(Date::year_month_day todayValue_) : todayValue(todayValue_) {}
 
 	public: std::chrono::system_clock::time_point now() const override {
-		assertFail("now() called");
+		AssertFail("now() called");
 		return std::chrono::system_clock::now(); // avoid compiler complaint
 	}
 
@@ -37,22 +35,22 @@ class TestClock : public System::Clock {
 	}
 
 	public: std::chrono::nanoseconds nanotime() const override {
-		assertFail("now() called");
+		AssertFail("now() called");
 		return std::chrono::nanoseconds(0); // avoid compiler complaint
 	}
 
 	public: std::chrono::milliseconds millitime() const override {
-		assertFail("now() called");
+		AssertFail("now() called");
 		return std::chrono::milliseconds(0); // avoid compiler complaint
 	}
 
 	public: std::chrono::centiseconds centitime() const override {
-		assertFail("now() called");
+		AssertFail("now() called");
 		return std::chrono::centiseconds(0); // avoid compiler complaint
 	}
 
 	public: std::chrono::deciseconds decitime() const override {
-		assertFail("now() called");
+		AssertFail("now() called");
 		return std::chrono::deciseconds(0); // avoid compiler complaint
 	}
 };

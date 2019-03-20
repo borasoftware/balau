@@ -1,3 +1,5 @@
+#include <utility>
+
 // @formatter:off
 //
 // Balau core C++ library
@@ -95,14 +97,14 @@ struct HttpServerConfiguration {
 	///////////////////////// Private implementation //////////////////////////
 
 	HttpServerConfiguration(std::shared_ptr<const System::Clock> clock_,
-	                        BalauLogger logger_,
+	                        const BalauLogger & logger_,
 	                        std::string serverIdentification_,
 	                        TCP::endpoint endpoint_,
 	                        std::string sessionCookieName_,
 	                        std::shared_ptr<HttpWebApp> httpHandler_,
 	                        std::shared_ptr<WsWebApp> wsHandler_,
 	                        std::shared_ptr<MimeTypes> mimeTypes_)
-		: clock(clock_)
+		: clock(std::move(clock_))
 		, logger(logger_)
 		, serverId(std::move(serverIdentification_))
 		, endpoint(std::move(endpoint_))

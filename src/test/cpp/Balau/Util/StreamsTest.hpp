@@ -18,7 +18,7 @@ namespace Balau {
 namespace Util {
 
 struct StreamsTest : public Testing::TestGroup<StreamsTest> {
-	explicit StreamsTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	StreamsTest() {
 		registerTest(&StreamsTest::readLinesToVector, "readLinesToVector");
 		registerTest(&StreamsTest::consume,           "consume");
 	}

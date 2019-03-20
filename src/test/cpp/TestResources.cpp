@@ -16,7 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 const Resource::File TestResources::BalauBaseFolder                = Resource::File(BalauString(BALAU_BASE_FOLDER_));
@@ -36,7 +35,7 @@ const std::string TestResources::BalauTestEmailTo                  = BalauString
 
 Resource::File TestResources::assertTestResourceFileExists(const std::string & relativePath) {
 	Resource::File path = BalauSourceTestResourcesFolder / relativePath;
-	assertThat(path.exists(), is(true));
+	AssertThat(path.exists(), is(true));
 	return path;
 }
 

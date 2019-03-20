@@ -19,7 +19,7 @@ namespace Balau {
 namespace Resource {
 
 struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
-	explicit UriComponentsTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	UriComponentsTest() {
 		registerTest(&UriComponentsTest::uriParse_full,                                  "uriParse_full");
 		registerTest(&UriComponentsTest::uriParse_noUserinfo,                            "uriParse_noUserinfo");
 		registerTest(&UriComponentsTest::uriParse_noAuthority,                           "uriParse_noAuthority");

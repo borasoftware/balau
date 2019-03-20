@@ -19,8 +19,6 @@
 
 namespace Balau {
 
-using Testing::assertFail;
-using Testing::assertThat;
 using Testing::is;
 
 namespace Lang {
@@ -33,7 +31,7 @@ void PropertyParserTest_test(const std::string & expected) {
 	Resource::StringUri input(expected);
 	Properties properties = PropertyParserService::parse(input);
 	std::string actual = toString(properties);
-	assertThat(actual, is(expected));
+	AssertThat(actual, is(expected));
 }
 
 const std::string simpleHierarchyText = 1 + R"Property(
@@ -96,8 +94,8 @@ void PropertyParserTest::rootIncludes() {
 }
 
 void PropertyParserTest::normalisation() {
-	assertThat(PropertyNode::normalise("\\{"), is("{"));
-	assertThat(PropertyNode::normalise("abc\\\n  def\\\n  ghi"), is("abcdefghi"));
+	AssertThat(PropertyNode::normalise("\\{"), is("{"));
+	AssertThat(PropertyNode::normalise("abc\\\n  def\\\n  ghi"), is("abcdefghi"));
 }
 
 } // namespace Property

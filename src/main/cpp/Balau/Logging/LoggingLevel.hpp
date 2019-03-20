@@ -99,25 +99,6 @@ inline std::string toString(LoggingLevel level) {
 	}
 }
 
-///
-/// A distinct type used for source code file and line number.
-///
-/// This prevents function overload issues that would occur were the logging
-/// methods to use const char * file, unsigned int line instead.
-///
-struct SourceCodeLocation {
-	const char * file;
-	unsigned int line;
-
-	SourceCodeLocation()
-		: file(nullptr)
-		, line(0) {}
-
-	SourceCodeLocation(const char * file_, unsigned int line_)
-		: file(file_)
-		, line(line_) {}
-};
-
 } // namespace Balau
 
 #endif // COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGING_LEVEL

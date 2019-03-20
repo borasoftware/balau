@@ -19,7 +19,7 @@ namespace Balau::Impl {
 // A simple hash map implementation used in the injector.
 //
 // This map uses the BindingKey type as the key type, but accepts a
-// BindingKeyReference type in the get call.
+// BindingKeyView type in the get call.
 //
 // Building the map is not optimised, as it only occurs once during injector
 // instantiation.
@@ -46,8 +46,8 @@ class BindingMap {
 
 		private: ConstIterator(const BindingMap * parent_)
 			: parent(parent_)
-			  , bucketIndex(0)
-			  , entryIndex(0) {
+			, bucketIndex(0)
+			, entryIndex(0) {
 			while (bucketIndex < parent->buckets.size() && parent->buckets[bucketIndex].empty()) {
 				++bucketIndex;
 			}
@@ -55,8 +55,8 @@ class BindingMap {
 
 		private: ConstIterator(const BindingMap * parent_, size_t bucketIndex_, size_t entryIndex_)
 			: parent(parent_)
-			  , bucketIndex(bucketIndex_)
-			  , entryIndex(entryIndex_) {}
+			, bucketIndex(bucketIndex_)
+			, entryIndex(entryIndex_) {}
 
 		public: const Entry & operator * () const {
 			return parent->buckets[bucketIndex][entryIndex];

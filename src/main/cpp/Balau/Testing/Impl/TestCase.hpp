@@ -20,21 +20,22 @@ class TestMethodBase;
 
 // Test case contain the group instance, the test method, and the test name.
 class TestCase {
-	public: std::shared_ptr<TestGroupBase> group;
+	public: TestGroupBase * group;
 	public: std::shared_ptr<TestMethodBase> method;
 	public: std::string name;
 
-	public: TestCase(std::shared_ptr<TestMethodBase> method_, std::string && name_)
-		: method(std::move(method_))
+	public: TestCase(TestGroupBase * group_, std::shared_ptr<TestMethodBase> method_, std::string && name_)
+		: group(group_)
+		, method(std::move(method_))
 		, name(std::move(name_)) {}
 
 	public: TestCase(TestCase && rhs) noexcept
-		: group(std::move(rhs.group))
+		: group(rhs.group)
 		, method(std::move(rhs.method))
 		, name(std::move(rhs.name)) {}
 
 	public: TestCase & operator = (TestCase && rhs) noexcept {
-		group = std::move(rhs.group);
+		group = rhs.group;
 		method = std::move(rhs.method);
 		name = std::move(rhs.name);
 		return *this;

@@ -153,7 +153,7 @@ template <typename T> class DependencyGraph {
 
 		private: explicit iterator(Graph & graph_, VertexIterator vertexIter_)
 			: graph(graph_)
-			  , vertexIter(vertexIter_) {}
+			, vertexIter(vertexIter_) {}
 
 		private: Graph & graph;
 		private: VertexIterator vertexIter;
@@ -226,7 +226,7 @@ template <typename T> class DependencyGraph {
 
 		private: explicit const_iterator(const Graph & graph_, VertexIterator vertexIter_)
 			: graph(graph_)
-			  , vertexIter(vertexIter_) {}
+			, vertexIter(vertexIter_) {}
 
 		private: const Graph & graph;
 		private: VertexIterator vertexIter;

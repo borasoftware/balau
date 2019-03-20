@@ -45,8 +45,8 @@
 
 		<para class="cpp-define-statement">#include &lt;Balau/Util/Strings.hpp></para>
 
-		<para>The following utilities are currently implemented. More information is available on the <ref type="raw" new="true" url="../../structBalau_1_1Util_1_1Strings.html">API documentation</ref> page.</para>
-
+		<para>The following utilities are currently implemented. More information is available on the <ref type="raw" new="true" url="../../api/structBalau_1_1Util_1_1Strings.html">API documentation</ref> page.</para>
+		https://borasoftware.com/doc/balau/latest/api/structBalau_1_1Util_1_1Strings.html
 		<para>Each function covers UTF-8 and UTF-32 encodings and is available in several forms.</para>
 
 		<h2>Examination</h2>

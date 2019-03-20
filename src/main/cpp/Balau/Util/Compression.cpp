@@ -341,8 +341,8 @@ inline bool isDirectoryName(const std::string & name) {
 	return Strings::endsWith(name, "/");
 }
 
-std::regex removeMultipleSeparators("//+");
-std::regex removeFrontSeparator("^/");
+static std::regex removeMultipleSeparators("//+");
+static std::regex removeFrontSeparator("^/");
 
 void Unzipper::openImpl(const Resource::File & path_, bool verify, const std::string & pw, int mode) {
 	int flags = mode;

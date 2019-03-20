@@ -23,7 +23,7 @@ namespace Http {
 namespace HttpWebApps {
 
 struct RedirectingHttpWebAppTest : public Testing::TestGroup<RedirectingHttpWebAppTest> {
-	explicit RedirectingHttpWebAppTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	RedirectingHttpWebAppTest() {
 		registerTest(&RedirectingHttpWebAppTest::injectedInstantiation, "injectedInstantiation");
 	}
 

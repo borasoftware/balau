@@ -16,7 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Util {
@@ -62,7 +61,7 @@ const std::vector<std::pair<double, std::string>> fixedTestData = {
 
 void PrettyPrintTest::fixed() {
 	for (const auto & element : fixedTestData) {
-		assertThat(PrettyPrint::fixed(element.first, 3), is(element.second));
+		AssertThat(PrettyPrint::fixed(element.first, 3), is(element.second));
 	}
 }
 
@@ -111,7 +110,7 @@ const std::vector<std::pair<double, std::string>> scientificTestData = {
 
 void PrettyPrintTest::scientific() {
 	for (const auto & element : scientificTestData) {
-		assertThat(PrettyPrint::scientific(element.first, 3), is(element.second));
+		AssertThat(PrettyPrint::scientific(element.first, 3), is(element.second));
 	}
 }
 
@@ -160,7 +159,7 @@ const std::vector<std::pair<double, std::string>> metricPrefixTestData = {
 
 void PrettyPrintTest::metricPrefix() {
 	for (const auto & element : metricPrefixTestData) {
-		assertThat(PrettyPrint::metricPrefix(element.first, 3), is(element.second));
+		AssertThat(PrettyPrint::metricPrefix(element.first, 3), is(element.second));
 	}
 }
 
@@ -182,7 +181,7 @@ const std::vector<std::pair<double, std::string>> binaryPrefixTestData = {
 
 void PrettyPrintTest::binaryPrefix() {
 	for (const auto & element : binaryPrefixTestData) {
-		assertThat(PrettyPrint::binaryPrefix(element.first, 0), is(element.second));
+		AssertThat(PrettyPrint::binaryPrefix(element.first, 0), is(element.second));
 	}
 }
 
@@ -198,7 +197,7 @@ const std::vector<std::pair<double, std::string>> byteValueTestData = {
 
 void PrettyPrintTest::byteValue() {
 	for (const auto & element : byteValueTestData) {
-		assertThat(PrettyPrint::byteValue((size_t) element.first), is(std::string(element.second)));
+		AssertThat(PrettyPrint::byteValue((size_t) element.first), is(std::string(element.second)));
 	}
 }
 
@@ -212,7 +211,7 @@ const std::vector<std::pair<std::chrono::milliseconds, std::string>> durationTes
 
 void PrettyPrintTest::duration() {
 	for (const auto & element : durationTestData) {
-		assertThat(PrettyPrint::duration(element.first, 1), is(std::string(element.second)));
+		AssertThat(PrettyPrint::duration(element.first, 1), is(std::string(element.second)));
 	}
 }
 

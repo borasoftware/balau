@@ -16,7 +16,7 @@
 namespace Balau {
 
 struct HashLibraryTest : public Testing::TestGroup<HashLibraryTest> {
-    explicit HashLibraryTest(Testing::TestRunner & runner) : TestGroup(runner) {
+    HashLibraryTest() {
       registerTest(&HashLibraryTest::test, "test");
     }
 

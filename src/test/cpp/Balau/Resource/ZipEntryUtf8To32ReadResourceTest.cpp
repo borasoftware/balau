@@ -16,7 +16,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Resource {
@@ -49,7 +48,7 @@ void ZipEntryUtf8To32ReadResourceTest::test() {
 		if (!Util::Strings::endsWith(p, "/")) {
 			auto iter = expectedEntries.find(p);
 
-			assertThat(iter == expectedEntries.end(), is(false));
+			AssertThat(iter == expectedEntries.end(), is(false));
 
 			const auto & expected = iter->second;
 
@@ -62,8 +61,8 @@ void ZipEntryUtf8To32ReadResourceTest::test() {
 			auto actualZipEntryData = toString32(zipEntryReadStream);
 			auto actualUriData = toString32(uriReadStream);
 
-			assertThat(actualZipEntryData, is(expected));
-			assertThat(actualUriData, is(expected));
+			AssertThat(actualZipEntryData, is(expected));
+			AssertThat(actualUriData, is(expected));
 		}
 	}
 }

@@ -80,7 +80,7 @@
 
 		<para>Whether a log message is output to the logging stream depends on whether the logging namespace is enabled for that logging level. This depends on the logging configuration.</para>
 
-		<para>The <emph>{}</emph> placeholders are replaced with the result of the <emph>toString</emph> call of the object(s) supplied in the logging call. It is thus necessary that suitable <emph>toString</emph> functions are defined for all object types passed to logging calls.</para>
+		<para>The <emph>{}</emph> placeholders are replaced with the result of the <ref url="Application/CharactersAndStrings#universal-to-string">toString</ref> call of the object(s) supplied in the logging call. It is thus necessary that suitable <emph>toString</emph> functions are defined for all object types passed to logging calls.</para>
 
 		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
 
@@ -234,7 +234,7 @@
 
 		<para>To log a message, the logger has five sets of templated methods that accept a variable number of parameters. Each set corresponds to a logging level { trace, debug, info, warn, error }.</para>
 
-		<para>The templated methods accept any types as const references. Each parameter is converted to a string via the Balau universal to-string function (see the documentation on the <ref url="Application/ToString">universal to-string function</ref> for more information). It is sufficient to ensure that a <emph>toString</emph> function has been defined for the type of each parameter at the point of template function instantiation, and the logger will use it to stringify the parameter.</para>
+		<para>The templated methods accept any types as const references. Each parameter is converted to a string via the Balau universal to-string function (see the documentation on the <ref url="Application/CharactersAndStrings#universal-to-string">universal to-string function</ref> for more information). It is sufficient to ensure that a <emph>toString</emph> function has been defined for the type of each parameter at the point of template function instantiation, and the logger will use it to stringify the parameter.</para>
 
 		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
 

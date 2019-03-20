@@ -159,6 +159,15 @@
 			auto * n = trie.findNearest({ 1, 2, 3 });
 		</code>
 
+		<h3>FindNearestLeaf</h3>
+
+		<para>The <emph>findNearestLeaf</emph> methods work in the same way as the <emph>findNearest</emph> methods, with the exception that a match must terminate with a leaf node. If a nearest match is found that is not a leaf node, then <emph>nullptr</emph> is returned.</para>
+
+		<code lang="C++">
+			// Perform a nearest leaf search with the default comparator.
+			auto * n = trie.findNearestLeaf({ 1, 2, 3 });
+		</code>
+
 		<h2>Iteration</h2>
 
 		<para>Standard library compatible iterators are provided in the object trie implementation. There are two types of iterator available:</para>

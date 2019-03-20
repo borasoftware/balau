@@ -18,7 +18,7 @@ namespace Balau {
 
 // This test group tests the assertions of the test runner.
 struct AssertionsTest : public Testing::TestGroup<AssertionsTest> {
-	explicit AssertionsTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	AssertionsTest() {
 		registerTest(&AssertionsTest::test, "test");
 	}
 

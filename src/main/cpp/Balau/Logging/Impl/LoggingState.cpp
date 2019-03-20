@@ -144,7 +144,7 @@ std::string LoggingState::generateAbbreviatedNamespace(std::string_view loggerNa
 	std::ostringstream builder;
 	std::string prefix;
 
-	if (identifiers.size() > 0) {
+	if (!identifiers.empty()) {
 		for (size_t m = 0; m < identifiers.size() - 1; m++) {
 			builder << prefix << identifiers[m][0];
 			prefix = ".";
@@ -161,11 +161,14 @@ Logger & LoggingState::getInstance(std::string_view loggingNamespace) {
 
 	std::string nameSpaceStr = std::string(loggingNamespace == "." ? "" : loggingNamespace);
 
-	const std::vector<std::string_view> nameSpace = Util::Strings::splitAndTrim(nameSpaceStr, ".");
+	const std::vector<std::string_view> nameSpace = Util::Containers::concatenate(
+		std::vector<std::string_view> { "" }, Util::Strings::splitAndTrim(nameSpaceStr, ".")
+	);
 
 	LoggerTreeNode * nearest = loggerTree.findNearest(
 		  nameSpace
 		, [] (const auto & holder, const auto & identifier) { return holder.logger->identifier == identifier; }
+		, false
 	);
 
 	if (nearest->value.getLogger()->nameSpace == nameSpaceStr) {
@@ -821,7 +824,7 @@ void LoggingState::setFormats(LoggerTree & theLoggers) {
 		try {
 			loggerItems = new LogItemVector;
 
-			std::regex re(R"(%message|%Y|%y|%m|%d|%H|%M|%S|%thread|%LEVEL|%level|%filename|%filepath|%line|%namespace|%ns|%%|%\")");
+			static const std::regex re(R"(%message|%Y|%y|%m|%d|%H|%M|%S|%thread|%LEVEL|%level|%filename|%filepath|%line|%namespace|%ns|%%|%\")");
 			std::smatch sm;
 
 			while (std::regex_search(format, sm, re)) {

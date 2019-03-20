@@ -18,7 +18,7 @@ namespace Balau {
 namespace Container {
 
 struct ArrayBlockingQueueTest : public Testing::TestGroup<ArrayBlockingQueueTest> {
-	explicit ArrayBlockingQueueTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	ArrayBlockingQueueTest() {
 		registerTest(&ArrayBlockingQueueTest::fullQueue,  "fullQueue");
 	}
 

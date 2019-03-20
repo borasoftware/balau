@@ -21,7 +21,7 @@ namespace Balau {
 namespace Util {
 
 struct DateTimeTest : public Testing::TestGroup<DateTimeTest> {
-	explicit DateTimeTest(Testing::TestRunner & runner) : TestGroup(runner) {
+	DateTimeTest() {
 		registerTest(&DateTimeTest::toStringString, "toStringString");
 		registerTest(&DateTimeTest::toStringStream, "toStringStream");
 		registerTest(&DateTimeTest::toDuration,     "toTimePoint");

@@ -15,7 +15,6 @@
 
 namespace Balau {
 
-using Testing::assertThat;
 using Testing::is;
 
 namespace Util {
@@ -56,7 +55,7 @@ void StreamsTest::readLinesToVector() {
 
 	const auto & expected = expectedLines;
 
-	assertThat(actual, is(expected));
+	AssertThat(actual, is(expected));
 }
 
 void StreamsTest::consume() {
@@ -71,7 +70,7 @@ void StreamsTest::consume() {
 	const std::string expected = Strings::joinContainer("\n", expectedLines) + "\n";
 	const std::string actual = dst.str();
 
-	assertThat(actual, is(expected));
+	AssertThat(actual, is(expected));
 }
 
 } // namespace Util

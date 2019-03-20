@@ -17,7 +17,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_EXECUTION_MODEL
 #define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_EXECUTION_MODEL
 
-#include <Balau/Exception/BalauException.hpp>
+#include <Balau/Exception/CommandLineExceptions.hpp>
 #include <Balau/Util/Strings.hpp>
 
 namespace Balau::Testing {
@@ -29,7 +29,7 @@ namespace Balau::Testing {
 /// worker processes, or a process per test. Each execution model has its own
 /// advantages and disadvantages.
 ///
-enum ExecutionModel {
+enum ExecutionModel : unsigned int {
 	///
 	/// Run all tests in a single thread.
 	///
@@ -130,8 +130,18 @@ inline void fromString(ExecutionModel & model, const std::string & value) {
 	} else if (Util::Strings::equalsIgnoreCase(value, "ProcessPerTest")) {
 		model = ProcessPerTest;
 	} else {
-		ThrowBalauException(Exception::BugException, "Unknown execution model: " + value);
+		ThrowBalauException(Exception::CommandlineException, "Unknown execution model: " + value);
 	}
+}
+
+///
+/// Returns true if the supplied string represents a valid execution model (the case is ignored).
+///
+inline bool isExecutionModel(std::string_view value) {
+	return Util::Strings::equalsIgnoreCase(value, "SingleThreaded")
+		|| Util::Strings::equalsIgnoreCase(value, "WorkerThreads")
+		|| Util::Strings::equalsIgnoreCase(value, "WorkerProcesses")
+		|| Util::Strings::equalsIgnoreCase(value, "ProcessPerTest");
 }
 
 } // namespace Balau::Testing
