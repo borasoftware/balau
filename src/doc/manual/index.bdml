@@ -167,7 +167,7 @@
 
 		<h2>C++ version</h2>
 
-		<para>Balau requires a compiler that is compliant with C++17 or a later version of the specification.</para>
+		<para>Balau requires a compiler that is compliant with C++17 or a later version of the specification. The compiler must have support for guaranteed copy elision.</para>
 
 		<h2>Operating systems</h2>
 
