@@ -819,14 +819,14 @@ class Logger {
 	//
 	// Reads on this atomic are free on x86/x64.
 	//
-	private: std::atomic<LoggingLevel> level = LoggingLevel::NONE;
+	private: std::atomic<LoggingLevel> level = { LoggingLevel::NONE };
 
 	//
 	// Indicates whether messages from this logger should flush the stream after each message.
 	//
 	// Reads on this atomic are free on x86/x64.
 	//
-	private: std::atomic_bool shouldFlush = true;
+	private: std::atomic_bool shouldFlush { true };
 
 	//
 	// The log items for which this logger is configured.

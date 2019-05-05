@@ -48,7 +48,7 @@ class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
 
 	private: struct SharedState {
 		// Shared atomic int, providing the next test case index to run.
-		std::atomic_uint nextTestIndex = 0;
+		std::atomic_uint nextTestIndex { 0 };
 
 		// Non shared ints, providing the current test case index that a child process is running.
 		// These are checked when a child process starts up in order to determine if a child process seg-faulted.

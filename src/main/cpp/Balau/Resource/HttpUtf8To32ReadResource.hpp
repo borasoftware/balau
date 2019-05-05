@@ -43,26 +43,32 @@ class HttpUtf8To32ReadResource : public Utf8To32ReadResource {
 	///
 	public: explicit HttpUtf8To32ReadResource(const Http & url_);
 
-	public: ~HttpUtf8To32ReadResource() {
+	public: HttpUtf8To32ReadResource(HttpUtf8To32ReadResource && rhs) noexcept
+		: url(std::move(rhs.url))
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
+	public: ~HttpUtf8To32ReadResource() override {
 		close();
 	}
 
 	public: std::u32istream & readStream() override {
-		return utf32Stream;
+		return *utf32Stream;
 	}
 
 	public: const Uri & uri() const override;
 
 	public: void close() override {
-		utf32Stream.close();
+		utf32Stream->close();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<Http> url;
-	private: boost::iostreams::stream<Impl::HttpSource> utf8Stream;
+	private: std::unique_ptr<boost::iostreams::stream<Impl::HttpSource>> utf8Stream;
 	private: std::istream & ref;
-	private: istream_utf8_utf32 utf32Stream;
+	private: std::unique_ptr<istream_utf8_utf32> utf32Stream;
 };
 
 } // namespace Balau::Resource

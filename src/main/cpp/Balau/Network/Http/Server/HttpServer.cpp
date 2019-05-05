@@ -69,8 +69,9 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	)
 	, threadNamePrefix(std::move(threadNamePrefix_))
 	, workerCount(workerCount_)
-	, ioContext((int) workerCount)
-	, signalSet(ioContext) {
+	, ioContext(new boost::asio::io_context((int) workerCount))
+	, mutex(new std::mutex)
+	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
 		doRegisterSignalHandler();
 	}
@@ -108,7 +109,7 @@ HttpServer::~HttpServer() {
 ///////////////////////////////// Public API //////////////////////////////////
 
 void HttpServer::start() {
-	std::unique_lock<std::mutex> lock(mutex);
+	std::unique_lock<std::mutex> lock(*mutex);
 
 	if (!workers.empty()) {
 		BalauBalauLogInfo(
@@ -126,13 +127,13 @@ void HttpServer::start() {
 		, "HTTP server {}:{} started with {} workers"
 		, state->endpoint.address()
 		, state->endpoint.port()
-		, runningWorkerCount
+		, *runningWorkerCount
 	);
 }
 
 void HttpServer::run() {
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		std::unique_lock<std::mutex> lock(*mutex);
 
 		if (!workers.empty()) {
 			BalauBalauLogWarn(
@@ -161,12 +162,12 @@ void HttpServer::run() {
 }
 
 bool HttpServer::isRunning() {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock(*mutex);
 	return !workers.empty();
 }
 
 void HttpServer::stop(bool warn) {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock(*mutex);
 
 	if (workers.empty()) {
 		if (warn) {
@@ -180,9 +181,9 @@ void HttpServer::stop(bool warn) {
 
 	BalauBalauLogInfo(state->logger, "Stopping HTTP server {}:{}", state->endpoint.address(), state->endpoint.port());
 
-	ioContext.stop();
+	ioContext->stop();
 
-	while (!ioContext.stopped()) {
+	while (!ioContext->stopped()) {
 		System::Sleep::milliSleep(10);
 	}
 
@@ -368,7 +369,7 @@ void HttpServer::addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & 
 }
 
 void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
-	listener = std::make_unique<Impl::Listener>(state, ioContext);
+	listener = std::make_unique<Impl::Listener>(state, *ioContext);
 
 	if (!listener->isOpen()) {
 		ThrowBalauException(
@@ -380,7 +381,7 @@ void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
 
 	listener->doAccept();
 
-	runningWorkerCount = 0;
+	*runningWorkerCount = 0;
 	workers.reserve(thisWorkerCount);
 
 	for (size_t workerIndex = 0; workerIndex < thisWorkerCount; workerIndex++) {
@@ -388,7 +389,7 @@ void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
 	}
 
 	// TODO add thread creation timeout failure handling
-	while (runningWorkerCount != thisWorkerCount) {
+	while (*runningWorkerCount != thisWorkerCount) {
 		System::Sleep::milliSleep(10);
 	}
 }
@@ -406,7 +407,7 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 		, workerIndex
 	);
 
-	++runningWorkerCount;
+	++*runningWorkerCount;
 
 	// Log started message if this is the main thread blocking.
 	if (blocking) {
@@ -415,13 +416,13 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 			, "HTTP server {}:{} started with {} workers"
 			, state->endpoint.address()
 			, state->endpoint.port()
-			, runningWorkerCount
+			, *runningWorkerCount
 		);
 	}
 
 	while (true) {
 		try {
-			ioContext.run();
+			ioContext->run();
 			break;
 		} catch (const std::exception & e) {
 			BalauBalauLogError(
@@ -433,7 +434,7 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 				, e.what()
 			);
 
-			ioContext.restart();
+			ioContext->restart();
 		} catch (...) {
 			BalauBalauLogError(
 				  state->logger
@@ -443,11 +444,11 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 				, workerIndex
 			);
 
-			ioContext.restart();
+			ioContext->restart();
 		}
 	}
 
-	--runningWorkerCount;
+	--*runningWorkerCount;
 
 	BalauBalauLogInfo(
 		  state->logger
@@ -459,14 +460,14 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 }
 
 void HttpServer::doRegisterSignalHandler() {
-	signalSet.add(SIGINT);
-	signalSet.add(SIGTERM);
+	signalSet->add(SIGINT);
+	signalSet->add(SIGTERM);
 
 	#if defined(SIGQUIT)
-		signalSet.add(SIGQUIT);
+		signalSet->add(SIGQUIT);
 	#endif
 
-	signalSet.async_wait(boost::bind(&HttpServer::handleSignal, this, _1, _2));
+	signalSet->async_wait(boost::bind(&HttpServer::handleSignal, this, _1, _2));
 }
 
 void HttpServer::handleSignal(const boost::system::error_code & error, int sig) {

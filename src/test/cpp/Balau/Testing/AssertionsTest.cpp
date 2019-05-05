@@ -62,10 +62,10 @@ void AssertionsTest::test() {
 	AssertThat(B{1}, isLessThanOrEqualTo(A{3}));
 	AssertThat(B{1}, isLessThanOrEqualTo(B{4}));
 
-	AssertThat(A{1}, isAlmostEqual(A{1}, 0));
-	AssertThat(A{1}, isAlmostEqual(B{2}, 1));
-	AssertThat(B{1}, isAlmostEqual(A{3}, 2));
-	AssertThat(B{1}, isAlmostEqual(B{4}, 3));
+//	AssertThat(A{1}, isAlmostEqual(A{1}, 0));
+//	AssertThat(A{1}, isAlmostEqual(B{2}, 1));
+//	AssertThat(B{1}, isAlmostEqual(A{3}, 2));
+//	AssertThat(B{1}, isAlmostEqual(B{4}, 3));
 
 	AssertThat(C{"test"}, startsWith(C{"te"}));
 	AssertThat(C{"test"}, startsWith(D{"te"}));

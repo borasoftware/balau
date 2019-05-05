@@ -186,7 +186,8 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @throw CyclicDependencyException if there is a cyclic dependency
 	/// @throw SharedInjectorException if one of the injectable classes specifies a shared pointer injector dependency
 	///
-	public: static ValidationParent validateChild(ValidationParent parent, const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
+	public: static ValidationParent validateChild(const ValidationParent & parent,
+	                                              const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
 		return performValidation(parent.parent, conf);
 	}
 
@@ -216,7 +217,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @return a binding key
 	///
 	public: template <typename InstT>
-	static Impl::BindingKey createBindingKey(std::string name = "") {
+	static Impl::BindingKey createBindingKey(const std::string & name = "") {
 		return GetInstance<InstT>::createBindingKey(name);
 	}
 
@@ -1058,8 +1059,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		if (binding != nullptr) {
 			return getSharedInstance<BaseT>(*binding);
 		} else if (typeIndex == std::type_index(typeid(Injector))) {
-			// If we are here, then BaseT == Injector and the reinterpret cast disappears.
-			return std::reinterpret_pointer_cast<BaseT>(std::const_pointer_cast<Injector>(shared_from_this()));
+			// If we are here, then BaseT == Injector and the cast disappears.
+			auto ptr = std::const_pointer_cast<Injector>(shared_from_this());
+			void * p1 = static_cast<void *>(&ptr);
+			auto * p2 = static_cast<std::shared_ptr<BaseT> *>(p1);
+			return *p2;
 		} else if (parent) {
 			return parent->getSharedImpl<BaseT>(name);
 		} else {
@@ -1082,8 +1086,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		if (binding != nullptr) {
 			return getSharedInstance<BaseT>(*binding);
 		} else if (typeIndex == std::type_index(typeid(Injector))) {
-			// If we are here, then BaseT == Injector and the reinterpret cast disappears.
-			return std::reinterpret_pointer_cast<BaseT>(std::const_pointer_cast<Injector>(shared_from_this()));
+			// If we are here, then BaseT == Injector and the cast disappears.
+			auto ptr = std::const_pointer_cast<Injector>(shared_from_this());
+			void * p1 = static_cast<void *>(&ptr);
+			auto * p2 = static_cast<std::shared_ptr<BaseT> *>(p1);
+			return *p2;
 		} else if (parent) {
 			return parent->getSharedImpl<BaseT>(name, defaultValue);
 		} else {
@@ -1145,8 +1152,8 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	using PropertyTextVectorPtr = std::shared_ptr<std::vector<std::string>>;
 
 	private: template <typename ... Conf>
-	static std::shared_ptr<Injector> createInjector(std::shared_ptr<const Injector> parent, const Conf & ... conf) {
-		auto injector = std::shared_ptr<Injector>(new Injector(std::move(parent), conf ...)); // NOLINT
+	static std::shared_ptr<Injector> createInjector(const std::shared_ptr<const Injector> & parent, const Conf & ... conf) {
+		auto injector = std::shared_ptr<Injector>(new Injector(parent, conf ...)); // NOLINT
 		Impl::BindingGraph graph;
 		injector->performValidation(graph);
 
@@ -1159,9 +1166,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		return injector;
 	}
 
-	private: static std::shared_ptr<Injector> createInjector(std::shared_ptr<const Injector> parent,
+	private: static std::shared_ptr<Injector> createInjector(const std::shared_ptr<const Injector> & parent,
 	                                                         const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
-		auto injector = std::shared_ptr<Injector>(new Injector(std::move(parent), conf)); // NOLINT
+		auto injector = std::shared_ptr<Injector>(new Injector(parent, conf)); // NOLINT
 		Impl::BindingGraph graph;
 		injector->performValidation(graph);
 
@@ -1176,13 +1183,13 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 	// Main constructor.
 	private: template <typename ... Conf>
-	Injector(std::shared_ptr<const Injector> parent_, const Conf & ... conf)
-		: parent(std::move(parent_))
+	explicit Injector(const std::shared_ptr<const Injector> & parent_, const Conf & ... conf)
+		: parent(parent_)
 		, bindings(createBindings(conf ...)) {}
 
 	// Main constructor.
-	private: Injector(std::shared_ptr<const Injector> parent_, const std::vector<std::shared_ptr<InjectorConfiguration>> & conf)
-		: parent(std::move(parent_))
+	private: Injector(const std::shared_ptr<const Injector> & parent_, const std::vector<std::shared_ptr<InjectorConfiguration>> & conf)
+		: parent(parent_)
 		, bindings(createBindings(conf)) {}
 
 	private: class PrototypeConstruction {};
@@ -1229,15 +1236,15 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	}
 
 	private: template <typename ... Conf>
-	static ValidationParent performValidation(std::shared_ptr<const Injector> parent, const Conf & ... conf) {
-		auto injector = std::shared_ptr<Injector>(new Injector(std::move(parent), conf ...)); // NOLINT
+	static ValidationParent performValidation(const std::shared_ptr<const Injector> & parent, const Conf & ... conf) {
+		auto injector = std::shared_ptr<Injector>(new Injector(parent, conf ...)); // NOLINT
 		Impl::BindingGraph graph;
 		injector->performValidation(graph);
 		return ValidationParent(injector);
 	}
 
-	private: static ValidationParent performValidation(std::shared_ptr<const Injector> parent,
-	                                          const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
+	private: static ValidationParent performValidation(const std::shared_ptr<const Injector> & parent,
+	                                                   const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
 		auto injector = std::shared_ptr<Injector>(new Injector(std::move(parent), conf)); // NOLINT
 		Impl::BindingGraph graph;
 		injector->performValidation(graph);

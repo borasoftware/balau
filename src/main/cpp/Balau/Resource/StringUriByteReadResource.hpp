@@ -36,6 +36,10 @@ class StringUriByteReadResource : public ByteReadResource {
 	///
 	public: explicit StringUriByteReadResource(const StringUri & stringUri_);
 
+	public: StringUriByteReadResource(StringUriByteReadResource && rhs) noexcept
+		: stringUri(std::move(rhs.stringUri))
+		, stream(std::move(rhs.stream)) {}
+
 	public: std::istream & readStream() override {
 		return stream;
 	}

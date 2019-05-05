@@ -142,7 +142,7 @@ static_assert(sizeof(uint64_t)           == 8, "uint64_t is not 64 bits");
 #if INTPTR_MAX == INT32_MAX
 	#define BalauPointerSize_ 32
 #elif INTPTR_MAX == INT64_MAX
-	#define BalauPointerSize_ 64
+#define BalauPointerSize_ 64
 #else
 	#error "Pointer size not supported for this platform."
 #endif
@@ -151,6 +151,14 @@ static_assert(sizeof(uint64_t)           == 8, "uint64_t is not 64 bits");
 /// The pointer size in bits of the platform.
 ///
 #define BalauPointerSize BalauPointerSize_
+
+////////////////////////////////// Backports //////////////////////////////////
+
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+	#include <string_view>
+#else
+	#include <Balau/Type/Impl/StringView.hpp>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 

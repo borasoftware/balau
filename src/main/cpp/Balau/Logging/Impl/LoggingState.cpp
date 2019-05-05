@@ -233,7 +233,7 @@ void LoggingState::configure(std::string_view configurationText,
 	std::for_each(
 		  placeholders.begin()
 		, placeholders.end()
-		, [&encasedPlaceholders] (const auto & p) { encasedPlaceholders.insert(std::pair("${" + p.first + "}", p.second)); }
+		, [&encasedPlaceholders] (const auto & p) { encasedPlaceholders.insert(std::pair<std::string, std::string>("${" + p.first + "}", p.second)); }
 	);
 
 	LoggerTree newLoggers = manualConfigure(configurationText, encasedPlaceholders);
@@ -262,7 +262,7 @@ void LoggingState::configure(const EnvironmentProperties & configuration,
 	std::for_each(
 		  placeholders.begin()
 		, placeholders.end()
-		, [&encasedPlaceholders] (const auto & p) { encasedPlaceholders.insert(std::pair("${" + p.first + "}", p.second)); }
+		, [&encasedPlaceholders] (const auto & p) { encasedPlaceholders.insert(std::pair<std::string, std::string>("${" + p.first + "}", p.second)); }
 	);
 
 	LoggerTree newLoggers = manualConfigure(configuration, encasedPlaceholders);
@@ -434,7 +434,7 @@ LoggerTree LoggingState::manualConfigure(const EnvironmentProperties & configura
 	LoggerTree theLoggers = createDefaultConfiguration();
 
 	if (configuration.begin() != configuration.end()) {
-		const EnvironmentProperties configurationExpanded = expandConfigurationTextMacros(configuration, encasedPlaceholders);
+		const auto configurationExpanded = expandConfigurationTextMacros(configuration, encasedPlaceholders);
 		LoggerTree newLoggers = parseConfiguration(configurationExpanded);
 		cascadeAndConfigureLoggers(theLoggers, newLoggers);
 	} else {
@@ -487,8 +487,8 @@ std::string LoggingState::expandConfigurationTextMacros(std::string_view configu
 	return text;
 }
 
-EnvironmentProperties LoggingState::expandConfigurationTextMacros(const EnvironmentProperties & configuration,
-                                                                  const std::map<std::string, std::string> & encasedPlaceholders) {
+std::unique_ptr<EnvironmentProperties> LoggingState::expandConfigurationTextMacros(const EnvironmentProperties & configuration,
+                                                                                   const std::map<std::string, std::string> & encasedPlaceholders) {
 	const boost::filesystem::path exeLocation = boost::dll::program_location();
 	const std::string homeDir = User::getHomeDirectory().toUriString();
 	const std::string executableName = exeLocation.filename().string();
@@ -512,7 +512,7 @@ EnvironmentProperties LoggingState::expandConfigurationTextMacros(const Environm
 		}
 	}
 
-	return EnvironmentProperties(std::move(bindings));
+	return std::make_unique<EnvironmentProperties>(std::move(bindings));
 }
 
 std::unique_ptr<Impl::AbstractBinding>
@@ -905,10 +905,10 @@ LoggerTree LoggingState::parseConfiguration(const std::string & configurationTex
 	return visitor.visit(properties);
 }
 
-LoggerTree LoggingState::parseConfiguration(const EnvironmentProperties & configuration) {
+LoggerTree LoggingState::parseConfiguration(const std::unique_ptr<EnvironmentProperties> & configuration) {
 	printLoggingDebugMessage("parseConfiguration called with environment properties object\n");
 	LoggerConfigurationVisitor visitor;
-	return visitor.visit(configuration);
+	return visitor.visit(*configuration);
 }
 
 void LoggingState::setLevels(LoggerTree & theLoggers) {

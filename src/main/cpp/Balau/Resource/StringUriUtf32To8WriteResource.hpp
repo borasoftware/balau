@@ -43,12 +43,18 @@ class StringUriUtf32To8WriteResource : public Utf32To8WriteResource {
 	///
 	public: explicit StringUriUtf32To8WriteResource(StringUri & stringUri_);
 
-	public: ~StringUriUtf32To8WriteResource() {
+	public: StringUriUtf32To8WriteResource(StringUriUtf32To8WriteResource && rhs) noexcept
+		: stringUri(rhs.stringUri)
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
+	public: ~StringUriUtf32To8WriteResource() override {
 		close();
 	}
 
 	public: std::u32ostream & writeStream() override {
-		return utf32Stream;
+		return *utf32Stream;
 	}
 
 	public: const Uri & uri() const override;
@@ -58,9 +64,9 @@ class StringUriUtf32To8WriteResource : public Utf32To8WriteResource {
 	////////////////////////// Private implementation /////////////////////////
 
 	private: StringUri & stringUri;
-	private: std::ostringstream utf8Stream;
+	private: std::unique_ptr<std::ostringstream> utf8Stream;
 	private: std::ostream & ref;
-	private: ostream_utf32_utf8 utf32Stream;
+	private: std::unique_ptr<ostream_utf32_utf8> utf32Stream;
 };
 
 } // namespace Balau::Resource

@@ -32,6 +32,10 @@ class ZipEntry;
 /// Zip entry byte read resources are created by calling ZipEntry::getByteReadResource.
 ///
 class ZipEntryByteReadResource : public ByteReadResource {
+	public: ZipEntryByteReadResource(ZipEntryByteReadResource && rhs) noexcept
+		: entry(rhs.entry)
+		, stream(std::move(rhs.stream)) {}
+
 	public: ~ZipEntryByteReadResource() override = default;
 
 	public: void close() override {
@@ -41,7 +45,7 @@ class ZipEntryByteReadResource : public ByteReadResource {
 	public: const Uri & uri() const override;
 
 	public: std::istream & readStream() override {
-		return stream;
+		return *stream;
 	}
 
 	////////////////////////// Private implementation /////////////////////////
@@ -51,7 +55,7 @@ class ZipEntryByteReadResource : public ByteReadResource {
 	private: explicit ZipEntryByteReadResource(const ZipEntry & entry_);
 
 	private: const ZipEntry & entry;
-	private: boost::iostreams::stream<Impl::ZipEntrySource> stream;
+	private: std::unique_ptr<boost::iostreams::stream<Impl::ZipEntrySource>> stream;
 };
 
 } // namespace Balau::Resource

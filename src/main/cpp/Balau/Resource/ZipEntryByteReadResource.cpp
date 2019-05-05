@@ -15,7 +15,7 @@ namespace Balau::Resource {
 
 ZipEntryByteReadResource::ZipEntryByteReadResource(const ZipEntry & entry_)
 	: entry(entry_)
-	, stream(Impl::ZipEntrySource(entry.archive, entry.entryIndex)) {}
+	, stream(new boost::iostreams::stream<Impl::ZipEntrySource>(Impl::ZipEntrySource(entry.archive, entry.entryIndex))) {}
 
 const Uri & ZipEntryByteReadResource::uri() const {
 	return entry;

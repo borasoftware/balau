@@ -16,9 +16,9 @@ namespace Balau::Resource {
 
 StringUriUtf32To8WriteResource::StringUriUtf32To8WriteResource(StringUri & stringUri_)
 	: stringUri(stringUri_)
-	, utf8Stream()
-	, ref(utf8Stream)
-	, utf32Stream(ref) {}
+	, utf8Stream(new std::ostringstream())
+	, ref(*utf8Stream)
+	, utf32Stream(new ostream_utf32_utf8(ref)) {}
 
 const Uri & StringUriUtf32To8WriteResource::uri() const {
 	return stringUri;
@@ -26,9 +26,9 @@ const Uri & StringUriUtf32To8WriteResource::uri() const {
 
 void StringUriUtf32To8WriteResource::close() {
 	// TODO Determine why the temporary padding is required.. is this a defect?
-	utf32Stream << U"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-	utf32Stream.flush();
-	auto s = utf8Stream.str();
+	*utf32Stream << U"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	utf32Stream->flush();
+	auto s = utf8Stream->str();
 	std::string_view sv = s;
 	std::string_view sv2 = sv.substr(0, sv.length() - 100);
 	stringUri.append(sv2);

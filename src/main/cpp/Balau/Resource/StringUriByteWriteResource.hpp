@@ -36,7 +36,11 @@ class StringUriByteWriteResource : public ByteWriteResource {
 	///
 	public: explicit StringUriByteWriteResource(StringUri & stringUri_);
 
-	public: ~StringUriByteWriteResource() {
+	public: StringUriByteWriteResource(StringUriByteWriteResource && rhs) noexcept
+		: stringUri(std::move(rhs.stringUri))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~StringUriByteWriteResource() override {
 		close();
 	}
 

@@ -16,12 +16,12 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_A
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_A
 
+#include <Balau/Type/StdTypes.hpp>
 #include <Balau/Type/Impl/ToStringImpl.hpp>
 #include <Balau/ThirdParty/Boost/Locale/EncodingUtf.hpp>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/locale.hpp>
-#include <boost/utility/string_view.hpp>
 
 #include <forward_list>
 #include <map>
@@ -96,6 +96,8 @@ inline Balau::U8String<AllocatorT> toString(const std::string_view & value) {
 	return Balau::U8String<AllocatorT>(value);
 }
 
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+
 ///
 /// Creates a string from the Boost string view.
 ///
@@ -103,6 +105,8 @@ template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const boost::string_view & value) {
 	return Balau::U8String<AllocatorT>(value.data(), value.length());
 }
+
+#endif
 
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.
@@ -488,6 +492,9 @@ inline Balau::U16String<AllocatorT> toString16(const std::string_view & value) {
 	return toString16<AllocatorT>(Balau::U8String<AllocatorT>(value));
 }
 
+
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-16 string.
 ///
@@ -495,6 +502,8 @@ template <typename AllocatorT>
 inline Balau::U16String<AllocatorT> toString16(const boost::string_view & value) {
 	return toString16<AllocatorT>(Balau::U8String<AllocatorT>(value.to_string()));
 }
+
+#endif
 
 ///
 /// Returns the supplied value as is.
@@ -866,6 +875,8 @@ inline Balau::U32String<AllocatorT> toString32(const std::string_view & value) {
 	return toString32<AllocatorT>(Balau::U8String<AllocatorT>(value));
 }
 
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-32 string.
 ///
@@ -873,6 +884,8 @@ template <typename AllocatorT>
 inline Balau::U32String<AllocatorT> toString32(const boost::string_view & value) {
 	return toString32<AllocatorT>(Balau::U8String<AllocatorT>(value.to_string()));
 }
+
+#endif
 
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.

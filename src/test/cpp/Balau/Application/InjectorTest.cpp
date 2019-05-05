@@ -750,7 +750,10 @@ struct J {
 struct Counter {
 	BalauInject(Counter);
 
-	std::atomic_int count = 100;
+	std::atomic_int count { 100 };
+
+	private: Counter() noexcept = default;
+	private: Counter(Counter && rhs) noexcept : count(rhs.count.load()) {}
 };
 
 struct D : public J {
@@ -843,6 +846,8 @@ struct CCS {
 	CCS(const CCS &) = delete;
 
 	BalauInjectConstruct(CCS, value);
+
+	private: CCS(CCS && rhs) noexcept : value(rhs.value) {}
 };
 
 struct CD {
@@ -853,9 +858,9 @@ struct CD {
 
 // This object is bound to a reference binding.
 // The lifetime of the object must be longer than the injector lifetime.
-std::ostringstream referencedStream;
+std::ostringstream referencedStream; // NOLINT
 
-const CC cc(3.14159);
+const CC cc(3.14159); // NOLINT
 
 void InjectorTest::allBindings() {
 	class Configuration : public ApplicationConfiguration {
@@ -987,9 +992,10 @@ struct AA {
 	double value;
 	BalauInjectConstruct(AA, value);
 	AA(const AA & ) = delete; // Prevent copying.
+	AA(AA && ) = default;
 };
 
-const AA aa(543.2);
+const AA aa(543.2); // NOLINT
 
 void InjectorTest::docTest() {
 	class Configuration : public ApplicationConfiguration {

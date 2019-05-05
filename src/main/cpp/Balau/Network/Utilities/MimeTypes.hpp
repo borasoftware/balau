@@ -17,6 +17,8 @@
 /// Mime type utilities.
 ///
 
+#include <Balau/Type/StdTypes.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>

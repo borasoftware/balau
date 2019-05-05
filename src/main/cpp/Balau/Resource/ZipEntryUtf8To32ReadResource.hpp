@@ -41,6 +41,12 @@ class ZipEntryUtf8To32ReadResource : public Utf8To32ReadResource {
 
 	public: ~ZipEntryUtf8To32ReadResource() override = default;
 
+	public: ZipEntryUtf8To32ReadResource(ZipEntryUtf8To32ReadResource && rhs) noexcept
+		: entry(rhs.entry)
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
 	public: void close() override {
 		// NOP
 	}
@@ -48,7 +54,7 @@ class ZipEntryUtf8To32ReadResource : public Utf8To32ReadResource {
 	public: const Uri & uri() const override;
 
 	public: std::u32istream & readStream() override {
-		return utf32Stream;
+		return *utf32Stream;
 	}
 
 	///
@@ -61,9 +67,9 @@ class ZipEntryUtf8To32ReadResource : public Utf8To32ReadResource {
 	friend class ZipEntry;
 
 	private: const ZipEntry & entry;
-	private: boost::iostreams::stream<Impl::ZipEntrySource> utf8Stream;
+	private: std::unique_ptr<boost::iostreams::stream<Impl::ZipEntrySource>> utf8Stream;
 	private: std::istream & ref;
-	private: istream_utf8_utf32 utf32Stream;
+	private: std::unique_ptr<istream_utf8_utf32> utf32Stream;
 };
 
 } // namespace Balau::Resource
