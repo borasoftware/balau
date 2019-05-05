@@ -40,9 +40,24 @@ struct HttpServerRegisterBuiltInWeApps {
 	}
 };
 
-HttpServerRegisterBuiltInWeApps httpServerRegisterBuiltInWeApps;
+HttpServerRegisterBuiltInWeApps httpServerRegisterBuiltInWeApps; // NOLINT
 
 //////////////////// Constructors with injector parameter /////////////////////
+
+HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
+                       const std::shared_ptr<EnvironmentProperties>& configuration,
+                       bool registerSignalHandler)
+	: state(createState(std::move(clock), configuration))
+	, threadNamePrefix(configuration->getValue<std::string>("thread.name.prefix", ""))
+	, workerCount((size_t) configuration->getValue<int>("worker.count", 1))
+	, ioContext(new boost::asio::io_context(configuration->getValue<int>("worker.count", 1)))
+	, runningWorkerCount(new std::atomic_uint { 0 })
+	, mutex(new std::mutex)
+	, signalSet(new boost::asio::signal_set(*ioContext)) {
+	if (registerSignalHandler) {
+		doRegisterSignalHandler();
+	}
+}
 
 HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
                        const std::string & serverId,
@@ -70,6 +85,7 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	, threadNamePrefix(std::move(threadNamePrefix_))
 	, workerCount(workerCount_)
 	, ioContext(new boost::asio::io_context((int) workerCount))
+	, runningWorkerCount(new std::atomic_uint { 0 })
 	, mutex(new std::mutex)
 	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
@@ -197,7 +213,7 @@ void HttpServer::stop(bool warn) {
 }
 
 std::shared_ptr<HttpServerConfiguration> HttpServer::createState(std::shared_ptr<System::Clock> clock,
-                                                                 std::shared_ptr<EnvironmentProperties> configuration) {
+                                                                 const std::shared_ptr<EnvironmentProperties> & configuration) {
 	// Root logging configuration
 	auto loggingNamespace = configuration->getValue<std::string>("logging.namespace", "http.server");
 	auto accessLog = configuration->getValue<std::string>("access.log", "stream: stdout");
@@ -218,7 +234,7 @@ std::shared_ptr<HttpServerConfiguration> HttpServer::createState(std::shared_ptr
 	);
 }
 
-std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(std::shared_ptr<EnvironmentProperties> configuration, BalauLogger & logger) {
+std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(const std::shared_ptr<EnvironmentProperties> & configuration, BalauLogger & logger) {
 	auto mimeTypesProperties = configuration->getCompositeOrNull("mime.types");
 
 	if (!mimeTypesProperties) {
@@ -250,7 +266,7 @@ std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(std::shared_ptr<Environme
 	return std::make_shared<MimeTypes>(std::move(data));
 }
 
-std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(std::shared_ptr<EnvironmentProperties> configuration,
+std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
                                                           BalauLogger & logger) {
 	auto webAppConfigurations = configuration->hasComposite("http")
 		? configuration->getComposite("http")
@@ -287,7 +303,7 @@ std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(std::shared_ptr<Enviro
 	return std::shared_ptr<HttpWebApp>(new HttpWebApps::RoutingHttpWebApp(std::move(routing)));
 }
 
-std::shared_ptr<WsWebApp> HttpServer::createWsHandler(std::shared_ptr<EnvironmentProperties> configuration,
+std::shared_ptr<WsWebApp> HttpServer::createWsHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
                                                       BalauLogger & logger) {
 	auto webAppConfigurations = configuration->hasComposite("ws")
 		? configuration->getComposite("ws")

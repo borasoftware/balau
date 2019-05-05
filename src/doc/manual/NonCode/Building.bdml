@@ -75,7 +75,9 @@
 			sudo yum install zlib-devel openssl-devel libcurl-devel libzip-devel
 		</code>
 
-		<h4>RHEL 7.6 / CentOS 7.6</h4>
+		<h4>RHEL CentOS</h4>
+
+		<para>Balau can be built on RHEL5 / CentOS v5 of later via the developer toolset 6 or later.</para>
 
 		<code>
 			sudo yum install zlib-devel openssl-devel libcurl-devel
@@ -96,17 +98,13 @@
 			make install
 		</code>
 
-		<para>Note that a C++17 capable compiler is required to build Balau. This can be achieved via the <emph>SCL</emph> command:</para>
+		<para>To install the developer toolset on CentOS, the <emph>SCL</emph> command can be used. DTS7 may be installed via the following command:</para>
 
 		<code>
 			scl enable devtoolset-7 bash
 		</code>
 
-		<para>RHEL 7.6 / CentOS 7.6 also ship with CMake version <emph>2.8.12.2</emph>. As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build must be done. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
-
-		<code>
-			scl enable devtoolset-7 bash
-		</code>
+		<para>RHEL / CentOS also ship with old versions of CMake (<emph>2.8</emph>). As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build of CMake must be available. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
 
 		<h2>ICU</h2>
 
