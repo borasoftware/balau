@@ -10,8 +10,8 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__STRING_VIEW
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__STRING_VIEW
 
-#include <boost/utility/string_view.hpp>
 #include <string>
+#include <boost/utility/string_view.hpp>
 
 namespace std { // NOLINT
 

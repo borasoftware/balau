@@ -22,6 +22,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/locale.hpp>
+#include <boost/utility/string_view.hpp>
 
 #include <forward_list>
 #include <map>
