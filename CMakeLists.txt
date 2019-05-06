@@ -21,7 +21,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #  - Doxyfile
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.3.1)
+project(Balau VERSION 2019.5.1)
 
 ############################# CMAKE CONFIGURATION #############################
 
