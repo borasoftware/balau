@@ -34,9 +34,9 @@ namespace Interprocess {
 // TODO convert to use boost interprocess basic_string when the ManagedSharedMemory class is written.
 template <int childProcessCount> struct SharedTestState {
 	std::array<std::array<char, 1024>, childProcessCount> reports { std::array<char, 1024> { 0 } };
-	std::atomic_uint dequeueCounter = 0;
-	std::atomic_uint enqueueCounter = 0;
-	boost::interprocess::interprocess_semaphore sync = 0;
+	std::atomic_uint dequeueCounter { 0 };
+	std::atomic_uint enqueueCounter { 0 };
+	boost::interprocess::interprocess_semaphore sync { 0 };
 };
 
 ////////////// Common tests with different queue configurations ///////////////

@@ -13,7 +13,7 @@
 <document xmlns="http://boradoc.org/1.0">
 	<chapter title="Balau core C++ library" id="bdml-title-page">
 		<para><strong>User manual</strong></para>
-		<para>Version 2019.3.1</para>
+		<para>Version 2019.5.1</para>
 		<para class="bdml-strong">Bora Software</para>
 	</chapter>
 </document>

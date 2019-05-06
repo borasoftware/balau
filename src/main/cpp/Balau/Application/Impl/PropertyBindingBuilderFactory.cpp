@@ -15,19 +15,19 @@ namespace Balau::Impl {
 
 // The map of creators by type string.
 std::map<std::string, PropertyBindingBuilderFactoryPtr> propertyBindingBuilderFactoryFactoriesByTypeString = {
-	  std::pair("byte",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed char>("")))
-	, std::pair("short",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed short>("")))
-	, std::pair("int",     PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed int>("")))
-	, std::pair("long",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed long long>("")))
+	  std::pair<std::string, PropertyBindingBuilderFactoryPtr>("byte",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed char>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("short",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed short>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("int",     PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed int>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("long",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed long long>("")))
 
-	, std::pair("float",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<float>("")))
-	, std::pair("double",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<double>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("float",   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<float>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("double",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<double>("")))
 
-	, std::pair("string",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
-	, std::pair("char",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
-	, std::pair("boolean", PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<bool>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("string",  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("char",    PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>("boolean", PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<bool>("")))
 
-	, std::pair(
+	, std::pair<std::string, PropertyBindingBuilderFactoryPtr>(
 		  "uri"
 		, PropertyBindingBuilderFactoryPtr(
 			new UniquePropertyBindingBuilderFactory<Resource::Uri>(
@@ -42,19 +42,19 @@ std::map<std::string, PropertyBindingBuilderFactoryPtr> propertyBindingBuilderFa
 
 // The map of creators by type id.
 std::map<std::type_index, PropertyBindingBuilderFactoryPtr> propertyBindingBuilderFactoryFactoriesByTypeId = {
-	  std::pair(std::type_index(typeid(signed char)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed char>("")))
-	, std::pair(std::type_index(typeid(signed short)), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed short>("")))
-	, std::pair(std::type_index(typeid(signed int)),   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed int>("")))
-	, std::pair(std::type_index(typeid(signed long)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed long long>("")))
+	  std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(signed char)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed char>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(signed short)), PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed short>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(signed int)),   PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed int>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(signed long)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<signed long long>("")))
 
-	, std::pair(std::type_index(typeid(float)),        PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<float>("")))
-	, std::pair(std::type_index(typeid(double)),       PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<double>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(float)),        PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<float>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(double)),       PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<double>("")))
 
-	, std::pair(std::type_index(typeid(std::string)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
-	, std::pair(std::type_index(typeid(char)),         PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
-	, std::pair(std::type_index(typeid(bool)),         PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<bool>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(std::string)),  PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<std::string>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(char)),         PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<char>("")))
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(std::type_index(typeid(bool)),         PropertyBindingBuilderFactoryPtr(new ValuePropertyBindingBuilderFactory<bool>("")))
 
-	, std::pair(
+	, std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(
 		  std::type_index(typeid(Resource::Uri))
 		, PropertyBindingBuilderFactoryPtr(
 			new UniquePropertyBindingBuilderFactory<Resource::Uri>(
@@ -72,8 +72,8 @@ void registerEnvironmentPropertyType(const std::string & typeString,
                                      PropertyBindingBuilderFactoryPtr factory) {
 	static std::mutex mutex;
 	std::lock_guard<std::mutex> lock(mutex);
-	propertyBindingBuilderFactoryFactoriesByTypeString.insert(std::pair(typeString, factory));
-	propertyBindingBuilderFactoryFactoriesByTypeId.insert(std::pair(typeIndex, factory));
+	propertyBindingBuilderFactoryFactoriesByTypeString.insert(std::pair<std::string, PropertyBindingBuilderFactoryPtr>(typeString, factory));
+	propertyBindingBuilderFactoryFactoriesByTypeId.insert(std::pair<std::type_index, PropertyBindingBuilderFactoryPtr>(typeIndex, factory));
 }
 
 void registerEnvironmentPropertyUnsignedTypes() {

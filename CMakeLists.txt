@@ -21,7 +21,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #  - Doxyfile
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.3.1)
+project(Balau VERSION 2019.5.1)
 
 ############################# CMAKE CONFIGURATION #############################
 
@@ -270,6 +270,19 @@ message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
 
 set(ALL_LIBS ${ALL_LIBS} rt zip curl)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
+
+################################## BACKPORTS ##################################
+
+include(CheckIncludeFileCXX)
+
+check_include_file_cxx(string_view STRING_VIEW_AVAILABLE)
+
+if (STRING_VIEW_AVAILABLE)
+	message(STATUS "std::string_view is available. Setting -DBALAU_STD_STRING_VIEW_AVAILABLE")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_STD_STRING_VIEW_AVAILABLE")
+else ()
+	message(STATUS "std::string_view is not available. Using boost::string_view")
+endif ()
 
 ############################### STATUS PRINTOUT ###############################
 

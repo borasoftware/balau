@@ -37,12 +37,16 @@ class FileUtf8To32ReadResource : public Utf8To32ReadResource {
 	///
 	public: explicit FileUtf8To32ReadResource(const File & file_);
 
-	public: ~FileUtf8To32ReadResource() {
+	public: FileUtf8To32ReadResource(FileUtf8To32ReadResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileUtf8To32ReadResource() override {
 		close();
 	}
 
 	public: std::u32istream & readStream() override {
-		return stream;
+		return *stream;
 	}
 
 	public: const Uri & uri() const override;
@@ -55,13 +59,13 @@ class FileUtf8To32ReadResource : public Utf8To32ReadResource {
 	public: const File & getFile() const;
 
 	public: void close() override {
-		stream.close();
+		stream->close();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<File> file;
-	private: std::u32ifstream stream;
+	private: std::unique_ptr<std::u32ifstream> stream;
 };
 
 } // namespace Balau::Resource

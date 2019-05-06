@@ -16,11 +16,11 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_S
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_S
 
+#include <Balau/Type/StdTypes.hpp>
 #include <Balau/Type/Impl/ToStringImpl.hpp>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/locale.hpp>
-#include <boost/utility/string_view.hpp>
 
 #include <forward_list>
 #include <map>
@@ -45,12 +45,16 @@ inline std::string toString(const std::string_view & value) {
 	return std::string(value);
 }
 
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+
 ///
 /// Creates a string from the Boost string view.
 ///
 inline std::string toString(const boost::string_view & value) {
 	return value.to_string();
 }
+
+#endif
 
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.
@@ -394,12 +398,16 @@ inline std::u16string toString16(const std::string_view & value) {
 	return toString16(std::string(value));
 }
 
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-16 string.
 ///
 inline std::u16string toString16(const boost::string_view & value) {
 	return toString16(value.to_string());
 }
+
+#endif
 
 ///
 /// Returns the supplied value as is.
@@ -724,12 +732,16 @@ inline std::u32string toString32(const std::string_view & value) {
 	return toString32(std::string(value));
 }
 
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-32 string.
 ///
 inline std::u32string toString32(const boost::string_view & value) {
 	return toString32(value.to_string());
 }
+
+#endif
 
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.

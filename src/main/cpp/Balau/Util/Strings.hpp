@@ -608,7 +608,7 @@ struct Strings final {
 
 		std::string ret;
 		append(ret, c, width - count);
-		ret += str;
+		ret.append(std::string(str.data(), str.length()));
 		return ret;
 	}
 
@@ -626,7 +626,7 @@ struct Strings final {
 
 		std::string ret;
 		append(ret, c, width - count);
-		ret += str;
+		ret.append(std::string(str.data(), str.length()));
 		return ret;
 	}
 
@@ -642,7 +642,7 @@ struct Strings final {
 
 		std::u32string ret;
 		append(ret, c, width - str.length());
-		ret += str;
+		ret.append(std::u32string(str.data(), str.length()));
 		return ret;
 	}
 
@@ -874,7 +874,9 @@ struct Strings final {
 	           std::basic_string_view<CharT> replacement,
 	           size_t * count = nullptr) {
 		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> ret(input);
-		replaceAllImpl(ret, match, replacement, count);
+		auto m = std::string(match.data(), match.length());
+		auto r = std::string(replacement.data(), replacement.length());
+		replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -887,7 +889,9 @@ struct Strings final {
 	                                           std::basic_string_view<CharT> replacement,
 	                                           size_t * count = nullptr) {
 		std::basic_string<CharT> ret(input);
-		replaceAllImpl(ret, match, replacement, count);
+		auto m = std::string(match.data(), match.length());
+		auto r = std::string(replacement.data(), replacement.length());
+		replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -899,7 +903,9 @@ struct Strings final {
 	                              std::string_view replacement,
 	                              size_t * count = nullptr) {
 		std::string ret(input);
-		replaceAllImpl(ret, match, replacement, count);
+		auto m = std::string(match.data(), match.length());
+		auto r = std::string(replacement.data(), replacement.length());
+		replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -911,7 +917,9 @@ struct Strings final {
 	                                 std::u32string_view replacement,
 	                                 size_t * count = nullptr) {
 		std::u32string ret(input);
-		replaceAllImpl(ret, match, replacement, count);
+		auto m = std::u32string(match.data(), match.length());
+		auto r = std::u32string(replacement.data(), replacement.length());
+		replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -1080,8 +1088,8 @@ struct Strings final {
 		std::basic_string_view<CharT> d;
 
 		for (const auto & e : container) {
-			builder += d;
-			builder += ::ToString<CharT, AllocatorT>()(e);
+			builder.append(std::basic_string<CharT>(d.data(), d.length()));
+			builder.append(::ToString<CharT, std::allocator<CharT>>()(e));
 			d = delimiter;
 		}
 
@@ -1100,8 +1108,8 @@ struct Strings final {
 		std::basic_string_view<CharT> d;
 
 		for (const auto & e : container) {
-			builder += d;
-			builder += ::ToString<CharT, std::allocator<CharT>>()(e);
+			builder.append(std::basic_string<CharT>(d.data(), d.length()));
+			builder.append(::ToString<CharT, std::allocator<CharT>>()(e));
 			d = delimiter;
 		}
 
@@ -1132,7 +1140,7 @@ struct Strings final {
 		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> builder;
 
 		for (const auto & e : container) {
-			builder += prefix + ::ToString<CharT, AllocatorT>()(e) + suffix;
+			builder.append(prefix + ::ToString<CharT, AllocatorT>()(e) + suffix);
 		}
 
 		return builder;
@@ -1175,7 +1183,11 @@ struct Strings final {
 		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> builder;
 
 		for (const auto & e : container) {
-			builder += std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>{prefix} + ::ToString<CharT, AllocatorT>()(e) + suffix;
+			builder.append(
+				  std::basic_string<CharT, std::char_traits<CharT>, AllocatorT>{prefix}
+				+ ::ToString<CharT, AllocatorT>()(e)
+				+ suffix
+			);
 		}
 
 		return builder;

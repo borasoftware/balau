@@ -38,24 +38,28 @@ class HttpByteReadResource : public ByteReadResource {
 	///
 	public: explicit HttpByteReadResource(const Http & url_);
 
-	public: ~HttpByteReadResource() {
+	public: HttpByteReadResource(HttpByteReadResource && rhs) noexcept
+		: url(std::move(rhs.url))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~HttpByteReadResource() override {
 		close();
 	}
 
 	public: std::istream & readStream() override {
-		return stream;
+		return *stream;
 	}
 
 	public: const Uri & uri() const override;
 
 	public: void close() override {
-		stream.close();
+		stream->close();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<Http> url;
-	private: boost::iostreams::stream<Impl::HttpSource> stream;
+	private: std::unique_ptr<boost::iostreams::stream<Impl::HttpSource>> stream;
 };
 
 } // namespace Balau::Resource

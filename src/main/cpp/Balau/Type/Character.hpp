@@ -328,7 +328,7 @@ struct Character {
 	///
 	static void setUtf8AndAdvanceOffset(std::string & destination, int & offset, char32_t c) {
 		auto newUChar = (UChar32) c;
-		U8_APPEND_UNSAFE(destination.data(), offset, newUChar); // NOLINT
+		U8_APPEND_UNSAFE(&destination[0], offset, newUChar); // NOLINT
 	}
 };
 

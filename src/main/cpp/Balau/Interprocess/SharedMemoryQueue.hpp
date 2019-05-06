@@ -117,8 +117,8 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	                          unsigned int bufferSize_,
 	                          std::string name_,
 	                          bool throwOnOversize_ = false)
-		: name(std::move(name_))
-		, queue(createQueue(capacity, bufferSize_))
+		: name(std::move(prepQueue(name_, bufferSize_)))
+		, queue(CreateOnly, name.c_str(), capacity, bufferSize_)
 		, chunkSize(bufferSize_)
 		, queueState(CreateOnly, name + "_queueState")
 		, throwOnOversize(throwOnOversize_) {}
@@ -555,7 +555,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		buffer.resize(headerSize);
 		const char * headerBytes = (const char *) &header;
 		memcpy(buffer.data(), headerBytes, headerSize);
-		SinkBuffer oStreamBuffer = SinkBuffer(SinkDevice(buffer));
+		SinkBuffer oStreamBuffer { SinkDevice(buffer) };
 		boost::archive::binary_oarchive archive(oStreamBuffer);
 		archive << BoostSerialization(object);
 	}
@@ -589,20 +589,19 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		return (unsigned int) buffer.size() + minimumChunkSize;
 	}
 
-	private: boost::interprocess::message_queue createQueue(unsigned int queueSize, unsigned int bufferSize) {
+	// Allows queue prepping for compilers without guaranteed copy elision.
+	private: std::string & prepQueue(std::string & n, unsigned int bufferSize) {
 		if (bufferSize < minimumChunkSize) {
 			ThrowBalauException(
-				  Exception::SizeException
-				, "The supplied shared memory queue buffer is less than the minimum legal size of "
-				  + ::toString(minimumChunkSize) + "."
+				Exception::SizeException
+			, "The supplied shared memory queue buffer is less than the minimum legal size of "
+			  + ::toString(minimumChunkSize) + "."
 			);
 		}
 
-		boost::interprocess::shared_memory_object::remove(name.c_str());
+		boost::interprocess::shared_memory_object::remove(n.c_str());
 
-		return boost::interprocess::message_queue(
-			CreateOnly, name.c_str(), queueSize, bufferSize
-		);
+		return n;
 	}
 
 	private: boost::interprocess::message_queue openOrCreateQueue(unsigned int queueSize, unsigned int bufferSize) {

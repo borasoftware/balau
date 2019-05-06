@@ -246,7 +246,7 @@ template <typename T> class DependencyGraph {
 	///
 	public: void addDependency(const T & dependency, bool throwIfExists = true) {
 		if (reverseLookup.find(dependency) != reverseLookup.end()) {
-			ThrowBalauException(Exception::ItemExistsException, dependency, "");
+			ThrowBalauException(Exception::ItemExistsException<T>, dependency, "");
 		}
 
 		Vertex vertex = boost::add_vertex(graph);
@@ -272,7 +272,7 @@ template <typename T> class DependencyGraph {
 		auto itemIter = reverseLookup.find(dependency);
 
 		if (itemIter == reverseLookup.end()) {
-			ThrowBalauException(Exception::ItemDoesNotExistException, dependency, "");
+			ThrowBalauException(Exception::ItemDoesNotExistException<T>, dependency, "");
 		}
 
 		const auto vertex = itemIter->second;

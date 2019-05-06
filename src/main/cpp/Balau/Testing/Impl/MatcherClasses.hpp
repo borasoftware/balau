@@ -66,7 +66,7 @@ template <typename E, typename C, typename V> class ExpectedValue<E, C, V, EvNot
 
 	public: ExpectedValue(const ExpectedValue<E, C, V, EvNotUsed> & copy)
 		: expected(copy.expected)
-		, v(copy.value) {}
+		, v(copy.v) {}
 
 	public: const V & value() const { return v; }
 };

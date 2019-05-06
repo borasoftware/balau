@@ -14,9 +14,9 @@ namespace Balau::Resource {
 
 HttpUtf8To32ReadResource::HttpUtf8To32ReadResource(const Http & url_)
 	: url(new Http(url_))
-	, utf8Stream(url_)
-	, ref(utf8Stream)
-	, utf32Stream(ref) {}
+	, utf8Stream(new boost::iostreams::stream<Impl::HttpSource>(url_))
+	, ref(*utf8Stream)
+	, utf32Stream(new istream_utf8_utf32(ref)) {}
 
 const Uri & HttpUtf8To32ReadResource::uri() const {
 	return *url;

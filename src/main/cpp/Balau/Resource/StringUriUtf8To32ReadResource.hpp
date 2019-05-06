@@ -43,8 +43,14 @@ class StringUriUtf8To32ReadResource : public Utf8To32ReadResource {
 	///
 	public: explicit StringUriUtf8To32ReadResource(const StringUri & stringUri_);
 
+	public: StringUriUtf8To32ReadResource(StringUriUtf8To32ReadResource && rhs) noexcept
+		: stringUri(std::move(rhs.stringUri))
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
 	public: std::u32istream & readStream() override {
-		return utf32Stream;
+		return *utf32Stream;
 	}
 
 	public: const Uri & uri() const override;
@@ -54,9 +60,9 @@ class StringUriUtf8To32ReadResource : public Utf8To32ReadResource {
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<StringUri> stringUri;
-	private: std::istringstream utf8Stream;
+	private: std::unique_ptr<std::istringstream> utf8Stream;
 	private: std::istream & ref;
-	private: istream_utf8_utf32 utf32Stream;
+	private: std::unique_ptr<istream_utf8_utf32> utf32Stream;
 };
 
 } // namespace Balau::Resource

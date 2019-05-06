@@ -116,7 +116,7 @@ class EnvironmentConfigurationBuilderUtils {
 		++first->level;
 
 		if (first->isComposite()) {
-			auto composite = std::reinterpret_pointer_cast<CompositePropertyBindingBuilderFactory>(first);
+			auto * composite = reinterpret_cast<CompositePropertyBindingBuilderFactory *>(first.get());
 
 			std::for_each(
 				  composite->children.begin()
@@ -133,7 +133,7 @@ class EnvironmentConfigurationBuilderUtils {
 		++last->level;
 
 		if (last->isComposite()) {
-			auto composite = std::reinterpret_pointer_cast<CompositePropertyBindingBuilderFactory>(last);
+			auto * composite = reinterpret_cast<CompositePropertyBindingBuilderFactory *>(last.get());
 
 			std::for_each(
 				  composite->children.begin()

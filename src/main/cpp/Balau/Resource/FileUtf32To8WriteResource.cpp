@@ -16,13 +16,13 @@ namespace Balau::Resource {
 
 FileUtf32To8WriteResource::FileUtf32To8WriteResource(const File & file_)
 	: file(std::make_unique<File>(file_))
-	, stream(file_.getEntry().path().native()) {
+	, stream(new std::u32ofstream(file_.getEntry().path().native())) {
 	// Overload 7 is typically called with its second argument, f, obtained
 	// directly from a new-expression: the locale is responsible for calling
 	// the matching delete from its own destructor.
-	stream.imbue(std::locale(std::locale(), new std::codecvt<char32_t, char, std::mbstate_t>));
+	stream->imbue(std::locale(std::locale(), new std::codecvt<char32_t, char, std::mbstate_t>));
 
-	if (!stream.is_open()) {
+	if (!stream->is_open()) {
 		ThrowBalauException(Exception::NotFoundException, toString(file_));
 	}
 }
