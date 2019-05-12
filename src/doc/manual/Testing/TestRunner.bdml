@@ -501,7 +501,7 @@
 						clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot
 					);
 
-					server->start();
+					server->startAsync();
 					return server->getPort();
 				}
 			);

@@ -16,9 +16,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace System {
+namespace Balau::System {
 
 struct SystemClockTest : public Testing::TestGroup<SystemClockTest> {
 	SystemClockTest() {
@@ -30,8 +28,6 @@ struct SystemClockTest : public Testing::TestGroup<SystemClockTest> {
 	void millitime();
 };
 
-} // namespace System
-
-} // namespace Balau
+} // namespace Balau::System
 
 #endif // COM_BORA_SOFTWARE__BALAU_SYSTEM__DEFAULT_CLOCK_TEST

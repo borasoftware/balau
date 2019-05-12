@@ -45,6 +45,8 @@ namespace Balau::System {
 /// @todo Add more clock functionality.
 ///
 class Clock {
+	public: using TimePoint = std::chrono::system_clock::time_point;
+
 	///
 	/// Get the current time point.
 	///

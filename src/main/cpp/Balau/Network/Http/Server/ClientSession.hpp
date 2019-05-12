@@ -27,7 +27,7 @@ namespace Balau::Network::Http {
 /// Client sessions are valid until the client does not connect for the configurable
 /// timeout period or when a web application explicitly deletes the client session.
 ///
-class ClientSession {
+class ClientSession final {
 	public: const std::string sessionId;
 
 	///

@@ -50,8 +50,8 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	: state(createState(std::move(clock), configuration))
 	, threadNamePrefix(configuration->getValue<std::string>("thread.name.prefix", ""))
 	, workerCount((size_t) configuration->getValue<int>("worker.count", 1))
+	, launched(new std::atomic_uint { 0U })
 	, ioContext(new boost::asio::io_context(configuration->getValue<int>("worker.count", 1)))
-	, runningWorkerCount(new std::atomic_uint { 0 })
 	, mutex(new std::mutex)
 	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
@@ -84,8 +84,8 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	)
 	, threadNamePrefix(std::move(threadNamePrefix_))
 	, workerCount(workerCount_)
+	, launched(new std::atomic_uint { 0U })
 	, ioContext(new boost::asio::io_context((int) workerCount))
-	, runningWorkerCount(new std::atomic_uint { 0 })
 	, mutex(new std::mutex)
 	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
@@ -124,13 +124,14 @@ HttpServer::~HttpServer() {
 
 ///////////////////////////////// Public API //////////////////////////////////
 
-void HttpServer::start() {
+void HttpServer::startAsync() {
 	std::unique_lock<std::mutex> lock(*mutex);
 
 	if (!workers.empty()) {
 		BalauBalauLogInfo(
 			state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
 		);
+
 		return;
 	}
 
@@ -143,11 +144,11 @@ void HttpServer::start() {
 		, "HTTP server {}:{} started with {} workers"
 		, state->endpoint.address()
 		, state->endpoint.port()
-		, *runningWorkerCount
+		, workerCount
 	);
 }
 
-void HttpServer::run() {
+void HttpServer::startSync() {
 	{
 		std::unique_lock<std::mutex> lock(*mutex);
 
@@ -155,6 +156,7 @@ void HttpServer::run() {
 			BalauBalauLogWarn(
 				state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
 			);
+
 			return;
 		}
 
@@ -197,6 +199,7 @@ void HttpServer::stop(bool warn) {
 
 	BalauBalauLogInfo(state->logger, "Stopping HTTP server {}:{}", state->endpoint.address(), state->endpoint.port());
 
+	listener->close();
 	ioContext->stop();
 
 	while (!ioContext->stopped()) {
@@ -385,6 +388,8 @@ void HttpServer::addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & 
 }
 
 void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
+	ioContext->restart();
+
 	listener = std::make_unique<Impl::Listener>(state, *ioContext);
 
 	if (!listener->isOpen()) {
@@ -397,15 +402,14 @@ void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
 
 	listener->doAccept();
 
-	*runningWorkerCount = 0;
 	workers.reserve(thisWorkerCount);
+	launched->store(0U);
 
 	for (size_t workerIndex = 0; workerIndex < thisWorkerCount; workerIndex++) {
 		workers.emplace_back([workerIndex, this] { workerThreadFunction(workerIndex, false); });
 	}
 
-	// TODO add thread creation timeout failure handling
-	while (*runningWorkerCount != thisWorkerCount) {
+	while (launched->load() != thisWorkerCount) {
 		System::Sleep::milliSleep(10);
 	}
 }
@@ -423,8 +427,6 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 		, workerIndex
 	);
 
-	++*runningWorkerCount;
-
 	// Log started message if this is the main thread blocking.
 	if (blocking) {
 		BalauBalauLogInfo(
@@ -432,9 +434,11 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 			, "HTTP server {}:{} started with {} workers"
 			, state->endpoint.address()
 			, state->endpoint.port()
-			, *runningWorkerCount
+			, workerCount
 		);
 	}
+
+	++(*launched);
 
 	while (true) {
 		try {
@@ -449,8 +453,6 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 				, workerIndex
 				, e.what()
 			);
-
-			ioContext->restart();
 		} catch (...) {
 			BalauBalauLogError(
 				  state->logger
@@ -459,12 +461,8 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 				, state->endpoint.port()
 				, workerIndex
 			);
-
-			ioContext->restart();
 		}
 	}
-
-	--*runningWorkerCount;
 
 	BalauBalauLogInfo(
 		  state->logger

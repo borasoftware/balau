@@ -32,7 +32,7 @@ namespace Balau::Network::Http {
 ///
 /// Holds a pointer to the private session information object for the client.
 ///
-class WsSession : public std::enable_shared_from_this<WsSession> {
+class WsSession final : public std::enable_shared_from_this<WsSession> {
 	///
 	/// Create a WebSocket session object with the supplied data.
 	///
@@ -44,11 +44,11 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 	/// TODO This can be selected from the routing trie in advance.
 	///
 	public: WsSession(std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-	                  TCP::socket socket_,
+	                  TCP::socket && socket_,
 	                  std::string path_)
 		: serverConfiguration(std::move(serverConfiguration_))
-		, ws(std::move(socket_))
-		, strand(ws.get_executor())
+		, strand(socket_.get_executor())
+		, socket(std::move(socket_))
 		, path(std::move(path_)) {}
 
 	///
@@ -72,7 +72,7 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 //				std::placeholders::_1,
 //				std::placeholders::_2));
 
-		ws.async_accept(
+		socket.async_accept(
 			req,
 			boost::asio::bind_executor(
 				strand,
@@ -85,7 +85,7 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 	}
 
 	public: void run() {
-		ws.async_accept(
+		socket.async_accept(
 			boost::asio::bind_executor(
 				strand, std::bind(&WsSession::onAccept, shared_from_this(), std::placeholders::_1)
 			)
@@ -122,7 +122,7 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 	}
 
 	public: void doRead() {
-		ws.async_read(
+		socket.async_read(
 			buffer,
 			boost::asio::bind_executor(
 				strand,
@@ -146,9 +146,9 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 		checkError(ec);
 
 		// Echo the message
-		ws.text(ws.got_text());
+		socket.text(socket.got_text());
 
-		ws.async_write(
+		socket.async_write(
 			  buffer.data()
 			, boost::asio::bind_executor(
 				strand, std::bind(&WsSession::onWrite, shared_from_this(), std::placeholders::_1, std::placeholders::_2)
@@ -176,8 +176,8 @@ class WsSession : public std::enable_shared_from_this<WsSession> {
 	}
 
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
-	private: WS::stream<TCP::socket> ws;
 	private: boost::asio::strand<boost::asio::io_context::executor_type> strand;
+	private: WS::stream<TCP::socket> socket;
 	private: const std::string path;
 	private: boost::beast::multi_buffer buffer;
 };

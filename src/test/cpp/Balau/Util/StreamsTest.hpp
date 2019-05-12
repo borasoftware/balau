@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Util {
+namespace Balau::Util {
 
 struct StreamsTest : public Testing::TestGroup<StreamsTest> {
 	StreamsTest() {
@@ -27,8 +25,6 @@ struct StreamsTest : public Testing::TestGroup<StreamsTest> {
 	void consume();
 };
 
-} // namespace Util
-
-} // namespace Balau
+} // namespace Balau::Util
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__STREAMS_TEST

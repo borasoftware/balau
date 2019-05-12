@@ -23,11 +23,7 @@ using Testing::is;
 using Testing::isGreaterThan;
 using Testing::isLessThan;
 
-namespace Network {
-
-namespace Http {
-
-namespace HttpWebApps {
+namespace Network::Http::HttpWebApps {
 
 template <typename ResponseT> void assertResponse(const ResponseT & response,
                                                   const char * expectedReason,
@@ -70,7 +66,7 @@ void FileServingHttpWebAppTest::getFile() {
 				new HttpServer(clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -112,7 +108,7 @@ void FileServingHttpWebAppTest::getNotFoundFile() {
 				new HttpServer(clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -144,7 +140,7 @@ void FileServingHttpWebAppTest::headFile() {
 				new HttpServer(clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -176,7 +172,7 @@ void FileServingHttpWebAppTest::headNotFoundFile() {
 				new HttpServer(clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -208,7 +204,7 @@ void FileServingHttpWebAppTest::getFile1000Serial() {
 				new HttpServer(clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -275,7 +271,7 @@ void FileServingHttpWebAppTest::getFile1000Parallel() {
 				new HttpServer(clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -323,7 +319,7 @@ void FileServingHttpWebAppTest::getFiles() {
 				new HttpServer(clock,  "BalauTest", endpoint, "FileHandler", 4, documentRoot)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -359,10 +355,6 @@ void FileServingHttpWebAppTest::getFiles() {
 	AssertThat(bytesTransferred, isLessThan(100000000U));
 }
 
-} // namespace HttpWebApps
-
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http::HttpWebApps
 
 } // namespace Balau

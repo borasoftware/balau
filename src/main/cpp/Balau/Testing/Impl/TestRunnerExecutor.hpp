@@ -13,6 +13,7 @@
 
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/System/Sleep.hpp>
+#include <Balau/System/ThreadName.hpp>
 #include <Balau/Testing/Impl/CompositeWriter.hpp>
 #include <Balau/Testing/Impl/FlattenedTestCase.hpp>
 #include <Balau/Testing/Impl/TestCase.hpp>
@@ -92,6 +93,10 @@ class TestRunnerExecutor {
 			return;
 		}
 
+		// Set the main execution thread to the test name.
+		std::string previousThreadName = System::ThreadName::getName();
+		System::ThreadName::setName(testToRun.testName);
+
 		std::ostringstream output;
 		const std::string text = pidStr + " - Running test " + testToRun.testName;
 		output << std::left << std::setw((int) maxLineLength) << text;
@@ -124,6 +129,8 @@ class TestRunnerExecutor {
 				, std::move(outputStr)
 			)
 		);
+
+		System::ThreadName::setName(previousThreadName);
 	}
 
 	private: bool runSetup(TestGroupBase & group, std::ostream & output) {

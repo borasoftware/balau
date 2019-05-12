@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Container {
+namespace Balau::Container {
 
 struct ArrayBlockingQueueTest : public Testing::TestGroup<ArrayBlockingQueueTest> {
 	ArrayBlockingQueueTest() {
@@ -25,8 +23,6 @@ struct ArrayBlockingQueueTest : public Testing::TestGroup<ArrayBlockingQueueTest
 	void fullQueue();
 };
 
-} // namespace Container
-
-} // namespace Balau
+} // namespace Balau::Container
 
 #endif // COM_BORA_SOFTWARE__BALAU_COLLECTION__ARRAY_BLOCKING_QUEUE_TEST

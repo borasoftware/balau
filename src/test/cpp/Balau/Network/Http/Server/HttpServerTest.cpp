@@ -25,9 +25,7 @@ namespace Balau {
 using Testing::is;
 using Testing::isGreaterThan;
 
-namespace Network {
-
-namespace Http {
+namespace Network::Http {
 
 template <typename ResponseT> void assertResponse(const ResponseT & response,
                                                   const char * expectedReason,
@@ -119,7 +117,7 @@ void HttpServerTest::injectedInstantiation() {
 			auto injector = Injector::create(Wiring(), EnvConfig(env));
 
 			server = injector->getShared<HttpServer>();
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -151,8 +149,6 @@ void HttpServerTest::injectedInstantiation() {
 	AssertThat(response2.base().result(), is(Status::not_found));
 }
 
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http
 
 } // namespace Balau

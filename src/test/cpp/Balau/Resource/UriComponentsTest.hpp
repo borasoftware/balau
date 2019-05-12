@@ -14,9 +14,7 @@
 #include <Balau/Resource/UriComponents.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 	UriComponentsTest() {
@@ -103,8 +101,6 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 	                             const std::string & fragment);
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_COMPONENTS_TEST

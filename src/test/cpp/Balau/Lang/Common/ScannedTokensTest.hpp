@@ -14,9 +14,7 @@
 #include "Balau/Lang/Common/ScannedTokens.hpp"
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Lang {
+namespace Balau::Lang {
 
 struct ScannedTokensTest : public Testing::TestGroup<ScannedTokensTest> {
 	ScannedTokensTest() {
@@ -28,8 +26,6 @@ struct ScannedTokensTest : public Testing::TestGroup<ScannedTokensTest> {
 	void scannerApiConsumeAndPutBack();
 };
 
-} // namespace Lang
-
-} // namespace Balau
+} // namespace Balau::Lang
 
 #endif // COM_BORA_SOFTWARE__BALAU_LANG__SCANNED_TOKENS_TEST

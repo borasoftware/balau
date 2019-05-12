@@ -35,9 +35,7 @@ class Clock;
 
 } // namespace System
 
-namespace Network {
-
-namespace Http {
+namespace Network::Http {
 
 class HttpWebApp;
 class WsWebApp;
@@ -114,9 +112,7 @@ struct HttpServerConfiguration {
 		, mimeTypes(std::move(mimeTypes_)) {}
 };
 
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http
 
 } // namespace Balau
 

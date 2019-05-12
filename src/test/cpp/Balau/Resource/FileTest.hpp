@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct FileTest : public Testing::TestGroup<FileTest> {
 	FileTest() {
@@ -27,8 +25,6 @@ struct FileTest : public Testing::TestGroup<FileTest> {
 	void resolve();
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE_TEST

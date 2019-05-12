@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct HttpsUtf8To32ReadResourceTest : public Testing::TestGroup<HttpsUtf8To32ReadResourceTest> {
 	explicit HttpsUtf8To32ReadResourceTest() {
@@ -29,8 +27,6 @@ struct HttpsUtf8To32ReadResourceTest : public Testing::TestGroup<HttpsUtf8To32Re
 	private: void performTest(const std::string & url_, const std::u32string & expectedStart);
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__HTTPS_UTF8_TO_32_READ_RESOURCE_TEST

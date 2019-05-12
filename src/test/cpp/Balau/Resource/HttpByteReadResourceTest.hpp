@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct HttpByteReadResourceTest : public Testing::TestGroup<HttpByteReadResourceTest> {
 	HttpByteReadResourceTest() {
@@ -29,8 +27,6 @@ struct HttpByteReadResourceTest : public Testing::TestGroup<HttpByteReadResource
 	private: void performTest(const std::string & url_);
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__HTTP_BYTE_READ_RESOURCE_TEST

@@ -13,11 +13,7 @@
 
 #include <Balau/Network/Http/Client/HttpsClient.hpp>
 
-namespace Balau {
-
-namespace Network {
-
-namespace Http {
+namespace Balau::Network::Http {
 
 void HttpsClientTest::getRequest() {
 	HttpsClient client("borasoftware.com");
@@ -59,8 +55,4 @@ void HttpsClientTest::postRequest() {
 	}
 }
 
-} // namespace Http
-
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network::Http

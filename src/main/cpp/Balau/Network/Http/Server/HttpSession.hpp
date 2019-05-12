@@ -43,7 +43,7 @@ class HttpSessions;
 ///
 /// Multiple HTTP sessions may occur within the lifetime of a single client session.
 ///
-class HttpSession : public std::enable_shared_from_this<HttpSession> {
+class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	///
 	/// Create an HTTP session object with the supplied data.
 	///
@@ -52,10 +52,10 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 	/// @param serverConfiguration_ the configuration of the HTTP server that created this session
 	/// @param socket_ the session socket
 	///
-	public: HttpSession(Impl::HttpSessions & owner_,
+	public: HttpSession(Impl::HttpSessions & httpSessions_,
 	                    Impl::ClientSessions & clientSessions_,
 	                    std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-	                    TCP::socket socket_);
+	                    TCP::socket && socket_);
 
 	///
 	/// Get the shared state of the http server.
@@ -117,7 +117,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 			  socket
 			, *sharedResponse
 			, boost::asio::bind_executor(
-				strand
+				  strand
 				, std::bind(
 					&HttpSession::onWrite
 					, shared_from_this()
@@ -191,20 +191,16 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 	}
 
 	private: void onWrite(boost::system::error_code errorCode, std::size_t bytesTransferred, bool close);
-
-	private: void stop();
-
 	private: void doClose();
-
 	private: void parseCookies();
 	private: void setClientSession();
 
-	private: Impl::HttpSessions & owner;
+	private: Impl::HttpSessions & httpSessions;
 	private: Impl::ClientSessions & clientSessions;
 	private: std::shared_ptr<ClientSession> clientSession;
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
-	private: TCP::socket socket;
 	private: boost::asio::strand<boost::asio::io_context::executor_type> strand;
+	private: TCP::socket socket;
 	private: Buffer buffer;
 	private: StringRequest request;
 	private: std::string cookieString;
