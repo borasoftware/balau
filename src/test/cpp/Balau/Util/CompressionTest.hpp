@@ -15,9 +15,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Util {
+namespace Balau::Util {
 
 struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	CompressionTest() {
@@ -35,8 +33,6 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	void encryptedZipperTest();
 };
 
-} // namespace Util
-
-} // namespace Balau
+} // namespace Balau::Util
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION_TEST

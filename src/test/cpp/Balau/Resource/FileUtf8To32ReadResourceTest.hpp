@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct FileUtf8To32ReadResourceTest : public Testing::TestGroup<FileUtf8To32ReadResourceTest> {
 	explicit FileUtf8To32ReadResourceTest() {
@@ -25,8 +23,6 @@ struct FileUtf8To32ReadResourceTest : public Testing::TestGroup<FileUtf8To32Read
 	void test();
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE_UTF8_TO_32_READ_RESOURCE_TEST

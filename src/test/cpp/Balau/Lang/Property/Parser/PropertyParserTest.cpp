@@ -21,9 +21,7 @@ namespace Balau {
 
 using Testing::is;
 
-namespace Lang {
-
-namespace Property {
+namespace Lang::Property {
 
 using namespace AST;
 
@@ -98,8 +96,6 @@ void PropertyParserTest::normalisation() {
 	AssertThat(PropertyNode::normalise("abc\\\n  def\\\n  ghi"), is("abcdefghi"));
 }
 
-} // namespace Property
-
-} // namespace Lang
+} // namespace Lang::Property
 
 } // namespace Balau

@@ -49,7 +49,7 @@ void EchoingWsWebAppTest::test() {
 				new HttpServer(clock, "BalauTest", endpoint, "RoutingHandler", 4, httpHandler, wsHandler)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);

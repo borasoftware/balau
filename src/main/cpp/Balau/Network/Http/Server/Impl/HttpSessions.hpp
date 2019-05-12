@@ -26,34 +26,32 @@ namespace Balau::Network::Http::Impl {
 //
 // TODO replace mutex with concurrent data structure.
 //
-class HttpSessions {
-	public: void start(std::shared_ptr<HttpSession> session) {
-		{
-			std::lock_guard<std::mutex> lock(mutex);
-			sessions.insert(session);
-		}
-
-		session->doRead();
+class HttpSessions final {
+	public: void registerSession(const std::shared_ptr<HttpSession> & session) {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+		sessions.insert(session);
 	}
 
-	public: void stop(const std::shared_ptr<HttpSession> & session) {
-		std::lock_guard<std::mutex> lock(mutex);
+	public: void unregisterSession(const std::shared_ptr<HttpSession> & session) {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 		sessions.erase(session);
 	}
 
 	// Called a single time by the listener when it is shutting down.
-	public: void stopAll() {
-		std::set<std::shared_ptr<HttpSession>> sessionsCopy = sessions;
+	public: void unregisterAllSessions(const BalauLogger & logger) {
+		std::lock_guard<std::recursive_mutex> lock(mutex);
+
+		BalauBalauLogInfo(logger, "HttpsSessions: unregistering {} HTTP sessions.", sessions.size());
 
 		for (auto & session : sessions) {
-			session->stop();
+			session->doClose();
 		}
 
 		sessions.clear();
 	}
 
 	private: std::set<std::shared_ptr<HttpSession>> sessions;
-	private: std::mutex mutex;
+	private: std::recursive_mutex mutex;
 };
 
 } // namespace Balau::Network::Http::Impl

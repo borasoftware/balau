@@ -187,7 +187,7 @@ class HttpServer {
 	///
 	/// @throw NetworkException if there was an issue initialising the listener
 	///
-	public: void start();
+	public: void startAsync();
 
 	///
 	/// Start the HTTP server and block until the server is stopped.
@@ -197,7 +197,7 @@ class HttpServer {
 	///
 	/// @throw NetworkException if there was an issue initialising the listener
 	///
-	public: void run();
+	public: void startSync();
 
 	///
 	/// Returns true if the server is running.
@@ -237,9 +237,9 @@ class HttpServer {
 		, threadNamePrefix(rhs.threadNamePrefix)
 		, workerCount(rhs.workerCount)
 		, workers(std::move(rhs.workers))
+		, launched(std::move(rhs.launched))
 		, listener(std::move(rhs.listener))
 		, ioContext(std::move(rhs.ioContext))
-		, runningWorkerCount(std::move(rhs.runningWorkerCount))
 		, mutex(std::move(rhs.mutex))
 		, signalSet(std::move(rhs.signalSet)) {}
 
@@ -290,9 +290,9 @@ class HttpServer {
 	private: const std::string threadNamePrefix;
 	private: size_t workerCount;
 	private: std::vector<std::thread> workers;
+	private: std::unique_ptr<std::atomic_uint> launched;
 	private: std::shared_ptr<Impl::Listener> listener;
 	private: std::unique_ptr<boost::asio::io_context> ioContext;
-	private: std::unique_ptr<std::atomic_uint> runningWorkerCount;
 	private: std::unique_ptr<std::mutex> mutex;
 	private: std::unique_ptr<boost::asio::signal_set> signalSet;
 };

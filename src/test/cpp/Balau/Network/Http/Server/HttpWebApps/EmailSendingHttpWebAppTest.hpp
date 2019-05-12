@@ -14,13 +14,7 @@
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Network {
-
-namespace Http {
-
-namespace HttpWebApps {
+namespace Balau::Network::Http::HttpWebApps {
 
 struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWebAppTest> {
 	EmailSendingHttpWebAppTest() {
@@ -36,12 +30,6 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 	bool checkEnvironmentVariables();
 };
 
-} // namespace HttpWebApps
-
-} // namespace Http
-
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network::Http::HttpWebApps
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST

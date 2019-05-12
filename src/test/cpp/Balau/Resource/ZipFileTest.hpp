@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct ZipFileTest : public Testing::TestGroup<ZipFileTest> {
 	ZipFileTest() {
@@ -25,8 +23,6 @@ struct ZipFileTest : public Testing::TestGroup<ZipFileTest> {
 	void iteration();
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE_TEST

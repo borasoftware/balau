@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct FileByteWriteResourceTest : public Testing::TestGroup<FileByteWriteResourceTest> {
 	FileByteWriteResourceTest() {
@@ -27,8 +25,6 @@ struct FileByteWriteResourceTest : public Testing::TestGroup<FileByteWriteResour
 	private: File prepWritePath(const std::string & testName, const std::string & text);
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE_BYTE_WRITE_RESOURCE_TEST

@@ -13,11 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Lang {
-
-namespace Property {
+namespace Balau::Lang::Property {
 
 struct PropertyParserTest : public Testing::TestGroup<PropertyParserTest> {
 	PropertyParserTest() {
@@ -35,10 +31,6 @@ struct PropertyParserTest : public Testing::TestGroup<PropertyParserTest> {
 	void normalisation();
 };
 
-} // namespace Css
-
-} // namespace Lang
-
-} // namespace Balau
+} // namespace Balau::Lang::Property
 
 #endif // COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_PARSER_TEST

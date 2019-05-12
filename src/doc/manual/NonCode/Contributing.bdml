@@ -101,6 +101,8 @@
 			<entry>When creating a function that accepts one or more const strings, string views should be used instead of std strings.</entry>
 
 			<entry>Beware of the <emph>std::string_view::data()</emph> method. Do not use this method unless you are 100% sure null pointer character array termination is not required in the program logic that uses the data.</entry>
+
+			<entry>Beware of returning <emph>std::string_view</emph> from methods. Returning <emph>std::string_view</emph> from a method should only be done when the lifetime of the referenced string data is guaranteed to outlive the string view being returnd.</entry>
 		</bullets>
 
 		<h2>Const correctness</h2>

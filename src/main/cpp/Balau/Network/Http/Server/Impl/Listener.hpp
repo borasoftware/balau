@@ -23,7 +23,7 @@
 namespace Balau::Network::Http::Impl {
 
 // Listener for HttpServer.
-class Listener : public std::enable_shared_from_this<Listener> {
+class Listener final : public std::enable_shared_from_this<Listener> {
 	//
 	// @throw NetworkException if there was an issue constructing the listener
 	//
@@ -54,35 +54,45 @@ class Listener : public std::enable_shared_from_this<Listener> {
 
 	public: void close() {
 		acceptor.close();
-		httpSessions.stopAll();
+		httpSessions.unregisterAllSessions(serverConfiguration->logger);
 	}
 
 	public: void doAccept() {
-		acceptor.async_accept(
-			socket, std::bind(&Listener::onAccept, shared_from_this(), std::placeholders::_1)
-		);
+		acceptor.async_accept(socket, std::bind(&Listener::onAccept, shared_from_this(), std::placeholders::_1));
 	}
 
 	private: void onAccept(boost::system::error_code errorCode) {
-		if (errorCode == boost::system::errc::operation_canceled) {
+		if (!errorCode) {
+			// ASIO states that following the socket move, the moved-from socket is in the same
+			// state as if constructed using basic_stream_socket<tcp>(io_context &) constructor.
+			auto session = std::make_shared<HttpSession>(
+				httpSessions, clientSessions, serverConfiguration, std::move(socket)
+			);
+
+			httpSessions.registerSession(session);
+			session->doRead();
+		} else if (errorCode == boost::system::errc::operation_canceled) {
 			BalauBalauLogInfo(
-				serverConfiguration->logger
-			, "Listener {}:{} stopping due to: {}"
-			, serverConfiguration->endpoint.address()
-			, serverConfiguration->endpoint.port()
-			, errorCode.message()
+				  serverConfiguration->logger
+				, "Listener {}:{} stopping due to: {}"
+				, serverConfiguration->endpoint.address()
+				, serverConfiguration->endpoint.port()
+				, errorCode.message()
 			);
 
 			return;
 		} else {
-			httpSessions.start(
-				std::make_shared<HttpSession>(httpSessions, clientSessions, serverConfiguration, std::move(socket))
+			BalauBalauLogInfo(
+				  serverConfiguration->logger
+				, "Listener accept failure on {}:{}: {}. Restarting listener."
+				, serverConfiguration->endpoint.address()
+				, serverConfiguration->endpoint.port()
+				, errorCode.message()
 			);
 		}
 
 		doAccept();
 	}
-
 
 	private: template <typename ErrorMessageCreator>
 	void checkError(const boost::system::error_code & errorCode, const ErrorMessageCreator & errorMessage) {

@@ -14,9 +14,7 @@
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Network {
+namespace Balau::Network {
 
 struct UrlDecodeTest : public Testing::TestGroup<UrlDecodeTest> {
 	UrlDecodeTest() {
@@ -28,8 +26,6 @@ struct UrlDecodeTest : public Testing::TestGroup<UrlDecodeTest> {
 	void splitAndDecodeTest();
 };
 
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_UTILITIES__URL_DECODE_TEST

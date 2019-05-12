@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Util {
+namespace Balau::Util {
 
 struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 	PrettyPrintTest() {
@@ -35,8 +33,6 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 	void duration();
 };
 
-} // namespace Util
-
-} // namespace Balau
+} // namespace Balau::Util
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__PRETTY_PRINT_TEST

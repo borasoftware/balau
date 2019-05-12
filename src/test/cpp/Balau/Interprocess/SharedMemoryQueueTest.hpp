@@ -16,9 +16,7 @@
 
 #include <array>
 
-namespace Balau {
-
-namespace Interprocess {
+namespace Balau::Interprocess {
 
 // Test object.
 struct SMT {
@@ -46,15 +44,11 @@ inline bool operator != (const SMT & lhs, const SMT & rhs) {
 	return lhs.d != rhs.d || lhs.i != rhs.i;
 }
 
-} // namespace Interprocess
-
-} // namespace Balau
+} // namespace Balau::Interprocess
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Interprocess {
+namespace Balau::Interprocess {
 
 struct SharedMemoryQueueTest : public Testing::TestGroup<SharedMemoryQueueTest> {
 	SharedMemoryQueueTest() {
@@ -80,8 +74,6 @@ struct SharedMemoryQueueTest : public Testing::TestGroup<SharedMemoryQueueTest> 
 	void multipleBufferPending();
 };
 
-} // namespace Interprocess
-
-} // namespace Balau
+} // namespace Balau::Interprocess
 
 #endif // COM_BORA_SOFTWARE__BALAU_LANG__SHARED_MEMORY_QUEUE_TEST

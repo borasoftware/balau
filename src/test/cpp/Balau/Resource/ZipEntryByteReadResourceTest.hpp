@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct ZipEntryByteReadResourceTest : public Testing::TestGroup<ZipEntryByteReadResourceTest> {
 	ZipEntryByteReadResourceTest() {
@@ -25,8 +23,6 @@ struct ZipEntryByteReadResourceTest : public Testing::TestGroup<ZipEntryByteRead
 	void test();
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE_TEST

@@ -22,9 +22,7 @@ using Testing::isGreaterThan;
 using Testing::startsWith;
 using Testing::throws;
 
-namespace Network {
-
-namespace Http {
+namespace Network::Http {
 
 void HttpClientTest::getRequest() {
 	HttpClient client("borasoftware.com");
@@ -120,8 +118,6 @@ void HttpClientTest::assertResponse(Response<CharVectorBody> & response,
 	}
 }
 
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http
 
 } // namespace Balau

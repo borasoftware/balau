@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct FileUtf32To8WriteResourceTest : public Testing::TestGroup<FileUtf32To8WriteResourceTest> {
 	explicit FileUtf32To8WriteResourceTest() {
@@ -27,8 +25,6 @@ struct FileUtf32To8WriteResourceTest : public Testing::TestGroup<FileUtf32To8Wri
 	private: File prepWritePath(const std::string & testName, const std::string & text);
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE_UTF32_TO_8_WRITE_RESOURCE_TEST

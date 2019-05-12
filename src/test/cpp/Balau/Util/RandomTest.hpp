@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Util {
+namespace Balau::Util {
 
 struct RandomTest : public Testing::TestGroup<RandomTest> {
 	RandomTest() {
@@ -25,8 +23,6 @@ struct RandomTest : public Testing::TestGroup<RandomTest> {
 	void test();
 };
 
-} // namespace Util
-
-} // namespace Balau
+} // namespace Balau::Util
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__RANDOM_TEST
