@@ -125,7 +125,7 @@ class TestRunnerExecutor {
 				  ns
 				, testToRun.group->groupIndex
 				, testToRun.testIndex
-				, TestResult::Result::Success
+				, success ? TestResult::Result::Success : TestResult::Result::Failure
 				, std::move(outputStr)
 			)
 		);

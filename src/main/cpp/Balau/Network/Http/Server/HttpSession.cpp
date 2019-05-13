@@ -44,6 +44,10 @@ void HttpSession::doRead() {
 	);
 }
 
+void HttpSession::close() {
+	strand.post(std::bind(&HttpSession::doClose, this), allocator);
+}
+
 void HttpSession::onRead(boost::system::error_code errorCode, std::size_t bytesTransferred) {
 	boost::ignore_unused(bytesTransferred);
 
@@ -105,8 +109,13 @@ void HttpSession::onWrite(boost::system::error_code errorCode, std::size_t bytes
 }
 
 void HttpSession::doClose() {
-	// TODO Edge case.. verify if a second call to these methods is a defect.
-	// TODO This could occur during a server shutdown with active HTTP sessions.
+	// Executed via the strand.
+
+	if (!socket.is_open()) {
+		BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose ignoring duplicate call.");
+		return;
+	}
+
 	boost::system::error_code errorCode;
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose shutting down");
 	socket.shutdown(TCP::socket::shutdown_send, errorCode);

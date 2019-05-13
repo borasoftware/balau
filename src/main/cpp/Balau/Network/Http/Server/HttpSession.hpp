@@ -139,6 +139,11 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	///
 	public: void doRead();
 
+	///
+	/// Close the session if it is still open.
+	///
+	public: void close();
+
 	// Callback from context.
 	private: void onRead(boost::system::error_code errorCode, std::size_t bytesTransferred);
 
@@ -206,6 +211,7 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	private: std::string cookieString;
 	private: std::map<std::string_view, std::string_view> cookies;
 	private: std::shared_ptr<void> cachedResponse; // Used to keep the response alive.
+	private: std::allocator<char> allocator;
 };
 
 } // namespace Balau::Network::Http
