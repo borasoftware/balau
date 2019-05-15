@@ -22,6 +22,7 @@ using namespace Util;
 
 using Testing::is;
 using Testing::startsWith;
+using Testing::endsWith;
 using Testing::contains;
 
 const std::string defaultConfigurationTextPrefix = 1 + R"RR(
@@ -42,11 +43,15 @@ com.borasoftware.misc {
 }
 )RR";
 
-const std::string STREAM_ENTRY = "_STREAM_ENTRY_";
+const std::string STREAM_ENTRY = "_STREAM_ENTRY_"; // NOLINT
 
-void assertContains(const std::string & actual, const std::vector<std::string> & expectedContains) {
-	for (auto expected : expectedContains) {
-		AssertThat(actual, contains(expected));
+static void assertLines(const std::string & actual, const std::vector<std::string> & expected) {
+	const auto lines = Strings::split(actual, "\n");
+
+	AssertThat(lines.size(), is(expected.size()));
+
+	for (size_t m = 0; m < lines.size(); m++) {
+		AssertThat(std::string(lines[m]), endsWith(expected[m]));
 	}
 }
 
@@ -119,27 +124,27 @@ void LoggerTest::stringMessages() {
 	const std::string actual2 = Files::readToString(logFile2);
 
 	const std::vector<std::string> expectedContains1 = {
-		  " [TestMain] INFO - c.borasoftware - Hello World"
-		, " [TestMain] INFO - c.b.a - Hello info"
-		, " [TestMain] WARN - c.b.a - Hello warn"
-		, " [TestMain] ERROR - c.b.a - Hello error"
-		, " [TestMain] INFO - c.b.misc - Hello unconfigured namespace"
+		  " [LoggerTest::stringMessages] INFO - c.borasoftware - Hello World"
+		, " [LoggerTest::stringMessages] INFO - c.b.a - Hello info"
+		, " [LoggerTest::stringMessages] WARN - c.b.a - Hello warn"
+		, " [LoggerTest::stringMessages] ERROR - c.b.a - Hello error"
+		, " [LoggerTest::stringMessages] INFO - c.b.misc - Hello unconfigured namespace"
 	};
 
 	const std::vector<std::string> expectedContains2 = {
-		  " [TestMain] INFO - c.b.misc - Hello newly configured namespace"
-		, " [TestMain] INFO - c.borasoftware - Hello World"
-		, " [TestMain] INFO - c.b.a - Hello again"
-		, " [TestMain] INFO - c.b.m.d.f.z.b.abc - A big unconfigured namespace"
-		, " [TestMain] WARN - c.b.misc - This should be logged in a file."
-		, " [TestMain] ERROR - c.b.misc - This should be logged in a file."
-		, " [TestMain] INFO - c.b.misc - This should be logged in a file."
-		, " [TestMain] DEBUG - c.b.misc - This should be logged in a file."
-		, " [TestMain] TRACE - c.b.misc - This should be logged in a file."
+		  " [LoggerTest::stringMessages] INFO - c.b.misc - Hello newly configured namespace"
+		, " [LoggerTest::stringMessages] INFO - c.borasoftware - Hello World"
+		, " [LoggerTest::stringMessages] INFO - c.b.a - Hello again"
+		, " [LoggerTest::stringMessages] INFO - c.b.m.d.f.z.b.abc - A big unconfigured namespace"
+		, " [LoggerTest::stringMessages] WARN - c.b.misc - This should be logged in a file."
+		, " [LoggerTest::stringMessages] ERROR - c.b.misc - This should be logged in a file."
+		, " [LoggerTest::stringMessages] INFO - c.b.misc - This should be logged in a file."
+		, " [LoggerTest::stringMessages] DEBUG - c.b.misc - This should be logged in a file."
+		, " [LoggerTest::stringMessages] TRACE - c.b.misc - This should be logged in a file."
 	};
 
-	assertContains(actual1, expectedContains1);
-	assertContains(actual2, expectedContains2);
+	assertLines(actual1, expectedContains1);
+	assertLines(actual2, expectedContains2);
 }
 
 void LoggerTest::parameterisedMessages() {
@@ -166,13 +171,13 @@ void LoggerTest::parameterisedMessages() {
 	const std::string actual = Files::readToString(logFile);
 
 	const std::vector<std::string> expectedContains = {
-		  ": - [TestMain] INFO - com.borasoftware - A single 1 parameter message"
-		, ": - [TestMain] INFO - com.borasoftware - A two 1 parameter 2 message"
-		, ": - [TestMain] INFO - com.borasoftware - A three 1 parameter 2 message 3"
-		, ": - [TestMain] INFO - com.borasoftware - 1, 2, 3, 4"
+		  ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A single 1 parameter message"
+		, ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A two 1 parameter 2 message"
+		, ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A three 1 parameter 2 message 3"
+		, ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - 1, 2, 3, 4"
 	};
 
-	assertContains(actual, expectedContains);
+	assertLines(actual, expectedContains);
 }
 
 void LoggerTest::loggerMacros() {
@@ -221,29 +226,28 @@ void LoggerTest::loggerMacros() {
 	const std::string actual = Files::readToString(logFile);
 
 	const std::vector<std::string> expectedContains = {
-		"LoggerTest.cpp:"
-		, " : - [TestMain] INFO - com.borasoftware - A single 1 parameter message"
-		, " : - [TestMain] INFO - com.borasoftware - A two 1 parameter 2 message"
-		, " : - [TestMain] INFO - com.borasoftware - A three 1 parameter 2 message 3"
-		, " : - [TestMain] INFO - com.borasoftware - 1, 2, 3, 4"
-		, " - [TestMain] TRACE - com.borasoftware - Test log trace macro"
-		, " - [TestMain] DEBUG - com.borasoftware - Test log debug macro"
-		, " - [TestMain] INFO - com.borasoftware - Test log info macro"
-		, " - [TestMain] WARN - com.borasoftware - Test log warn macro"
-		, " - [TestMain] ERROR - com.borasoftware - Test log error macro"
-		, " - [TestMain] TRACE - com.borasoftware - Test log trace macro with 1 parameter"
-		, " - [TestMain] DEBUG - com.borasoftware - Test log debug macro with 2 parameter"
-		, " - [TestMain] INFO - com.borasoftware - Test log info macro with 3 parameter"
-		, " - [TestMain] WARN - com.borasoftware - Test log warn macro with 4 parameter"
-		, " - [TestMain] ERROR - com.borasoftware - Test log error macro with 5 parameter"
-		, " - [TestMain] TRACE - com.borasoftware - Test log trace macro with 0, 5 parameters"
-		, " - [TestMain] DEBUG - com.borasoftware - Test log debug macro with 1, 6 parameters"
-		, " - [TestMain] INFO - com.borasoftware - Test log info macro with 2, 7 parameters"
-		, " - [TestMain] WARN - com.borasoftware - Test log warn macro with 3, 8 parameters"
-		, " - [TestMain] ERROR - com.borasoftware - Test log error macro with 4, 9 parameters"
+		  " - [LoggerTest::loggerMacros] INFO - com.borasoftware - A single 1 parameter message"
+		, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - A two 1 parameter 2 message"
+		, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - A three 1 parameter 2 message 3"
+		, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - 1, 2, 3, 4"
+		, " - [LoggerTest::loggerMacros] TRACE - com.borasoftware - Test log trace macro"
+		, " - [LoggerTest::loggerMacros] DEBUG - com.borasoftware - Test log debug macro"
+		, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log info macro"
+		, " - [LoggerTest::loggerMacros] WARN - com.borasoftware - Test log warn macro"
+		, " - [LoggerTest::loggerMacros] ERROR - com.borasoftware - Test log error macro"
+		, " - [LoggerTest::loggerMacros] TRACE - com.borasoftware - Test log trace macro with 1 parameter"
+		, " - [LoggerTest::loggerMacros] DEBUG - com.borasoftware - Test log debug macro with 2 parameter"
+		, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log info macro with 3 parameter"
+		, " - [LoggerTest::loggerMacros] WARN - com.borasoftware - Test log warn macro with 4 parameter"
+		, " - [LoggerTest::loggerMacros] ERROR - com.borasoftware - Test log error macro with 5 parameter"
+		, " - [LoggerTest::loggerMacros] TRACE - com.borasoftware - Test log trace macro with 0, 5 parameters"
+		, " - [LoggerTest::loggerMacros] DEBUG - com.borasoftware - Test log debug macro with 1, 6 parameters"
+		, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log info macro with 2, 7 parameters"
+		, " - [LoggerTest::loggerMacros] WARN - com.borasoftware - Test log warn macro with 3, 8 parameters"
+		, " - [LoggerTest::loggerMacros] ERROR - com.borasoftware - Test log error macro with 4, 9 parameters"
 	};
 
-	assertContains(actual, expectedContains);
+	assertLines(actual, expectedContains);
 }
 
 void LoggerTest::getConfigurationCall() {
@@ -287,7 +291,7 @@ void LoggerTest::globalNamespace() {
 
 	Logger::flushAll();
 	const std::string actual = Files::readToString(logFile);
-	const std::string expectedContains = " : - [TestMain] WARN -  - This is a test message with parameter 2";
+	const std::string expectedContains = " : - [LoggerTest::globalNamespace] WARN -  - This is a test message with parameter 2";
 
 	AssertThat(actual, contains(expectedContains));
 }
@@ -312,11 +316,11 @@ void LoggerTest::unconfiguredRootNamespace() {
 	const std::string actual = Files::readToString(logFile);
 
 	const std::vector<std::string> expectedContains =  {
-		  "[TestMain] WARN - qwerty - This is a message with parameter 2 on an unconfigured root namespace."
-		, "[TestMain] WARN - zxcv.asdf.wer - This is a message with parameter 2 on another deep hierarchy unconfigured root namespace."
+		  "[LoggerTest::unconfiguredRootNamespace] WARN - qwerty - This is a message with parameter 2 on an unconfigured root namespace."
+		, "[LoggerTest::unconfiguredRootNamespace] WARN - zxcv.asdf.wer - This is a message with parameter 2 on another deep hierarchy unconfigured root namespace."
 	};
 
-	assertContains(actual, expectedContains);
+	assertLines(actual, expectedContains);
 }
 
 void LoggerTest::configuredNamespaceWithoutFormat() {
@@ -339,7 +343,7 @@ abcd {
 
 	Logger::flushAll();
 	const std::string actual = Files::readToString(logFile);
-	const std::string expectedContains = " [TestMain] INFO - abcd - Hello newly configured namespace abcd";
+	const std::string expectedContains = " [LoggerTest::configuredNamespaceWithoutFormat] INFO - abcd - Hello newly configured namespace abcd";
 
 	AssertThat(actual, contains(expectedContains));
 }
@@ -368,14 +372,13 @@ void LoggerTest::loggingWithLineAndFileName() {
 	const std::string actual = Files::readToString(logFile);
 
 	const std::vector<std::string> expectedContains = {
-		  " LoggerTest.cpp:"
-		, " - [TestMain] INFO -  - hello mike"
-		, " : - [TestMain] INFO -  - hello 8 john"
-		, " - [TestMain] INFO -  - hello bob"
-		, " - [TestMain] INFO - com.borasoftware - hello C++"
+		  " - [LoggerTest::loggingWithLineAndFileName] INFO -  - hello mike"
+		, " - [LoggerTest::loggingWithLineAndFileName] INFO -  - hello 8 john"
+		, " - [LoggerTest::loggingWithLineAndFileName] INFO -  - hello bob"
+		, " - [LoggerTest::loggingWithLineAndFileName] INFO - com.borasoftware - hello C++"
 	};
 
-	assertContains(actual, expectedContains);
+	assertLines(actual, expectedContains);
 }
 
 void LoggerTest::functionBasedLogging() {
@@ -409,13 +412,13 @@ void LoggerTest::functionBasedLogging() {
 	const std::string actual = Files::readToString(logFile);
 
 	const std::vector<std::string> expectedContains = {
-		  " : - [TestMain] INFO -  - hello bob"
-		, " : - [TestMain] INFO -  - IN i + j = 6"
-		, " : - [TestMain] WARN -  - WA i + j = 6"
-		, " : - [TestMain] ERROR -  - ER i + j = 6"
+		  "[LoggerTest::functionBasedLogging] INFO -  - hello bob"
+		, "[LoggerTest::functionBasedLogging] INFO -  - IN i + j = 6"
+		, "[LoggerTest::functionBasedLogging] WARN -  - WA i + j = 6"
+		, "[LoggerTest::functionBasedLogging] ERROR -  - ER i + j = 6"
 	};
 
-	assertContains(actual, expectedContains);
+	assertLines(actual, expectedContains);
 }
 
 void LoggerTest::flushing() {
@@ -478,12 +481,11 @@ void LoggerTest::customLoggingStream() {
 
 	const auto actual = customLoggingStreamStream.str();
 	const std::vector<std::string> expectedContains = {
-		  " LoggerTest.cpp:"
-		, " - [TestMain] INFO -  - hello bob"
-		, " - [TestMain] INFO - com.borasoftware - hello C++"
+		  " - [LoggerTest::customLoggingStream] INFO -  - hello bob"
+		, " - [LoggerTest::customLoggingStream] INFO - com.borasoftware - hello C++"
 	};
 
-	assertContains(actual, expectedContains);
+	assertLines(actual, expectedContains);
 }
 
 void LoggerTest::resetLoggingSystem() {

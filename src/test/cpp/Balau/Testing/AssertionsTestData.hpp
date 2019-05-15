@@ -208,9 +208,7 @@ inline bool operator == (const D & lhs, const D & rhs) {
 	return lhs.value == rhs.value;
 }
 
-namespace Balau {
-
-namespace Testing {
+namespace Balau::Testing {
 
 inline bool contains(const C & lhs, const C & rhs) {
 	return Util::Strings::contains(lhs.value, rhs.value);
@@ -228,9 +226,7 @@ inline bool contains(const D & lhs, const D & rhs) {
 	return Util::Strings::contains(lhs.value, rhs.value);
 }
 
-} // namespace Testing
-
-} // namespace Balau
+} // namespace Balau::Testing
 
 inline void foo() {
 	ThrowBalauException(Balau::Exception::SizeException, "testing");

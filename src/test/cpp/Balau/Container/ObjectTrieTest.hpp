@@ -28,9 +28,7 @@ inline std::string toString(const ObjectTrieTestValue & value) {
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Container {
+namespace Balau::Container {
 
 struct ObjectTrieTest : public Testing::TestGroup<ObjectTrieTest> {
 	ObjectTrieTest() {
@@ -50,8 +48,6 @@ struct ObjectTrieTest : public Testing::TestGroup<ObjectTrieTest> {
 	void fluentBuild();
 };
 
-} // namespace Container
-
-} // namespace Balau
+} // namespace Balau::Container
 
 #endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__BALAU_TRIE_TEST

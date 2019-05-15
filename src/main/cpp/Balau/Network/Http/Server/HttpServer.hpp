@@ -106,17 +106,8 @@ class HttpServer {
 	/// @param registerSignalHandler (default = true) set to false in order to prevent signal handler installation
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
-	                   std::shared_ptr<EnvironmentProperties> configuration,
-	                   bool registerSignalHandler = true)
-		: state(createState(clock, configuration))
-		, threadNamePrefix(configuration->getValue<std::string>("thread.name.prefix", ""))
-		, workerCount((size_t) configuration->getValue<int>("worker.count", 1))
-		, ioContext(configuration->getValue<int>("worker.count", 1))
-		, signalSet(ioContext) {
-		if (registerSignalHandler) {
-			doRegisterSignalHandler();
-		}
-	}
+	                   const std::shared_ptr<EnvironmentProperties>& configuration,
+	                   bool registerSignalHandler = true);
 
 	///
 	/// Create an HTTP server with HTTP and optional WebSocket handlers.
@@ -194,7 +185,7 @@ class HttpServer {
 	///
 	/// @throw NetworkException if there was an issue initialising the listener
 	///
-	public: void start();
+	public: void startAsync();
 
 	///
 	/// Start the HTTP server and block until the server is stopped.
@@ -204,7 +195,7 @@ class HttpServer {
 	///
 	/// @throw NetworkException if there was an issue initialising the listener
 	///
-	public: void run();
+	public: void startSync();
 
 	///
 	/// Returns true if the server is running.
@@ -238,31 +229,43 @@ class HttpServer {
 
 	////////////////////////// Private implementation /////////////////////////
 
+	// Used for injection for compilers without guaranteed copy elision.
+	private: HttpServer(HttpServer && rhs) noexcept
+		: state(std::move(rhs.state))
+		, threadNamePrefix(rhs.threadNamePrefix)
+		, workerCount(rhs.workerCount)
+		, workers(std::move(rhs.workers))
+		, launched(std::move(rhs.launched))
+		, listener(std::move(rhs.listener))
+		, ioContext(std::move(rhs.ioContext))
+		, mutex(std::move(rhs.mutex))
+		, signalSet(std::move(rhs.signalSet)) {}
+
 	//
 	// Create the HTTP server configuration object.
 	//
 	private: static std::shared_ptr<HttpServerConfiguration> createState(std::shared_ptr<System::Clock> clock,
-	                                                                     std::shared_ptr<EnvironmentProperties> configuration);
+	                                                                     const std::shared_ptr<EnvironmentProperties> & configuration);
 
 	//
 	// Create a mime type map from the environment configuration if one is
 	// supplied, otherwise use the default mime type map that is hard coded.
 	//
-	private: static std::shared_ptr<MimeTypes> createMimeTypes(std::shared_ptr<EnvironmentProperties> configuration,
+	private: static std::shared_ptr<MimeTypes> createMimeTypes(const std::shared_ptr<EnvironmentProperties> & configuration,
 	                                                           BalauLogger & logger);
 
 	//
 	// Create the HTTP handler, consisting of a HTTP routing handle at the base
 	// and other HTTP handlers at the leaves.
 	//
-	private: static std::shared_ptr<HttpWebApp> createHttpHandler(std::shared_ptr<EnvironmentProperties> configuration,
+	private: static std::shared_ptr<HttpWebApp> createHttpHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
 	                                                              BalauLogger & logger);
 
 	//
 	// Create the WebSocket handler, consisting of a WebSocket routing handle at the base
 	// and other WebSocket handlers at the leaves.
 	//
-	private: static std::shared_ptr<WsWebApp> createWsHandler(std::shared_ptr<EnvironmentProperties> configuration,
+	private: static std::shared_ptr<WsWebApp> createWsHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
 	                                                          BalauLogger & logger);
 
 	//
@@ -284,12 +287,12 @@ class HttpServer {
 	private: std::shared_ptr<HttpServerConfiguration> state;
 	private: const std::string threadNamePrefix;
 	private: size_t workerCount;
-	private: boost::asio::io_context ioContext;
-	private: std::shared_ptr<Impl::Listener> listener;
 	private: std::vector<std::thread> workers;
-	private: std::atomic_uint runningWorkerCount;
-	private: std::mutex mutex;
-	private: boost::asio::signal_set signalSet;
+	private: std::unique_ptr<std::atomic_uint> launched;
+	private: std::shared_ptr<Impl::Listener> listener;
+	private: std::unique_ptr<boost::asio::io_context> ioContext;
+	private: std::unique_ptr<std::mutex> mutex;
+	private: std::unique_ptr<boost::asio::signal_set> signalSet;
 };
 
 } // namespace Network::Http

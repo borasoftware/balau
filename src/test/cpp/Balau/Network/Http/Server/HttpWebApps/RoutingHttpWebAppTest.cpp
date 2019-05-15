@@ -25,11 +25,7 @@ namespace Balau {
 using Testing::is;
 using Testing::isGreaterThan;
 
-namespace Network {
-
-namespace Http {
-
-namespace HttpWebApps {
+namespace Network::Http::HttpWebApps {
 
 void assertResponse(const CharVectorResponse & response, const Resource::File & filePath) {
 	const auto & header = response.base();
@@ -87,7 +83,7 @@ void RoutingHttpWebAppTest::test() {
 				new HttpServer(clock, "BalauTest", endpoint, "RoutingHandler", 4, handler)
 			);
 
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -109,10 +105,6 @@ void RoutingHttpWebAppTest::test() {
 	logger.info("Received css page: {}", bdmlPath);
 }
 
-} // namespace HttpWebApps
-
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http::HttpWebApps
 
 } // namespace Balau

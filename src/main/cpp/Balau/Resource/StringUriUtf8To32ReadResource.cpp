@@ -17,9 +17,9 @@ namespace Balau::Resource {
 
 StringUriUtf8To32ReadResource::StringUriUtf8To32ReadResource(const StringUri & stringUri_)
 	: stringUri(std::make_unique<StringUri>(stringUri_))
-	, utf8Stream(stringUri->getString())
-	, ref(utf8Stream)
-	, utf32Stream(ref) {}
+	, utf8Stream(new std::istringstream(stringUri->getString()))
+	, ref(*utf8Stream)
+	, utf32Stream(new istream_utf8_utf32(ref)) {}
 
 const Uri & StringUriUtf8To32ReadResource::uri() const {
 	return *stringUri;

@@ -16,9 +16,9 @@ namespace Balau::Resource {
 
 FileByteReadResource::FileByteReadResource(const File & file_)
 	: file(std::make_unique<File>(file_))
-	, stream(file_.getEntry()) {
+	, stream(new boost::filesystem::ifstream(file_.getEntry())) {
 
-	if (!stream.is_open()) {
+	if (!stream->is_open()) {
 		ThrowBalauException(Exception::NotFoundException, toString(file_));
 	}
 }

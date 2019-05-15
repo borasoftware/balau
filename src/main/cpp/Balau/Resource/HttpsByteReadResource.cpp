@@ -14,7 +14,7 @@ namespace Balau::Resource {
 
 HttpsByteReadResource::HttpsByteReadResource(const Https & url_)
 	: url(new Https(url_))
-	, stream(Impl::HttpsSource(url_)) {}
+	, stream(new boost::iostreams::stream<Impl::HttpsSource>(Impl::HttpsSource(url_))) {}
 
 const Uri & HttpsByteReadResource::uri() const {
 	return *url;

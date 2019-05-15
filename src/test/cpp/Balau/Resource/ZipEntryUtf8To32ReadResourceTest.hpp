@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct ZipEntryUtf8To32ReadResourceTest : public Testing::TestGroup<ZipEntryUtf8To32ReadResourceTest> {
 	explicit ZipEntryUtf8To32ReadResourceTest() {
@@ -25,8 +23,6 @@ struct ZipEntryUtf8To32ReadResourceTest : public Testing::TestGroup<ZipEntryUtf8
 	void test();
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_UTF8_TO_32_READ_RESOURCE_TEST

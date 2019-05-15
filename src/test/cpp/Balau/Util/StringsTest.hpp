@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Util {
+namespace Balau::Util {
 
 struct StringsTest : public Testing::TestGroup<StringsTest> {
 	StringsTest() {
@@ -125,8 +123,6 @@ struct StringsTest : public Testing::TestGroup<StringsTest> {
 	void replaceAll_string_regex();
 };
 
-} // namespace Util
-
-} // namespace Balau
+} // namespace Balau::Util
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__STRINGS_TEST

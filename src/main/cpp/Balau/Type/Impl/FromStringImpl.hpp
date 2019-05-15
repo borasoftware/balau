@@ -16,9 +16,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/locale.hpp>
 
-namespace Balau {
-
-namespace Impl {
+namespace Balau::Impl {
 
 // Checks that the string is not empty and throws a conversion exception if it is.
 inline void validateFromStringValue(std::string_view value) {
@@ -212,8 +210,6 @@ inline long double stringToLongDouble(std::string_view value) {
 	return n;
 }
 
-} // namespace Impl
-
-} // namespace Balau
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__FROM_STRING_IMPL

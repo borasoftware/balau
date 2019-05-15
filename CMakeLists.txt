@@ -18,10 +18,11 @@ cmake_minimum_required(VERSION 3.10.2)
 # When updating the version, also update:
 #  - BalauConfig.cmake
 #  - BalauConfigVersion.cmake
-#  - Doxyfile
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.3.1)
+project(Balau VERSION 2019.5.2)
+
+configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
 ############################# CMAKE CONFIGURATION #############################
 
@@ -151,12 +152,14 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-function")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-parameter") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-ignored-qualifiers") # Required for Boost Beast headers.
+	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# using Clang
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-lambda-capture") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-private-field")
+	set(BALAU_CXX_FLAGS_DEBUG "${BALAU_CXX_FLAGS_DEBUG} -fstandalone-debug")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# using GCC
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-but-set-parameter")
@@ -172,8 +175,17 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0 -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0 -g3")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+
+#
+# Turn on trace logging if BALAU_TRACE is defined.
+#
+if (BALAU_TRACE)
+	message(STATUS "BALAU_TRACE: trace logging turned on.")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBOOST_ASIO_ENABLE_HANDLER_TRACKING")
+endif ()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -270,6 +282,19 @@ message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
 
 set(ALL_LIBS ${ALL_LIBS} rt zip curl)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
+
+################################## BACKPORTS ##################################
+
+include(CheckIncludeFileCXX)
+
+check_include_file_cxx(string_view STRING_VIEW_AVAILABLE)
+
+if (STRING_VIEW_AVAILABLE)
+	message(STATUS "std::string_view is available. Setting -DBALAU_STD_STRING_VIEW_AVAILABLE")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_STD_STRING_VIEW_AVAILABLE")
+else ()
+	message(STATUS "std::string_view is not available. Using boost::string_view")
+endif ()
 
 ############################### STATUS PRINTOUT ###############################
 
@@ -591,7 +616,7 @@ add_library(Balau STATIC ${THIRD_PARTY_SOURCE_FILES} ${BALAU_SOURCE_FILES})
 add_custom_target(
 	BalauApiDoc
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMAND doxygen ${CMAKE_SOURCE_DIR}/src/doc/api/Doxyfile
+	COMMAND doxygen ${CMAKE_BINARY_DIR}/Doxyfile
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/doc/bdml ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/resources

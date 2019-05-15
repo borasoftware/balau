@@ -23,11 +23,7 @@ using Testing::is;
 using Testing::isGreaterThan;
 using Testing::isLessThan;
 
-namespace Network {
-
-namespace Http {
-
-namespace HttpWebApps {
+namespace Network::Http::HttpWebApps {
 
 static void assertResponse(const CharVectorResponse & response, Status expectedStatus, const std::string & redirectionPath) {
 	const auto & header = response.base();
@@ -102,7 +98,7 @@ void RedirectingHttpWebAppTest::injectedInstantiation() {
 			auto injector = Injector::create(Wiring(), EnvConfig(env));
 
 			server = injector->getShared<HttpServer>();
-			server->start();
+			server->startAsync();
 			return server->getPort();
 		}
 	);
@@ -126,10 +122,6 @@ void RedirectingHttpWebAppTest::injectedInstantiation() {
 	assertResponse(client.get("/redirect/more/file.html"), Status::moved_permanently, "/test/more/file.html");
 }
 
-} // namespace HttpWebApps
-
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http::HttpWebApps
 
 } // namespace Balau

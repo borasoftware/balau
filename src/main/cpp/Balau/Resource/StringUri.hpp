@@ -77,7 +77,7 @@ class StringUri : public Uri {
 	/// @return the current object, allowing chaining calls to be made
 	///
 	public: StringUri & append(std::string_view text) {
-		data += text;
+		data.append(text.data(), text.length());
 		return *this;
 	}
 

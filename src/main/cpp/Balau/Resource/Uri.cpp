@@ -29,13 +29,14 @@ void fromString(std::unique_ptr<Uri> & uri, std::string_view value) {
 		uri.reset(new Https(value));
 		return;
 	} else if (scheme == "file") {
-		path = value.substr(value.find(':') + 1);
+		auto s = value.substr(value.find(':') + 1);
+		path = std::string(s.data(), s.length());
 	} else { // Implicit file schema or zip archive.
-		path = value;
+		path = std::string(value);
 	}
 
 	if (Util::Strings::endsWith(path, ".zip")) {
-			uri.reset(new ZipFile(File(path)));
+		uri.reset(new ZipFile(File(path)));
 	} else {
 		uri.reset(new File(path));
 	}

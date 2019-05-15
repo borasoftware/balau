@@ -37,12 +37,16 @@ class FileUtf32To8WriteResource : public Utf32To8WriteResource {
 	///
 	public: explicit FileUtf32To8WriteResource(const File & file_);
 
-	public: ~FileUtf32To8WriteResource() {
+	public: FileUtf32To8WriteResource(FileUtf32To8WriteResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileUtf32To8WriteResource() override {
 		close();
 	}
 
 	public: std::u32ostream & writeStream() override {
-		return stream;
+		return *stream;
 	}
 
 	public: const Uri & uri() const override;
@@ -55,13 +59,13 @@ class FileUtf32To8WriteResource : public Utf32To8WriteResource {
 	public: const File & getFile() const;
 
 	public: void close() override {
-		stream.close();
+		stream->close();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<File> file;
-	private: std::u32ofstream stream;
+	private: std::unique_ptr<std::u32ofstream> stream;
 };
 
 } // namespace Balau::Resource

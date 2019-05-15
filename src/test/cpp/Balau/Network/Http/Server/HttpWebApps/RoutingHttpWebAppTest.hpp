@@ -14,13 +14,7 @@
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Network {
-
-namespace Http {
-
-namespace HttpWebApps {
+namespace Balau::Network::Http::HttpWebApps {
 
 struct RoutingHttpWebAppTest : public Testing::TestGroup<RoutingHttpWebAppTest> {
 	RoutingHttpWebAppTest() {
@@ -30,12 +24,6 @@ struct RoutingHttpWebAppTest : public Testing::TestGroup<RoutingHttpWebAppTest> 
 	void test();
 };
 
-} // namespace HttpWebApps
-
-} // namespace Http
-
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network::Http::HttpWebApps
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__ROUTING_HTTP_WEB_APP_TEST

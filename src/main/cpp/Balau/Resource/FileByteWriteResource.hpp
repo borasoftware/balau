@@ -35,12 +35,16 @@ class FileByteWriteResource : public ByteWriteResource {
 	///
 	public: explicit FileByteWriteResource(const File & file_);
 
-	public: ~FileByteWriteResource() {
+	public: FileByteWriteResource(FileByteWriteResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileByteWriteResource() override {
 		close();
 	}
 
 	public: std::ostream & writeStream() override {
-		return stream;
+		return *stream;
 	}
 
 	public: const Uri & uri() const override;
@@ -53,13 +57,13 @@ class FileByteWriteResource : public ByteWriteResource {
 	public: const File & getFile() const;
 
 	public: void close() override {
-		stream.close();
+		stream->close();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<File> file;
-	private: boost::filesystem::ofstream stream;
+	private: std::unique_ptr<boost::filesystem::ofstream> stream;
 };
 
 } // namespace Balau::Resource

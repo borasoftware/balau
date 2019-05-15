@@ -37,12 +37,16 @@ class FileByteReadResource : public ByteReadResource {
 	///
 	public: explicit FileByteReadResource(const File & file_);
 
-	public: ~FileByteReadResource() {
+	public: FileByteReadResource(FileByteReadResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileByteReadResource() override {
 		close();
 	}
 
 	public: std::istream & readStream() override {
-		return stream;
+		return *stream;
 	}
 
 	public: const Uri & uri() const override;
@@ -55,13 +59,13 @@ class FileByteReadResource : public ByteReadResource {
 	public: const File & getFile() const;
 
 	public: void close() override {
-		stream.close();
+		stream->close();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::unique_ptr<File> file;
-	private: boost::filesystem::ifstream stream;
+	private: std::unique_ptr<boost::filesystem::ifstream> stream;
 };
 
 } // namespace Balau::Resource

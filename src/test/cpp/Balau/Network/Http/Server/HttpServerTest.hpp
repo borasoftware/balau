@@ -14,11 +14,7 @@
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Network {
-
-namespace Http {
+namespace Balau::Network::Http {
 
 struct HttpServerTest : public Testing::TestGroup<HttpServerTest> {
 	HttpServerTest() {
@@ -28,10 +24,6 @@ struct HttpServerTest : public Testing::TestGroup<HttpServerTest> {
 	void injectedInstantiation();
 };
 
-} // namespace Http
-
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network::Http
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SERVER_TEST

@@ -93,7 +93,7 @@
 
 			using namespace Balau::Testing;
 
-			int main() {
+			int main(int argc, char * argv[]) {
 				// Run the tests with the worker processes execution model.
 				return TestRunner::run(WorkerProcesses, argc, argv);
 			}
@@ -108,13 +108,13 @@
 
 			using namespace Balau::Testing;
 
-			int main() {
+			int main(int argc, char * argv[]) {
 				// Run the tests with the execution model specified as the first element of argv.
 				return TestRunner::run(argc, argv);
 			}
 		</code>
 
-		<para>The test runner will interpret the first element of <emph>argv</emph> as the execution model (case insensitive) and the remainder of the command line arguments as a space/comma delimited list of globbed test names to run.</para>
+		<para>The test runner will interpret the first element of <emph>argv</emph> as the execution model (case insensitive) if it is a valid execution model, and the remainder of the command line arguments as a space/comma delimited list of globbed test names to run. If the first element of <emph>argv</emph> is not a valid execution model, it will form the head of the globbed test name list and the <emph>SingleThreaded</emph> execution model will be used by default.</para>
 
 		<para>In both cases, the zeroth element of <emph>argv</emph> is assumed to be the test application path and is ignored. If this is not the case, then the starting element can be specified as an optional argument of the <emph>run</emph> call.</para>
 
@@ -138,11 +138,11 @@
 		<code lang="C++">
 			# Run the Balau test application with the worker processes execution model
 			# and specifying a subset of tests via a comma delimited list of patterns.
-			BalauTests WorkerProcesses Injector*,Environment*
+			BalauTests WorkerProcesses Injector::*,Environment::*
 
 			# Run the Balau test application with the worker processes execution model
 			# and specifying a subset of tests via a space delimited list of patterns.
-			BalauTests WorkerProcesses Injector* Environment*
+			BalauTests WorkerProcesses Injector::* Environment::*
 		</code>
 
 		<h3>Execution models</h3>
@@ -422,7 +422,7 @@
 		<para>In order to register test writers, they are specified as arguments to the test runner's <emph>run</emph> method:</para>
 
 		<code lang="C++">
-			int main() {
+			int main(int argc, char * argv[]) {
 				// Run the test runner with two writers.
 				TestRunner::run(
 					  argc, argv, 1, false, false
@@ -501,7 +501,7 @@
 						clock, "BalauTest", endpoint, "FileHandler", 4, documentRoot
 					);
 
-					server->start();
+					server->startAsync();
 					return server->getPort();
 				}
 			);
@@ -522,7 +522,7 @@
 
 			using namespace Balau::Testing;
 
-			int main() {
+			int main(int argc, char * argv[]) {
 				// Run the tests with the execution model specified as the first element of argv.
 				return TestRunner::run(argc, argv);
 			}
@@ -564,7 +564,7 @@
 
 			using namespace Balau::Testing;
 
-			int main() {
+			int main(int argc, char * argv[]) {
 				// Run the tests with the worker processes execution model.
 				return TestRunner::run(WorkerProcesses, argc, argv);
 			}

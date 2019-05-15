@@ -37,6 +37,12 @@ class TestGroupBase {
 
 	protected: TestGroupBase();
 
+	public: bool currentIsIgnored();
+
+	public: void resetIgnoreCurrent();
+
+	protected: void ignoreCurrent();
+
 	public: virtual ~TestGroupBase() = default;
 
 	private: virtual void setup() = 0;
@@ -54,6 +60,7 @@ class TestGroupBase {
 
 	private: virtual unsigned int getExecutionModels() const = 0;
 
+	private: bool currentIgnored = false;
 	private: const unsigned int groupIndex;
 };
 

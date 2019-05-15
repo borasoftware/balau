@@ -31,7 +31,7 @@ const std::vector<UInt> offsets        = {          0,          5,           6, 
 const std::vector<CodeSpan> codeSpans  = { C(1,1,1,6), C(1,6,1,7), C(1,7,1,13), C(1,13,2,1), C(2,1,2,6), C(2,6,2,7), C(2,7,2,13), C(2,13,2,14), C(2,14,2,19), C(2,19,3,1), C(3,1,3,1) };
 
 void ScannedTokensTest::randomAccessBuilding() {
-	RandomAccessScannedTokens sc(
+	RandomAccessScannedTokens<Token> sc(
 		Lang::ScannedTokens<Token>(
 			nullptr, std::string(text), std::vector<Token>(tokens), std::vector<UInt>(offsets)
 		)
@@ -43,7 +43,7 @@ void ScannedTokensTest::randomAccessBuilding() {
 }
 
 void ScannedTokensTest::scannerApiConsumeAndPutBack() {
-	ScannerApiScannedTokens sc(
+	ScannerApiScannedTokens<Token> sc(
 		Lang::ScannedTokens<Token>(
 			nullptr, std::string(text), std::vector<Token>(tokens), std::vector<UInt>(offsets)
 		)

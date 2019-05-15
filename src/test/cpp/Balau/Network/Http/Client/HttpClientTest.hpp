@@ -14,11 +14,7 @@
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Network {
-
-namespace Http {
+namespace Balau::Network::Http {
 
 struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	HttpClientTest() {
@@ -33,16 +29,10 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	void postRequest();
 	void newClient();
 
-	static void assertResponse(Response<CharVectorBody> & response,
-	                           const char * bodyStart,
-	                           const char * reasonStr,
-	                           Status status);
+	static void assertResponse(Response<CharVectorBody> & response, const char * bodyStart, const char * reasonStr, Status status);
+	static void assertResponse(EmptyResponse & response, const char * reasonStr, Status status);
 };
 
-} // namespace Http
-
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network::Http
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP__HTTP_CLIENT_TEST

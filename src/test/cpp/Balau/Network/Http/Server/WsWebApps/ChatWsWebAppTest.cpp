@@ -22,11 +22,7 @@ using Testing::is;
 using Testing::isGreaterThan;
 using Testing::isLessThan;
 
-namespace Network {
-
-namespace Http {
-
-namespace WsWebApps {
+namespace Network::Http::WsWebApps {
 
 void ChatWsWebAppTest::test() {
 	// Work in progress.
@@ -50,16 +46,12 @@ void ChatWsWebAppTest::test() {
 //				new HttpServer(clock, "BalauTest", endpoint, "WsTestHandler", 4, httpHandler, wsHandler)
 //			);
 //
-//			server->start();
+//			server->startAsync();
 //			return server->getPort();
 //		}
 //	);
 }
 
-} // namespace WsWebApps
-
-} // namespace Http
-
-} // namespace Network
+} // namespace Network::Http::WsWebApps
 
 } // namespace Balau

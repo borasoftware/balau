@@ -36,7 +36,7 @@ int main() {
 	auto clock = std::shared_ptr<System::Clock>(new System::SystemClock());
 
 	server = std::make_unique<HttpServer>(clock, "Test server", endpoint, "Server", workerCount, root);
-	server->run();
+	server->startSync();
 
 	return 0;
 }

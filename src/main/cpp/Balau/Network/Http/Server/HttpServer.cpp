@@ -40,9 +40,24 @@ struct HttpServerRegisterBuiltInWeApps {
 	}
 };
 
-HttpServerRegisterBuiltInWeApps httpServerRegisterBuiltInWeApps;
+HttpServerRegisterBuiltInWeApps httpServerRegisterBuiltInWeApps; // NOLINT
 
 //////////////////// Constructors with injector parameter /////////////////////
+
+HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
+                       const std::shared_ptr<EnvironmentProperties>& configuration,
+                       bool registerSignalHandler)
+	: state(createState(std::move(clock), configuration))
+	, threadNamePrefix(configuration->getValue<std::string>("thread.name.prefix", ""))
+	, workerCount((size_t) configuration->getValue<int>("worker.count", 1))
+	, launched(new std::atomic_uint { 0U })
+	, ioContext(new boost::asio::io_context(configuration->getValue<int>("worker.count", 1)))
+	, mutex(new std::mutex)
+	, signalSet(new boost::asio::signal_set(*ioContext)) {
+	if (registerSignalHandler) {
+		doRegisterSignalHandler();
+	}
+}
 
 HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
                        const std::string & serverId,
@@ -69,8 +84,10 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	)
 	, threadNamePrefix(std::move(threadNamePrefix_))
 	, workerCount(workerCount_)
-	, ioContext((int) workerCount)
-	, signalSet(ioContext) {
+	, launched(new std::atomic_uint { 0U })
+	, ioContext(new boost::asio::io_context((int) workerCount))
+	, mutex(new std::mutex)
+	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
 		doRegisterSignalHandler();
 	}
@@ -107,13 +124,14 @@ HttpServer::~HttpServer() {
 
 ///////////////////////////////// Public API //////////////////////////////////
 
-void HttpServer::start() {
-	std::unique_lock<std::mutex> lock(mutex);
+void HttpServer::startAsync() {
+	std::unique_lock<std::mutex> lock(*mutex);
 
 	if (!workers.empty()) {
 		BalauBalauLogInfo(
 			state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
 		);
+
 		return;
 	}
 
@@ -126,18 +144,19 @@ void HttpServer::start() {
 		, "HTTP server {}:{} started with {} workers"
 		, state->endpoint.address()
 		, state->endpoint.port()
-		, runningWorkerCount
+		, workerCount
 	);
 }
 
-void HttpServer::run() {
+void HttpServer::startSync() {
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		std::unique_lock<std::mutex> lock(*mutex);
 
 		if (!workers.empty()) {
 			BalauBalauLogWarn(
 				state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
 			);
+
 			return;
 		}
 
@@ -161,12 +180,12 @@ void HttpServer::run() {
 }
 
 bool HttpServer::isRunning() {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock(*mutex);
 	return !workers.empty();
 }
 
 void HttpServer::stop(bool warn) {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock(*mutex);
 
 	if (workers.empty()) {
 		if (warn) {
@@ -180,9 +199,10 @@ void HttpServer::stop(bool warn) {
 
 	BalauBalauLogInfo(state->logger, "Stopping HTTP server {}:{}", state->endpoint.address(), state->endpoint.port());
 
-	ioContext.stop();
+	listener->close();
+	ioContext->stop();
 
-	while (!ioContext.stopped()) {
+	while (!ioContext->stopped()) {
 		System::Sleep::milliSleep(10);
 	}
 
@@ -196,7 +216,7 @@ void HttpServer::stop(bool warn) {
 }
 
 std::shared_ptr<HttpServerConfiguration> HttpServer::createState(std::shared_ptr<System::Clock> clock,
-                                                                 std::shared_ptr<EnvironmentProperties> configuration) {
+                                                                 const std::shared_ptr<EnvironmentProperties> & configuration) {
 	// Root logging configuration
 	auto loggingNamespace = configuration->getValue<std::string>("logging.namespace", "http.server");
 	auto accessLog = configuration->getValue<std::string>("access.log", "stream: stdout");
@@ -217,7 +237,7 @@ std::shared_ptr<HttpServerConfiguration> HttpServer::createState(std::shared_ptr
 	);
 }
 
-std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(std::shared_ptr<EnvironmentProperties> configuration, BalauLogger & logger) {
+std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(const std::shared_ptr<EnvironmentProperties> & configuration, BalauLogger & logger) {
 	auto mimeTypesProperties = configuration->getCompositeOrNull("mime.types");
 
 	if (!mimeTypesProperties) {
@@ -249,7 +269,7 @@ std::shared_ptr<MimeTypes> HttpServer::createMimeTypes(std::shared_ptr<Environme
 	return std::make_shared<MimeTypes>(std::move(data));
 }
 
-std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(std::shared_ptr<EnvironmentProperties> configuration,
+std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
                                                           BalauLogger & logger) {
 	auto webAppConfigurations = configuration->hasComposite("http")
 		? configuration->getComposite("http")
@@ -286,7 +306,7 @@ std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(std::shared_ptr<Enviro
 	return std::shared_ptr<HttpWebApp>(new HttpWebApps::RoutingHttpWebApp(std::move(routing)));
 }
 
-std::shared_ptr<WsWebApp> HttpServer::createWsHandler(std::shared_ptr<EnvironmentProperties> configuration,
+std::shared_ptr<WsWebApp> HttpServer::createWsHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
                                                       BalauLogger & logger) {
 	auto webAppConfigurations = configuration->hasComposite("ws")
 		? configuration->getComposite("ws")
@@ -368,7 +388,9 @@ void HttpServer::addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & 
 }
 
 void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
-	listener = std::make_unique<Impl::Listener>(state, ioContext);
+	ioContext->restart();
+
+	listener = std::make_unique<Impl::Listener>(state, *ioContext);
 
 	if (!listener->isOpen()) {
 		ThrowBalauException(
@@ -380,15 +402,14 @@ void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
 
 	listener->doAccept();
 
-	runningWorkerCount = 0;
 	workers.reserve(thisWorkerCount);
+	launched->store(0U);
 
 	for (size_t workerIndex = 0; workerIndex < thisWorkerCount; workerIndex++) {
 		workers.emplace_back([workerIndex, this] { workerThreadFunction(workerIndex, false); });
 	}
 
-	// TODO add thread creation timeout failure handling
-	while (runningWorkerCount != thisWorkerCount) {
+	while (launched->load() != thisWorkerCount) {
 		System::Sleep::milliSleep(10);
 	}
 }
@@ -406,8 +427,6 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 		, workerIndex
 	);
 
-	++runningWorkerCount;
-
 	// Log started message if this is the main thread blocking.
 	if (blocking) {
 		BalauBalauLogInfo(
@@ -415,13 +434,15 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 			, "HTTP server {}:{} started with {} workers"
 			, state->endpoint.address()
 			, state->endpoint.port()
-			, runningWorkerCount
+			, workerCount
 		);
 	}
 
+	++(*launched);
+
 	while (true) {
 		try {
-			ioContext.run();
+			ioContext->run();
 			break;
 		} catch (const std::exception & e) {
 			BalauBalauLogError(
@@ -432,8 +453,6 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 				, workerIndex
 				, e.what()
 			);
-
-			ioContext.restart();
 		} catch (...) {
 			BalauBalauLogError(
 				  state->logger
@@ -442,12 +461,8 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 				, state->endpoint.port()
 				, workerIndex
 			);
-
-			ioContext.restart();
 		}
 	}
-
-	--runningWorkerCount;
 
 	BalauBalauLogInfo(
 		  state->logger
@@ -459,14 +474,14 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 }
 
 void HttpServer::doRegisterSignalHandler() {
-	signalSet.add(SIGINT);
-	signalSet.add(SIGTERM);
+	signalSet->add(SIGINT);
+	signalSet->add(SIGTERM);
 
 	#if defined(SIGQUIT)
-		signalSet.add(SIGQUIT);
+		signalSet->add(SIGQUIT);
 	#endif
 
-	signalSet.async_wait(boost::bind(&HttpServer::handleSignal, this, _1, _2));
+	signalSet->async_wait(boost::bind(&HttpServer::handleSignal, this, _1, _2));
 }
 
 void HttpServer::handleSignal(const boost::system::error_code & error, int sig) {

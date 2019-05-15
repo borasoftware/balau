@@ -13,9 +13,7 @@
 
 #include <Balau/Type/ToString.hpp>
 
-namespace Balau {
-
-namespace Container {
+namespace Balau::Container {
 
 struct Dep {
 	std::string_view name;
@@ -29,9 +27,7 @@ inline std::string toString(const Dep & obj) {
 	return std::string(obj.name);
 }
 
-} // namespace Container
-
-} // namespace Balau
+} // namespace Balau::Container
 
 namespace std {
 
@@ -45,9 +41,7 @@ template <> struct hash<Balau::Container::Dep> {
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Container {
+namespace Balau::Container {
 
 struct DependencyGraphTest : public Testing::TestGroup<DependencyGraphTest> {
 	DependencyGraphTest() {
@@ -59,8 +53,6 @@ struct DependencyGraphTest : public Testing::TestGroup<DependencyGraphTest> {
 	void test();
 };
 
-} // namespace Container
-
-} // namespace Balau
+} // namespace Balau::Container
 
 #endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH_TEST

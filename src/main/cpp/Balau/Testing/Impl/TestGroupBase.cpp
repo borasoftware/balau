@@ -15,4 +15,16 @@ namespace Balau::Testing::Impl {
 
 TestGroupBase::TestGroupBase() : groupIndex(Testing::TestRunner::getGroupIndex()) {}
 
+bool TestGroupBase::currentIsIgnored() {
+	return currentIgnored;
+}
+
+void TestGroupBase::resetIgnoreCurrent() {
+	currentIgnored = false;
+}
+
+void TestGroupBase::ignoreCurrent() {
+	currentIgnored = true;
+}
+
 } // namespace Balau::Testing::Impl

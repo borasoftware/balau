@@ -109,8 +109,8 @@ class LoggingState final {
 	                                          const std::map<std::string, std::string> & encasedPlaceholders);
 
 	// Expands the ${user.home} and ${executable} placeholders.
-	EnvironmentProperties expandConfigurationTextMacros(const EnvironmentProperties & configuration,
-	                                                    const std::map<std::string, std::string> & encasedPlaceholders);
+	std::unique_ptr<EnvironmentProperties> expandConfigurationTextMacros(const EnvironmentProperties & configuration,
+	                                                                     const std::map<std::string, std::string> & encasedPlaceholders);
 
 	// Expands the ${user.home} and ${executable} placeholders.
 	std::unique_ptr<Impl::AbstractBinding> expandConfigurationValueTextMacros(Impl::BindingKey key,
@@ -167,7 +167,7 @@ class LoggingState final {
 	LoggerTree parseConfiguration(const std::string & configurationText);
 
 	// Visit the supplied configuration and create a configured logger tree.
-	LoggerTree parseConfiguration(const EnvironmentProperties & configuration);
+	LoggerTree parseConfiguration(const std::unique_ptr<EnvironmentProperties> & configuration);
 
 	// Sets the level variables in the loggers.
 	void setLevels(LoggerTree & theLoggers);

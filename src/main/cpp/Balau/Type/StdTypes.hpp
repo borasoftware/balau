@@ -152,6 +152,14 @@ static_assert(sizeof(uint64_t)           == 8, "uint64_t is not 64 bits");
 ///
 #define BalauPointerSize BalauPointerSize_
 
+////////////////////////////////// Backports //////////////////////////////////
+
+#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+	#include <string_view>
+#else
+	#include <Balau/Type/Impl/StringView.hpp>
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ///

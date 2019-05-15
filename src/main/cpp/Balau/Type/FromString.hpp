@@ -28,7 +28,7 @@
 /// @param value the string view input
 ///
 inline void fromString(std::string & destination, std::string_view value) {
-	destination = value;
+	destination = std::string(value.data(), value.length());
 }
 
 ///
@@ -531,7 +531,7 @@ inline void fromString16(std::string & destination, std::u16string_view value) {
 /// @param value the string view input
 ///
 inline void fromString16(std::u16string & destination, std::u16string_view value) {
-	destination = value;
+	destination = std::u16string(value.data(), value.length());
 }
 
 ///
@@ -841,7 +841,7 @@ inline void fromString32(std::u16string & destination, std::u32string_view value
 /// @param value the string view input
 ///
 inline void fromString32(std::u32string & destination, std::u32string_view value) {
-	destination = value;
+	destination = std::u32string(value.data(), value.length());
 }
 
 ///

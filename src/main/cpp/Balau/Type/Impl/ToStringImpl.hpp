@@ -13,9 +13,7 @@
 #include <string>
 #include <limits>
 
-namespace Balau {
-
-namespace Impl {
+namespace Balau::Impl {
 
 template <typename AllocatorT>
 using U8String = std::basic_string<char, std::char_traits<char>, AllocatorT>;
@@ -41,8 +39,6 @@ inline U8String<AllocatorT> toString(const char * fmt, T value) {
 	return U8String<AllocatorT>(buffer, buffer + len);
 }
 
-} // namespace Impl
-
-} // namespace Balau
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__TO_STRING_IMPL

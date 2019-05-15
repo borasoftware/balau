@@ -122,7 +122,7 @@ void ToStringTest::toString_type_index() {
 
 void ToStringTest::toString_function() {
 	std::string s = "test string";
-	AssertThat(toString(std::function([&s] () { return s; })), is(s));
+	AssertThat(toString(std::function<std::string ()>([&s] () { return s; })), is(s));
 }
 
 void ToStringTest::toString_vector() {
@@ -267,7 +267,7 @@ void ToStringTest::toString16_type_index() {
 
 void ToStringTest::toString16_function() {
 	std::u16string s = u"test string";
-	AssertThat(toString16(std::function([&s] () { return s; })), is(s));
+	AssertThat(toString16(std::function<std::u16string ()>([&s] () { return s; })), is(s));
 }
 
 void ToStringTest::toString16_vector() {
@@ -393,7 +393,7 @@ void ToStringTest::toString32_type_index() {
 
 void ToStringTest::toString32_function() {
 	std::u32string s = U"test string";
-	AssertThat(toString32(std::function([&s] () { return s; })), is(s));
+	AssertThat(toString32(std::function<std::u32string ()>([&s] () { return s; })), is(s));
 }
 
 void ToStringTest::toString32_vector() {

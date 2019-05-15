@@ -29,7 +29,7 @@ class Listener;
 //
 // TODO replace mutex with concurrent data structure.
 //
-class ClientSessions {
+class ClientSessions final {
 	friend class ::Balau::Network::Http::HttpSession;
 	friend class Listener;
 

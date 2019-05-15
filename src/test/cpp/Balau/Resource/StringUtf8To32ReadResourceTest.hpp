@@ -13,9 +13,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Resource {
+namespace Balau::Resource {
 
 struct StringUtf8To32ReadResourceTest : public Testing::TestGroup<StringUtf8To32ReadResourceTest> {
 	explicit StringUtf8To32ReadResourceTest() {
@@ -25,8 +23,6 @@ struct StringUtf8To32ReadResourceTest : public Testing::TestGroup<StringUtf8To32
 	void test();
 };
 
-} // namespace Resource
-
-} // namespace Balau
+} // namespace Balau::Resource
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__STRING_UTF8_TO_32_READ_RESOURCE_TEST

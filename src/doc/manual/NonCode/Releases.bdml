@@ -33,6 +33,14 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2019.5.1</h1>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>modifications to support GCC 6.2 (for RHEL DTS6).</entry>
+		</bullets>
+
 		<h1>V2019.3.1</h1>
 
 		<para>New features in this release:</para>

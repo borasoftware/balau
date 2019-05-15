@@ -22,48 +22,73 @@ using Testing::isGreaterThan;
 using Testing::startsWith;
 using Testing::throws;
 
-namespace Network {
-
-namespace Http {
+namespace Network::Http {
 
 void HttpClientTest::getRequest() {
-	HttpClient client("borasoftware.com");
-
 	try {
-		Response<CharVectorBody> response = client.get("/");
-		const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
-		assertResponse(response, expectedBody.c_str(), "Moved Permanently", Status::moved_permanently);
+		HttpClient client("borasoftware.com");
+
+		try {
+			Response<CharVectorBody> response = client.get("/");
+			const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
+			assertResponse(response, expectedBody.c_str(), "Moved Permanently", Status::moved_permanently);
+		} catch (const boost::system::system_error & e) {
+			logLine(e.what());
+			logLine(e.code().message());
+			throw;
+		}
 	} catch (const boost::system::system_error & e) {
-		logLine(e.what());
-		logLine(e.code().message());
-		throw;
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
 	}
 }
 
 void HttpClientTest::headRequest() {
-	HttpClient client("borasoftware.com");
-
 	try {
-		Response<CharVectorBody> response = client.get("/");
-		assertResponse(response, nullptr, "Moved Permanently", Status::moved_permanently);
+		HttpClient client("borasoftware.com");
+
+		try {
+			Response<CharVectorBody> response = client.get("/");
+			assertResponse(response, nullptr, "Moved Permanently", Status::moved_permanently);
+		} catch (const boost::system::system_error & e) {
+			logLine(e.what());
+			logLine(e.code().message());
+			throw;
+		}
 	} catch (const boost::system::system_error & e) {
-		logLine(e.what());
-		logLine(e.code().message());
-		throw;
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
 	}
 }
 
 void HttpClientTest::postRequest() {
-	HttpClient client("borasoftware.com");
-
 	try {
-		Response<CharVectorBody> response = client.post("/", "");
-		const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
-		assertResponse(response, expectedBody.c_str(), "Moved Permanently", Status::moved_permanently);
+		HttpClient client("borasoftware.com");
+
+		try {
+			Response<CharVectorBody> response = client.post("/", "");
+			const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
+			assertResponse(response, expectedBody.c_str(), "Moved Permanently", Status::moved_permanently);
+		} catch (const boost::system::system_error & e) {
+			logLine(e.what());
+			logLine(e.code().message());
+			throw;
+		}
 	} catch (const boost::system::system_error & e) {
-		logLine(e.what());
-		logLine(e.code().message());
-		throw;
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
 	}
 }
 
@@ -85,7 +110,6 @@ void HttpClientTest::newClient() {
 	AssertThat([] () { HttpClient::newClient("http://:80"); }, throws<Exception::InvalidUriException>());
 	AssertThat([] () { HttpClient::newClient("smtp://blah"); }, throws<Exception::NetworkException>());
 }
-
 
 void HttpClientTest::assertResponse(Response<CharVectorBody> & response,
                                     const char * bodyStart,
@@ -120,8 +144,25 @@ void HttpClientTest::assertResponse(Response<CharVectorBody> & response,
 	}
 }
 
-} // namespace Http
+void HttpClientTest::assertResponse(EmptyResponse & response, const char * reasonStr, Status status) {
+	auto header = response.base();
+	auto reason = header.reason();
+	auto result = header.result();
+	auto chunked = response.chunked();
+	auto hasContentLength = response.has_content_length();
+	auto keepAlive = response.keep_alive();
+	auto needEof = response.need_eof();
+	auto version = response.version();
 
-} // namespace Network
+	AssertThat(reason, is(reasonStr));
+	AssertThat(result, is(status));
+	AssertThat(chunked, is(false));
+	AssertThat(hasContentLength, is(false));
+	AssertThat(keepAlive, is(true));
+	AssertThat(needEof, is(false));
+	AssertThat(version, is(11U));
+}
+
+} // namespace Network::Http
 
 } // namespace Balau

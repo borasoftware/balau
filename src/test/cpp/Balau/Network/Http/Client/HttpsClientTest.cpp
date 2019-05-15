@@ -13,54 +13,73 @@
 
 #include <Balau/Network/Http/Client/HttpsClient.hpp>
 
-namespace Balau {
-
-namespace Network {
-
-namespace Http {
+namespace Balau::Network::Http {
 
 void HttpsClientTest::getRequest() {
-	HttpsClient client("borasoftware.com");
-
 	try {
-		Response<CharVectorBody> response = client.get("/test/testfile.html");
-		HttpClientTest::assertResponse(response, "<!DOCTYPE html", "OK", Status::ok);
+		HttpsClient client("borasoftware.com");
+
+		try {
+			Response<CharVectorBody> response = client.get("/test/testfile.html");
+			HttpClientTest::assertResponse(response, "<!DOCTYPE html", "OK", Status::ok);
+		} catch (const boost::system::system_error & e) {
+			logLine(e.what());
+			logLine(e.code().message());
+			throw;
+		}
 	} catch (const boost::system::system_error & e) {
-		logLine(e.what());
-		logLine(e.code().message());
-		throw;
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
 	}
 }
 
 void HttpsClientTest::headRequest() {
-	HttpsClient client("borasoftware.com");
-
 	try {
-		Response<CharVectorBody> response = client.get("/test/testfile.html");
-		HttpClientTest::assertResponse(response, nullptr, "OK", Status::ok);
+		HttpsClient client("borasoftware.com");
+
+		try {
+			EmptyResponse response = client.head("/test/testfile.html");
+			HttpClientTest::assertResponse(response, "OK", Status::ok);
+		} catch (const boost::system::system_error & e) {
+			logLine(e.what());
+			logLine(e.code().message());
+			throw;
+		}
 	} catch (const boost::system::system_error & e) {
-		logLine(e.what());
-		logLine(e.code().message());
-		throw;
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
 	}
 }
 
 void HttpsClientTest::postRequest() {
-	HttpsClient client("borasoftware.com");
-
 	try {
-		//Response<CharVectorBody> response = client.post("/", ""); // TODO
-		// TODO
-		//HttpClientTest::assertResponse(response, "<html>", "Moved Permanently", Status::ok);
+		HttpsClient client("borasoftware.com");
+
+		try {
+			//Response<CharVectorBody> response = client.post("/", ""); // TODO
+			// TODO
+			//HttpClientTest::assertResponse(response, "<html>", "Moved Permanently", Status::ok);
+		} catch (const boost::system::system_error & e) {
+			logLine(e.what());
+			logLine(e.code().message());
+			throw;
+		}
 	} catch (const boost::system::system_error & e) {
-		logLine(e.what());
-		logLine(e.code().message());
-		throw;
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
 	}
 }
 
-} // namespace Http
-
-} // namespace Network
-
-} // namespace Balau
+} // namespace Balau::Network::Http

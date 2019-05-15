@@ -16,9 +16,7 @@
 
 #include <Balau/Testing/TestRunner.hpp>
 
-namespace Balau {
-
-namespace Util {
+namespace Balau::Util {
 
 struct DateTimeTest : public Testing::TestGroup<DateTimeTest> {
 	DateTimeTest() {
@@ -32,8 +30,6 @@ struct DateTimeTest : public Testing::TestGroup<DateTimeTest> {
 	void toDuration();
 };
 
-} // namespace Util
-
-} // namespace Balau
+} // namespace Balau::Util
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__DATE_TIME_TEST

@@ -14,21 +14,15 @@
 
 namespace Balau::Network::Http {
 
-HttpSession::HttpSession(Impl::HttpSessions & owner_,
+HttpSession::HttpSession(Impl::HttpSessions & httpSessions_,
                          Impl::ClientSessions & clientSessions_,
                          std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-                         TCP::socket socket_)
-	: owner(owner_)
+                         TCP::socket && socket_)
+	: httpSessions(httpSessions_)
 	, clientSessions(clientSessions_)
 	, serverConfiguration(std::move(serverConfiguration_))
-	, socket(std::move(socket_))
-	, strand(socket.get_executor()) {
-	BalauBalauLogTrace(
-		  serverConfiguration->logger
-		, "HttpSession created (local = {}, remote = {})"
-		, socket.local_endpoint()
-		, socket.remote_endpoint()
-	);
+	, strand(socket_.get_executor())
+	, socket(std::move(socket_)) {
 }
 
 void HttpSession::doRead() {
@@ -50,6 +44,10 @@ void HttpSession::doRead() {
 	);
 }
 
+void HttpSession::close() {
+	strand.post(std::bind(&HttpSession::doClose, this), allocator);
+}
+
 void HttpSession::onRead(boost::system::error_code errorCode, std::size_t bytesTransferred) {
 	boost::ignore_unused(bytesTransferred);
 
@@ -63,6 +61,8 @@ void HttpSession::onRead(boost::system::error_code errorCode, std::size_t bytesT
 
 	// Check for WebSocket upgrade.
 	if (WS::is_upgrade(request)) {
+		// ASIO states that following the socket move, the moved-from socket is in the same
+		// state as if constructed using basic_stream_socket<tcp>(io_context &) constructor.
 		std::make_shared<WsSession>(
 			serverConfiguration, std::move(socket), std::string(request.target())
 		)->doAccept(
@@ -108,19 +108,21 @@ void HttpSession::onWrite(boost::system::error_code errorCode, std::size_t bytes
 	}
 }
 
-void HttpSession::stop() {
-	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::stop");
-	doClose();
-	owner.stop(shared_from_this());
-}
-
 void HttpSession::doClose() {
+	// Executed via the strand.
+
+	if (!socket.is_open()) {
+		BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose ignoring duplicate call.");
+		return;
+	}
+
 	boost::system::error_code errorCode;
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose shutting down");
 	socket.shutdown(TCP::socket::shutdown_send, errorCode);
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose completed shut down");
 	socket.close(errorCode);
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose closed");
+	httpSessions.unregisterSession(shared_from_this());
 }
 
 void HttpSession::parseCookies() {
