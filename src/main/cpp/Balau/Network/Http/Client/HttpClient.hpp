@@ -128,10 +128,10 @@ class HttpClient {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	protected: const std::string host;
-	protected: const unsigned short port;
-	protected: const std::string userAgent;
-	protected: const int version;
+	protected: std::string host;
+	protected: unsigned short port;
+	protected: std::string userAgent;
+	protected: int version;
 
 	private: template <typename ResponseT>
 	ResponseT sendRequest(Method verb, const std::string_view & path, const std::string_view & body);
