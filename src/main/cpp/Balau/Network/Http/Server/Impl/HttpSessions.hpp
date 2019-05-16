@@ -49,7 +49,6 @@ class HttpSessions final {
 
 		sessions.clear();
 	}
-
 	private: std::set<std::shared_ptr<HttpSession>> sessions;
 	private: std::recursive_mutex mutex;
 };
