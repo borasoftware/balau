@@ -33,6 +33,19 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2019.5.2</h1>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>HTTP server implementation refinements;</entry>
+			<entry>use ASIO strand in HttpSession instances to close sessions;</entry>
+			<entry>manual ignore method in unit test framework test group class;</entry>
+			<entry>test runner main threads named as current test;</entry>
+			<entry>further refinements for GCC 6 support;</entry>
+			<entry>other miscellaneous refinements.</entry>
+		</bullets>
+
 		<h1>V2019.5.1</h1>
 
 		<para>New features in this release:</para>
