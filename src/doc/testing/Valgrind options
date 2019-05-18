@@ -1,0 +1,5 @@
+
+--tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes
+
+--tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes
+

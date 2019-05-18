@@ -30,7 +30,7 @@ class LoggerPropertyVisitor : private Lang::Property::PropertyVisitor {
 	}
 
 	private: void visit(Lang::Property::Payload & payload, const Lang::Property::AST::Properties & object) override {
-		auto & pl = static_cast<LoggerPropertyAstPayload &>(payload);
+		auto & pl = static_cast<LoggerPropertyAstPayload &>(payload); // NOLINT
 
 		// Create root logger.
 		pl.loggerTree.root().value = LoggerHolder(std::shared_ptr<Logger>(new Logger("", "", "")));
@@ -41,7 +41,7 @@ class LoggerPropertyVisitor : private Lang::Property::PropertyVisitor {
 	}
 
 	private: void visit(Lang::Property::Payload & payload, const Lang::Property::AST::ValueProperty & object) override {
-		auto & pl = static_cast<LoggerPropertyAstPayload &>(payload);
+		auto & pl = static_cast<LoggerPropertyAstPayload &>(payload); // NOLINT
 
 		if (!pl.currentLoggerTreeNode) {
 			// TODO informative reporting
@@ -53,7 +53,7 @@ class LoggerPropertyVisitor : private Lang::Property::PropertyVisitor {
 	}
 
 	private: void visit(Lang::Property::Payload & payload, const Lang::Property::AST::CompositeProperty & object) override {
-		auto & pl = static_cast<LoggerPropertyAstPayload &>(payload);
+		auto & pl = static_cast<LoggerPropertyAstPayload &>(payload); // NOLINT
 
 		// Only value properties may be defined inside a logging composite property.
 		if (pl.currentLoggerTreeNode) {

@@ -13,18 +13,19 @@
 
 namespace Balau::Testing::Impl {
 
-TestGroupBase::TestGroupBase() : groupIndex(Testing::TestRunner::getGroupIndex()) {}
+TestGroupBase::TestGroupBase()
+	: groupIndex(Testing::TestRunner::getGroupIndex()) {}
 
 bool TestGroupBase::currentIsIgnored() {
-	return currentIgnored;
+	return currentIgnored([] () { return new bool(false); });
 }
 
 void TestGroupBase::resetIgnoreCurrent() {
-	currentIgnored = false;
+	currentIgnored() = false;
 }
 
 void TestGroupBase::ignoreCurrent() {
-	currentIgnored = true;
+	currentIgnored() = true;
 }
 
 } // namespace Balau::Testing::Impl

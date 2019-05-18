@@ -11,8 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE
 #define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE
 
-#include <memory>
-#include <string>
+#include <Balau/Concurrent/ThreadLocalInstance.hpp>
 
 namespace Balau::Testing {
 
@@ -60,7 +59,7 @@ class TestGroupBase {
 
 	private: virtual unsigned int getExecutionModels() const = 0;
 
-	private: bool currentIgnored = false;
+	private: Concurrent::ThreadLocalInstance<bool> currentIgnored;
 	private: const unsigned int groupIndex;
 };
 
