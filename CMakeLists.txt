@@ -46,11 +46,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-
-#################################### OPTIONS ##################################
-
-OPTION(ENABLE_ZIP "Enable use of LibZip library" ON)
-
 ############################## USER CONFIGURATION #############################
 
 #
@@ -287,19 +282,6 @@ message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
 
 set(ALL_LIBS ${ALL_LIBS} rt zip curl)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
-
-if (ENABLE_ZIP)
-	find_package(BZip2)
-
-	if (BZIP2_FOUND)
-		set(HAVE_LIBBZ2 1)
-
-		include_directories(${BZIP2_INCLUDE_DIR})
-		set(OPTIONAL_LIBRARY ${BZIP2_LIBRARY})
-	else ()
-		message(WARNING "-- bzip2 library not found; bzip2 support disabled")
-	endif ()
-endif ()
 
 ################################## BACKPORTS ##################################
 
