@@ -94,9 +94,7 @@ class FileTestWriter : public TestWriter {
 	}
 
 	public: std::unique_ptr<TestWriter> clone() const override {
-		return std::unique_ptr<TestWriter>(
-			new FileTestWriter(* static_cast<const Resource::File *>(&writeResource.uri()))
-		);
+		return std::unique_ptr<TestWriter>(new FileTestWriter(writeResource.getFile()));
 	}
 
 	////////////////////////// Private implementation /////////////////////////

@@ -204,6 +204,37 @@ class TestRunner {
 	}
 
 	///
+	/// Run the test runner with the execution model specified in the first argv element, the specified concurrency level and the test list specified in subsequent argv elements.
+	///
+	/// The concurrency level will be equal to the number of cores if the
+	/// execution model is WorkerThreads or WorkerProcesses, and the logging
+	/// will output to stdout.
+	///
+	/// @param argc the number of arguments in argv
+	/// @param argv the command line arguments
+	/// @param argvStart the command line argument index of the start of the test list
+	/// @param useNamespaces specify whether to use or ignore test class namespaces
+	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
+	/// @return 0 if all tests passed, 1 otherwise
+	///
+	public: static int run(int argc,
+	                       char * argv[],
+	                       unsigned int concurrencyLevel_,
+	                       int argvStart = 1,
+	                       bool useNamespaces = false,
+	                       bool pauseAtExit = false) {
+		const auto executionModel = argc > argvStart ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+		auto & r = runner();
+		r.testList = createTestList(argc, argv, argvStart + 1);
+		r.writer = Impl::CompositeWriter(StdOutTestWriter());
+		r.concurrencyLevel = concurrencyLevel_;
+		r.executionModel = r.checkOutOfProcessCapability(executionModel);
+		r.setUseNamespaces(useNamespaces);
+		r.pauseAtExit = pauseAtExit;
+		return r.performTestRun();
+	}
+
+	///
 	/// Run the test runner with the specified execution model, default concurrency and the test list specified in argv.
 	///
 	/// The concurrency level will be equal to the number of cores if the
@@ -600,7 +631,7 @@ class TestRunner {
 			}
 
 			case WorkerProcesses: {
-				writer << "Run type   = worker processes "
+				writer << "Run type = worker processes "
 				       << "(" << concurrencyLevel << " worker process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
@@ -611,7 +642,7 @@ class TestRunner {
 			}
 
 			case ProcessPerTest: {
-				writer << "Run type   = process per test "
+				writer << "Run type = process per test "
 				       << "(" << concurrencyLevel << " simultaneous process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(

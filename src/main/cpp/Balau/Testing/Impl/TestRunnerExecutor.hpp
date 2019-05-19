@@ -14,6 +14,7 @@
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/System/Sleep.hpp>
 #include <Balau/System/ThreadName.hpp>
+#include <Balau/Testing/ExecutionModel.hpp>
 #include <Balau/Testing/Impl/CompositeWriter.hpp>
 #include <Balau/Testing/Impl/FlattenedTestCase.hpp>
 #include <Balau/Testing/Impl/TestCase.hpp>

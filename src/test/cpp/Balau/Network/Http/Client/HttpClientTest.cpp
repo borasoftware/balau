@@ -48,25 +48,29 @@ void HttpClientTest::getRequest() {
 }
 
 void HttpClientTest::headRequest() {
-	try {
-		HttpClient client("borasoftware.com");
+	// TODO finish
+	ignore();
+	return;
 
-		try {
-			Response<CharVectorBody> response = client.get("/");
-			assertResponse(response, nullptr, "Moved Permanently", Status::moved_permanently);
-		} catch (const boost::system::system_error & e) {
-			logLine(e.what());
-			logLine(e.code().message());
-			throw;
-		}
-	} catch (const boost::system::system_error & e) {
-		if (e.code() == boost::system::errc::device_or_resource_busy) {
-			// Ignore due to no network available.
-			ignore();
-		} else {
-			throw;
-		}
-	}
+//	try {
+//		HttpClient client("borasoftware.com");
+//
+//		try {
+//			Response<CharVectorBody> response = client.get("/");
+//			assertResponse(response, nullptr, "Moved Permanently", Status::moved_permanently);
+//		} catch (const boost::system::system_error & e) {
+//			logLine(e.what());
+//			logLine(e.code().message());
+//			throw;
+//		}
+//	} catch (const boost::system::system_error & e) {
+//		if (e.code() == boost::system::errc::device_or_resource_busy) {
+//			// Ignore due to no network available.
+//			ignore();
+//		} else {
+//			throw;
+//		}
+//	}
 }
 
 void HttpClientTest::postRequest() {

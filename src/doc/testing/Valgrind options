@@ -1,5 +1,37 @@
 
---tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes
+--tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --sim-hints=deactivate-pthread-stack-cache-via-hack
 
 --tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes
 
+
+
+------------------------------------------- Helgrind report extracts -------------------------------------------
+
+==6705== 
+==6705== Possible data race during read of size 8 at 0x5011188 by thread #3
+==6705== Locks held: none
+==6705==    at 0x4E07CC2: zip_open_from_source (in /usr/lib/x86_64-linux-gnu/libzip.so.4.0.0)
+==6705==    by 0x4E07FA9: zip_open (in /usr/lib/x86_64-linux-gnu/libzip.so.4.0.0)
+==6705==    by 0x99F501: Balau::Util::Unzipper::openImpl(Balau::Resource::File const&, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) (Compression.cpp:356)
+==6705==    by 0x99F3D9: Balau::Util::Unzipper::open(Balau::Resource::File const&, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Compression.cpp:86)
+==6705==    by 0x7F4FB2: Balau::Util::unzipperTestImpl(Balau::Resource::File const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<Balau::Util::ZipEntryInfo, std::allocator<Balau::Util::ZipEntryInfo> > const&) (CompressionTest.cpp:122)
+==6705==    by 0x7F8FEA: Balau::Util::CompressionTest::encryptedUnzipperTest() (CompressionTest.cpp:216)
+==6705==    by 0x7FE295: Balau::Testing::TestGroup<Balau::Util::CompressionTest>::TestMethod::run() (TestRunner.hpp:63)
+==6705==    by 0x4A2C1D: Balau::Testing::Impl::TestRunnerExecutor::runTheTest(Balau::Testing::Impl::FlattenedTestCase&, std::ostream&) (TestRunnerExecutor.hpp:168)
+==6705==    by 0x4A212B: Balau::Testing::Impl::TestRunnerExecutor::runTest(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Balau::Testing::Impl::FlattenedTestCase&) (TestRunnerExecutor.hpp:108)
+==6705==    by 0x4A6CF8: Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor::childThreadLogic(Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*) (WorkerThreadsTestRunnerExecutor.hpp:93)
+==6705==    by 0x4A84A1: void std::__invoke_impl<void, void (*)(Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*), Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*>(std::__invoke_other, void (*&&)(Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*), Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*&&) (invoke.h:60)
+==6705==    by 0x4A83F1: std::__invoke_result<void (*)(Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*), Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*>::type std::__invoke<void (*)(Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*), Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*>(void (*&&)(Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*), Balau::Testing::Impl::WorkerThreadsTestRunnerExecutor*&&) (invoke.h:95)
+==6705== 
+==6705== This conflicts with a previous write of size 8 by thread #2
+==6705== Locks held: none
+==6705==    at 0x4E07E1B: zip_open_from_source (in /usr/lib/x86_64-linux-gnu/libzip.so.4.0.0)
+==6705==    by 0x4E07FA9: zip_open (in /usr/lib/x86_64-linux-gnu/libzip.so.4.0.0)
+==6705==    by 0x99F501: Balau::Util::Unzipper::openImpl(Balau::Resource::File const&, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) (Compression.cpp:356)
+==6705==    by 0x99F3D9: Balau::Util::Unzipper::open(Balau::Resource::File const&, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (Compression.cpp:86)
+==6705==    by 0x7F4FB2: Balau::Util::unzipperTestImpl(Balau::Resource::File const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<Balau::Util::ZipEntryInfo, std::allocator<Balau::Util::ZipEntryInfo> > const&) (CompressionTest.cpp:122)
+==6705==    by 0x7F7E2C: Balau::Util::CompressionTest::unzipperTest() (CompressionTest.cpp:193)
+==6705==    by 0x7FE295: Balau::Testing::TestGroup<Balau::Util::CompressionTest>::TestMethod::run() (TestRunner.hpp:63)
+==6705==    by 0x4A2C1D: Balau::Testing::Impl::TestRunnerExecutor::runTheTest(Balau::Testing::Impl::FlattenedTestCase&, std::ostream&) (TestRunnerExecutor.hpp:168)
+==6705==  Address 0x5011188 is in the Data segment of /usr/lib/x86_64-linux-gnu/libzip.so.4.0.0
+==6705== 
