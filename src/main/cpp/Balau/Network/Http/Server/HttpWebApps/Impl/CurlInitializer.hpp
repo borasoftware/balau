@@ -13,11 +13,15 @@
 
 namespace Balau::Network::Http::HttpWebApps::Impl {
 
+#ifdef BALAU_LIBCURL_ENABLED
+
 //
 // All uses of Curl functionality in the library must call ensureCurlInitialization()
 // before using Curl, and Curl's initialisation and clean up will be managed by Balau.
 //
 void ensureCurlInitialization();
+
+#endif // BALAU_LIBCURL_ENABLED
 
 } // namespace Balau::Network::Http::HttpWebApps::Impl
 

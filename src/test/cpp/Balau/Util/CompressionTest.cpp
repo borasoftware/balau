@@ -14,7 +14,11 @@
 #include <Balau/Util/Hashing.hpp>
 #include <Balau/Type/OnScopeExit.hpp>
 
+#ifdef BALAU_LIBZIP_ENABLED
+
 #include <zip.h>
+
+#endif // BALAU_LIBZIP_ENABLED
 
 namespace Balau {
 
@@ -24,26 +28,28 @@ using Testing::isGreaterThan;
 
 namespace Util {
 
-const Resource::File resDir  = TestResources::BalauSourceTestResourcesFolder;
-const Resource::File testDir = TestResources::BalauTestResultsFolder;
+#ifdef BALAU_LIBZIP_ENABLED
 
-const Resource::File zipFile                 = resDir / "Zips" / "ZipFile.zip";
-const Resource::File encryptedZipFile        = resDir / "Zips" / "EncryptedZipFile.zip";
+const Resource::File resDir  = TestResources::BalauSourceTestResourcesFolder; // NOLINT
+const Resource::File testDir = TestResources::BalauTestResultsFolder; // NOLINT
 
-const Resource::File mutatedZipFile          = testDir / "Zips" / "MutatedZipFile.zip";
-const Resource::File mutatedEncryptedZipFile = testDir / "Zips" / "MutatedEncryptedZipFile.zip";
+const Resource::File zipFile                 = resDir / "Zips" / "ZipFile.zip"; // NOLINT
+const Resource::File encryptedZipFile        = resDir / "Zips" / "EncryptedZipFile.zip"; // NOLINT
 
-const std::string testPassword = "testPW";
+const Resource::File mutatedZipFile          = testDir / "Zips" / "MutatedZipFile.zip"; // NOLINT
+const Resource::File mutatedEncryptedZipFile = testDir / "Zips" / "MutatedEncryptedZipFile.zip"; // NOLINT
 
-inline std::chrono::system_clock::time_point tp(int64_t s) {
+const std::string testPassword = "testPW"; // NOLINT
+
+static inline std::chrono::system_clock::time_point tp(int64_t s) {
 	return std::chrono::system_clock::time_point(std::chrono::nanoseconds(s * 1000000000UL));
 }
 
-inline std::pair<std::string, std::vector<char>> mpv(std::string s, std::vector<char> v) {
+static inline std::pair<std::string, std::vector<char>> mpv(std::string s, std::vector<char> v) {
 	return std::make_pair<std::string, std::vector<char>>(std::move(s), std::move(v));
 }
 
-inline std::pair<std::string, std::string> mps(std::string s1, std::string s2) {
+static inline std::pair<std::string, std::string> mps(std::string s1, std::string s2) {
 	return std::make_pair<std::string, std::string>(std::move(s1), std::move(s2));
 }
 
@@ -61,9 +67,9 @@ void CompressionTest::fingerprintTest() {
 	);
 }
 
-void unzipperTestImpl(const Resource::File & file,
-                      const std::string & pw,
-                      const std::vector<ZipEntryInfo> & expectedEntryInfos) {
+static void unzipperTestImpl(const Resource::File & file,
+                             const std::string & pw,
+                             const std::vector<ZipEntryInfo> & expectedEntryInfos) {
 	const std::set<std::string> expectedEntryNames = {
 		  "a/"
 		, "a/aa"
@@ -216,14 +222,14 @@ void CompressionTest::encryptedUnzipperTest() {
 	unzipperTestImpl(encryptedZipFile, testPassword, expectedEntryInfos);
 }
 
-const std::string archiveComment = "This is an archive comment.";
-const std::string newDirectory = "q/w/e/r/";
-const std::string newEntryExistingDirectoryFromFile = "q/w/e/r/newEntry.zip";
-const std::string newEntryExistingDirectoryFromBytes = "q/w/e/r/newBytes";
-const std::string newEntryExistingDirectoryFromString = "q/w/e/r/newString";
-const std::vector<char> bytes {1, 2, 3, 4, 5, 6, 7, 8, 9};
-const std::string str = "qwertyuiop";
-const std::string newEntryExistingDirectoryFromStringRenamed = "q/w/e/r/newStringRenamed";
+const std::string archiveComment = "This is an archive comment."; // NOLINT
+const std::string newDirectory = "q/w/e/r/"; // NOLINT
+const std::string newEntryExistingDirectoryFromFile = "q/w/e/r/newEntry.zip"; // NOLINT
+const std::string newEntryExistingDirectoryFromBytes = "q/w/e/r/newBytes"; // NOLINT
+const std::string newEntryExistingDirectoryFromString = "q/w/e/r/newString"; // NOLINT
+const std::vector<char> bytes {1, 2, 3, 4, 5, 6, 7, 8, 9}; // NOLINT
+const std::string str = "qwertyuiop"; // NOLINT
+const std::string newEntryExistingDirectoryFromStringRenamed = "q/w/e/r/newStringRenamed"; // NOLINT
 
 void zipperTestImpl2(const Resource::File & file, bool commit, const std::string & pw) {
 	Zipper zipper;
@@ -328,6 +334,91 @@ void CompressionTest::zipperTest() {
 void CompressionTest::encryptedZipperTest() {
 	zipperTestImpl1(encryptedZipFile, mutatedEncryptedZipFile, testPassword);
 }
+
+void CompressionTest::libzipSoakTest() {
+	const size_t iterationCount = 1;
+	std::vector<std::thread> threads;
+
+	for (size_t m = 0; m < 2; m++) {
+		threads.emplace_back(
+			[this] () {
+				for (size_t m = 0; m < iterationCount; m++) {
+					unzipperTest();
+				}
+			}
+		);
+
+	}
+
+//	threads.emplace_back(
+//		[this] () {
+//			for (size_t m = 0; m < iterationCount; m++) {
+//				unzipperTest();
+//				zipperTest();
+//			}
+//		}
+//	);
+//
+//	threads.emplace_back(
+//		[this] () {
+//			for (size_t m = 0; m < iterationCount; m++) {
+//				encryptedUnzipperTest();
+//			}
+//		}
+//	);
+//
+//	threads.emplace_back(
+//		[this] () {
+//			for (size_t m = 0; m < iterationCount; m++) {
+//				encryptedUnzipperTest();
+//				encryptedZipperTest();
+//			}
+//		}
+//	);
+
+	for (auto & thread : threads) {
+		thread.join();
+	}
+}
+
+static void unzipperTestImpl2() {
+	int error = 0;
+	zip_t * archive = zip_open("../../src/test/resources/Zips/ZipFile.zip", ZIP_RDONLY | ZIP_CHECKCONS, &error);
+	if (error) { throw std::exception(); }
+	zip_discard(archive);
+}
+
+void CompressionTest::libzipSoakTest2() {
+	std::thread t1(unzipperTestImpl2);
+	std::thread t2(unzipperTestImpl2);
+	t1.join();
+	t2.join();
+}
+
+static void unzipperTestImpl3() {
+	const Resource::File zipFile = resDir / "Zips" / "ZipFile.zip";
+	const auto path = zipFile.toRawString().c_str();
+	int error = 0;
+	zip_t * archive = zip_open(path, ZIP_RDONLY | ZIP_CHECKCONS, &error);
+	if (error) { throw std::exception(); }
+	struct zip_stat sb {};
+	zip_stat_init(&sb);
+	const long long count = zip_get_num_entries(archive, 0);
+
+	if (count < 0) { throw std::exception(); }
+
+	zip_discard(archive);
+}
+
+void CompressionTest::libzipSoakTest3() {
+	std::thread t1([this] () { unzipperTestImpl2(); });
+	std::thread t2([this] () { unzipperTestImpl2(); });
+
+	t1.join();
+	t2.join();
+}
+
+#endif // BALAU_LIBZIP_ENABLED
 
 } // namespace Util
 

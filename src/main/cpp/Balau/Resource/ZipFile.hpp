@@ -17,6 +17,8 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE
 
+#ifdef BALAU_LIBZIP_ENABLED
+
 #include <Balau/Resource/File.hpp>
 #include <Balau/Resource/ZipEntry.hpp>
 
@@ -271,5 +273,7 @@ template <> struct equal_to<Balau::Resource::ZipFile> {
 };
 
 } // namespace std
+
+#endif // BALAU_LIBZIP_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE

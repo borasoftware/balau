@@ -11,9 +11,12 @@
 #include "Compression.hpp"
 #include "Balau/Type/OnScopeExit.hpp"
 
+#ifdef BALAU_LIBZIP_ENABLED
+
 #include <zip.h>
 
 namespace Balau::Util {
+
 
 std::string getLibZipErrorAsString(int error) {
 	switch (error) {
@@ -602,3 +605,5 @@ void Zipper::deleteFile(const std::string & cleanName) {
 }
 
 } // namespace Balau::Util
+
+#endif // BALAU_LIBZIP_ENABLED

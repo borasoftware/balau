@@ -125,10 +125,13 @@ void FileLoggingStream::createNewStream() {
 
 	boost::filesystem::path previousPath(previousPathString);
 
+	#ifdef BALAU_ZLIB_ENABLED
+
 	if (boost::filesystem::exists(previousPath)) {
 		boost::filesystem::path previousPathGzip(previousPath.string() + ".gz");
 		Resource::File previousPathGzipFile(previousPathGzip);
 		Resource::File previousPathFile(previousPath);
+
 
 		// Zip up the file.
 		GZip::gzip(previousPathFile, previousPathGzipFile);
@@ -149,6 +152,8 @@ void FileLoggingStream::createNewStream() {
 			// TODO report error
 		}
 	}
+
+	#endif // BALAU_ZLIB_ENABLED
 }
 
 void FileLoggingStream::updateFunction(FileLoggingStream * const self) {

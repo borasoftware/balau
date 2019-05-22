@@ -19,18 +19,28 @@ namespace Balau::Util {
 
 struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	CompressionTest() {
+		#ifdef BALAU_LIBZIP_ENABLED
 		registerTest(&CompressionTest::fingerprintTest,       "fingerprintTest");
 		registerTest(&CompressionTest::unzipperTest,          "unzipperTest");
 		registerTest(&CompressionTest::encryptedUnzipperTest, "encryptedUnzipperTest");
 		registerTest(&CompressionTest::zipperTest,            "zipperTest");
 		registerTest(&CompressionTest::encryptedZipperTest,   "encryptedZipperTest");
+		registerTest(&CompressionTest::libzipSoakTest,        "libzipSoakTest");
+		registerTest(&CompressionTest::libzipSoakTest2,       "libzipSoakTest2");
+		registerTest(&CompressionTest::libzipSoakTest3,       "libzipSoakTest3");
+		#endif // BALAU_LIBZIP_ENABLED
 	}
 
+	#ifdef BALAU_LIBZIP_ENABLED
 	void fingerprintTest();
 	void unzipperTest();
 	void encryptedUnzipperTest();
 	void zipperTest();
 	void encryptedZipperTest();
+	void libzipSoakTest();
+	void libzipSoakTest2();
+	void libzipSoakTest3();
+	#endif // BALAU_LIBZIP_ENABLED
 };
 
 } // namespace Balau::Util

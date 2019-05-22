@@ -192,9 +192,10 @@ class TestRunner {
 	                       int argvStart = 1,
 	                       bool useNamespaces = false,
 	                       bool pauseAtExit = false) {
-		const auto executionModel = argc > argvStart ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+		const bool executionModelSpecified = argc > argvStart ? isExecutionModel(Util::Strings::toLower(argv[argvStart])) : false;
+		const auto executionModel = executionModelSpecified ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart + 1);
+		r.testList = createTestList(argc, argv, executionModelSpecified ? argvStart + 1 : argvStart);
 		r.writer = Impl::CompositeWriter(StdOutTestWriter());
 		r.concurrencyLevel = r.getConcurrencyLevel();
 		r.executionModel = r.checkOutOfProcessCapability(executionModel);
@@ -223,9 +224,10 @@ class TestRunner {
 	                       int argvStart = 1,
 	                       bool useNamespaces = false,
 	                       bool pauseAtExit = false) {
-		const auto executionModel = argc > argvStart ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+		const bool executionModelSpecified = argc > argvStart ? isExecutionModel(Util::Strings::toLower(argv[argvStart])) : false;
+		const auto executionModel = executionModelSpecified ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart + 1);
+		r.testList = createTestList(argc, argv, executionModelSpecified ? argvStart + 1 : argvStart);
 		r.writer = Impl::CompositeWriter(StdOutTestWriter());
 		r.concurrencyLevel = concurrencyLevel_;
 		r.executionModel = r.checkOutOfProcessCapability(executionModel);

@@ -8,6 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
+#ifdef BALAU_LIBZIP_ENABLED
+
 #include "ZipEntry.hpp"
 #include "ZipEntryByteReadResource.hpp"
 
@@ -22,3 +24,5 @@ const Uri & ZipEntryByteReadResource::uri() const {
 }
 
 } // namespace Balau::Resource
+
+#endif // BALAU_LIBZIP_ENABLED

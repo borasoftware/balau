@@ -46,6 +46,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+
+#################################### OPTIONS ##################################
+
+OPTION(ENABLE_ZLIB "Enable ZLib library wrappers for gzip support" ON)
+OPTION(ENABLE_ZIP  "Enable LibZip library wrappers Zipper and Unzipper" ON)
+OPTION(ENABLE_CURL "Enable use of Curl library" ON)
+
 ############################## USER CONFIGURATION #############################
 
 #
@@ -153,6 +160,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-parameter") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-ignored-qualifiers") # Required for Boost Beast headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
+	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-nullability-extension") # Required for libzip 1.5.2.
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -177,7 +185,6 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0 -g3")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
 
 #
 # Turn on trace logging if BALAU_TRACE is defined.
@@ -259,28 +266,60 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 set(ALL_LIBS ${ALL_LIBS} Threads::Threads)
 
-############################### OTHER LIBRARIES ###############################
+############################ COMPRESSION LIBRARIES ############################
 
-find_package(ZLIB REQUIRED)
-include_directories(${ZLIB_INCLUDE_DIR})
-set(ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
-message(STATUS "ZLIB include dir: ${ZLIB_INCLUDE_DIR}")
-message(STATUS "ZLIB libraries: ${ZLIB_LIBRARIES}")
+if (ENABLE_ZLIB)
+	find_package(ZLIB REQUIRED)
+	include_directories(${ZLIB_INCLUDE_DIR})
+	find_package_handle_standard_args(ZLIB DEFAULT_MSG ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
+	set(ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
+	message(STATUS "ZLIB include dir: ${ZLIB_INCLUDE_DIR}")
+	message(STATUS "ZLIB libraries: ${ZLIB_LIBRARIES}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_ZLIB_ENABLED")
+endif ()
+
+if (ENABLE_ZIP)
+	find_path(LIBZIP_INCLUDE_DIR zip.h zipconf.h)
+	find_library(LIBZIP_LIBRARY NAMES zip libzip)
+	find_package_handle_standard_args(LIBZIP DEFAULT_MSG LIBZIP_LIBRARY LIBZIP_INCLUDE_DIR)
+
+	if (LIBZIP_FOUND)
+		include_directories(${LIBZIP_INCLUDE_DIR})
+		set(ALL_LIBS ${ALL_LIBS} ${LIBZIP_LIBRARY})
+		message(STATUS "LIBZIP include dir: ${LIBZIP_INCLUDE_DIR}")
+		message(STATUS "LIBZIP library: ${LIBZIP_LIBRARY}")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_LIBZIP_ENABLED")
+	else ()
+		message(FATAL "LibZip library not found.")
+	endif ()
+endif ()
+
+################################ CURL LIBRARY #################################
+
+if (ENABLE_CURL)
+	find_path(LIBCURL_INCLUDE_DIR curl/curl.h)
+	find_library(LIBCURL_LIBRARY NAMES curl libcurl)
+	find_package_handle_standard_args(LIBCURL DEFAULT_MSG LIBCURL_LIBRARY LIBCURL_INCLUDE_DIR)
+
+	if (LIBCURL_FOUND)
+		include_directories(${LIBCURL_INCLUDE_DIR})
+		set(ALL_LIBS ${ALL_LIBS} ${LIBCURL_LIBRARY})
+		message(STATUS "LIBCURL include dir: ${LIBCURL_INCLUDE_DIR}")
+		message(STATUS "LIBCURL library: ${LIBCURL_LIBRARY}")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_LIBCURL_ENABLED")
+	else ()
+		message(FATAL "LibCurl library not found.")
+	endif ()
+endif ()
+
+############################### OTHER LIBRARIES ###############################
 
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})
 message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-
-# TODO
-#find_package(LIBZIP REQUIRED)
-#include_directories(${LIBZIP_INCLUDE_DIR})
-#set(ALL_LIBS ${ALL_LIBS} ${LIBZIP_LIBRARIES})
-#message(STATUS "LIBZIP include dir: ${LIBZIP_INCLUDE_DIR}")
-#message(STATUS "LIBZIP libraries: ${LIBZIP_LIBRARIES}")
-
-set(ALL_LIBS ${ALL_LIBS} rt zip curl)
+set(ALL_LIBS ${ALL_LIBS} rt)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
 
 ################################## BACKPORTS ##################################

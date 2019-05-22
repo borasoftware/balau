@@ -52,6 +52,11 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 		, nextTestIndex(0) {}
 
 	public: void run() override {
+		if (tests.empty()) {
+			writer << "No tests to run.\n";
+			return;
+		}
+
 		std::vector<std::thread> threads;
 
 		for (size_t m = 0; m < concurrencyLevel; m++) {

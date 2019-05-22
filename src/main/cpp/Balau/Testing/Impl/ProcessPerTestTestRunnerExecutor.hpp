@@ -31,6 +31,11 @@ class ProcessPerTestTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
 		) {}
 
 	public: void run() override {
+		if (tests.empty()) {
+			writer << "No tests to run.\n";
+			return;
+		}
+
 		writer << ("Parent pid = " + ::toString(getpid()) + "\n");
 
 		//

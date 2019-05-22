@@ -43,6 +43,11 @@ class SingleThreadedTestRunnerExecutor : public TestRunnerExecutor {
 		) {}
 
 	public: void run() override {
+		if (tests.empty()) {
+			writer << "No tests to run.\n";
+			return;
+		}
+
 		resultQueue = std::unique_ptr<TestResultQueue>(new SingleThreadedTestResultQueue());
 		size_t committedRuns = 0;
 

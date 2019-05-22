@@ -8,6 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
+#ifdef BALAU_LIBCURL_ENABLED
+
 #include "EmailSendingHttpWebApp.hpp"
 #include "../HttpSession.hpp"
 #include "Balau/Network/Utilities/UrlDecode.hpp"
@@ -223,3 +225,5 @@ EmailSendingHttpWebApp::BodyGenerator EmailSendingHttpWebApp::createBodyGenerato
 }
 
 } // namespace Balau::Network::Http::HttpWebApps
+
+#endif // BALAU_LIBCURL_ENABLED
