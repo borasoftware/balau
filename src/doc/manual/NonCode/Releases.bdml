@@ -43,7 +43,18 @@
 			<entry>manual ignore method in unit test framework test group class;</entry>
 			<entry>test runner main threads named as current test;</entry>
 			<entry>further refinements for GCC 6 support;</entry>
+			<entry>CMake options to disable zlib/libzip/curl functionalities;</entry>
 			<entry>other miscellaneous refinements.</entry>
+		</bullets>
+
+		<para>Pending features not yet in this release:</para>
+
+		<bullets>
+			<entry>HTTP client implementation incomplete;</entry>
+			<entry>WebSocket application framework and documentation;</entry>
+			<entry>WebSocket client;</entry>
+			<entry>HTTP client keep alive;</entry>
+			<entry>tutorial application example.</entry>
 		</bullets>
 
 		<h1>V2019.5.1</h1>
