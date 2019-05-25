@@ -16,6 +16,8 @@
 
 #ifdef BALAU_LIBZIP_ENABLED
 
+#define _Nonnull
+#define _Nullable
 #include <zip.h>
 
 #endif // BALAU_LIBZIP_ENABLED

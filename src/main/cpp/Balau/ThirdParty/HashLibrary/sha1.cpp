@@ -8,20 +8,17 @@
 
 // big endian architectures need #define __BYTE_ORDER __BIG_ENDIAN
 #ifndef _MSC_VER
-
-#include <endian.h>
-
+	#include <endian.h>
 #endif
 
-namespace Balau {
-
-namespace HashLibrary {
+namespace Balau::HashLibrary {
 
 /// same as reset()
-SHA1::SHA1() {
+SHA1::SHA1()
+	: m_numBytes(0)
+	, m_bufferSize(0) {
 	reset();
 }
-
 
 /// restart
 void SHA1::reset() {
@@ -36,8 +33,8 @@ void SHA1::reset() {
 	m_hash[4] = 0xc3d2e1f0;
 }
 
-
 namespace {
+
 // mix functions for processBlock()
 inline uint32_t f1(uint32_t b, uint32_t c, uint32_t d) {
 	return d ^ (b & (c ^ d)); // original: f = (b & c) | ((~b) & d);
@@ -56,20 +53,19 @@ inline uint32_t rotate(uint32_t a, uint32_t c) {
 }
 
 inline uint32_t swap(uint32_t x) {
-#if defined(__GNUC__) || defined(__clang__)
-	return __builtin_bswap32(x);
-#endif
-#ifdef MSC_VER
-	return _byteswap_ulong(x);
-#endif
-
-	return (x >> 24) |
-	       ((x >> 8) & 0x0000FF00) |
-	       ((x << 8) & 0x00FF0000) |
-	       (x << 24);
-}
+	#if defined(__GNUC__) || defined(__clang__)
+		return __builtin_bswap32(x);
+	#elif defined MSC_VER
+		return _byteswap_ulong(x);
+	#else
+		return (x >> 24) |
+		       ((x >> 8) & 0x0000FF00) |
+		       ((x << 8) & 0x00FF0000) |
+		       (x << 24);
+	#endif
 }
 
+} // namespace
 
 /// process 64 bytes
 void SHA1::processBlock(const void * data) {
@@ -82,20 +78,21 @@ void SHA1::processBlock(const void * data) {
 
 	// data represented as 16x 32-bit words
 	const uint32_t * input = (uint32_t *) data;
+
 	// convert to big endian
 	uint32_t words[80];
-	for (int i = 0; i < 16; i++)
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
-		words[i] = input[i];
-#else
-	{
-	words[i] = swap(input[i]);
+
+	for (int i = 0; i < 16; i++) {
+		#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+			words[i] = input[i];
+		#else
+			words[i] = swap(input[i]);
+		#endif
 	}
-#endif
 
 	// extend to 80 words
 	for (int i = 16; i < 80; i++) {
-	words[i] = rotate(words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1);
+		words[i] = rotate(words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1);
 	}
 
 	// first round
@@ -169,7 +166,7 @@ void SHA1::processBlock(const void * data) {
 
 /// add arbitrary number of bytes
 void SHA1::add(const void * data, size_t numBytes) {
-	const uint8_t * current = (const uint8_t *) data;
+	const auto * current = (const uint8_t *) data;
 
 	if (m_bufferSize > 0) {
 		while (numBytes > 0 && m_bufferSize < BlockSize) {
@@ -187,7 +184,7 @@ void SHA1::add(const void * data, size_t numBytes) {
 
 	// no more data ?
 	if (numBytes == 0) {
-	return;
+		return;
 	}
 
 	// process full blocks
@@ -205,77 +202,83 @@ void SHA1::add(const void * data, size_t numBytes) {
 	}
 }
 
-
 /// process final block, less than 64 bytes
 void SHA1::processBuffer() {
-	// the input bytes are considered as bits strings, where the first bit is the most significant bit of the byte
+	// the input bytes are considered as bits strings, where the
+	// first bit is the most significant bit of the byte
 
 	// - append "1" bit to message
 	// - append "0" bits until message length in bit mod 512 is 448
 	// - append length as 64 bit integer
 
 	// number of bits
-	size_t paddedLength = m_bufferSize * 8;
+	size_t paddedLength = m_bufferSize * 8U;
 
 	// plus one bit set to 1 (always appended)
 	paddedLength++;
 
 	// number of bits must be (numBits % 512) = 448
-	size_t lower11Bits = paddedLength & 511;
-	if (lower11Bits <= 448) {
-	paddedLength += 448 - lower11Bits;
+	size_t lower11Bits = paddedLength & 511U;
+
+	if (lower11Bits <= 448U) {
+		paddedLength += 448U - lower11Bits;
 	} else {
-paddedLength += 512 + 448 - lower11Bits;
+		paddedLength += 512U + 448U - lower11Bits;
 	}
+
 	// convert from bits to bytes
-	paddedLength /= 8;
+	paddedLength /= 8U;
 
 	// only needed if additional data flows over into a second block
 	unsigned char extra[BlockSize];
 
 	// append a "1" bit, 128 => binary 10000000
 	if (m_bufferSize < BlockSize) {
-	m_buffer[m_bufferSize] = 128;
+		m_buffer[m_bufferSize] = 128U;
 	} else {
-extra[0] = 128;
+		extra[0] = 128U;
 	}
 
 	size_t i;
+
 	for (i = m_bufferSize + 1; i < BlockSize; i++) {
-	m_buffer[i] = 0;
+		m_buffer[i] = 0;
 	}
+
 	for (; i < paddedLength; i++) {
-	extra[i - BlockSize] = 0;
+		extra[i - BlockSize] = 0;
 	}
 
 	// add message length in bits as 64 bit number
 	uint64_t msgBits = 8 * (m_numBytes + m_bufferSize);
+
 	// find right position
 	unsigned char * addLength;
+
 	if (paddedLength < BlockSize) {
-	addLength = m_buffer + paddedLength;
+		addLength = m_buffer + paddedLength;
 	} else {
-addLength = extra + paddedLength - BlockSize;
+		addLength = extra + paddedLength - BlockSize;
 	}
 
 	// must be big endian
-	*addLength++ = (unsigned char) ((msgBits >> 56) & 0xFF);
-	*addLength++ = (unsigned char) ((msgBits >> 48) & 0xFF);
-	*addLength++ = (unsigned char) ((msgBits >> 40) & 0xFF);
-	*addLength++ = (unsigned char) ((msgBits >> 32) & 0xFF);
-	*addLength++ = (unsigned char) ((msgBits >> 24) & 0xFF);
-	*addLength++ = (unsigned char) ((msgBits >> 16) & 0xFF);
-	*addLength++ = (unsigned char) ((msgBits >> 8) & 0xFF);
-	*addLength = (unsigned char) (msgBits & 0xFF);
+	*addLength++ = (unsigned char) ((msgBits >> 56U) & 0xFFU);
+	*addLength++ = (unsigned char) ((msgBits >> 48U) & 0xFFU);
+	*addLength++ = (unsigned char) ((msgBits >> 40U) & 0xFFU);
+	*addLength++ = (unsigned char) ((msgBits >> 32U) & 0xFFU);
+	*addLength++ = (unsigned char) ((msgBits >> 24U) & 0xFFU);
+	*addLength++ = (unsigned char) ((msgBits >> 16U) & 0xFFU);
+	*addLength++ = (unsigned char) ((msgBits >> 8U) & 0xFFU);
+	*addLength   = (unsigned char) (msgBits & 0xFFU);
 
 	// process blocks
 	processBlock(m_buffer);
+
 	// flowed over into a second block ?
 	if (paddedLength > BlockSize) {
-	processBlock(extra);
+		processBlock(extra);
 	}
 }
-
 
 /// return latest hash as 40 hex characters
 std::string SHA1::getHash() {
@@ -286,39 +289,40 @@ std::string SHA1::getHash() {
 	// convert to hex string
 	std::string result;
 	result.reserve(2 * HashBytes);
-	for (int i = 0; i < HashBytes; i++) {
-		static const char dec2hex[16 + 1] = "0123456789abcdef";
-		result += dec2hex[(rawHash[i] >> 4) & 15];
-		result += dec2hex[rawHash[i] & 15];
+
+	for (unsigned int i : rawHash) {
+		static const char dec2hex[16U + 1U] = "0123456789abcdef";
+		result += dec2hex[(i >> 4U) & 15U];
+		result += dec2hex[i & 15U];
 	}
 
 	return result;
 }
 
-
 /// return latest hash as bytes
 void SHA1::getHash(unsigned char buffer[SHA1::HashBytes]) {
 	// save old hash if buffer is partially filled
 	uint32_t oldHash[HashValues];
+
 	for (int i = 0; i < HashValues; i++) {
-	oldHash[i] = m_hash[i];
+		oldHash[i] = m_hash[i];
 	}
 
 	// process remaining bytes
 	processBuffer();
 
 	unsigned char * current = buffer;
-	for (int i = 0; i < HashValues; i++) {
-		*current++ = (m_hash[i] >> 24) & 0xFF;
-		*current++ = (m_hash[i] >> 16) & 0xFF;
-		*current++ = (m_hash[i] >> 8) & 0xFF;
-		*current++ = m_hash[i] & 0xFF;
+
+	for (size_t i = 0; i < HashValues; i++) {
+		*current++ = (m_hash[i] >> 24U) & 0xFFU;
+		*current++ = (m_hash[i] >> 16U) & 0xFFU;
+		*current++ = (m_hash[i] >> 8U) & 0xFFU;
+		*current++ = m_hash[i] & 0xFFU;
 
 		// restore old hash
 		m_hash[i] = oldHash[i];
 	}
 }
-
 
 /// compute SHA1 of a memory block
 std::string SHA1::operator ()(const void * data, size_t numBytes) {
@@ -327,7 +331,6 @@ std::string SHA1::operator ()(const void * data, size_t numBytes) {
 	return getHash();
 }
 
-
 /// compute SHA1 of a string, excluding final zero
 std::string SHA1::operator ()(const std::string & text) {
 	reset();
@@ -335,6 +338,4 @@ std::string SHA1::operator ()(const std::string & text) {
 	return getHash();
 }
 
-} // namespace HashLibrary
-
-} // namespace Balau
+} // namespace Balau::HashLibrary

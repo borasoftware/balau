@@ -51,19 +51,17 @@ inline bool operator == (const Element & lhs, const Element & rhs) {
 class TestExecutor {
 	private: ArrayBlockingQueue<Element> & queue;
 	private: SynchronizedQueue<Element> testQueue;
-	private: bool shouldFinish;
+	private: std::atomic_bool shouldFinish;
 	private: std::thread thread;
 	private: std::mutex mutex;
-	private: std::condition_variable condition;
 
-	public: TestExecutor(ArrayBlockingQueue<Element> & queue_)
+	public: explicit TestExecutor(ArrayBlockingQueue<Element> & queue_)
 		: queue(queue_)
 		, shouldFinish(false)
 		, thread(TestExecutor::launch, this) {}
 
-	public: ~TestExecutor() {
+	public: void finish() {
 		shouldFinish = true;
-		condition.notify_one();
 		thread.join();
 	}
 
@@ -110,6 +108,8 @@ void ArrayBlockingQueueTest::fullQueue() {
 		AssertThat(queue.empty(), is(true));
 		AssertThat(queue.full(), is(false));
 	}
+
+	executor.finish();
 }
 
 } // namespace Container

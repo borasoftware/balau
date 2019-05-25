@@ -1,5 +1,3 @@
-#include <utility>
-
 // @formatter:off
 //
 // Balau core C++ library
@@ -130,55 +128,69 @@ void HttpServer::startAsync() {
 	std::unique_lock<std::mutex> lock(*mutex);
 
 	if (!workers.empty()) {
-		BalauBalauLogInfo(
-			state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
-		);
-
+		BalauBalauLogWarn(state->logger, "HTTP server {}:{} already running", state->endpoint.address(), state->endpoint.port());
 		return;
 	}
 
 	BalauBalauLogInfo(state->logger, "Starting HTTP server {}:{}", state->endpoint.address(), state->endpoint.port());
 
-	startWorkerThreads(workerCount);
+	ioContext->restart();
+	workers.reserve(workerCount);
+	launched->store(0U);
 
-	BalauBalauLogInfo(
-		  state->logger
-		, "HTTP server {}:{} started with {} workers"
-		, state->endpoint.address()
-		, state->endpoint.port()
-		, workerCount
+	// Launch the first worker thread that also launches the listener.
+	workers.emplace_back(
+		[this] {
+			launchListener();
+			workerThreadFunction(0);
+		}
 	);
+
+	// Wait until the listener launching thread has started.
+	while (launched->load() != 1U) {
+		System::Sleep::milliSleep(10);
+	}
+
+	// Launch the remaining worker threads.
+	for (size_t workerIndex = 0; workerIndex < workerCount - 1; workerIndex++) {
+		workers.emplace_back([workerIndex, this] { workerThreadFunction(workerIndex); });
+	}
+
+	while (launched->load() != workerCount) {
+		System::Sleep::milliSleep(10);
+	}
 }
 
 void HttpServer::startSync() {
-	{
-		std::unique_lock<std::mutex> lock(*mutex);
+	std::unique_lock<std::mutex> lock(*mutex);
 
-		if (!workers.empty()) {
-			BalauBalauLogWarn(
-				state->logger, "HTTP server {}:{} already started", state->endpoint.address(), state->endpoint.port()
-			);
+	if (!workers.empty()) {
+		BalauBalauLogWarn(state->logger, "HTTP server {}:{} already running", state->endpoint.address(), state->endpoint.port());
+		return;
+	}
 
-			return;
-		}
+	BalauBalauLogInfo(state->logger, "Starting HTTP server {}:{}", state->endpoint.address(), state->endpoint.port());
 
-		BalauBalauLogInfo(
-			state->logger, "Starting HTTP server {}:{}", state->endpoint.address(), state->endpoint.port()
-		);
+	ioContext->restart();
 
-		startWorkerThreads(workerCount - 1);
+	// This thread will be one of the IO context threads.
+	launchListener();
+
+	workers.reserve(workerCount - 1);
+	launched->store(0U);
+
+	for (size_t workerIndex = 0; workerIndex < workerCount - 1; workerIndex++) {
+		workers.emplace_back([workerIndex, this] { workerThreadFunction(workerIndex); });
 	}
 
 	// Last worker is on this thread.
 	const std::string previousThreadName = System::ThreadName::getName();
 
-	workerThreadFunction(workerCount - 1, true);
+	workerThreadFunction(workerCount - 1);
 
 	stop(false);
 
-	if (!previousThreadName.empty()) {
-		System::ThreadName::setName(previousThreadName);
-	}
+	System::ThreadName::setName(previousThreadName);
 }
 
 bool HttpServer::isRunning() {
@@ -308,8 +320,7 @@ std::shared_ptr<HttpWebApp> HttpServer::createHttpHandler(const std::shared_ptr<
 	return std::shared_ptr<HttpWebApp>(new HttpWebApps::RoutingHttpWebApp(std::move(routing)));
 }
 
-std::shared_ptr<WsWebApp> HttpServer::createWsHandler(const std::shared_ptr<EnvironmentProperties> & configuration,
-                                                      BalauLogger & logger) {
+std::shared_ptr<WsWebApp> HttpServer::createWsHandler(const std::shared_ptr<EnvironmentProperties> & configuration, BalauLogger & logger) {
 	auto webAppConfigurations = configuration->hasComposite("ws")
 		? configuration->getComposite("ws")
 		: std::make_shared<EnvironmentProperties>();
@@ -389,34 +400,20 @@ void HttpServer::addToHttpRoutingTrie(HttpWebApps::RoutingHttpWebApp::Routing & 
 	}
 }
 
-void HttpServer::startWorkerThreads(size_t thisWorkerCount) {
-	ioContext->restart();
-
+void HttpServer::launchListener() {
 	listener = std::make_unique<Impl::Listener>(state, *ioContext);
 
 	if (!listener->isOpen()) {
 		ThrowBalauException(
 			  Exception::NetworkException
-			, "Listener on " + toString(state->endpoint.address()) + ":"
-			+ ::toString(state->endpoint.port()) + " did not initialise correctly."
+			, ::toString("Listener on ", state->endpoint.address(), ":", state->endpoint.port(), " did not initialise correctly.")
 		);
 	}
 
 	listener->doAccept();
-
-	workers.reserve(thisWorkerCount);
-	launched->store(0U);
-
-	for (size_t workerIndex = 0; workerIndex < thisWorkerCount; workerIndex++) {
-		workers.emplace_back([workerIndex, this] { workerThreadFunction(workerIndex, false); });
-	}
-
-	while (launched->load() != thisWorkerCount) {
-		System::Sleep::milliSleep(10);
-	}
 }
 
-void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
+void HttpServer::workerThreadFunction(size_t workerIndex) {
 	if (!threadNamePrefix.empty()) {
 		System::ThreadName::setName(threadNamePrefix + "-" + ::toString(workerIndex));
 	}
@@ -429,8 +426,8 @@ void HttpServer::workerThreadFunction(size_t workerIndex, bool blocking) {
 		, workerIndex
 	);
 
-	// Log started message if this is the main thread blocking.
-	if (blocking) {
+	// Log started message if this is the last worker thread.
+	if (workerIndex == workerCount - 1) {
 		BalauBalauLogInfo(
 			  state->logger
 			, "HTTP server {}:{} started with {} workers"

@@ -27,6 +27,8 @@
 #include <Balau/Testing/Assertions.hpp>
 #include <Balau/Util/Vectors.hpp>
 
+#include <mutex>
+
 namespace Balau {
 
 class Logger;
@@ -90,6 +92,7 @@ class FileTestWriter : public TestWriter {
 	public: explicit FileTestWriter(const Resource::File & file) : writeResource(file) {}
 
 	public: void writeString(const std::string & str) override {
+		std::lock_guard<std::mutex> lock(mutex);
 		writeResource.writeStream() << str;
 	}
 
@@ -100,6 +103,7 @@ class FileTestWriter : public TestWriter {
 	////////////////////////// Private implementation /////////////////////////
 
 	private: Resource::FileByteWriteResource writeResource;
+	private: std::mutex mutex;
 };
 
 ///

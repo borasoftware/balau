@@ -1,3 +1,5 @@
+#include <utility>
+
 // @formatter:off
 //
 // Balau core C++ library
@@ -32,8 +34,8 @@ class BindingMap {
 		Impl::BindingKey key;
 		std::unique_ptr<Impl::AbstractBinding> value;
 
-		Entry(const Impl::BindingKey & key_, std::unique_ptr<Impl::AbstractBinding> && value_)
-			: key(key_)
+		Entry(Impl::BindingKey key_, std::unique_ptr<Impl::AbstractBinding> && value_)
+			: key(std::move(key_))
 			, value(std::move(value_)) {}
 
 		Entry(Entry && rhs) noexcept
@@ -44,7 +46,7 @@ class BindingMap {
 	public: class ConstIterator {
 		friend class BindingMap;
 
-		private: ConstIterator(const BindingMap * parent_)
+		private: explicit ConstIterator(const BindingMap * parent_)
 			: parent(parent_)
 			, bucketIndex(0)
 			, entryIndex(0) {

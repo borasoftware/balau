@@ -46,6 +46,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #################################### OPTIONS ##################################
 
@@ -148,7 +149,7 @@ include_directories(${CMAKE_BINARY_DIR})
 #
 # Common compiler switches used in targets.
 #
-set(BALAU_CXX_FLAGS "-fPIC -Wall -pedantic -Wextra")
+set(BALAU_CXX_FLAGS "-fPIC -Wall -Wextra")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-missing-braces")
@@ -159,8 +160,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-function")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-parameter") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-ignored-qualifiers") # Required for Boost Beast headers.
-	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
-	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-nullability-extension") # Required for libzip 1.5.2.
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -168,10 +167,17 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-lambda-capture") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-private-field")
 	set(BALAU_CXX_FLAGS_DEBUG "${BALAU_CXX_FLAGS_DEBUG} -fstandalone-debug")
+
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0.0)
+		set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
+	endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# using GCC
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-but-set-parameter")
-	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-implicit-fallthrough") # Required for Boost Locale library.
+
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0.0)
+		set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-implicit-fallthrough") # Required for Boost Locale library.
+	endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 	# using Intel C++
 	message(FATAL_ERROR "Balau has not been tested with Intel C++.
@@ -814,6 +820,75 @@ add_custom_target(
 )
 
 add_dependencies(RunBalauTests BalauTests)
+
+############################## CODE QUALITY TOOLS #############################
+
+#
+# A targt to run Memcheck.
+#
+# This target requires CppCheck.
+#
+# This target requires Valgrind.
+#
+add_custom_target(
+	RunBalauTestsMemcheck
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	COMMAND valgrind --tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --read-var-info=yes ./BalauTests SingleThreaded
+)
+
+add_dependencies(RunBalauTestsMemcheck BalauTests)
+
+#
+# A targt to run Memcheck with the WorkerThreads execution model..
+#
+# This target requires Valgrind.
+#
+add_custom_target(
+	RunBalauTestsMemcheckWorkerThreads
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	COMMAND valgrind --tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --read-var-info=yes ./BalauTests WorkerThreads
+)
+
+add_dependencies(RunBalauTestsMemcheck BalauTests)
+
+#
+# A targt to run Helgrind.
+#
+# This target requires Valgrind.
+#
+add_custom_target(
+	RunBalauTestsHelgrind
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	COMMAND valgrind --tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --suppressions=../../src/test/data/balau-helgrind.supp ./BalauTests SingleThreaded
+)
+
+add_dependencies(RunBalauTestsHelgrind BalauTests)
+
+#
+# A targt to run CppCheck on the compile_commands.json file.
+#
+# This target requires CppCheck.
+#
+add_custom_target(
+	RunCppCheck
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMAND cppcheck --enable=warning,performance,information --project=compile_commands.json -j 4
+)
+
+add_dependencies(RunCppCheck BalauTests)
+
+#
+# A targt to run CppCheck on the compile_commands.json file and create an XML report file.
+#
+# This target requires CppCheck.
+#
+add_custom_target(
+	RunCppCheckXml
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMAND cppcheck --enable=warning,performance,information --project=compile_commands.json --xml balau_cppcheck.xml -j 4
+)
+
+add_dependencies(RunCppCheck BalauTests)
 
 ################################# EXAMPLE APPS ################################
 

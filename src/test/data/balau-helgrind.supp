@@ -1,0 +1,83 @@
+
+{
+   BALAU_LOGGING_STREAM_STDOUT_IS_THREAD_SAFE
+   Helgrind:Race
+   ...
+   fun:*Balau*LoggingSystem*StdOutLoggingStream*
+}
+
+{
+   BALAU_TEST_LOGGING_STREAM_STDOUT_IS_THREAD_SAFE
+   Helgrind:Race
+   ...
+   fun:*Balau*Testing*StdOutTestWriter*
+}
+
+{
+   BALAU_LOGGING_STREAM_STDERR_IS_THREAD_SAFE
+   Helgrind:Race
+   ...
+   fun:*Balau*LoggingSystem*StdErrLoggingStream*
+}
+
+{
+   MKTIME_HAS_CACHED_VALUE
+   Helgrind:Race
+   ...
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:ranged_convert
+   fun:__mktime_internal
+}
+
+{
+   BEAST_STATIC_INITIALISATION_IS_CONST_OBJECT
+   Helgrind:Race
+   ...
+   fun:_ZNK5boost*beast*http*detail*field_table*
+}
+
+{
+   BEAST_STATIC_INITIALISATION_IS_CONST_OBJECT2
+   Helgrind:Race
+   ...
+   fun:*boost*beast*http*basic_fields*
+}
+
+{
+   BOOST_ASIO_CONDITION_VARIABLE1
+   Helgrind:Misc
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:*boost*asio*detail*posix_event*maybe_unlock_and_signal_one*
+   fun:*boost*asio*detail*conditionally_enabled_event*maybe_unlock_and_signal_one*
+}
+
+{
+   BOOST_ASIO_CONDITION_VARIABLE2
+   Helgrind:Misc
+   ...
+   fun:*boost*asio*detail*posix_event*unlock_and_signal_one*conditionally_enabled_mutex*
+   fun:*boost*asio*detail*conditionally_enabled_event*unlock_and_signal_one*
+}
+
+{
+   BOOST_ASIO_TO_INVESTIGATE1
+   Helgrind:Race
+   ...
+   fun:*boost*asio*detail*epoll_reactor*
+}
+
+{
+   BOOST_ASIO_TO_INVESTIGATE2
+   Helgrind:Race
+   ...
+   fun:*boost*asio*detail*op_queue_access*
+}
+
+{
+   BOOST_ASIO_TO_INVESTIGATE3
+   Helgrind:Race
+   ...
+   fun:*boost*asio*detail*scheduler*do_run_one*
+}

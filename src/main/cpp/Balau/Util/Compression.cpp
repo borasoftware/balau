@@ -13,10 +13,11 @@
 
 #ifdef BALAU_LIBZIP_ENABLED
 
+#define _Nonnull
+#define _Nullable
 #include <zip.h>
 
 namespace Balau::Util {
-
 
 std::string getLibZipErrorAsString(int error) {
 	switch (error) {

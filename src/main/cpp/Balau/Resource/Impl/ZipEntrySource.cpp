@@ -10,10 +10,12 @@
 
 #ifdef BALAU_LIBZIP_ENABLED
 
+#define _Nonnull
+#define _Nullable
+#include <zip.h>
+
 #include "ZipEntrySource.hpp"
 #include "../../Exception/ResourceExceptions.hpp"
-
-#include <zip.h>
 
 namespace Balau::Resource::Impl {
 

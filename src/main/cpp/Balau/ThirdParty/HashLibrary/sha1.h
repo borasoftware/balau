@@ -12,19 +12,16 @@
 
 // define fixed size integer types
 #ifdef _MSC_VER
-// Windows
-typedef unsigned __int8  uint8_t;
-typedef unsigned __int32 uint32_t;
-typedef unsigned __int64 uint64_t;
+	// Windows
+	typedef unsigned __int8  uint8_t;
+	typedef unsigned __int32 uint32_t;
+	typedef unsigned __int64 uint64_t;
 #else
-// GCC
-#include <stdint.h>
-
+	// GCC
+	#include <stdint.h>
 #endif
 
-namespace Balau {
-
-namespace HashLibrary {
+namespace Balau::HashLibrary {
 
 /// compute SHA1 hash
 /** Usage:
@@ -41,56 +38,55 @@ namespace HashLibrary {
   */
 class SHA1 //: public Hash
 {
-	public:
 	/// split into 64 byte blocks (=> 512 bits), hash is 20 bytes long
-	enum {
+	public: enum {
 		BlockSize = 512 / 8, HashBytes = 20
 	};
 
 	/// same as reset()
-	SHA1();
+	public: SHA1();
 
 	/// compute SHA1 of a memory block
-	std::string operator ()(const void * data, size_t numBytes);
+	public: std::string operator () (const void * data, size_t numBytes);
 
 	/// compute SHA1 of a string, excluding final zero
-	std::string operator ()(const std::string & text);
+	public: std::string operator () (const std::string & text);
 
 	/// add arbitrary number of bytes
-	void add(const void * data, size_t numBytes);
+	public: void add(const void * data, size_t numBytes);
 
 	/// return latest hash as 40 hex characters
-	std::string getHash();
+	public: std::string getHash();
 
 	/// return latest hash as bytes
-	void getHash(unsigned char buffer[HashBytes]);
+	public: void getHash(unsigned char buffer[HashBytes]);
 
 	/// restart
-	void reset();
+	public: void reset();
 
-	private:
 	/// process 64 bytes
-	void processBlock(const void * data);
+	private: void processBlock(const void * data);
 
 	/// process everything left in the internal buffer
-	void processBuffer();
+	private: void processBuffer();
 
 	/// size of processed data in bytes
-	uint64_t m_numBytes;
-	/// valid bytes in m_buffer
-	size_t m_bufferSize;
-	/// bytes not processed yet
-	uint8_t m_buffer[BlockSize];
+	private: uint64_t m_numBytes;
 
-	enum {
+	/// valid bytes in m_buffer
+	private: size_t m_bufferSize;
+
+	/// bytes not processed yet
+	private: uint8_t m_buffer[BlockSize] { 0U };
+
+	private: enum {
 		HashValues = HashBytes / 4
 	};
+
 	/// hash, stored as integers
-	uint32_t m_hash[HashValues];
+	private: uint32_t m_hash[HashValues] { 0U };
 };
 
-} // namespace HashLibrary
-
-} // namespace Balau
+} // namespace Balau::HashLibrary
 
 #endif // BALAU_TP__HASH_LIBRARY__SHA1_H

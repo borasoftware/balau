@@ -80,6 +80,13 @@ struct User final {
 				}
 			} while (!repeat);
 
+			if (result == nullptr || result->pw_dir == nullptr) {
+				ThrowBalauException(
+					  Exception::NotFoundException
+					, ::toString("Failed to locate the user home directory: getpwnam_r raised an error, errno = ", errno)
+				);
+			}
+
 			return Resource::File(result->pw_dir);
 		#elif BOOST_OS_WINDOWS
 			std::string h = std::getenv("USERPROFILE");
