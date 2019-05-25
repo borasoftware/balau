@@ -41,12 +41,6 @@
 
 					<cell>Valgrind is reporting a memory leak in Boost Asio <emph>SSL::context</emph>. The call stack ends with a malloc call initiated by the OpenSSL call <emph>ERR_get_state</emph> (tested OpenSSL version 1.1). However, since version 1.1, OpenSSL is reported to clean up all thread local allocations itself.</cell>
 				</row>
-
-				<row>
-					<cell>GCC reports an<newline />"extra ‘;’ warning"</cell>
-
-					<cell>This is due to superfluous semicolons in boost/process/detail/posix/io_context_ref.hpp.</cell>
-				</row>
 			</body>
 		</table>
 	</chapter>

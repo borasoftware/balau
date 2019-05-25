@@ -8,23 +8,14 @@
 #
 
 #
-# This Doxygen configuration is used from a CMake target run via build ALL.
-#
-# If you wish to manually run Doxygen to create the API documentation, execute
-# the following commands in the root folder of your working copy.
-#
-#   mkdir build    # The 'build' folder will be used as the build location.
-#   cd build
-#   doxygen ../src/doc/api/Doxyfile
-#   cp -R ../src/doc/bdml .
-#   cp -R ../src/doc/resources .
+# This Doxygen configuration is used in a CMake target after variable substitution.
 #
 
 # ############## Project related options ##############
 
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Balau"
-PROJECT_NUMBER         = 2019.5.1
+PROJECT_NUMBER         = @Balau_VERSION@
 PROJECT_BRIEF          = "Core C++ library"
 PROJECT_LOGO           = ../src/doc/resources/images/BalauLogoWhite.png
 CREATE_SUBDIRS         = NO

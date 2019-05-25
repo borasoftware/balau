@@ -29,10 +29,8 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	void postRequest();
 	void newClient();
 
-	static void assertResponse(Response<CharVectorBody> & response,
-	                           const char * bodyStart,
-	                           const char * reasonStr,
-	                           Status status);
+	static void assertResponse(Response<CharVectorBody> & response, const char * bodyStart, const char * reasonStr, Status status);
+	static void assertResponse(EmptyResponse & response, const char * reasonStr, Status status);
 };
 
 } // namespace Balau::Network::Http

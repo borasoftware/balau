@@ -281,14 +281,14 @@ class HttpServer {
 	                                          const std::string & locationStr,
 	                                          std::shared_ptr<HttpWebApp> & webApp);
 
-	private: void startWorkerThreads(size_t thisWorkerCount);
-	private: void workerThreadFunction(size_t workerIndex, bool blocking);
+	private: void launchListener();
+	private: void workerThreadFunction(size_t workerIndex);
 	private: void doRegisterSignalHandler();
 	private: void handleSignal(const boost::system::error_code & error, int sig);
 
 	private: std::shared_ptr<HttpServerConfiguration> state;
 	private: const std::string threadNamePrefix;
-	private: size_t workerCount;
+	private: const size_t workerCount;
 	private: std::vector<std::thread> workers;
 	private: std::unique_ptr<std::atomic_uint> launched;
 	private: std::shared_ptr<Impl::Listener> listener;

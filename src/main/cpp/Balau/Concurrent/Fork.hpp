@@ -48,7 +48,7 @@ class Fork {
 	/// handle child termination.
 	///
 	/// @param  function the function to run in the child process
-	/// @param  exitChild if set to true, exit(function) is called
+	/// @param  exitChild if set to true, exit(int) is called with the the exit state of the function
 	/// @return the child pid for the parent process, the exit state of the function for the child process if it returns
 	/// @throw ForkException if the fork call failed
 	///
@@ -58,10 +58,12 @@ class Fork {
 		const int pid = ::fork();
 
 		if (pid == 0) {
+			const int status = function();
+
 			if (exitChild) {
-				exit(function());
+				exit(status);
 			} else {
-				return function();
+				return status;
 			}
 		} else if (pid > 0) {
 			return pid;

@@ -18,10 +18,11 @@ cmake_minimum_required(VERSION 3.10.2)
 # When updating the version, also update:
 #  - BalauConfig.cmake
 #  - BalauConfigVersion.cmake
-#  - Doxyfile
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.5.1)
+project(Balau VERSION 2019.5.2)
+
+configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
 ############################# CMAKE CONFIGURATION #############################
 
@@ -45,6 +46,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+#################################### OPTIONS ##################################
+
+OPTION(ENABLE_ZLIB "Enable ZLib library wrappers for gzip support" ON)
+OPTION(ENABLE_ZIP  "Enable LibZip library wrappers Zipper and Unzipper" ON)
+OPTION(ENABLE_CURL "Enable use of Curl library" ON)
 
 ############################## USER CONFIGURATION #############################
 
@@ -141,7 +149,7 @@ include_directories(${CMAKE_BINARY_DIR})
 #
 # Common compiler switches used in targets.
 #
-set(BALAU_CXX_FLAGS "-fPIC -Wall -pedantic -Wextra")
+set(BALAU_CXX_FLAGS "-fPIC -Wall -Wextra")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-missing-braces")
@@ -152,17 +160,24 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-function")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-parameter") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-ignored-qualifiers") # Required for Boost Beast headers.
-	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# using Clang
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-lambda-capture") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-private-field")
+	set(BALAU_CXX_FLAGS_DEBUG "${BALAU_CXX_FLAGS_DEBUG} -fstandalone-debug")
+
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0.0)
+		set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
+	endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# using GCC
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-but-set-parameter")
-	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-implicit-fallthrough") # Required for Boost Locale library.
+
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0.0)
+		set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-implicit-fallthrough") # Required for Boost Locale library.
+	endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 	# using Intel C++
 	message(FATAL_ERROR "Balau has not been tested with Intel C++.
@@ -174,9 +189,8 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0 -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0 -g3")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-
 
 #
 # Turn on trace logging if BALAU_TRACE is defined.
@@ -258,28 +272,60 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 set(ALL_LIBS ${ALL_LIBS} Threads::Threads)
 
-############################### OTHER LIBRARIES ###############################
+############################ COMPRESSION LIBRARIES ############################
 
-find_package(ZLIB REQUIRED)
-include_directories(${ZLIB_INCLUDE_DIR})
-set(ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
-message(STATUS "ZLIB include dir: ${ZLIB_INCLUDE_DIR}")
-message(STATUS "ZLIB libraries: ${ZLIB_LIBRARIES}")
+if (ENABLE_ZLIB)
+	find_package(ZLIB REQUIRED)
+	include_directories(${ZLIB_INCLUDE_DIR})
+	find_package_handle_standard_args(ZLIB DEFAULT_MSG ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
+	set(ALL_LIBS ${ALL_LIBS} ${ZLIB_LIBRARIES})
+	message(STATUS "ZLIB include dir: ${ZLIB_INCLUDE_DIR}")
+	message(STATUS "ZLIB libraries: ${ZLIB_LIBRARIES}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_ZLIB_ENABLED")
+endif ()
+
+if (ENABLE_ZIP)
+	find_path(LIBZIP_INCLUDE_DIR zip.h zipconf.h)
+	find_library(LIBZIP_LIBRARY NAMES zip libzip)
+	find_package_handle_standard_args(LIBZIP DEFAULT_MSG LIBZIP_LIBRARY LIBZIP_INCLUDE_DIR)
+
+	if (LIBZIP_FOUND)
+		include_directories(${LIBZIP_INCLUDE_DIR})
+		set(ALL_LIBS ${ALL_LIBS} ${LIBZIP_LIBRARY})
+		message(STATUS "LIBZIP include dir: ${LIBZIP_INCLUDE_DIR}")
+		message(STATUS "LIBZIP library: ${LIBZIP_LIBRARY}")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_LIBZIP_ENABLED")
+	else ()
+		message(FATAL "LibZip library not found.")
+	endif ()
+endif ()
+
+################################ CURL LIBRARY #################################
+
+if (ENABLE_CURL)
+	find_path(LIBCURL_INCLUDE_DIR curl/curl.h)
+	find_library(LIBCURL_LIBRARY NAMES curl libcurl)
+	find_package_handle_standard_args(LIBCURL DEFAULT_MSG LIBCURL_LIBRARY LIBCURL_INCLUDE_DIR)
+
+	if (LIBCURL_FOUND)
+		include_directories(${LIBCURL_INCLUDE_DIR})
+		set(ALL_LIBS ${ALL_LIBS} ${LIBCURL_LIBRARY})
+		message(STATUS "LIBCURL include dir: ${LIBCURL_INCLUDE_DIR}")
+		message(STATUS "LIBCURL library: ${LIBCURL_LIBRARY}")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_LIBCURL_ENABLED")
+	else ()
+		message(FATAL "LibCurl library not found.")
+	endif ()
+endif ()
+
+############################### OTHER LIBRARIES ###############################
 
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})
 message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-
-# TODO
-#find_package(LIBZIP REQUIRED)
-#include_directories(${LIBZIP_INCLUDE_DIR})
-#set(ALL_LIBS ${ALL_LIBS} ${LIBZIP_LIBRARIES})
-#message(STATUS "LIBZIP include dir: ${LIBZIP_INCLUDE_DIR}")
-#message(STATUS "LIBZIP libraries: ${LIBZIP_LIBRARIES}")
-
-set(ALL_LIBS ${ALL_LIBS} rt zip curl)
+set(ALL_LIBS ${ALL_LIBS} rt)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
 
 ################################## BACKPORTS ##################################
@@ -615,7 +661,7 @@ add_library(Balau STATIC ${THIRD_PARTY_SOURCE_FILES} ${BALAU_SOURCE_FILES})
 add_custom_target(
 	BalauApiDoc
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMAND doxygen ${CMAKE_SOURCE_DIR}/src/doc/api/Doxyfile
+	COMMAND doxygen ${CMAKE_BINARY_DIR}/Doxyfile
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/doc/bdml ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/resources
@@ -774,6 +820,75 @@ add_custom_target(
 )
 
 add_dependencies(RunBalauTests BalauTests)
+
+############################## CODE QUALITY TOOLS #############################
+
+#
+# A targt to run Memcheck.
+#
+# This target requires CppCheck.
+#
+# This target requires Valgrind.
+#
+add_custom_target(
+	RunBalauTestsMemcheck
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	COMMAND valgrind --tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --read-var-info=yes ./BalauTests SingleThreaded
+)
+
+add_dependencies(RunBalauTestsMemcheck BalauTests)
+
+#
+# A targt to run Memcheck with the WorkerThreads execution model..
+#
+# This target requires Valgrind.
+#
+add_custom_target(
+	RunBalauTestsMemcheckWorkerThreads
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	COMMAND valgrind --tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --read-var-info=yes ./BalauTests WorkerThreads
+)
+
+add_dependencies(RunBalauTestsMemcheck BalauTests)
+
+#
+# A targt to run Helgrind.
+#
+# This target requires Valgrind.
+#
+add_custom_target(
+	RunBalauTestsHelgrind
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	COMMAND valgrind --tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --suppressions=../../src/test/data/balau-helgrind.supp ./BalauTests SingleThreaded
+)
+
+add_dependencies(RunBalauTestsHelgrind BalauTests)
+
+#
+# A targt to run CppCheck on the compile_commands.json file.
+#
+# This target requires CppCheck.
+#
+add_custom_target(
+	RunCppCheck
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMAND cppcheck --enable=warning,performance,information --project=compile_commands.json -j 4
+)
+
+add_dependencies(RunCppCheck BalauTests)
+
+#
+# A targt to run CppCheck on the compile_commands.json file and create an XML report file.
+#
+# This target requires CppCheck.
+#
+add_custom_target(
+	RunCppCheckXml
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	COMMAND cppcheck --enable=warning,performance,information --project=compile_commands.json --xml balau_cppcheck.xml -j 4
+)
+
+add_dependencies(RunCppCheck BalauTests)
 
 ################################# EXAMPLE APPS ################################
 

@@ -13,6 +13,20 @@
 
 namespace Balau::Testing::Impl {
 
+thread_local bool TestGroupBase::currentIgnored = false;
+
 TestGroupBase::TestGroupBase() : groupIndex(Testing::TestRunner::getGroupIndex()) {}
+
+bool TestGroupBase::currentIsIgnored() {
+	return currentIgnored;
+}
+
+void TestGroupBase::resetIgnoreCurrent() {
+	currentIgnored = false;
+}
+
+void TestGroupBase::ignoreCurrent() {
+	currentIgnored = true;
+}
 
 } // namespace Balau::Testing::Impl

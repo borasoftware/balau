@@ -12,12 +12,12 @@
 
 #endif
 
-namespace Balau {
-
-namespace HashLibrary {
+namespace Balau::HashLibrary {
 
 /// same as reset()
-MD5::MD5() {
+MD5::MD5()
+	: m_numBytes(0)
+	, m_bufferSize(0) {
 	reset();
 }
 
@@ -377,6 +377,4 @@ std::string MD5::operator ()(const std::string & text) {
 	return getHash();
 }
 
-} // namespace HashLibrary
-
-} // namespace Balau
+} // namespace Balau::HashLibrary

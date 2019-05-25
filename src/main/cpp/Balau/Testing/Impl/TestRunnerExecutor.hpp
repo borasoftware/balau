@@ -14,6 +14,7 @@
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/System/Sleep.hpp>
 #include <Balau/System/ThreadName.hpp>
+#include <Balau/Testing/ExecutionModel.hpp>
 #include <Balau/Testing/Impl/CompositeWriter.hpp>
 #include <Balau/Testing/Impl/FlattenedTestCase.hpp>
 #include <Balau/Testing/Impl/TestCase.hpp>
@@ -101,16 +102,19 @@ class TestRunnerExecutor {
 		const std::string text = pidStr + " - Running test " + testToRun.testName;
 		output << std::left << std::setw((int) maxLineLength) << text;
 		const std::chrono::nanoseconds start = System::SystemClock().nanotime();
-		bool success = runSetup(*testToRun.group, output);
 
-		if (success) {
-			success = runTheTest(testToRun, output);
+		auto status = runSetup(*testToRun.group, output);
+
+		if (status == TestResult::Result::Success) {
+			status = runTheTest(testToRun, output);
 		}
 
-		success = runTeardown(*testToRun.group, output, success);
+		status = runTeardown(*testToRun.group, output, status);
 
-		if (success) {
+		if (status == TestResult::Result::Success) {
 			output << " - passed.";
+		} else if (status == TestResult::Result::Ignored) {
+			output << " - ignored.";
 		}
 
 		const std::chrono::nanoseconds duration = System::SystemClock().nanotime() - start;
@@ -125,7 +129,7 @@ class TestRunnerExecutor {
 				  ns
 				, testToRun.group->groupIndex
 				, testToRun.testIndex
-				, TestResult::Result::Success
+				, status
 				, std::move(outputStr)
 			)
 		);
@@ -133,10 +137,10 @@ class TestRunnerExecutor {
 		System::ThreadName::setName(previousThreadName);
 	}
 
-	private: bool runSetup(TestGroupBase & group, std::ostream & output) {
+	private: TestResult::Result runSetup(TestGroupBase & group, std::ostream & output) {
 		try {
 			group.setup();
-			return true;
+			return TestResult::Result::Success;
 		} catch (const Exception::AssertionException & e) {
 			output << " - FAILED!\n\n"
 			       << "Exception thrown in setup method\n"
@@ -156,13 +160,14 @@ class TestRunnerExecutor {
 			       << extractTypeName(typeid(e).name(), useNamespaces) << "\n\n";
 		}
 
-		return false;
+		return TestResult::Result::Failure;
 	}
 
-	private: bool runTheTest(FlattenedTestCase & testToRun, std::ostream & output) {
+	private: TestResult::Result runTheTest(FlattenedTestCase & testToRun, std::ostream & output) {
 		try {
+			testToRun.group->resetIgnoreCurrent();
 			testToRun.method->run();
-			return true;
+			return testToRun.group->currentIsIgnored() ? TestResult::Result::Ignored : TestResult::Result::Success;
 		} catch (const Exception::AssertionException & e) {
 			output << " - FAILED!\n\n"
 			       << "Assertion failed: " << e.message << "\n\n";
@@ -179,15 +184,15 @@ class TestRunnerExecutor {
 			       << extractTypeName(typeid(e).name(), useNamespaces) << "\n";
 		}
 
-		return false;
+		return TestResult::Result::Failure;
 	}
 
-	private: bool runTeardown(TestGroupBase & group, std::ostream & output, bool success) {
+	private: TestResult::Result runTeardown(TestGroupBase & group, std::ostream & output, TestResult::Result status) {
 		try {
 			group.teardown();
-			return success;
+			return status;
 		} catch (const Exception::AssertionException & e) {
-			if (success) {
+			if (status != TestResult::Result::Failure) {
 				output << " - FAILED!\n\n"
 				       << "Exception thrown in teardown method\n"
 				       << "Assertion failed: " << e.message << "\n\n";
@@ -196,7 +201,7 @@ class TestRunnerExecutor {
 				       << "Assertion failed: " << e.message << "\n\n";
 			}
 		} catch (const std::exception & e) {
-			if (success) {
+			if (status != TestResult::Result::Failure) {
 				output << " - FAILED!\n\n"
 				       << "Exception thrown in teardown method\n"
 				       << "Exception thrown: " << e.what() << "\n"
@@ -210,7 +215,7 @@ class TestRunnerExecutor {
 			// TODO this doesn't work
 			auto e = std::current_exception();
 
-			if (success) {
+			if (status != TestResult::Result::Failure) {
 				output << " - FAILED!\n\n"
 				       << "Exception thrown in teardown method\n"
 				       << "Unknown exception thrown of type: "
@@ -222,7 +227,7 @@ class TestRunnerExecutor {
 			}
 		}
 
-		return false;
+		return TestResult::Result::Failure;
 	}
 
 	protected: void processTestResultMessage(TestResult && message) {

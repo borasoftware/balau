@@ -31,6 +31,11 @@ class WorkerProcessesTestRunnerExecutor : public MultiProcessTestRunnerExecutor 
 		) {}
 
 	public: void run() override {
+		if (tests.empty()) {
+			writer << "No tests to run.\n";
+			return;
+		}
+
 		writer << ("Parent pid = " + ::toString(getpid()) + "\n");
 
 		//
@@ -55,11 +60,8 @@ class WorkerProcessesTestRunnerExecutor : public MultiProcessTestRunnerExecutor 
 
 			TestResult testResult = resultQueue->tryDequeue();
 
-			if (testResult.duration != -1 && testResult.result == TestResult::Result::Ignored) {
-				// A valid test case was dequeued but was set to ignore.
-				++committedRuns;
-			} else if (testResult.duration != -1) {
-				// A valid test case was dequeued and was run.
+			if (testResult.duration != -1) {
+				// A valid test case was dequeued.
 				processTestResultMessage(std::move(testResult));
 				++committedRuns;
 			}

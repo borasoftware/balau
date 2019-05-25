@@ -65,6 +65,11 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 	};
 
 	///
+	/// Signal that the currently executing test case has been ignored by the test itself.
+	///
+	public: void ignore();
+
+	///
 	/// Write additional logging to the test writers.
 	///
 	public: void log(const std::string & string);
@@ -187,11 +192,44 @@ class TestRunner {
 	                       int argvStart = 1,
 	                       bool useNamespaces = false,
 	                       bool pauseAtExit = false) {
-		const auto executionModel = argc > argvStart ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+		const bool executionModelSpecified = argc > argvStart ? isExecutionModel(Util::Strings::toLower(argv[argvStart])) : false;
+		const auto executionModel = executionModelSpecified ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart + 1);
+		r.testList = createTestList(argc, argv, executionModelSpecified ? argvStart + 1 : argvStart);
 		r.writer = Impl::CompositeWriter(StdOutTestWriter());
 		r.concurrencyLevel = r.getConcurrencyLevel();
+		r.executionModel = r.checkOutOfProcessCapability(executionModel);
+		r.setUseNamespaces(useNamespaces);
+		r.pauseAtExit = pauseAtExit;
+		return r.performTestRun();
+	}
+
+	///
+	/// Run the test runner with the execution model specified in the first argv element, the specified concurrency level and the test list specified in subsequent argv elements.
+	///
+	/// The concurrency level will be equal to the number of cores if the
+	/// execution model is WorkerThreads or WorkerProcesses, and the logging
+	/// will output to stdout.
+	///
+	/// @param argc the number of arguments in argv
+	/// @param argv the command line arguments
+	/// @param argvStart the command line argument index of the start of the test list
+	/// @param useNamespaces specify whether to use or ignore test class namespaces
+	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
+	/// @return 0 if all tests passed, 1 otherwise
+	///
+	public: static int run(int argc,
+	                       char * argv[],
+	                       unsigned int concurrencyLevel_,
+	                       int argvStart = 1,
+	                       bool useNamespaces = false,
+	                       bool pauseAtExit = false) {
+		const bool executionModelSpecified = argc > argvStart ? isExecutionModel(Util::Strings::toLower(argv[argvStart])) : false;
+		const auto executionModel = executionModelSpecified ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+		auto & r = runner();
+		r.testList = createTestList(argc, argv, executionModelSpecified ? argvStart + 1 : argvStart);
+		r.writer = Impl::CompositeWriter(StdOutTestWriter());
+		r.concurrencyLevel = concurrencyLevel_;
 		r.executionModel = r.checkOutOfProcessCapability(executionModel);
 		r.setUseNamespaces(useNamespaces);
 		r.pauseAtExit = pauseAtExit;
@@ -364,9 +402,19 @@ class TestRunner {
 	               bool useNamespaces,
 	               bool pauseAtExit,
 	               const WriterItemT & ... writerItems) {
-		const auto executionModel = argc > argvStart ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+		const bool firstArgIsExecutionModel = argc > argvStart ? isExecutionModel(argv[argvStart]) : false;
+		Testing::ExecutionModel executionModel = Testing::SingleThreaded;
+
+		if (firstArgIsExecutionModel) {
+			fromString(executionModel, argv[argvStart]);
+			std::cout << "\nRunning tests for command line specified execution model "
+			          << toString(executionModel) << "\n" << std::endl;
+		} else {
+			std::cout << "\nRunning tests for predefined execution model SingleThreaded\n" << std::endl;
+		}
+
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart + 1);
+		r.testList = createTestList(argc, argv, argvStart + (firstArgIsExecutionModel ? 1 : 0));
 		r.writer = Impl::CompositeWriter(writerItems ...);
 		r.concurrencyLevel = r.getConcurrencyLevel();
 		r.executionModel = r.checkOutOfProcessCapability(executionModel);
@@ -585,7 +633,7 @@ class TestRunner {
 			}
 
 			case WorkerProcesses: {
-				writer << "Run type   = worker processes "
+				writer << "Run type = worker processes "
 				       << "(" << concurrencyLevel << " worker process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
@@ -596,7 +644,7 @@ class TestRunner {
 			}
 
 			case ProcessPerTest: {
-				writer << "Run type   = process per test "
+				writer << "Run type = process per test "
 				       << "(" << concurrencyLevel << " simultaneous process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
@@ -724,15 +772,15 @@ class TestRunner {
 
 		if (failureCount == 0) {
 			writer << "\nALL TESTS PASSED"
-			       << "\n  tests executed: " << Util::Strings::padLeft(::toString(successCount), 6)
-			       << "\n  tests ignored:  " << Util::Strings::padLeft(::toString(ignoredCount), 6)
+			       << "\n  tests passed:  " << Util::Strings::padLeft(::toString(successCount), 6)
+			       << "\n  tests ignored: " << Util::Strings::padLeft(::toString(ignoredCount), 6)
 			       << "\n";
 		} else {
-			writer << "\n***** THERE WERE TEST FAILURES. *****\n\n"
-			       << "Total tests run: " << (successCount + failureCount + ignoredCount) << "\n\n"
-			       << "\n  tests executed: " << Util::Strings::padLeft(::toString(successCount), 6)
-			       << "\n  tests ignored:  " << Util::Strings::padLeft(::toString(ignoredCount), 6)
-			       << "\n  tests failed:   " << Util::Strings::padLeft(::toString(failureCount), 6)
+			writer << "\n***** THERE WERE TEST FAILURES. *****\n"
+			       << "\nTotal tests run: " << (successCount + failureCount + ignoredCount) << "\n\n"
+			       << "\n  tests passed:  " << Util::Strings::padLeft(::toString(successCount), 6)
+			       << "\n  tests ignored: " << Util::Strings::padLeft(::toString(ignoredCount), 6)
+			       << "\n  tests failed:  " << Util::Strings::padLeft(::toString(failureCount), 6)
 			       << "\n\n"
 			       << "Failed tests:\n";
 
@@ -805,6 +853,11 @@ class TestRunner {
 };
 
 ////////////////////////// Test group implementation //////////////////////////
+
+template <typename TestClassT>
+inline void TestGroup<TestClassT>::ignore() {
+	ignoreCurrent();
+}
 
 template <typename TestClassT>
 inline void TestGroup<TestClassT>::log(const std::string & string) {

@@ -69,7 +69,7 @@
 			<entry>start the HTTP server.</entry>
 		</bullets>
 
-		<para>As application is intended to run as a service, the main function will call the blocking method <emph>httpServer->run()</emph>, and will shut down when a <emph>SIGINT</emph> or <emph>SIGTERM</emph> is received. The HTTP server's default signal handler is thus left enabled.</para>
+		<para>As application is intended to run as a service, the main function will call the blocking method <emph>httpServer->startSync()</emph>, and will shut down when a <emph>SIGINT</emph> or <emph>SIGTERM</emph> is received. The HTTP server's default signal handler is thus left enabled.</para>
 
 		<para>The tutorial's main function is presented with a minimum of validation code. A production ready application should provide additional validation.</para>
 
@@ -160,7 +160,7 @@
 					auto server = injector->getShared&lt;Network::Http::HttpServer>();
 
 					// This will block until SIGINT/SIGTERM is received.
-					server->run();
+					server->startSync();
 					return 0;
 				} catch (const std::exception &amp; e) {
 					log.error("Error: {}", e.what());

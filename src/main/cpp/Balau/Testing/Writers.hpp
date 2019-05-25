@@ -27,6 +27,8 @@
 #include <Balau/Testing/Assertions.hpp>
 #include <Balau/Util/Vectors.hpp>
 
+#include <mutex>
+
 namespace Balau {
 
 class Logger;
@@ -90,18 +92,18 @@ class FileTestWriter : public TestWriter {
 	public: explicit FileTestWriter(const Resource::File & file) : writeResource(file) {}
 
 	public: void writeString(const std::string & str) override {
+		std::lock_guard<std::mutex> lock(mutex);
 		writeResource.writeStream() << str;
 	}
 
 	public: std::unique_ptr<TestWriter> clone() const override {
-		return std::unique_ptr<TestWriter>(
-			new FileTestWriter(* static_cast<const Resource::File *>(&writeResource.uri()))
-		);
+		return std::unique_ptr<TestWriter>(new FileTestWriter(writeResource.getFile()));
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: Resource::FileByteWriteResource writeResource;
+	private: std::mutex mutex;
 };
 
 ///

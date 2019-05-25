@@ -35,9 +35,9 @@
 
 		<h2>Introduction</h2>
 
-		<para>A C++ dependency injection framework, with templated binding configuration and get-instance methods. The injector framework provides a code based application configuration mechanism via implementations of the <emph>ApplicationConfiguration</emph> class. Declaration calls within application configuration classes define non-polymophic value (termed <emph>value</emph>), polymophic value (termed <emph>unique</emph>), reference, and singleton bindings.</para>
+		<para>A C++ dependency injection framework. The injector is configured via templated binding functions and provides get-instance methods for non-polymorphic and polymorphic values, references, thread-local and non-thread-local singletons. The code based application configuration mechanism is performed via implementations of the <emph>ApplicationConfiguration</emph> base class. Binding declaration calls within application configuration classes define non-polymorphic value (termed <emph>value</emph>), polymorphic value (termed <emph>unique</emph>), reference, and singleton bindings.</para>
 
-		<para>The dependency injector framework also integrates with the <ref url="Lang/PropertyParser">hierarchical property framework</ref>. This allows typed and untyped (<emph>std::string</emph>) environment properties (simple and composite) to be created in the injector via implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
+		<para>The dependency injection framework also integrates with the <ref url="Lang/PropertyParser">hierarchical property framework</ref>. This allows typed and untyped (<emph>std::string</emph>) environment properties (simple and composite) to be created in the injector via implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
 
 		<para>Using this approach, multiple application processes (one set of processes per application environment) may be run from the same injector configuration. Each environment is configured according to the environment's property file(s) and the environment configuration is validated and loaded into the injector by the meta-configuration contained in the implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
 
@@ -45,7 +45,7 @@
 
 		<para>Using a dependency injection approach for the structural wiring of a software application is useful when the complexity of the application reaches a certain threshold. As an application's source code becomes larger and more complex, manual management of dependencies becomes overly complicated and error prone.</para>
 
-		<para>In this respect, using one or more injectors in the design of a software application reduces complexity, concentrates structural wiring into a concise set of declarations, and delegates object lifetime management of long lived objects to the injector framework. The dependency injection paradigm also facilitates isolating a class for unit testing, by allowing mocked or stubbed dependencies to be supplied to an instance of the class being tested.</para>
+		<para>In this respect, using one or more injectors in the design of a software application reduces complexity, concentrates structural wiring into a concise set of declarations, and delegates object lifetime management of long lived objects to the injection framework. The dependency injection paradigm also facilitates isolating a class for unit testing, by allowing mocked or stubbed dependencies to be supplied to an instance of the class being tested.</para>
 
 		<h2>Balau injector</h2>
 
@@ -86,6 +86,7 @@
 		<h1>Quick start</h1>
 
 		<para class="cpp-define-statement">#include &lt;Balau/Application/Injector.hpp></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Application/Injectable.hpp></para>
 
 		<para>The steps involved in creating a software application based on the Balau injector are:</para>
 
@@ -328,7 +329,7 @@
 
 				// Explicitly created injectable constructor.
 				public: Derived2(std::shared_ptr&lt;Base&gt; dependency_)
-					: (std::move(dependency_)) {}
+					: dependency(std::move(dependency_)) {}
 
 				public: void foo() override;
 			};
@@ -345,7 +346,7 @@
 
 				// Explicitly created injectable constructor.
 				public: Derived2(std::shared_ptr&lt;Base&gt; dependency_)
-					: (std::move(dependency_)) {}
+					: dependency(std::move(dependency_)) {}
 
 				public: void foo() override;
 			};
@@ -1181,21 +1182,21 @@
 
 		<h1>Design</h1>
 
-		<para>This section provides a summary of some aspects of the philosophy and design of the Balau injector framework. It is not necessary to read this section in order to use the injector.</para>
+		<para>This section provides a summary of some aspects of the philosophy and design of the Balau injection framework. It is not necessary to read this section in order to use the injector.</para>
 
 		<h2>Overview</h2>
 
-		<para>The design of the Balau injector framework was partly influenced from experience with the Java based <emph>Guice</emph> and <emph>Spring</emph> dependency injection frameworks in enterprise software development. The Balau injector implements a philosophy that is similar to <emph>Guice</emph>, but has a technical approach that reflects the more comprehensive type system available in the C++ language and standard library, and the runtime reflection limitations in C++.</para>
+		<para>The design of the Balau injection framework was partly influenced from experience with the Java based <emph>Guice</emph> and <emph>Spring</emph> dependency injection frameworks in enterprise software development. The Balau injector implements a philosophy that is similar to <emph>Guice</emph>, but has a technical approach that reflects the more comprehensive type system available in the C++ language and standard library, and the runtime reflection limitations in C++.</para>
 
 		<h2>Background</h2>
 
 		<para>Java based dependency injection frameworks work within the confines of the Java type system. The combination of dual primitive/reference types and generics type erasure has resulted in Java based injectors having an API based on a single meta-type: the Java reference.</para>
 
-		<para>Outside of the compiler imposed <emph>final</emph> keyword, Java references may be bound and rebound. Assigning a Java reference copies the reference "value", resulting in a new reference "value" that points to the same object. In the context of C++, the Java reference is most similar to a C++ pointer. Java dependency injector frameworks thus effectively work wholly with pointers to objects.</para>
+		<para>Outside of the compiler imposed <emph>final</emph> keyword, Java references may be bound and rebound. Assigning a Java reference copies the reference "value", resulting in a new reference "value" that points to the same object. In the context of C++, the Java reference is most similar to a C++ pointer. Java dependency injection frameworks thus effectively work wholly with pointers to objects.</para>
 
 		<para>In C++, we have a much richer type system than in Java. We also have a responsibility for managing object lifetime that can only be partially automated via pointer containers.</para>
 
-		<para>Given the richer type system, a C++ dependency injector framework does not need to be limited to providing <emph>T *</emph> pointers to objects. Potentially some or all or more than the following meta-types could be supplied.</para>
+		<para>Given the richer type system, a C++ dependency injection framework does not need to be limited to providing <emph>T *</emph> pointers to objects. Potentially some or all or more than the following meta-types could be supplied.</para>
 
 		<table class="bdml-table40L60">
 			<head> <cell>Meta-type</cell> <cell>Description</cell> </head>
@@ -1285,7 +1286,7 @@
 
 		<h2>Meta-design</h2>
 
-		<para>The key questions raised during the development of the Balau injector framework were:</para>
+		<para>The key questions raised during the development of the Balau injection framework were:</para>
 
 		<list>
 			<entry>which meta-types should be provided by the injector;</entry>
@@ -1306,7 +1307,7 @@
 
 			<entry>the API must be simple to use;</entry>
 
-			<entry>the injector framework code must be simple to debug when an end developer is faced with a failing binding or a non-obvious injection issue;</entry>
+			<entry>the injection framework code must be simple to debug when an end developer is faced with a failing binding or a non-obvious injection issue;</entry>
 
 			<entry>the injector must be able to inject itself;</entry>
 

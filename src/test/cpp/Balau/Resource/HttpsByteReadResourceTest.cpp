@@ -29,19 +29,28 @@ void HttpsByteReadResourceTest::nonEmptyPath() {
 }
 
 void HttpsByteReadResourceTest::performTest(const std::string & url_, const std::string & expectedStart) {
-	Https url(url_);
+	try {
+		Https url(url_);
 
-	auto httpsReadResource = url.getByteReadResource();
-	auto uriReadResource = url.byteReadResource();
+		auto httpsReadResource = url.getByteReadResource();
+		auto uriReadResource = url.byteReadResource();
 
-	std::istream & httpsReadStream = httpsReadResource.readStream();
-	std::istream & uriReadStream = uriReadResource->readStream();
+		std::istream & httpsReadStream = httpsReadResource.readStream();
+		std::istream & uriReadStream = uriReadResource->readStream();
 
-	auto actualHttpsData = ::toString(httpsReadStream);
-	auto actualUriData = ::toString(uriReadStream);
+		auto actualHttpsData = ::toString(httpsReadStream);
+		auto actualUriData = ::toString(uriReadStream);
 
-	AssertThat(actualHttpsData, startsWith(expectedStart));
-	AssertThat(actualUriData, startsWith(expectedStart));
+		AssertThat(actualHttpsData, startsWith(expectedStart));
+		AssertThat(actualUriData, startsWith(expectedStart));
+	} catch (const boost::system::system_error & e) {
+		if (e.code() == boost::system::errc::device_or_resource_busy) {
+			// Ignore due to no network available.
+			ignore();
+		} else {
+			throw;
+		}
+	}
 }
 
 } // namespace Resource

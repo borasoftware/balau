@@ -22,6 +22,8 @@
 #include <Balau/Util/DateTime.hpp>
 #include <Balau/Util/Files.hpp>
 
+#ifdef BALAU_ZLIB_ENABLED
+
 #include <boost/iostreams/categories.hpp>
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/copy.hpp>
@@ -29,6 +31,8 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
+
+#endif // BALAU_ZLIB_ENABLED
 
 #include <algorithm>
 #include <chrono>
@@ -39,12 +43,18 @@ namespace Balau {
 
 namespace Resource::Impl {
 
+#ifdef BALAU_LIBZIP_ENABLED
+
 class ZipEntrySource;
 class ZipEntrySink;
+
+#endif // BALAU_LIBZIP_ENABLED
 
 } // namespace Resource::Impl
 
 namespace Util {
+
+#ifdef BALAU_ZLIB_ENABLED
 
 ///
 /// %GZip compression utilities.
@@ -148,6 +158,10 @@ struct GZip final {
 	GZip(const GZip &) = delete;
 	GZip & operator = (const GZip &) = delete;
 };
+
+#endif // BALAU_ZLIB_ENABLED
+
+#ifdef BALAU_LIBZIP_ENABLED
 
 ///
 /// Information about a zip archive entry (file or directory).
@@ -670,6 +684,8 @@ class Zipper : public Unzipper {
 	// Delete a file entry.
 	private: void deleteFile(const std::string & cleanName);
 };
+
+#endif // BALAU_LIBZIP_ENABLED
 
 } // namespace Util
 

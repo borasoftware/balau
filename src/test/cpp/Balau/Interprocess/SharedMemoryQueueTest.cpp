@@ -114,7 +114,7 @@ void runMISO(SharedMemoryQueueTest & self, SharedMemoryQueue<SMT> & queue) {
 		);
 	}
 
-	const auto timeout = std::chrono::nanoseconds(1000000000LL * 5LL); // 5 seconds
+	const auto timeout = std::chrono::nanoseconds(1000000000LL * 30LL); // 30 seconds (allow for Valgrind delays)
 	const auto startTime = System::SystemClock().nanotime();
 	unsigned int messagesCounted = 0;
 	std::string failureMessage;
@@ -200,7 +200,7 @@ void SharedMemoryQueueTest::singleBufferSIMO() {
 		pids.push_back(
 			Fork::performFork(
 				[&] () {
-					const auto timeout = std::chrono::nanoseconds(1000000000LL * 5LL); // 10 seconds
+					const auto timeout = std::chrono::nanoseconds(1000000000LL * 30LL); // 30 seconds (allow for Valgrind delays)
 					const auto startTime = System::SystemClock().nanotime();
 
 					while (true) {
@@ -288,7 +288,7 @@ void SharedMemoryQueueTest::singleBufferMIMO() {
 				[&] () {
 					sharedTestState->sync.wait();
 
-					const auto timeout = std::chrono::nanoseconds(1000000000LL * 5LL); // 10 seconds
+					const auto timeout = std::chrono::nanoseconds(1000000000LL * 30LL); // 30 seconds (allow for Valgrind delays)
 					const auto startTime = System::SystemClock().nanotime();
 
 					while (true) {

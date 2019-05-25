@@ -1,0 +1,132 @@
+
+
+--track-fds=yes
+
+valgrind --tool=memcheck --leak-check=full --leak-resolution=med --track-origins=yes --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --read-var-info  --log-file=memcheck.log ./BalauTests SingleThreaded
+
+valgrind --tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --suppressions=../../src/test/data/balau-helgrind.supp --sim-hints=deactivate-pthread-stack-cache-via-hack --log-file=helgrind.log ./BalauTests SingleThreaded
+
+valgrind --tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --suppressions=../../src/test/data/balau-helgrind.supp --sim-hints=deactivate-pthread-stack-cache-via-hack --log-file=helgrind.log ./BalauTests WorkerThreads
+
+valgrind --tool=helgrind --vgdb=no --trace-children=yes --read-inline-info=yes --fair-sched=yes --suppressions=../../src/test/data/balau-helgrind.supp --sim-hints=deactivate-pthread-stack-cache-via-hack --log-file=helgrind.log --gen-suppressions=all ./BalauTests SingleThreaded
+
+------------------------------------------- Helgrind report extracts to study -------------------------------------------
+
+==21980== Possible data race during read of size 8 at 0x83FDF98 by thread #1
+==21980== Locks held: 1, at address 0x8415850
+==21980==    at 0x8D787C: std::__shared_ptr<Balau::Network::Http::Impl::Listener, (__gnu_cxx::_Lock_policy)2>::get() const (shared_ptr_base.h:1308)
+==21980==    by 0x8D7864: std::__shared_ptr_access<Balau::Network::Http::Impl::Listener, (__gnu_cxx::_Lock_policy)2, false, false>::_M_get() const (shared_ptr_base.h:1019)
+==21980==    by 0x8CF504: std::__shared_ptr_access<Balau::Network::Http::Impl::Listener, (__gnu_cxx::_Lock_policy)2, false, false>::operator->() const (shared_ptr_base.h:1013)
+==21980==    by 0x8C9767: Balau::Network::Http::HttpServer::stop(bool) (HttpServer.cpp:216)
+==21980==    by 0x8C945A: Balau::Network::Http::HttpServer::~HttpServer() (HttpServer.cpp:122)
+==21980==    by 0x71F12A: std::_Sp_counted_ptr<Balau::Network::Http::HttpServer*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() (shared_ptr_base.h:377)
+==21980==    by 0x44DE7B: std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() (shared_ptr_base.h:155)
+==21980==    by 0x44DE29: std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count() (shared_ptr_base.h:728)
+==21980==    by 0x7224E8: std::__shared_ptr<Balau::Network::Http::HttpServer, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr() (shared_ptr_base.h:1167)
+==21980==    by 0x7194C4: std::shared_ptr<Balau::Network::Http::HttpServer>::~shared_ptr() (shared_ptr.h:103)
+==21980==    by 0x7249F8: Balau::Network::Http::HttpWebApps::FileServingHttpWebAppTest::getFile() (FileServingHttpWebAppTest.cpp:89)
+==21980==    by 0x72C8C5: Balau::Testing::TestGroup<Balau::Network::Http::HttpWebApps::FileServingHttpWebAppTest>::TestMethod::run() (TestRunner.hpp:63)
+==21980==
+==21980== This conflicts with a previous write of size 8 by thread #10
+==21980== Locks held: none
+==21980==    at 0x8E4B83: _ZSt4swapIPN5Balau7Network4Http4Impl8ListenerEENSt9enable_ifIXsr6__and_ISt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS9_ESt18is_move_assignableIS9_EEE5valueEvE4typeERS9_SI_ (move.h:195)
+==21980==    by 0x8E40FE: std::__shared_ptr<Balau::Network::Http::Impl::Listener, (__gnu_cxx::_Lock_policy)2>::swap(std::__shared_ptr<Balau::Network::Http::Impl::Listener, (__gnu_cxx::_Lock_policy)2>&) (shared_ptr_base.h:1324)
+==21980==    by 0x8E3FE9: _ZNSt12__shared_ptrIN5Balau7Network4Http4Impl8ListenerELN9__gnu_cxx12_Lock_policyE2EEaSIS4_St14default_deleteIS4_EEENSt9enable_ifIXsr6__and_ISt20__sp_compatible_withIPT_PS4_ESt14is_convertibleINSt10unique_ptrISD
+==21980==    by 0x8D0366: _ZNSt10shared_ptrIN5Balau7Network4Http4Impl8ListenerEEaSIS4_St14default_deleteIS4_EEENSt9enable_ifIXsr13is_assignableIRSt12__shared_ptrIS4_LN9__gnu_cxx12_Lock_policyE2EESt10unique_ptrIT_T0_EEE5valueERS5_E4typeEO
+==21980==    by 0x8CA59C: Balau::Network::Http::HttpServer::launchListener() (HttpServer.cpp:404)
+==21980==    by 0x8CD27B: Balau::Network::Http::HttpServer::startAsync()::$_0::operator()() const (HttpServer.cpp:144)
+==21980==    by 0x8CD24C: void std::__invoke_impl<void, Balau::Network::Http::HttpServer::startAsync()::$_0>(std::__invoke_other, Balau::Network::Http::HttpServer::startAsync()::$_0&&) (invoke.h:60)
+==21980==    by 0x8CD1DC: std::__invoke_result<Balau::Network::Http::HttpServer::startAsync()::$_0>::type std::__invoke<Balau::Network::Http::HttpServer::startAsync()::$_0>(Balau::Network::Http::HttpServer::startAsync()::$_0&&) (invoke.h
+==21980==  Address 0x83fdf98 is 88 bytes inside a block of size 128 alloc'd
+==21980==    at 0x4838E02: operator new(unsigned long) (vg_replace_malloc.c:344)
+==21980==    by 0x72759B: Balau::Network::Http::HttpWebApps::FileServingHttpWebAppTest::getFile()::$_0::operator()() const (FileServingHttpWebAppTest.cpp:66)
+==21980==    by 0x72737C: std::_Function_handler<unsigned short (), Balau::Network::Http::HttpWebApps::FileServingHttpWebAppTest::getFile()::$_0>::_M_invoke(std::_Any_data const&) (std_function.h:282)
+==21980==    by 0x9A0BED: std::function<unsigned short ()>::operator()() const (std_function.h:687)
+==21980==    by 0x99F72A: Balau::Testing::NetworkTesting::initialiseWithFreeTcpPort(std::function<unsigned short ()>, unsigned long) (NetworkTesting.cpp:23)
+==21980==    by 0x724660: Balau::Network::Http::HttpWebApps::FileServingHttpWebAppTest::getFile() (FileServingHttpWebAppTest.cpp:57)
+==21980==    by 0x72C8C5: Balau::Testing::TestGroup<Balau::Network::Http::HttpWebApps::FileServingHttpWebAppTest>::TestMethod::run() (TestRunner.hpp:63)
+==21980==    by 0x4A2EAD: Balau::Testing::Impl::TestRunnerExecutor::runTheTest(Balau::Testing::Impl::FlattenedTestCase&, std::ostream&) (TestRunnerExecutor.hpp:169)
+==21980==    by 0x4A22EB: Balau::Testing::Impl::TestRunnerExecutor::runTest(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Balau::Testing::Impl::FlattenedTestCase&) (TestRunnerExecutor.hpp:109)
+==21980==    by 0x49A8E8: Balau::Testing::Impl::SingleThreadedTestRunnerExecutor::run() (SingleThreadedTestRunnerExecutor.hpp:55)
+==21980==    by 0x49284F: Balau::Testing::TestRunner::performTestRun() (TestRunner.hpp:660)
+==21980==    by 0x47571F: Balau::Testing::TestRunner::run(int, char**, int, bool, bool) (TestRunner.hpp:204)
+==21980==  Block was alloc'd by thread #1
+
+------------------------------
+
+==21980== Possible data race during read of size 4 at 0xE3E428 by thread #50
+==21980== Locks held: none
+==21980==    at 0x9B63F8: boost::thread_detail::enter_once_region(boost::once_flag&) (in /home/nicholas/Bora/BoraGitHubProjects/balau-github/cmake-build-debug/bin/BalauTests)
+==21980==    by 0x9AA0CF: boost::detail::get_current_thread_data() (in /home/nicholas/Bora/BoraGitHubProjects/balau-github/cmake-build-debug/bin/BalauTests)
+==21980==    by 0x9AA528: boost::detail::get_tss_data(void const*) (in /home/nicholas/Bora/BoraGitHubProjects/balau-github/cmake-build-debug/bin/BalauTests)
+==21980==    by 0x5CCCB4: boost::thread_specific_ptr<std::shared_ptr<Balau::Base2> >::get() const (tss.hpp:84)
+==21980==    by 0x5CCB9C: Balau::Concurrent::ThreadLocalInstance<std::shared_ptr<Balau::Base2>, void>::operator()(std::function<std::shared_ptr<Balau::Base2>* ()>) (ThreadLocalInstance.hpp:47)
+==21980==    by 0x5CC4EF: Balau::Impl::ThreadLocalSingletonBinding<Balau::Base2, Balau::Derived2>::get(Balau::Injector const*) const (Binding.hpp:404)
+==21980==    by 0x5F60A2: std::shared_ptr<Balau::Base2> Balau::Injector::getSharedInstance<Balau::Base2>(std::unique_ptr<Balau::Impl::AbstractBinding, std::default_delete<Balau::Impl::AbstractBinding> > const&) const (Injector.hpp:1133)
+==21980==    by 0x5F5C35: std::shared_ptr<Balau::Base2> Balau::Injector::getSharedImpl<Balau::Base2>(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:1060)
+==21980==    by 0x5F5B5E: Balau::Injector::GetInstance<std::shared_ptr<Balau::Base2> >::get(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:725)
+==21980==    by 0x5BCF33: std::shared_ptr<Balau::Base2> Balau::Injector::getShared<Balau::Base2>(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:434)
+==21980==    by 0x5AE2B5: Balau::InjectorTest::threadLocalScopeUsage()::ThreadFunction::run(std::shared_ptr<Balau::Injector> const&) (InjectorTest.cpp:681)
+==21980==    by 0x5AB69C: Balau::InjectorTest::threadLocalScopeUsage()::ThreadFunction::threadFunction(ThreadFunction&, std::shared_ptr<Balau::Injector> const&) (InjectorTest.cpp:677)
+==21980==
+==21980== This conflicts with a previous write of size 4 by thread #49
+==21980== Locks held: 1, at address 0xE3E4E0
+==21980==    at 0x9B6480: boost::thread_detail::commit_once_region(boost::once_flag&) (in /home/nicholas/Bora/BoraGitHubProjects/balau-github/cmake-build-debug/bin/BalauTests)
+==21980==    by 0x9AA0F2: boost::detail::get_current_thread_data() (in /home/nicholas/Bora/BoraGitHubProjects/balau-github/cmake-build-debug/bin/BalauTests)
+==21980==    by 0x9AA528: boost::detail::get_tss_data(void const*) (in /home/nicholas/Bora/BoraGitHubProjects/balau-github/cmake-build-debug/bin/BalauTests)
+==21980==    by 0x5CCCB4: boost::thread_specific_ptr<std::shared_ptr<Balau::Base2> >::get() const (tss.hpp:84)
+==21980==    by 0x5CCB9C: Balau::Concurrent::ThreadLocalInstance<std::shared_ptr<Balau::Base2>, void>::operator()(std::function<std::shared_ptr<Balau::Base2>* ()>) (ThreadLocalInstance.hpp:47)
+==21980==    by 0x5CC4EF: Balau::Impl::ThreadLocalSingletonBinding<Balau::Base2, Balau::Derived2>::get(Balau::Injector const*) const (Binding.hpp:404)
+==21980==    by 0x5F60A2: std::shared_ptr<Balau::Base2> Balau::Injector::getSharedInstance<Balau::Base2>(std::unique_ptr<Balau::Impl::AbstractBinding, std::default_delete<Balau::Impl::AbstractBinding> > const&) const (Injector.hpp:1133)
+==21980==    by 0x5F5C35: std::shared_ptr<Balau::Base2> Balau::Injector::getSharedImpl<Balau::Base2>(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:1060)
+==21980==  Address 0xe3e428 is 0 bytes inside data symbol "_ZN5boost6detail12_GLOBAL__N_128current_thread_tls_init_flagE"
+
+------------------------------
+
+==21980== Possible data race during read of size 1 at 0x848D720 by thread #50
+==21980== Locks held: none
+==21980==    at 0x5C098E: load (atomic_base.h:396)
+==21980==    by 0x5C098E: std::atomic<bool>::load(std::memory_order) const (atomic:111)
+==21980==    by 0x5C073D: Balau::Concurrent::LazyValue<std::shared_ptr<Balau::Base> >::operator()(std::function<std::shared_ptr<Balau::Base> ()>) (LazyValue.hpp:63)
+==21980==    by 0x5C02CF: Balau::Impl::LazySingletonBinding<Balau::Base, Balau::DerivedA>::get(Balau::Injector const*) const (Binding.hpp:498)
+==21980==    by 0x5C35E2: std::shared_ptr<Balau::Base> Balau::Injector::getSharedInstance<Balau::Base>(std::unique_ptr<Balau::Impl::AbstractBinding, std::default_delete<Balau::Impl::AbstractBinding> > const&) const (Injector.hpp:1133)
+==21980==    by 0x5C3175: std::shared_ptr<Balau::Base> Balau::Injector::getSharedImpl<Balau::Base>(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:1060)
+==21980==    by 0x5C309E: Balau::Injector::GetInstance<std::shared_ptr<Balau::Base> >::get(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:725)
+==21980==    by 0x5C2F43: std::shared_ptr<Balau::Base> Balau::Injector::getInstance<std::shared_ptr<Balau::Base> >(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:253)
+==21980==    by 0x5C2E39: Balau::Derived2::_Balau_newHeapInstance(Balau::Injector const&) (InjectorTest.cpp:135)
+==21980==    by 0x5CD00C: Balau::Impl::ThreadLocalSingletonBinding<Balau::Base2, Balau::Derived2>::get(Balau::Injector const*) const::{lambda()#1}::operator()() const (Binding.hpp:407)
+==21980==    by 0x5CCE9C: std::_Function_handler<std::shared_ptr<Balau::Base2>* (), Balau::Impl::ThreadLocalSingletonBinding<Balau::Base2, Balau::Derived2>::get(Balau::Injector const*) const::{lambda()#1}>::_M_invoke(std::_Any_data const
+==21980==    by 0x5CCD9D: std::function<std::shared_ptr<Balau::Base2>* ()>::operator()() const (std_function.h:687)
+==21980==    by 0x5CCBAF: Balau::Concurrent::ThreadLocalInstance<std::shared_ptr<Balau::Base2>, void>::operator()(std::function<std::shared_ptr<Balau::Base2>* ()>) (ThreadLocalInstance.hpp:48)
+==21980==
+==21980== This conflicts with a previous write of size 1 by thread #49
+==21980== Locks held: 1, at address 0x848D728
+==21980==    at 0x5C0B28: store (atomic_base.h:374)
+==21980==    by 0x5C0B28: std::atomic<bool>::store(bool, std::memory_order) (atomic:103)
+==21980==    by 0x5C07C0: Balau::Concurrent::LazyValue<std::shared_ptr<Balau::Base> >::operator()(std::function<std::shared_ptr<Balau::Base> ()>) (LazyValue.hpp:68)
+==21980==    by 0x5C02CF: Balau::Impl::LazySingletonBinding<Balau::Base, Balau::DerivedA>::get(Balau::Injector const*) const (Binding.hpp:498)
+==21980==    by 0x5C35E2: std::shared_ptr<Balau::Base> Balau::Injector::getSharedInstance<Balau::Base>(std::unique_ptr<Balau::Impl::AbstractBinding, std::default_delete<Balau::Impl::AbstractBinding> > const&) const (Injector.hpp:1133)
+==21980==    by 0x5C3175: std::shared_ptr<Balau::Base> Balau::Injector::getSharedImpl<Balau::Base>(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:1060)
+==21980==    by 0x5C309E: Balau::Injector::GetInstance<std::shared_ptr<Balau::Base> >::get(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:725)
+==21980==    by 0x5C2F43: std::shared_ptr<Balau::Base> Balau::Injector::getInstance<std::shared_ptr<Balau::Base> >(std::basic_string_view<char, std::char_traits<char> >) const (Injector.hpp:253)
+==21980==    by 0x5C2E39: Balau::Derived2::_Balau_newHeapInstance(Balau::Injector const&) (InjectorTest.cpp:135)
+==21980==  Address 0x848d720 is 112 bytes inside a block of size 176 alloc'd
+==21980==    at 0x4838E02: operator new(unsigned long) (vg_replace_malloc.c:344)
+==21980==    by 0x5BFC19: Balau::BindingBuilder<Balau::Base>::LazySingletonBindingSupplier<Balau::DerivedA>::build(Balau::Impl::BindingKey&&) const (BindingBuilder.hpp:449)
+==21980==    by 0x5BF3CD: Balau::BindingBuilder<Balau::Base>::build() (BindingBuilder.hpp:484)
+==21980==    by 0x5B56EE: std::shared_ptr<Balau::Impl::BindingMap> Balau::Injector::createBindings<Balau::InjectorTest::threadLocalScopeUsage()::Configuration>(Balau::InjectorTest::threadLocalScopeUsage()::Configuration const&) (Injector
+==21980==    by 0x5B55B4: Balau::Injector::Injector<Balau::InjectorTest::threadLocalScopeUsage()::Configuration>(std::shared_ptr<Balau::Injector const> const&, Balau::InjectorTest::threadLocalScopeUsage()::Configuration const&) (Injector
+==21980==    by 0x5B52EE: std::shared_ptr<Balau::Injector> Balau::Injector::createInjector<Balau::InjectorTest::threadLocalScopeUsage()::Configuration>(std::shared_ptr<Balau::Injector const> const&, Balau::InjectorTest::threadLocalScopeU
+==21980==    by 0x5AB56B: std::shared_ptr<Balau::Injector> Balau::Injector::create<Balau::InjectorTest::threadLocalScopeUsage()::Configuration>(Balau::InjectorTest::threadLocalScopeUsage()::Configuration const&) (Injector.hpp:53)
+==21980==    by 0x5AB109: Balau::InjectorTest::threadLocalScopeUsage() (InjectorTest.cpp:658)
+==21980==    by 0x5F57F5: Balau::Testing::TestGroup<Balau::InjectorTest>::TestMethod::run() (TestRunner.hpp:63)
+==21980==    by 0x4A2EAD: Balau::Testing::Impl::TestRunnerExecutor::runTheTest(Balau::Testing::Impl::FlattenedTestCase&, std::ostream&) (TestRunnerExecutor.hpp:169)
+==21980==    by 0x4A22EB: Balau::Testing::Impl::TestRunnerExecutor::runTest(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Balau::Testing::Impl::FlattenedTestCase&) (TestRunnerExecutor.hpp:109)
+==21980==    by 0x49A8E8: Balau::Testing::Impl::SingleThreadedTestRunnerExecutor::run() (SingleThreadedTestRunnerExecutor.hpp:55)
+==21980==  Block was alloc'd by thread #1
+
+------------------------------------------- Memcheck report extracts to study -------------------------------------------
+
+
+------------------------------
+

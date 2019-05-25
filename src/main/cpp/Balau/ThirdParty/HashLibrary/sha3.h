@@ -21,9 +21,7 @@ typedef unsigned __int64 uint64_t;
 
 #endif
 
-namespace Balau {
-
-namespace HashLibrary {
+namespace Balau::HashLibrary {
 
 /// compute SHA3 hash
 /** Usage:
@@ -40,58 +38,63 @@ namespace HashLibrary {
   */
 class SHA3 //: public Hash
 {
-	public:
 	/// algorithm variants
-	enum Bits {
-		Bits224 = 224, Bits256 = 256, Bits384 = 384, Bits512 = 512
+	public: enum Bits {
+		  Bits224 = 224
+		, Bits256 = 256
+		, Bits384 = 384
+		, Bits512 = 512
 	};
 
 	/// same as reset()
-	explicit SHA3(Bits bits = Bits256);
+	public: explicit SHA3(Bits bits = Bits256);
 
 	/// compute hash of a memory block
-	std::string operator ()(const void * data, size_t numBytes);
+	public: std::string operator ()(const void * data, size_t numBytes);
 
 	/// compute hash of a string, excluding final zero
-	std::string operator ()(const std::string & text);
+	public: std::string operator ()(const std::string & text);
 
 	/// add arbitrary number of bytes
-	void add(const void * data, size_t numBytes);
+	public: void add(const void * data, size_t numBytes);
 
 	/// return latest hash as hex characters
-	std::string getHash();
+	public: std::string getHash();
 
 	/// restart
-	void reset();
+	public: void reset();
 
-	private:
 	/// process a full block
-	void processBlock(const void * data);
+	private: void processBlock(const void * data);
 
 	/// process everything left in the internal buffer
-	void processBuffer();
+	private: void processBuffer();
 
 	/// 1600 bits, stored as 25x64 bit, BlockSize is no more than 1152 bits (Keccak224)
-	enum {
-		StateSize = 1600 / (8 * 8), MaxBlockSize = 200 - 2 * (224 / 8)
+	private: enum {
+		  StateSize = 1600 / (8 * 8)
+		, MaxBlockSize = 200 - 2 * (224 / 8)
 	};
 
 	/// hash
-	uint64_t m_hash[StateSize];
+	private: uint64_t m_hash[StateSize] { 0 };
+
 	/// size of processed data in bytes
-	uint64_t m_numBytes;
+	private: uint64_t m_numBytes;
+
 	/// block size (less or equal to MaxBlockSize)
-	size_t m_blockSize;
+	private: size_t m_blockSize;
+
 	/// valid bytes in m_buffer
-	size_t m_bufferSize;
+	private: size_t m_bufferSize;
+
 	/// bytes not processed yet
-	uint8_t m_buffer[MaxBlockSize];
+	private: uint8_t m_buffer[MaxBlockSize] { 0 };
+
 	/// variant
-	Bits m_bits;
+	private: Bits m_bits;
 };
 
-} // namespace HashLibrary
-
-} // namespace Balau
+} // namespace Balau::HashLibrary
 
 #endif // BALAU_TP__HASH_LIBRARY__SHA3_H

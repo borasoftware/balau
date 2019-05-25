@@ -79,14 +79,14 @@ std::map<std::string, LoggingStreamFactory> LoggingState::createDefaultStreamFac
 		std::make_pair(
 			"stdout"
 			, [] (std::string_view) {
-				return static_cast<LoggingStream *>(new OStreamLoggingStream(std::cout));
+				return static_cast<LoggingStream *>(new StdOutLoggingStream);
 			}
 		)
 
 		, std::make_pair(
 			"stderr"
 			, [] (std::string_view) {
-				return static_cast<LoggingStream *>(new OStreamLoggingStream(std::cerr));
+				return static_cast<LoggingStream *>(new StdErrLoggingStream);
 			}
 		)
 

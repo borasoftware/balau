@@ -44,12 +44,11 @@ class HttpSessions final {
 		BalauBalauLogInfo(logger, "HttpsSessions: unregistering {} HTTP sessions.", sessions.size());
 
 		for (auto & session : sessions) {
-			session->doClose();
+			session->close();
 		}
 
 		sessions.clear();
 	}
-
 	private: std::set<std::shared_ptr<HttpSession>> sessions;
 	private: std::recursive_mutex mutex;
 };

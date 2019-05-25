@@ -35,11 +35,15 @@ void fromString(std::unique_ptr<Uri> & uri, std::string_view value) {
 		path = std::string(value);
 	}
 
-	if (Util::Strings::endsWith(path, ".zip")) {
-		uri.reset(new ZipFile(File(path)));
-	} else {
+	#ifdef BALAU_LIBZIP_ENABLED
+		if (Util::Strings::endsWith(path, ".zip")) {
+			uri.reset(new ZipFile(File(path)));
+		} else {
+			uri.reset(new File(path));
+		}
+	#else
 		uri.reset(new File(path));
-	}
+	#endif // BALAU_LIBZIP_ENABLED
 }
 
 } // namespace Balau::Resource

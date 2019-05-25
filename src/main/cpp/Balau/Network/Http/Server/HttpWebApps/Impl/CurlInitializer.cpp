@@ -8,6 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
+#ifdef BALAU_LIBCURL_ENABLED
+
 #include "CurlInitializer.hpp"
 #include "../../../../../Concurrent/SingleTimeExecutor.hpp"
 #include "../../../../../Logging/Logger.hpp"
@@ -52,3 +54,5 @@ void ensureCurlInitialization() {
 }
 
 } // namespace Balau::Network::Http::HttpWebApps::Impl
+
+#endif // BALAU_LIBCURL_ENABLED

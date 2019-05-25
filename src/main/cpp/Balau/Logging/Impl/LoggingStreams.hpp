@@ -24,27 +24,79 @@ namespace Balau::LoggingSystem {
 
 ////////////////////////// Built-in logging streams ///////////////////////////
 
-// Built-in logging stream which wraps an external std::ostream.
+///
+/// Built-in logging stream which wraps an external std::ostream.
+///
+/// The supplied output streams may or may not be thread safe, thus the constructor accepts
+/// an optional threadSafe_ argument that can be set to true if mutex locking is not required.
+///
 class OStreamLoggingStream : public LoggingStream {
-	private: std::ostream & stream;
-
-	public: explicit OStreamLoggingStream(std::ostream & stream_) : stream(stream_) {}
+	public: explicit OStreamLoggingStream(std::ostream & stream_, bool threadSafe_ = false)
+		: stream(stream_)
+		, threadSafe(threadSafe_) {}
 
 	public: void write(const LoggingSystem::LoggerString & str) override {
-		stream << str;
+		if (!threadSafe) {
+			std::lock_guard<std::mutex> lock(syncMutex);
+			stream << str;
+		} else {
+			stream << str;
+		}
 	}
 
 	public: void flush() override {
-		stream.flush();
+		if (!threadSafe) {
+			std::lock_guard<std::mutex> lock(syncMutex);
+			stream.flush();
+		} else {
+			stream.flush();
+		}
+	}
+
+	private: std::ostream & stream;
+	private: const bool threadSafe;
+	private: std::mutex syncMutex;
+};
+
+///
+/// Built-in logging stream which logs to stdout.
+///
+/// The C++ specification states that stdout is threadsafe, hence no mutex lock is used in this logging stream.
+///
+class StdOutLoggingStream : public LoggingStream {
+	public: void write(const LoggingSystem::LoggerString & str) override {
+		std::cout << str;
+	}
+
+	public: void flush() override {
+		std::cout.flush();
 	}
 };
 
-//
-// Built-in logging stream which logs to a file.
-//
-// If the supplied URI contains one or more ${date} placeholders, the logging
-// stream will update at midnight to append to a new file.
-//
+///
+/// Built-in logging stream which logs to stderr.
+///
+/// The C++ specification states that stderr is threadsafe, hence no mutex lock is used in this logging stream.
+///
+class StdErrLoggingStream : public LoggingStream {
+	public: void write(const LoggingSystem::LoggerString & str) override {
+		std::cerr << str;
+	}
+
+	public: void flush() override {
+		std::cerr.flush();
+	}
+};
+
+///
+/// Built-in logging stream which logs to a file.
+///
+/// If the supplied URI contains one or more ${date} placeholders, the logging
+/// stream will update at midnight to append to a new file.
+///
+/// File output streams are not thread safe, thus this logging stream uses a
+/// mutex to prevent a race condition.
+///
 class FileLoggingStream : public LoggingStream {
 	private: std::shared_ptr<System::Clock> clock;
 	private: std::vector<std::string> pathComponents;
@@ -54,20 +106,19 @@ class FileLoggingStream : public LoggingStream {
 	private: std::thread updater;
 	private: std::string currentPath;
 
-	// Shared pointer prevents race condition when changing stream.
 	private: std::shared_ptr<boost::filesystem::ofstream> stream;
 
 	public: FileLoggingStream(std::shared_ptr<System::Clock> clock_, std::string_view uri);
 	public: ~FileLoggingStream() override;
 
 	public: void write(const LoggingSystem::LoggerString & str) override {
-		std::shared_ptr<boost::filesystem::ofstream> s = stream;
-		*s << str;
+		std::lock_guard<std::mutex> lock(syncMutex);
+		*stream << str;
 	}
 
 	public: void flush() override {
-		std::shared_ptr<boost::filesystem::ofstream> s = stream;
-		s->flush();
+		std::lock_guard<std::mutex> lock(syncMutex);
+		stream->flush();
 	}
 
 	///////////////////////// Private implementation //////////////////////////

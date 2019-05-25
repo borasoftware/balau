@@ -253,7 +253,7 @@ void getFile1000ParallelClientFunction(GetFile1000ParallelClientState * state) {
 }
 
 void FileServingHttpWebAppTest::getFile1000Parallel() {
-	const unsigned short testPortStart = 43245;
+	const unsigned short testPortStart = 23245;
 	auto documentRoot = TestResources::BalauSourceFolder / "doc";
 
 	std::shared_ptr<HttpServer> server;
@@ -262,7 +262,7 @@ void FileServingHttpWebAppTest::getFile1000Parallel() {
 		[&server, documentRoot] () {
 			auto endpoint = makeEndpoint(
 				"127.0.0.1"
-				, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
+				, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 1000)
 			);
 
 			auto clock = std::shared_ptr<System::Clock>(new System::SystemClock());
