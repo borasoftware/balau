@@ -45,6 +45,42 @@
 
 		<para>If the <emph>CMAKE_INSTALL_PREFIX</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. If the library should be installed elsewhere (such as to <emph>/usr</emph>), the <emph>CMAKE_INSTALL_PREFIX</emph> should be set, as discussed in the <emph>CMake variables</emph> section below.</para>
 
+		<h1>Options</h1>
+
+		<para>Balau contains a number of optional components that can be enabled/disabled during CMake configuration.</para>
+
+		<para>The currently available options are detailed in the table below.</para>
+
+		<table class="bdml-table2020c60">
+			<head>
+				<cell>Option</cell>
+				<cell>Default</cell>
+				<cell>Description</cell>
+			</head>
+
+			<body>
+				<row>
+					<cell>ENABLE_ZLIB</cell>
+					<cell>ON</cell>
+					<cell>Enable ZLib library wrappers for gzip compression support.</cell>
+				</row>
+
+				<row>
+					<cell>ENABLE_ZIP</cell>
+					<cell>ON</cell>
+					<cell>Enable LibZip library wrappers (Zipper and Unzipper).</cell>
+				</row>
+
+				<row>
+					<cell>ENABLE_CURL</cell>
+					<cell>OFF</cell>
+					<cell>Enable use of Curl library (email sending web app).</cell>
+				</row>
+			</body>
+		</table>
+
+		<para>By default, ZLib and LibZip compression components are enabled, and the Curl components are not. Enabled components will require the corresponding library development files to be present during the build, as described in the dependencies section below.</para>
+
 		<h1>Dependencies</h1>
 
 		<para>In addition to the C++ standard library, Balau relies on two third party libraries and three utility libraries.</para>
@@ -258,7 +294,7 @@
 		<code lang="C++">
 			######################## BALAU ########################
 
-			find_package(Balau 2019.5.2 REQUIRED)
+			find_package(Balau 2019.5.3 REQUIRED)
 			message(STATUS "Balau include dirs: ${Balau_INCLUDE_DIRS}")
 			message(STATUS "Balau library:      ${Balau_LIBRARY}")
 			include_directories(BEFORE ${Balau_INCLUDE_DIRS})

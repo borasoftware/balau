@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #  - BalauConfigVersion.cmake
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.5.2)
+project(Balau VERSION 2019.5.3)
 
 configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
@@ -52,7 +52,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 OPTION(ENABLE_ZLIB "Enable ZLib library wrappers for gzip support" ON)
 OPTION(ENABLE_ZIP  "Enable LibZip library wrappers Zipper and Unzipper" ON)
-OPTION(ENABLE_CURL "Enable use of Curl library" ON)
+OPTION(ENABLE_CURL "Enable use of Curl library" OFF)
 
 ############################## USER CONFIGURATION #############################
 
@@ -329,6 +329,8 @@ set(ALL_LIBS ${ALL_LIBS} rt)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
 
 ################################## BACKPORTS ##################################
+
+# TODO work out how to automate this once installed.
 
 include(CheckIncludeFileCXX)
 
