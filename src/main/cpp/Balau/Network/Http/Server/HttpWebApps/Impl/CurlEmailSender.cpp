@@ -8,6 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
+#ifdef BALAU_LIBCURL_ENABLED
+
 #include "CurlEmailSender.hpp"
 #include "CurlInitializer.hpp"
 #include "../../../../../System/SystemClock.hpp"
@@ -227,3 +229,5 @@ void CurlEmailSender::sendEmail(const std::string & from,
 }
 
 } // namespace Balau::Network::Http::HttpWebApps::Impl
+
+#endif // BALAU_LIBCURL_ENABLED

@@ -82,7 +82,7 @@
 		<bullets>
 			<entry>All anticipated uses cases of the new or enhanced feature should be tested by adding or revising the feature's test cases in the <emph>src/test</emph> folder.</entry>
 
-			<entry>When a modification is made or new code is introduced and the tests are written, the test application should be run with <emph>Valgrind</emph>, in order to verify that there are no memory issues. If there are memory issues, these should be debugged and resolved before raising a pull request.</entry>
+			<entry>When a modification is made or new code is introduced and the tests are written, the test application should be run with <emph>Valgrind</emph> memcheck and helgrind tools, in order to verify that there are no memory and threading issues. If there are memory and/or threading issues, these should be debugged and resolved before raising a pull request.</entry>
 
 			<entry>After completing the modification or new feature, the Balau test suite should be verified to pass in <emph>release</emph> mode in addition to <emph>debug</emph> mode.</entry>
 		</bullets>
