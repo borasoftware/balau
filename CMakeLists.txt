@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #  - BalauConfigVersion.cmake
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.6.1)
+project(Balau VERSION 2019.6.2)
 
 configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
