@@ -18,12 +18,14 @@ namespace Balau::Testing::Impl {
 // Test runner executor which implements the WorkerProcesses execution model.
 class WorkerProcessesTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
 	public: WorkerProcessesTestRunnerExecutor(CompositeWriter & writer_,
+	                                          std::shared_ptr<Impl::TestReportGenerator> & reportGenerator_,
 	                                          bool useNamespaces_,
 	                                          GroupedTestCaseMap & testCasesByGroup,
 	                                          const std::string & testList,
 	                                          unsigned int concurrencyLevel_)
 		: MultiProcessTestRunnerExecutor(
 			  writer_
+			, reportGenerator_
 			, useNamespaces_
 			, testCasesByGroup
 			, testList

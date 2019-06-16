@@ -11,7 +11,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE_TEST
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE_TEST
 
-#include "Balau/Application/CommandLine.hpp"
 #include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau {

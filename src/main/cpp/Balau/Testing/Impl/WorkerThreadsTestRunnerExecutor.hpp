@@ -36,6 +36,7 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 	private: std::atomic_uint nextTestIndex;
 
 	public: WorkerThreadsTestRunnerExecutor(CompositeWriter & writer_,
+	                                        std::shared_ptr<Impl::TestReportGenerator> & reportGenerator_,
 	                                        bool useNamespaces_,
 	                                        GroupedTestCaseMap & testCasesByGroup,
 	                                        const std::string & testList,
@@ -43,6 +44,7 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 		: TestRunnerExecutor(
 			  std::unique_ptr<TestResultQueue>(new (WorkerThreadsTestResultQueue))
 			, writer_
+			, reportGenerator_
 			, useNamespaces_
 			, testCasesByGroup
 			, testList

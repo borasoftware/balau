@@ -30,12 +30,14 @@ class SingleThreadedTestRunnerExecutor : public TestRunnerExecutor {
 	};
 
 	public: SingleThreadedTestRunnerExecutor(CompositeWriter & writer_,
+	                                         std::shared_ptr<Impl::TestReportGenerator> & reportGenerator_,
 	                                         bool useNamespaces_,
 	                                         GroupedTestCaseMap & testCasesByGroup,
 	                                         const std::string & testList)
 		: TestRunnerExecutor(
 			  std::unique_ptr<TestResultQueue>(new SingleThreadedTestResultQueue)
 			, writer_
+			, reportGenerator_
 			, useNamespaces_
 			, testCasesByGroup
 			, testList

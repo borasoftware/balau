@@ -17,6 +17,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
 #define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
 
+#include <Balau/Application/CommandLine.hpp>
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Exception/SystemExceptions.hpp>
@@ -30,6 +31,7 @@
 #include <Balau/Testing/Impl/TestMethodBase.hpp>
 #include <Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp>
 #include <Balau/Testing/Impl/WorkerThreadsTestRunnerExecutor.hpp>
+#include <Balau/Testing/Reporters/SurefireTestReportGenerator.hpp>
 #include <Balau/Util/DateTime.hpp>
 
 #include <termios.h>
@@ -91,6 +93,10 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 	///
 	public: template <typename S, typename ... SR> void logLine(const S & p, const SR & ... pRest);
 
+	public: const std::string & getGroupName() const final {
+		return testGroupName;
+	}
+
 	///
 	/// Create a test group that runs on all execution models.
 	///
@@ -132,14 +138,6 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	private: const std::string & getFullGroupName() const final {
-		return fullTestGroupName;
-	}
-
-	private: const std::string & getGroupName() const final {
-		return testGroupName;
-	}
-
 	private: void setGroupName(std::string && name) final {
 		testGroupName = std::move(name);
 	}
@@ -155,7 +153,6 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 	private: static TestGroupT instance;
 
 	private: unsigned int executionModels;
-	private: std::string fullTestGroupName;
 	private: std::string testGroupName;
 };
 
@@ -163,406 +160,257 @@ template <typename TestGroupT> TestGroupT TestGroup<TestGroupT>::instance;
 
 ////////////////////////////// Test runner class //////////////////////////////
 
+enum class TestRunnerOption {
+	  ExecutionModel
+	, Namespaces
+	, PauseAtExit
+	, ConcurrencyLevel
+	, ReportFolder
+	, Help
+};
+
+inline std::string toString(const TestRunnerOption & option) {
+	switch (option) {
+		case TestRunnerOption::ExecutionModel:   return "ExecutionModel";
+		case TestRunnerOption::Namespaces:       return "Namespaces";
+		case TestRunnerOption::PauseAtExit:      return "PauseAtExit";
+		case TestRunnerOption::ConcurrencyLevel: return "ConcurrencyLevel";
+		case TestRunnerOption::ReportFolder:     return "ReportFolder";
+		case TestRunnerOption::Help:             return "Help";
+	}
+}
+
 ///
 /// The main test runner class.
 ///
 /// The runner runs the registered test group class' test cases and produces a
 /// report at the end of execution.
 ///
-/// If not explicitly initialised, the default execution model used is WorkerProcesses
-/// and the default concurrency level is one thread/process per available CPU core.
+/// If not explicitly initialised, the default execution model used is
+/// WorkerProcesses and the default concurrency level is one thread/process
+/// per available CPU logical core.
 ///
 class TestRunner {
 	///
-	/// Run the test runner with the execution model specified in the first argv element, default concurrency and the test list specified in subsequent argv elements.
+	/// Run the test runner after parsing the supplied input arguments.
 	///
-	/// The concurrency level will be equal to the number of cores if the
-	/// execution model is WorkerThreads or WorkerProcesses, and the logging
-	/// will output to stdout.
+	/// If not specified, the default concurrency level will be equal to the number
+	/// of logical cores if the execution model is WorkerThreads or WorkerProcesses,
+	/// and the logging will output to stdout.
 	///
 	/// @param argc the number of arguments in argv
 	/// @param argv the command line arguments
-	/// @param argvStart the command line argument index of the start of the test list
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
+	/// @param ignoreFirst ignore the first command line argument (default == true)
+	/// @param reportGenerator the report generator to use if reporting is enabled (default == Surefire report generator)
 	/// @return 0 if all tests passed, 1 otherwise
 	///
 	public: static int run(int argc,
 	                       char * argv[],
-	                       int argvStart = 1,
-	                       bool useNamespaces = false,
-	                       bool pauseAtExit = false) {
-		const bool executionModelSpecified = argc > argvStart ? isExecutionModel(Util::Strings::toLower(argv[argvStart])) : false;
-		const auto executionModel = executionModelSpecified ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
+	                       bool ignoreFirst = true,
+	                       std::shared_ptr<Impl::TestReportGenerator> reportGenerator = std::shared_ptr<Impl::TestReportGenerator>(new Reporters::SurefireTestReportGenerator)) {
+		CommandLine<TestRunnerOption> cl = getCommandLineParser();
+
+		cl.parse(argc, argv, ignoreFirst);
+
+		if (cl.hasOption(TestRunnerOption::Help)) {
+			std::cout << cl.getHelpText(4, 80) << "\n";
+			return 0;
+		}
+
+		if (reportGenerator && cl.hasOption(TestRunnerOption::ReportFolder)) {
+			const std::string reportFolderString = cl.getOption(TestRunnerOption::ReportFolder);
+			setReportOutputFolder(Resource::File(reportFolderString), reportGenerator);
+		}
+
+		const auto executionModel = parseExecutionModel(cl);
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, executionModelSpecified ? argvStart + 1 : argvStart);
+
+		r.testList = createTestList(cl);
 		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel();
+		r.reportGenerator = std::move(reportGenerator);
+		r.concurrencyLevel = r.getConcurrencyLevel(cl);
 		r.executionModel = r.checkOutOfProcessCapability(executionModel);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
+		r.setUseNamespaces(cl.hasOption(TestRunnerOption::Namespaces));
+		r.pauseAtExit = cl.hasOption(TestRunnerOption::PauseAtExit);
 		return r.performTestRun();
 	}
 
 	///
-	/// Run the test runner with the execution model specified in the first argv element, the specified concurrency level and the test list specified in subsequent argv elements.
+	/// Run the test runner after parsing the supplied input arguments and using the supplied writers.
 	///
-	/// The concurrency level will be equal to the number of cores if the
-	/// execution model is WorkerThreads or WorkerProcesses, and the logging
-	/// will output to stdout.
+	/// If not specified, the concurrency level will be equal to the number of
+	/// logical cores if the execution model is WorkerThreads or WorkerProcesses.
 	///
+	/// The supplied report generator must have its output folder set.
+	///
+	/// @tparam WriterItemT the writer item types
 	/// @param argc the number of arguments in argv
 	/// @param argv the command line arguments
-	/// @param argvStart the command line argument index of the start of the test list
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(int argc,
-	                       char * argv[],
-	                       unsigned int concurrencyLevel_,
-	                       int argvStart = 1,
-	                       bool useNamespaces = false,
-	                       bool pauseAtExit = false) {
-		const bool executionModelSpecified = argc > argvStart ? isExecutionModel(Util::Strings::toLower(argv[argvStart])) : false;
-		const auto executionModel = executionModelSpecified ? parseExecutionModel(argv[argvStart]) : ExecutionModel::SingleThreaded;
-		auto & r = runner();
-		r.testList = createTestList(argc, argv, executionModelSpecified ? argvStart + 1 : argvStart);
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = concurrencyLevel_;
-		r.executionModel = r.checkOutOfProcessCapability(executionModel);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run the test runner with the specified execution model, default concurrency and the test list specified in argv.
-	///
-	/// The concurrency level will be equal to the number of cores if the
-	/// execution model is WorkerThreads or WorkerProcesses, and the logging
-	/// will output to stdout.
-	///
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param argc the number of arguments in argv
-	/// @param argv the command line arguments
-	/// @param argvStart the command line argument index of the start of the test list
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(ExecutionModel executionModel_,
-	                       int argc,
-	                       char * argv[],
-	                       int argvStart = 1,
-	                       bool useNamespaces = false,
-	                       bool pauseAtExit = false) {
-		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart);
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel();
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with the specified execution model and default concurrency.
-	///
-	/// The concurrency level will be equal to the number of cores if the
-	/// execution model is WorkerThreads or WorkerProcesses, and the logging
-	/// will output to stdout.
-	///
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(ExecutionModel executionModel_, bool useNamespaces = false, bool pauseAtExit = false) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel();
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with a WorkerProcesses execution model and the specified concurrency.
-	///
-	/// The concurrency level will be equal to the specified value, and the logging
-	/// will output to stdout.
-	///
-	/// @param concurrencyLevel_ the number of processes to use to run the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(unsigned int concurrencyLevel_, bool useNamespaces = false, bool pauseAtExit = false) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel(concurrencyLevel_);
-		r.executionModel = r.checkOutOfProcessCapability(WorkerProcesses);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with a WorkerProcesses execution model and the specified concurrency.
-	///
-	/// The concurrency level will be equal to the specified value, and the logging
-	/// will output to stdout.
-	///
-	/// @param concurrencyLevel_ the number of processes to use to run the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(int concurrencyLevel_, bool useNamespaces = false, bool pauseAtExit = false) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel((unsigned int) concurrencyLevel_);
-		r.executionModel = r.checkOutOfProcessCapability(WorkerProcesses);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with the specified execution model and specified concurrency.
-	///
-	/// The concurrency level will be equal to the specified value, and the logging
-	/// will output to stdout.
-	///
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param concurrencyLevel_ the number of threads or processes to use to run the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(ExecutionModel executionModel_,
-	                       unsigned int concurrencyLevel_,
-	                       bool useNamespaces = false,
-	                       bool pauseAtExit = false) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel(concurrencyLevel_);
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with the specified execution model and specified concurrency.
-	///
-	/// The concurrency level will be equal to the specified value, and the logging
-	/// will output to stdout.
-	///
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param concurrencyLevel_ the number of threads or processes to use to run the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: static int run(ExecutionModel executionModel_,
-	                       int concurrencyLevel_,
-	                       bool useNamespaces = false,
-	                       bool pauseAtExit = false) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(StdOutTestWriter());
-		r.concurrencyLevel = r.getConcurrencyLevel((unsigned int) concurrencyLevel_);
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run the test runner with the execution model specified in the first argv element, default concurrency, the specified writers, and the test list specified in subsequent argv elements.
-	///
-	/// The concurrency level will be equal to the number of cores if the
-	/// execution model is WorkerThreads or WorkerProcesses, and the logging
-	/// will output to stdout.
-	///
-	/// @param argc the number of arguments in argv
-	/// @param argv the command line arguments
-	/// @param argvStart the command line argument index of the start of the test list
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
+	/// @param ignoreFirst ignore the first command line argument
+	/// @param reportGenerator the report generator to use
+	/// @param writerItems the writer items to write the output to
 	/// @return 0 if all tests passed, 1 otherwise
 	///
 	public: template <typename ... WriterItemT>
 	static int run(int argc,
 	               char * argv[],
-	               int argvStart,
-	               bool useNamespaces,
-	               bool pauseAtExit,
+	               bool ignoreFirst,
+	               std::shared_ptr<Impl::TestReportGenerator> reportGenerator,
 	               const WriterItemT & ... writerItems) {
-		const bool firstArgIsExecutionModel = argc > argvStart ? isExecutionModel(argv[argvStart]) : false;
-		Testing::ExecutionModel executionModel = Testing::SingleThreaded;
+		CommandLine<TestRunnerOption> cl = getCommandLineParser();
 
-		if (firstArgIsExecutionModel) {
-			fromString(executionModel, argv[argvStart]);
-			std::cout << "\nRunning tests for command line specified execution model "
-			          << toString(executionModel) << "\n" << std::endl;
-		} else {
-			std::cout << "\nRunning tests for predefined execution model SingleThreaded\n" << std::endl;
+		cl.parse(argc, argv, ignoreFirst);
+
+		if (cl.hasOption(TestRunnerOption::Help)) {
+			std::cout << cl.getHelpText(4, 80) << "\n";
+			return 0;
+		}
+
+		if (reportGenerator && cl.hasOption(TestRunnerOption::ReportFolder)) {
+			const std::string reportFolderString = cl.getOption(TestRunnerOption::ReportFolder);
+			setReportOutputFolder(Resource::File(reportFolderString), reportGenerator);
+		}
+
+		const auto executionModel = parseExecutionModel(cl);
+		auto & r = runner();
+
+		r.testList = createTestList(cl);
+		r.writer = Impl::CompositeWriter(writerItems ...);
+		r.reportGenerator = std::move(reportGenerator);
+		r.concurrencyLevel = r.getConcurrencyLevel(cl);
+		r.executionModel = r.checkOutOfProcessCapability(executionModel);
+		r.setUseNamespaces(cl.hasOption(TestRunnerOption::Namespaces));
+		r.pauseAtExit = cl.hasOption(TestRunnerOption::PauseAtExit);
+		return r.performTestRun();
+	}
+
+	///
+	/// Run all the tests in the test runner.
+	///
+	/// The concurrency level will be equal to the number of logical cores if the
+	/// execution model is WorkerThreads or WorkerProcesses, and the logging will output to stdout.
+	///
+	/// Test output reports will be written if a report output folder is specified.
+	///
+	/// @param executionModel the execution model to run the tests
+	/// @param reportOutputFolder the output folder in which the reports will be written (default == empty == no reports written)
+	/// @param reportGenerator the report generator to use if reporting is enabled (default == Surefire report generator)
+	/// @return 0 if all tests passed, 1 otherwise
+	///
+	public: static int run(ExecutionModel executionModel,
+	                       const Resource::File & reportOutputFolder = Resource::File(),
+	                       std::shared_ptr<Impl::TestReportGenerator> reportGenerator = std::shared_ptr<Impl::TestReportGenerator>(new Reporters::SurefireTestReportGenerator)) {
+		const bool empty = reportOutputFolder.toRawString().empty();
+
+		if (reportGenerator && !empty) {
+			setReportOutputFolder(reportOutputFolder, reportGenerator);
 		}
 
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart + (firstArgIsExecutionModel ? 1 : 0));
-		r.writer = Impl::CompositeWriter(writerItems ...);
+
+		r.writer = Impl::CompositeWriter(StdOutTestWriter());
+
+		if (!empty) {
+			r.reportGenerator = std::move(reportGenerator);
+		}
+
 		r.concurrencyLevel = r.getConcurrencyLevel();
 		r.executionModel = r.checkOutOfProcessCapability(executionModel);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
+		r.setUseNamespaces(false);
+		r.pauseAtExit = false;
 		return r.performTestRun();
 	}
 
 	///
-	/// Run the test runner with the specified execution model, default concurrency, the specified writers, and the test list specified in argv.
+	/// Run the test runner after parsing the supplied input arguments and using the supplied writers.
 	///
-	/// The concurrency level will be equal to the number of cores if the
-	/// execution model is WorkerThreads or WorkerProcesses, and the logging
-	/// will output to stdout.
+	/// If not specified, the concurrency level will be equal to the number of
+	/// logical cores if the execution model is WorkerThreads or WorkerProcesses.
 	///
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param argc the number of arguments in argv
-	/// @param argv the command line arguments
-	/// @param argvStart the command line argument index of the start of the test list
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
+	/// Test output reports will only be written if a report output folder is specified.
+	///
+	/// @tparam WriterItemT the writer item types
+	/// @param executionModel the execution model to run the tests
+	/// @param reportOutputFolder the output folder in which the reports will be written (empty == no reports written)
+	/// @param reportGenerator the report generator to use if reporting is enabled
+	/// @param writerItems the writer items to write the output to
 	/// @return 0 if all tests passed, 1 otherwise
 	///
 	public: template <typename ... WriterItemT>
-	static int run(ExecutionModel executionModel_,
-	               int argc,
-	               char * argv[],
-	               int argvStart,
-	               bool useNamespaces,
-	               bool pauseAtExit,
+	static int run(ExecutionModel executionModel,
+	               const Resource::File & reportOutputFolder,
+	               std::shared_ptr<Impl::TestReportGenerator> reportGenerator,
 	               const WriterItemT & ... writerItems) {
+		const bool empty = reportOutputFolder.toRawString().empty();
+
+		if (reportGenerator && !empty) {
+			setReportOutputFolder(reportOutputFolder, reportGenerator);
+		}
+
 		auto & r = runner();
-		r.testList = createTestList(argc, argv, argvStart);
+
 		r.writer = Impl::CompositeWriter(writerItems ...);
+
+		if (!empty) {
+			r.reportGenerator = std::move(reportGenerator);
+		}
+
 		r.concurrencyLevel = r.getConcurrencyLevel();
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with a WorkerProcesses execution model, default concurrency, and the specified writers.
-	///
-	/// The concurrency level will be equal to the number of cores, and the logging
-	/// will output to the supplied writer items.
-	///
-	/// @tparam WriterItemT the writer item types
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @param writerItems the writer items
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: template <typename ... WriterItemT>
-	static int run(bool useNamespaces, bool pauseAtExit, const WriterItemT & ... writerItems) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(writerItems ...);
-		r.concurrencyLevel = r.getConcurrencyLevel();
-		r.executionModel = r.checkOutOfProcessCapability(WorkerProcesses);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with the specified execution model, default concurrency, and the specified writers.
-	///
-	/// The concurrency level will be equal to the number of cores, and the logging
-	/// will output to the supplied writer items.
-	///
-	/// @tparam WriterItemT the writer item types
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @param writerItems the writer items
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: template <typename ... WriterItemT>
-	static int run(ExecutionModel executionModel_,
-	               bool useNamespaces,
-	               bool pauseAtExit,
-	               const WriterItemT & ... writerItems) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(writerItems ...);
-		r.concurrencyLevel = r.getConcurrencyLevel();
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with a WorkerProcesses execution model, the specified concurrency, and the specified writers.
-	///
-	/// The concurrency level will be equal to the specified value, and the logging
-	/// will output to the supplied writer items.
-	///
-	/// @tparam WriterItemT the writer item types
-	/// @param concurrencyLevel_ the number of threads or processes to use to run the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @param writerItems the writer items
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: template <typename ... WriterItemT>
-	static int run(unsigned int concurrencyLevel_,
-	               bool useNamespaces,
-	               bool pauseAtExit,
-	               const WriterItemT & ... writerItems) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(writerItems ...);
-		r.concurrencyLevel = r.getConcurrencyLevel(concurrencyLevel_);
-		r.executionModel = r.checkOutOfProcessCapability(WorkerProcesses);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
-		return r.performTestRun();
-	}
-
-	///
-	/// Run all tests registered with the test runner, with the specified execution model, specified concurrency, and the specified writers.
-	///
-	/// The concurrency level will be equal to the specified value, and the logging
-	/// will output to the supplied writer items.
-	///
-	/// @tparam WriterItemT the writer item types
-	/// @param executionModel_ the execution model to use when running the tests
-	/// @param concurrencyLevel_ the number of threads or processes to use to run the tests
-	/// @param useNamespaces specify whether to use or ignore test class namespaces
-	/// @param pauseAtExit set this to true in order to pause for a key entry at the end of the test run
-	/// @param writerItems the writer items
-	/// @return 0 if all tests passed, 1 otherwise
-	///
-	public: template <typename ... WriterItemT>
-	static int run(ExecutionModel executionModel_,
-	               unsigned int concurrencyLevel_,
-	               bool useNamespaces,
-	               bool pauseAtExit,
-	               const WriterItemT & ... writerItems) {
-		auto & r = runner();
-		r.writer = Impl::CompositeWriter(writerItems ...);
-		r.concurrencyLevel = r.getConcurrencyLevel(concurrencyLevel_);
-		r.executionModel = r.checkOutOfProcessCapability(executionModel_);
-		r.setUseNamespaces(useNamespaces);
-		r.pauseAtExit = pauseAtExit;
+		r.executionModel = r.checkOutOfProcessCapability(executionModel);
+		r.setUseNamespaces(false);
+		r.pauseAtExit = false;
 		return r.performTestRun();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
+
+	//
+	// bool pauseAtExit              = false
+	// unsigned int concurrencyLevel = number of logical cores
+	// bool generateReports          = false
+	// bool reportGenerator          = SurefireTestReportGenerator
+	// bool reportOutputDirectory    = no default
+	//
+	// const WriterItemT & ... writerItems
+	// std::shared_ptr<Impl::TestReportGenerator> reportGenerator = SurefireTestReportGenerator
+	//
+	private: static CommandLine<TestRunnerOption> getCommandLineParser() {
+		return CommandLine<TestRunnerOption>(CommandLineStyle::SwitchSpaceValue)
+			.withOption(TestRunnerOption::ExecutionModel,   "e", "execution-model",  true,  "The execution model (default = SingleThreaded).")
+			.withOption(TestRunnerOption::Namespaces,       "n", "namespaces",       false, "Use namespaces in test group names (default is not to use).")
+			.withOption(TestRunnerOption::PauseAtExit,      "p", "pause",            false, "Pause at exit (default is not to pause).")
+			.withOption(TestRunnerOption::ConcurrencyLevel, "c", "concurrency",      true,  "The number of threads or processes to use to run the tests (default = detect).")
+			.withOption(TestRunnerOption::ReportFolder,     "r", "report-folder",    true,  "Generate test reports in the specified folder.")
+			.withOption(TestRunnerOption::Help,             "h", "help",             false, "Displays this help message.")
+			.withFinalValue();
+	}
+
+	private: static void setReportOutputFolder(const Resource::File & reportOutputFolder,
+	                                           std::shared_ptr<Impl::TestReportGenerator> & reportGenerator) {
+		if (!reportOutputFolder.toRawString().empty()) {
+			auto path = Resource::File(boost::filesystem::system_complete(reportOutputFolder.getEntry()));
+
+			if (path.isRegularFile()) {
+				ThrowBalauException(
+					  Exception::IllegalArgumentException
+					, ::toString("The specified report output folder is an existing regular file: ", path.toRawString())
+				);
+			}
+
+			if (!path.isRegularDirectory()) {
+				try {
+					path.createDirectories();
+				} catch (const boost::filesystem::filesystem_error & e) {
+					ThrowBalauException(
+						  Exception::IllegalArgumentException
+						, ::toString("The specified report output folder could not be created: ", path.toRawString())
+					);
+				}
+			}
+
+			reportGenerator->setOutputFolder(path);
+		}
+	}
 
 	// The test runner singleton.
 	private: static TestRunner & runner() {
@@ -572,6 +420,7 @@ class TestRunner {
 
 	private: TestRunner()
 		: writer(Impl::CompositeWriter(StdOutTestWriter()))
+		, reportGenerator()
 		, concurrencyLevel(getConcurrencyLevel())
 		, executionModel(checkOutOfProcessCapability(WorkerProcesses))
 		, useNamespaces(false)
@@ -586,16 +435,20 @@ class TestRunner {
 	}
 
 	// Parse the execution model string.
-	private: static ExecutionModel parseExecutionModel(std::string_view s) {
+	private: static ExecutionModel parseExecutionModel(CommandLine<TestRunnerOption> & cl) {
+		if (!cl.hasOption(TestRunnerOption::ExecutionModel)) {
+			return ExecutionModel::SingleThreaded;
+		}
+
+		const auto m = Util::Strings::toLower(Util::Strings::trim(cl.getOption(TestRunnerOption::ExecutionModel)));
 		Testing::ExecutionModel model;
-		const auto m = Util::Strings::toLower(s);
 
 		if (isExecutionModel(m)) {
 			fromString(model, m);
 			std::cout << "\nRunning tests for command line specified execution model " << toString(model) << "\n" << std::endl;
 		} else {
 			model = Testing::SingleThreaded;
-			std::cout << "\nRunning tests for predefined execution model SingleThreaded\n" << std::endl;
+			std::cout << "\nUnknown execution model specified. Using execution model SingleThreaded\n" << std::endl;
 		}
 
 		return model;
@@ -615,7 +468,9 @@ class TestRunner {
 				writer << "Run type = single process, single threaded\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
-					new Impl::SingleThreadedTestRunnerExecutor(writer, useNamespaces, testCasesByGroup, testList)
+					new Impl::SingleThreadedTestRunnerExecutor(
+						writer, reportGenerator, useNamespaces, testCasesByGroup, testList
+					)
 				);
 
 				break;
@@ -626,7 +481,9 @@ class TestRunner {
 				       << "(" << concurrencyLevel << " thread" << (concurrencyLevel > 1 ? "s" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
-					new Impl::WorkerThreadsTestRunnerExecutor(writer, useNamespaces, testCasesByGroup, testList, concurrencyLevel)
+					new Impl::WorkerThreadsTestRunnerExecutor(
+						writer, reportGenerator, useNamespaces, testCasesByGroup, testList, concurrencyLevel
+					)
 				);
 
 				break;
@@ -637,7 +494,9 @@ class TestRunner {
 				       << "(" << concurrencyLevel << " worker process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
-					new Impl::WorkerProcessesTestRunnerExecutor(writer, useNamespaces, testCasesByGroup, testList, concurrencyLevel)
+					new Impl::WorkerProcessesTestRunnerExecutor(
+						writer, reportGenerator, useNamespaces, testCasesByGroup, testList, concurrencyLevel
+					)
 				);
 
 				break;
@@ -648,7 +507,9 @@ class TestRunner {
 				       << "(" << concurrencyLevel << " simultaneous process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
 
 				executor = std::unique_ptr<Impl::TestRunnerExecutor>(
-					new Impl::ProcessPerTestTestRunnerExecutor(writer, useNamespaces, testCasesByGroup, testList, concurrencyLevel)
+					new Impl::ProcessPerTestTestRunnerExecutor(
+						writer, reportGenerator, useNamespaces, testCasesByGroup, testList, concurrencyLevel
+					)
 				);
 
 				break;
@@ -682,27 +543,34 @@ class TestRunner {
 		return success ? 0 : 1;
 	}
 
-	// Concatenates remaining arguments into a single string, forming the test list.
-	private: static std::string createTestList(int argc, char * argv[], int argvStart) {
-		std::string tl;
+	// Concatenates final values into a single string, forming the test list.
+	private: static std::string createTestList(CommandLine<TestRunnerOption> & cl) {
+		const size_t count = cl.getFinalValueCount();
 
-		// Empty list?
-		if (argc <= argvStart) {
-			return tl;
+		if (count == 0) {
+			return "";
 		}
 
-		tl = argv[argvStart];
+		std::string tl;
+		std::string prefix;
 
-		for (int i = argvStart + 1; i < argc; ++i) {
-			tl += " ";
-			tl += argv[i];
+		for (size_t m = 0; m < count; m++) {
+			tl += prefix;
+			tl += cl.getFinalValue(m);
+			prefix = " ";
 		}
 
 		return tl;
 	}
 
 	// Determine the concurrency level, either from the supplied requested concurrency level or from the hardware capabilities.
-	private: unsigned int getConcurrencyLevel(const unsigned int requestedConcurrency = 0) {
+	private: unsigned int getConcurrencyLevel(CommandLine<TestRunnerOption> & cl) {
+		const size_t requestedConcurrency = cl.getOptionAsUnsignedIntOrDefault(TestRunnerOption::ConcurrencyLevel, 0);
+		return getConcurrencyLevel(requestedConcurrency);
+	}
+
+	// Determine the concurrency level, either from the supplied requested concurrency level or from the hardware capabilities.
+	private: unsigned int getConcurrencyLevel(size_t requestedConcurrency = 0) {
 		const unsigned int coreCount = std::thread::hardware_concurrency();
 		const unsigned int maxConcurrency = Impl::TestRunnerLimits::MaxConcurrency;
 
@@ -820,7 +688,7 @@ class TestRunner {
 			if (!testCaseVector.empty()) {
 				testCaseVector[0].group->setGroupName(
 					Impl::TestRunnerExecutor::extractTypeName(
-						testCaseVector[0].group->getFullGroupName().c_str(), useNamespaces
+						testCaseVector[0].group->getGroupName().c_str(), useNamespaces
 					)
 				);
 			}
@@ -845,7 +713,8 @@ class TestRunner {
 	private: std::string testList;
 	private: std::unordered_map<std::string, std::vector<Impl::TestCase>> testCasesByGroup;
 	private: Impl::CompositeWriter writer;
-	private: unsigned int concurrencyLevel;
+	private: std::shared_ptr<Impl::TestReportGenerator> reportGenerator;
+	private: unsigned int concurrencyLevel {};
 	private: ExecutionModel executionModel;
 	private: bool useNamespaces;
 	private: bool pauseAtExit;
@@ -879,16 +748,14 @@ inline void TestGroup<TestClassT>::logLine(const S & p, const SR & ... pRest) {
 template <typename TestClassT>
 inline TestGroup<TestClassT>::TestGroup()
 	: executionModels(SingleThreaded | WorkerThreads | WorkerProcesses | ProcessPerTest)
-	, fullTestGroupName(Impl::TestRunnerExecutor::extractTypeName(typeid(*this).name(), false))
-	, testGroupName(fullTestGroupName) {
+	, testGroupName(Impl::TestRunnerExecutor::extractTypeName(typeid(*this).name(), false)) {
 	(void) &instance; // force instantiation
 }
 
 template <typename TestClassT>
 inline TestGroup<TestClassT>::TestGroup(unsigned int executionModels_)
 	: executionModels(executionModels_)
-	, fullTestGroupName(Impl::TestRunnerExecutor::extractTypeName(typeid(*this).name(), false))
-	, testGroupName(fullTestGroupName) {
+	, testGroupName(Impl::TestRunnerExecutor::extractTypeName(typeid(*this).name(), false)) {
 	(void) &instance; // force instantiation
 }
 
