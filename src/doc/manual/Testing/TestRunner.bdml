@@ -67,18 +67,22 @@
 		<code lang="C++">
 			// Example test group from the Balau unit tests.
 
-			struct CommandLineTest : public Testing::TestGroup&lt;CommandLineTest&gt; {
-				CommandLineTest() {
-					registerTest(&amp;CommandLineTest::basicTest,        "basicTest");
-					registerTest(&amp;CommandLineTest::failingTest,      "failingTest");
-					registerTest(&amp;CommandLineTest::finalValueTest,   "finalValueTest");
-					registerTest(&amp;CommandLineTest::numericValueTest, "numericValueTest");
+			struct ObjectTrieTest : public Testing::TestGroup&lt;ObjectTrieTest&gt; {
+				ObjectTrieTest() {
+					registerTest(&amp;ObjectTrieTest::uIntTrieBuild,               "uIntTrieBuild");
+					registerTest(&amp;ObjectTrieTest::uIntTrieCopy,                "uIntTrieCopy");
+					registerTest(&amp;ObjectTrieTest::uIntTreeDepthIterate,        "uIntTreeDepthIterate");
+					registerTest(&amp;ObjectTrieTest::uIntTreeDepthIterateForLoop, "uIntTreeDepthIterateForLoop");
+					registerTest(&amp;ObjectTrieTest::uIntTreeBreadthIterate,      "uIntTreeBreadthIterate");
+					registerTest(&amp;ObjectTrieTest::fluentBuild,                 "fluentBuild");
 				}
 
-				void basicTest();
-				void failingTest();
-				void finalValueTest();
-				void numericValueTest();
+				void uIntTrieBuild();
+				void uIntTrieCopy();
+				void uIntTreeDepthIterate();
+				void uIntTreeDepthIterateForLoop();
+				void uIntTreeBreadthIterate();
+				void fluentBuild();
 			};
 		</code>
 
@@ -86,33 +90,32 @@
 
 		<para>The test application executes the test runner by calling the test runner's <emph>run</emph> method. Within the main function, the test runner is initialised via one of the runner's initialisation methods. The most common <emph>run</emph> methods to use are the ones that take <emph>argc</emph> and <emph>argv</emph> arguments. The <emph>argc</emph> and <emph>argv</emph> arguments of the test application's main function are passed to the test runner's <emph>run</emph> method, in order to parse the command line arguments.</para>
 
-		<para>The first <emph>run</emph> method that takes <emph>argc</emph> and <emph>argv</emph> arguments also accepts an execution model:</para>
-
 		<code lang="C++">
 			#include &lt;Balau/Testing/TestRunner.hpp&gt;
 
 			using namespace Balau::Testing;
 
 			int main(int argc, char * argv[]) {
-				// Run the tests with the worker processes execution model.
-				return TestRunner::run(WorkerProcesses, argc, argv);
-			}
-		</code>
-
-		<para>The test runner will interpret the command line arguments as a space/comma delimited list of globbed test names to run.</para>
-
-		<para>The second <emph>run</emph> method that takes <emph>argc</emph> and <emph>argv</emph> arguments does not have an execution model input parameter:</para>
-
-		<code lang="C++">
-			#include &lt;Balau/Testing/TestRunner.hpp&gt;
-
-			using namespace Balau::Testing;
-
-			int main(int argc, char * argv[]) {
-				// Run the tests with the execution model specified as the first element of argv.
 				return TestRunner::run(argc, argv);
 			}
 		</code>
+
+		<para>The test runner uses the command line parser to parse a space separated command line which can also contain globbed test name pattners to run.</para>
+
+		<para>The following command line options are available.</para>
+
+		<table class="bdml-table161612L56">
+			<head> <cell>Short option</cell> <cell>Long option</cell> <cell>Has value</cell> <cell>Description</cell> </head>
+
+			<body>
+				<row> <cell>-e</cell> <cell>--execution-model</cell> <cell>yes</cell> <cell>The execution model (default = SingleThreaded).</cell> </row>
+				<row> <cell>-n</cell> <cell>--namespaces</cell>      <cell>no</cell>  <cell>Use namespaces in test group names (default is not to use).</cell> </row>
+				<row> <cell>-p</cell> <cell>--pause</cell>           <cell>no</cell>  <cell>Pause at exit (default is not to pause).</cell> </row>
+				<row> <cell>-c</cell> <cell>--concurrency</cell>     <cell>yes</cell> <cell>The number of threads or processes to use to run the tests (default = detect).</cell> </row>
+				<row> <cell>-r</cell> <cell>--report-folder</cell>   <cell>yes</cell> <cell>Generate test reports in the specified folder.</cell> </row>
+				<row> <cell>-h</cell> <cell>--help</cell>            <cell>no</cell>  <cell>Displays this help message.</cell> </row>
+			</body>
+		</table>
 
 		<para>The test runner will interpret the first element of <emph>argv</emph> as the execution model (case insensitive) if it is a valid execution model, and the remainder of the command line arguments as a space/comma delimited list of globbed test names to run. If the first element of <emph>argv</emph> is not a valid execution model, it will form the head of the globbed test name list and the <emph>SingleThreaded</emph> execution model will be used by default.</para>
 
@@ -138,11 +141,11 @@
 		<code lang="C++">
 			# Run the Balau test application with the worker processes execution model
 			# and specifying a subset of tests via a comma delimited list of patterns.
-			BalauTests WorkerProcesses Injector::*,Environment::*
+			BalauTests -e WorkerProcesses Injector::*,Environment::*
 
 			# Run the Balau test application with the worker processes execution model
 			# and specifying a subset of tests via a space delimited list of patterns.
-			BalauTests WorkerProcesses Injector::* Environment::*
+			BalauTests -e WorkerProcesses Injector::* Environment::*
 		</code>
 
 		<h3>Execution models</h3>
@@ -463,6 +466,12 @@
 
 		<para>More information on logging system configuration is available in the <ref url="Logging/Logger">Logging</ref> documentation.</para>
 
+		<h2>Test reports</h2>
+
+		<para>In addition to test result logging, the test runner can be configured to generate XML based test run report files.</para>
+
+		<para>The default reporter provides Maven Surefire plugin schema based XML reports. Alternative report generators may be defined by deriving from the <emph>TestReportGenerator</emph> base class and providing an instance of the reporter class to the test runner <emph>run</emph> function.</para>
+
 		<h1>Test utilities</h1>
 
 		<para>The test framework utilities are designed to provide domain specific help in accomplishing certain management tasks required during testing. The test framework utilities are in an early stage of development, and currently only a pair of network related test utility functions are defined.</para>
@@ -548,14 +557,16 @@
 		<code lang="C++">
 			# Run the Balau test application with the worker processes execution model
 			# and specifying a subset of tests via a comma delimited list of patterns.
-			BalauTests WorkerProcesses Injector*,Environment*
+			BalauTests -e WorkerProcesses Injector*,Environment*
 
 			# Run the Balau test application with the worker processes execution model
 			# and specifying a subset of tests via a space delimited list of patterns.
-			BalauTests WorkerProcesses Injector* Environment*
+			BalauTests -e WorkerProcesses Injector* Environment*
 		</code>
 
 		<h2>Model selection</h2>
+
+		<para>TODO update documentation to reflect command line parsing</para>
 
 		<para>The test execution model to run can be specified either as the first argument of the command line by calling the <emph>TestRunner::run(argc, argv)</emph> method, or explicitly by using other <emph>run</emph> method overloads, most commonly the <emph>TestRunner::run(model, argc, argv)</emph> overload.</para>
 

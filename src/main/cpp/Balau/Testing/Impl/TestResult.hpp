@@ -25,9 +25,20 @@ namespace Balau::Testing::Impl {
 //
 class TestResult {
 	public: enum class Result {
-		Success, Failure, Ignored
+		// The test succeeded.
+		Success
+
+		// The test failed by throwing an assertion exception.
+		, Failure
+
+		// The test failed by throwing another exception or seg-faulting.
+		, Error
+
+		// The test was skipped.
+		, Ignored
 	};
 
+	public: std::string testName;
 	public: long long duration;
 	public: unsigned int groupIndex;
 	public: unsigned int testIndex;
@@ -40,31 +51,36 @@ class TestResult {
 		, testIndex(0)
 		, result(Result::Ignored) {}
 
-	public: TestResult(long long duration_,
+	public: TestResult(std::string testName_,
+	                   long long duration_,
 	                   unsigned int groupIndex_,
 	                   unsigned int testIndex_,
 	                   Result result_,
 	                   std::string && resultText_)
-		: duration(duration_)
+		: testName(std::move(testName_))
+		, duration(duration_)
 		, groupIndex(groupIndex_)
 		, testIndex(testIndex_)
 		, result(result_)
 		, resultText(std::move(resultText_)){}
 
-	public: TestResult(unsigned int groupIndex_, unsigned int testIndex_)
-		: duration(0)
+	public: TestResult(std::string testName_, unsigned int groupIndex_, unsigned int testIndex_)
+		: testName(std::move(testName_))
+		, duration(0)
 		, groupIndex(groupIndex_)
 		, testIndex(testIndex_)
 		, result(Result::Ignored) {}
 
 	public: TestResult(TestResult && rhs) noexcept
-		: duration(rhs.duration)
+		: testName(std::move(rhs.testName))
+		, duration(rhs.duration)
 		, groupIndex(rhs.groupIndex)
 		, testIndex(rhs.testIndex)
 		, result(rhs.result)
 		, resultText(std::move(rhs.resultText)) {}
 
 	public: TestResult & operator = (TestResult && rhs) noexcept {
+		testName = std::move(rhs.testName);
 		duration = rhs.duration;
 		groupIndex = rhs.groupIndex;
 		testIndex = rhs.testIndex;
@@ -74,6 +90,7 @@ class TestResult {
 	}
 
 	public: void operator += (const TestResult & rhs) {
+		testName = rhs.testName;
 		duration = rhs.duration;
 		groupIndex = rhs.groupIndex;
 		testIndex = rhs.testIndex;
@@ -84,6 +101,7 @@ class TestResult {
 	// Serialisation method for marshalling/unmarshalling.
 	public: template <typename Archive> void serialize(Archive & archive, unsigned int ) {
 		archive
+			& BoostSerialization(testName)
 			& BoostSerialization(duration)
 			& BoostSerialization(groupIndex)
 			& BoostSerialization(testIndex)

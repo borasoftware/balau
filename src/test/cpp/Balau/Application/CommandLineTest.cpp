@@ -63,7 +63,7 @@ void finalValueImpl(int argc, const char * argv[], CommandLineStyle style) {
 
 	commandLine.parse(argc, argv, false);
 
-	AssertThat(commandLine.hasFinalValue(),                         is(true));
+	AssertThat(commandLine.getFinalValueCount(),                    is(1U));
 	AssertThat(commandLine.getOption(KEY1),                         is(VALUE1));
 	AssertThat(commandLine.getOption(KEY2),                         is(VALUE2));
 	AssertThat(commandLine.hasOption(KEY3),                         is(true));
@@ -112,7 +112,7 @@ void numericValueImpl(int argc, const char * argv[], CommandLineStyle style) {
 
 	commandLine.parse(argc, argv, true);
 
-	AssertThat(commandLine.hasFinalValue(), is(false));
+	AssertThat(commandLine.getFinalValueCount(), is(0U));
 
 	AssertThat(commandLine.getOption(KEY1), is(sValueStr));
 	AssertThat(commandLine.getOption(KEY2), is(usValueStr));

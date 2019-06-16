@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #  - BalauConfigVersion.cmake
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.5.3)
+project(Balau VERSION 2019.6.1)
 
 configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
@@ -598,6 +598,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Impl/TestMethodBase.hpp
 	src/main/cpp/Balau/Testing/Impl/TestResult.hpp
 	src/main/cpp/Balau/Testing/Impl/TestResultQueue.hpp
+	src/main/cpp/Balau/Testing/Impl/TestReportGenerator.hpp
 	src/main/cpp/Balau/Testing/Impl/TestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/TestRunnerLimits.hpp
 	src/main/cpp/Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp
@@ -614,6 +615,8 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Renderers/HexSignedLongRenderer.hpp
 	src/main/cpp/Balau/Testing/Renderers/HexUnsignedLongLongRenderer.hpp
 	src/main/cpp/Balau/Testing/Renderers/HexSignedLongLongRenderer.hpp
+	src/main/cpp/Balau/Testing/Reporters/SurefireTestReportGenerator.cpp
+	src/main/cpp/Balau/Testing/Reporters/SurefireTestReportGenerator.hpp
 	src/main/cpp/Balau/Testing/Util/NetworkTesting.cpp
 	src/main/cpp/Balau/Testing/Util/NetworkTesting.hpp
 	src/main/cpp/Balau/Type/Character.hpp

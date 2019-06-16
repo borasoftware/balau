@@ -20,6 +20,7 @@
 #include <Balau/Testing/Impl/TestCase.hpp>
 #include <Balau/Testing/Impl/TestGroupBase.hpp>
 #include <Balau/Testing/Impl/TestMethodBase.hpp>
+#include <Balau/Testing/Impl/TestReportGenerator.hpp>
 #include <Balau/Testing/Impl/TestResultQueue.hpp>
 #include <Balau/Type/UUID.hpp>
 #include <Balau/Util/DateTime.hpp>
@@ -41,6 +42,7 @@ class TestRunnerExecutor {
 
 	protected: std::unique_ptr<TestResultQueue> resultQueue;
 	protected: CompositeWriter & writer;
+	private: std::shared_ptr<Impl::TestReportGenerator> & reportGenerator;
 	protected: const size_t maxLineLength;
 	protected: std::vector<FlattenedTestCase> tests;
 
@@ -73,12 +75,14 @@ class TestRunnerExecutor {
 
 	protected: TestRunnerExecutor(std::unique_ptr<TestResultQueue> resultQueue_,
 	                              CompositeWriter & writer_,
+	                              std::shared_ptr<Impl::TestReportGenerator> & reportGenerator_,
 	                              bool useNamespaces_,
 	                              GroupedTestCaseMap & testCasesByGroup,
 	                              const std::string & testList,
 	                              bool isMultiProcess)
 		: resultQueue(std::move(resultQueue_))
 		, writer(writer_)
+		, reportGenerator(reportGenerator_)
 		, maxLineLength(determineMaximumLogLineLength(testCasesByGroup, testList, isMultiProcess))
 		, tests(addTests(testCasesByGroup, testList))
 		, useNamespaces(useNamespaces_)
@@ -90,7 +94,7 @@ class TestRunnerExecutor {
 	protected: void runTest(const std::string & pidStr, FlattenedTestCase & testToRun) {
 		if (!(testToRun.executionModels & getExecutionModel())) {
 			// Ignore test.
-			resultQueue->enqueue(TestResult(testToRun.group->groupIndex, testToRun.testIndex));
+			resultQueue->enqueue(TestResult(testToRun.testName, testToRun.group->groupIndex, testToRun.testIndex));
 			return;
 		}
 
@@ -126,7 +130,8 @@ class TestRunnerExecutor {
 
 		resultQueue->enqueue(
 			TestResult(
-				  ns
+				  testToRun.testName
+				, ns
 				, testToRun.group->groupIndex
 				, testToRun.testIndex
 				, status
@@ -138,6 +143,8 @@ class TestRunnerExecutor {
 	}
 
 	private: TestResult::Result runSetup(TestGroupBase & group, std::ostream & output) {
+		TestResult::Result result;
+
 		try {
 			group.setup();
 			return TestResult::Result::Success;
@@ -145,11 +152,15 @@ class TestRunnerExecutor {
 			output << " - FAILED!\n\n"
 			       << "Exception thrown in setup method\n"
 			       << "Assertion failed: " << e.message << "\n\n";
+
+			result = TestResult::Result::Failure;
 		} catch (const std::exception & e) {
 			output << " - FAILED!\n\n"
 			       << "Exception thrown in setup method\n"
 			       << "Exception thrown: " << e.what() << "\n"
 			       << "of type: " << extractTypeName(typeid(e).name(), useNamespaces) << "\n\n";
+
+			result = TestResult::Result::Error;
 		} catch (...) {
 			// TODO this doesn't work
 			const auto e = std::current_exception();
@@ -158,12 +169,16 @@ class TestRunnerExecutor {
 			       << "Exception thrown in setup method\n"
 			       << "Unknown exception thrown of type: "
 			       << extractTypeName(typeid(e).name(), useNamespaces) << "\n\n";
+
+			result = TestResult::Result::Error;
 		}
 
-		return TestResult::Result::Failure;
+		return result;
 	}
 
 	private: TestResult::Result runTheTest(FlattenedTestCase & testToRun, std::ostream & output) {
+		TestResult::Result result;
+
 		try {
 			testToRun.group->resetIgnoreCurrent();
 			testToRun.method->run();
@@ -171,10 +186,14 @@ class TestRunnerExecutor {
 		} catch (const Exception::AssertionException & e) {
 			output << " - FAILED!\n\n"
 			       << "Assertion failed: " << e.message << "\n\n";
+
+			result = TestResult::Result::Failure;
 		} catch (const std::exception & e) {
 			output << " - FAILED!\n\n"
 			       << "Exception thrown: " << e.what() << "\n"
 			       << "of type: " << extractTypeName(typeid(e).name(), useNamespaces) << "\n\n";
+
+			result = TestResult::Result::Error;
 		} catch (...) {
 			// TODO this doesn't work
 			const auto e = std::current_exception();
@@ -182,12 +201,16 @@ class TestRunnerExecutor {
 			output << " - FAILED!\n\n"
 			       << "Unknown exception thrown of type: "
 			       << extractTypeName(typeid(e).name(), useNamespaces) << "\n";
+
+			result = TestResult::Result::Error;
 		}
 
-		return TestResult::Result::Failure;
+		return result;
 	}
 
 	private: TestResult::Result runTeardown(TestGroupBase & group, std::ostream & output, TestResult::Result status) {
+		TestResult::Result result;
+
 		try {
 			group.teardown();
 			return status;
@@ -200,6 +223,8 @@ class TestRunnerExecutor {
 				output << "Exception thrown in teardown method\n"
 				       << "Assertion failed: " << e.message << "\n\n";
 			}
+
+			result = status == TestResult::Result::Error ? TestResult::Result::Error : TestResult::Result::Failure;
 		} catch (const std::exception & e) {
 			if (status != TestResult::Result::Failure) {
 				output << " - FAILED!\n\n"
@@ -211,6 +236,8 @@ class TestRunnerExecutor {
 				       << "Exception thrown: " << e.what() << "\n"
 				       << "of type: " << extractTypeName(typeid(e).name(), useNamespaces) << "\n\n";
 			}
+
+			result = TestResult::Result::Error;
 		} catch (...) {
 			// TODO this doesn't work
 			auto e = std::current_exception();
@@ -225,9 +252,11 @@ class TestRunnerExecutor {
 				       << "Unknown exception thrown of type: "
 				       << extractTypeName(typeid(e).name(), useNamespaces) << "\n\n";
 			}
+
+			result = TestResult::Result::Error;
 		}
 
-		return TestResult::Result::Failure;
+		return result;
 	}
 
 	protected: void processTestResultMessage(TestResult && message) {
@@ -254,8 +283,12 @@ class TestRunnerExecutor {
 				if (groupCount == groupSizeByName[testGroupName]) {
 					std::chrono::nanoseconds groupDuration(0);
 
+					std::vector<const TestResult *> groupTestResults;
+					groupTestResults.reserve(groupCount);
+
 					for (auto & thisTestResult : testResults) {
 						if (thisTestResult.groupIndex == testResult.groupIndex) {
+							groupTestResults.push_back(&thisTestResult);
 							groupDuration += std::chrono::nanoseconds(thisTestResult.duration);
 						}
 
@@ -263,6 +296,10 @@ class TestRunnerExecutor {
 							// Last one in group.
 							totalCoreTime += groupDuration;
 							writer << " Group duration (core clock time) = " << durationStr(groupDuration) << "\n";
+
+							// Call the report generator for this completed test group.
+							reportGenerator->generate(*test.group, groupDuration, groupTestResults);
+
 							break;
 						}
 					}

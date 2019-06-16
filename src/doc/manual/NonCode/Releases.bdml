@@ -33,6 +33,16 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2019.6.1</h1>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>XML based test report generation;</entry>
+			<entry>test runner now uses SSV style command line options;</entry>
+			<entry>command line parser supports multiple final values in SSV mode.</entry>
+		</bullets>
+
 		<h1>V2019.5.3</h1>
 
 		<para>New features in this release:</para>

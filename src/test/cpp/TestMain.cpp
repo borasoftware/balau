@@ -39,7 +39,7 @@ int runAllExecutionModels(int argc, char * argv[]) {
 	// Runs the test for a single execution model.
 	struct RunTests {
 		int runTests(const char * executable, Testing::ExecutionModel model, std::string testList) {
-			const int exitStatus = boost::process::system(executable, toString(model), testList);
+			const int exitStatus = boost::process::system(executable, "-e", toString(model), testList);
 			std::ostream & stream = exitStatus == 0 ? std::cout : std::cerr;
 			stream << "\n\n***** Test run for execution model " << toString(model)
 			       << " returned exit status " << exitStatus << " *****\n" << std::endl;

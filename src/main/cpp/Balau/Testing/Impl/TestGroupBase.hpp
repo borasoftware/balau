@@ -41,6 +41,8 @@ class TestGroupBase {
 
 	public: void resetIgnoreCurrent();
 
+	public: virtual const std::string & getGroupName() const = 0;
+
 	protected: void ignoreCurrent();
 
 	public: virtual ~TestGroupBase() = default;
@@ -48,12 +50,6 @@ class TestGroupBase {
 	private: virtual void setup() = 0;
 
 	private: virtual void teardown() = 0;
-
-	// Get the test class' full name.
-	private: virtual const std::string & getFullGroupName() const = 0;
-
-	// Get the test class' name during the test framework setup.
-	private: virtual const std::string & getGroupName() const = 0;
 
 	// Set the test class' name following a useNamespace update.
 	private: virtual void setGroupName(std::string && name) = 0;

@@ -63,7 +63,7 @@ template <typename KeyT> class CommandLine {
 	///
 	/// @param style_ the command line style to use
 	///
-	public: CommandLine(CommandLineStyle style_ = CommandLineStyle::Detect)
+	public: explicit CommandLine(CommandLineStyle style_ = CommandLineStyle::Detect)
 		: style(style_) {}
 
 	///
@@ -74,7 +74,7 @@ template <typename KeyT> class CommandLine {
 	///
 	/// Create a command line parser by moving the supplied parser.
 	///
-	public: CommandLine(CommandLine && ) = default;
+	public: CommandLine(CommandLine && ) noexcept = default;
 
 	///
 	/// Assign the current command line parser to a copy of the supplied parser.
@@ -84,7 +84,7 @@ template <typename KeyT> class CommandLine {
 	///
 	/// Assign the current command line parser by moving the contents of the supplied parser.
 	///
-	public: CommandLine & operator = (CommandLine && ) = default;
+	public: CommandLine & operator = (CommandLine && ) noexcept = default;
 
 	///////////////////////// Registration of options /////////////////////////
 
@@ -143,7 +143,7 @@ template <typename KeyT> class CommandLine {
 	}
 
 	///
-	/// Specify that the command line arguments include a final stand alone value.
+	/// Specify that the command line arguments include one (SEV style) or one or more (SSV style) final stand alone values.
 	///
 	public: CommandLine & withFinalValue() {
 		commandLineHasFinalValue = true;
@@ -221,63 +221,14 @@ template <typename KeyT> class CommandLine {
 			return; // No arguments provided.. nothing to do.
 		}
 
-		const CommandLineStyle derivedStyle = determineStyle(
-			args[ignoreFirst ? 1 : 0], ignoreFirst ? args.size() - 1: args.size()
-		);
-
-		std::vector<std::string> cleanedArgs;
-		size_t m = ignoreFirst ? 1 : 0;
+		const CommandLineStyle derivedStyle = style == CommandLineStyle::Detect
+			? determineStyle(args[ignoreFirst ? 1 : 0], ignoreFirst ? args.size() - 1: args.size())
+			: style;
 
 		if (derivedStyle == CommandLineStyle::SwitchEqualsValue) {
-			while (m < args.size()) {
-				const std::string & arg = args[m];
-
-				if (Util::Strings::contains(arg, "=")) {
-					// Specified as switch=value.. convert to switch-space-value for parsing.
-					const size_t first = arg.find("=");
-					cleanedArgs.emplace_back(arg.substr(0, first));
-					cleanedArgs.emplace_back(arg.substr(first + 1));
-				} else {
-					cleanedArgs.emplace_back(arg);
-				}
-
-				m++;
-			}
+			parseSwitchEqualsValue(derivedStyle, args, ignoreFirst);
 		} else {
-			while (m < args.size()) {
-				cleanedArgs.emplace_back(args[m]);
-				m++;
-			}
-		}
-
-		for (m = 0; m < (commandLineHasFinalValue ? cleanedArgs.size() - 1 : cleanedArgs.size()); m++) {
-			const std::string optionSwitch = determineSwitch(derivedStyle, cleanedArgs[m]);
-
-			auto iter = keysBySwitch.find(optionSwitch);
-
-			if (iter == keysBySwitch.end()) {
-				ThrowBalauException(Exception::OptionNotFoundException, optionSwitch);
-			}
-
-			const auto & key = iter->second;
-			const auto & option = optionsByKey.at(key);
-
-			if (option.hasValue) {
-				if (commandLineHasFinalValue && cleanedArgs.size() - m < 2) {
-					ThrowBalauException(Exception::MissingFinalValueException, "");
-				} else if (cleanedArgs.size() - m < 1) {
-					ThrowBalauException(Exception::MissingOptionValueException, optionSwitch);
-				}
-
-				m++;
-				parsedValuesByKey[key] = toString(Util::Strings::trim(cleanedArgs[m]));
-			} else {
-				parsedValuesByKey[key] = "";
-			}
-		}
-
-		if (commandLineHasFinalValue) {
-			finalValue = toString(Util::Strings::trim(cleanedArgs.back()));
+			parseSwitchSpaceValue(derivedStyle, args, ignoreFirst);
 		}
 	}
 
@@ -290,11 +241,14 @@ template <typename KeyT> class CommandLine {
 		return parsedValuesByKey.find(key) != parsedValuesByKey.end();
 	}
 
+
 	///
-	/// Does the command line option set have a final value?
+	/// Get the number of final values available.
 	///
-	public: bool hasFinalValue() const {
-		return commandLineHasFinalValue;
+	/// This will be zero or 1 for SEV style command lines, or zero or more for SSV style command lines.
+	///
+	public: size_t getFinalValueCount() const {
+		return finalValues.size();
 	}
 
 	////////////////////////////// String value ///////////////////////////////
@@ -509,19 +463,19 @@ template <typename KeyT> class CommandLine {
 		return getOptionAs<double, double>(key, "a double precision floating point value", parse, true, defaultValue);
 	}
 
-	/////////////////////////////// Final value ///////////////////////////////
+	/////////////////////////////// Final values //////////////////////////////
 
 	///
-	/// Get the final value as a string or throw if no final value is available.
+	/// Get the final value with the specified index as a string or throw if no final value is available.
 	///
-	/// @throw OptionNotFoundException if this parser does not have final values
+	/// @throw OptionNotFoundException if this parser does not have final values or the index is out of range
 	///
-	public: std::string getFinalValue() const {
+	public: std::string getFinalValue(size_t index = 0) const {
 		if (!commandLineHasFinalValue) {
 			ThrowBalauException(Exception::OptionNotFoundException, "This parser does not have final values.");
 		}
 
-		return finalValue;
+		return finalValues[index];
 	}
 
 	///
@@ -530,9 +484,9 @@ template <typename KeyT> class CommandLine {
 	/// @throw OptionNotFoundException if no final value exists or the parser does not have final values
 	/// @throw OptionValueException if the value supplied on the command line was invalid
 	///
-	public: float getFinalValueAsFloat() const {
+	public: float getFinalValueAsFloat(size_t index = 0) const {
 		auto parse = [] (const std::string & str) { return std::stof(str); };
-		return getFinalValueAs<float>("a single precision floating point value", parse);
+		return getFinalValueAs<float>("a single precision floating point value", parse, index);
 	}
 
 	///
@@ -541,9 +495,9 @@ template <typename KeyT> class CommandLine {
 	/// @throw OptionNotFoundException if no final value exists or the parser does not have final values
 	/// @throw OptionValueException if the value supplied on the command line was invalid
 	///
-	public: double getFinalValueAsDouble() const {
+	public: double getFinalValueAsDouble(size_t index = 0) const {
 		auto parse = [] (const std::string & str) { return std::stod(str); };
-		return getFinalValueAs<double>("a double precision floating point value", parse);
+		return getFinalValueAs<double>("a double precision floating point value", parse, index);
 	}
 
 	///////////////////////// Final value or default //////////////////////////
@@ -551,12 +505,12 @@ template <typename KeyT> class CommandLine {
 	///
 	/// Get the final value as a string or return the supplied default if no final value is available.
 	///
-	public: std::string getFinalValueOrDefault(const std::string & defaultValue) const {
-		if (!commandLineHasFinalValue) {
+	public: std::string getFinalValueOrDefault(const std::string & defaultValue, size_t index = 0) const {
+		if (!commandLineHasFinalValue || finalValues.size() <= index) {
 			return defaultValue;
 		}
 
-		return finalValue;
+		return finalValues[index];
 	}
 
 	///
@@ -565,9 +519,9 @@ template <typename KeyT> class CommandLine {
 	/// @throw OptionNotFoundException if no final value exists or the parser does not have final values
 	/// @throw OptionValueException if the value supplied on the command line was invalid
 	///
-	public: float getFinalValueAsFloatOrDefault(float defaultValue) const {
+	public: float getFinalValueAsFloatOrDefault(float defaultValue, size_t index = 0) const {
 		auto parse = [] (const std::string & str) { return std::stof(str); };
-		return getFinalValueAs<float>("a single precision floating point value", parse, true, defaultValue);
+		return getFinalValueAs<float>("a single precision floating point value", parse, index, true, defaultValue);
 	}
 
 	///
@@ -576,9 +530,9 @@ template <typename KeyT> class CommandLine {
 	/// @throw OptionNotFoundException if no final value exists or the parser does not have final values
 	/// @throw OptionValueException if the value supplied on the command line was invalid
 	///
-	public: double getFinalValueAsDoubleOrDefault(double defaultValue) const {
+	public: double getFinalValueAsDoubleOrDefault(double defaultValue, size_t index = 0) const {
 		auto parse = [] (const std::string & str) { return std::stod(str); };
-		return getFinalValueAs<double>("a double precision floating point value", parse, true, defaultValue);
+		return getFinalValueAs<double>("a double precision floating point value", parse, index, true, defaultValue);
 	}
 
 	//////////////////////////////// Help text ////////////////////////////////
@@ -687,27 +641,102 @@ template <typename KeyT> class CommandLine {
 			: CommandLineStyle::SwitchEqualsValue;
 	}
 
-	// Determine the switch to lookup, given the derived style.
-	private: static std::string determineSwitch(CommandLineStyle derivedStyle, const std::string & rawSwitch) {
+	private: void parseSwitchEqualsValue(const CommandLineStyle & derivedStyle,
+	                                     const std::vector<std::string> & args,
+	                                     bool ignoreFirst) {
 		using ::toString;
-		std::string sw = toString(Util::Strings::trim(rawSwitch));
 
-		if (derivedStyle == CommandLineStyle::SwitchSpaceValue) {
-			// Full switches must start with "--", abbreviated switches must start with "-".
-			// These are removed for the derivedSwitch.
+		std::vector<std::string> cleanedArgs;
+		size_t m = ignoreFirst ? 1 : 0;
 
-			if (Util::Strings::startsWith(sw, "--")) {
-				return sw.substr(2);
-			} else if (Util::Strings::startsWith(sw, "-")) {
-				return sw.substr(1);
+		while (m < args.size()) {
+			const std::string & arg = args[m];
+
+			if (Util::Strings::contains(arg, "=")) {
+				const size_t first = arg.find('=');
+				cleanedArgs.emplace_back(arg.substr(0, first));
+				cleanedArgs.emplace_back(arg.substr(first + 1));
 			} else {
-				ThrowBalauException(Exception::OptionNotFoundException, rawSwitch);
+				cleanedArgs.emplace_back(arg);
+			}
+
+			m++;
+		}
+
+		for (size_t m = 0; m < (commandLineHasFinalValue ? cleanedArgs.size() - 1 : cleanedArgs.size()); m++) {
+			const std::string optionSwitch = toString(Util::Strings::trim(cleanedArgs[m]));
+			auto iter = keysBySwitch.find(optionSwitch);
+
+			if (iter == keysBySwitch.end()) {
+				ThrowBalauException(Exception::OptionNotFoundException, optionSwitch);
+			}
+
+			const auto & key = iter->second;
+			const auto & option = optionsByKey.at(key);
+
+			if (option.hasValue) {
+				if (commandLineHasFinalValue && cleanedArgs.size() - m < 2) {
+					ThrowBalauException(Exception::MissingFinalValueException, "");
+				} else if (cleanedArgs.size() - m < 1) {
+					ThrowBalauException(Exception::MissingOptionValueException, optionSwitch);
+				}
+
+				m++;
+				parsedValuesByKey[key] = toString(Util::Strings::trim(cleanedArgs[m]));
+			} else {
+				parsedValuesByKey[key] = "";
 			}
 		}
 
-		// CommandLineStyle::SwitchEqualsValue
-		// Switches are used as is.
-		return rawSwitch;
+		if (commandLineHasFinalValue) {
+			finalValues.push_back(toString(Util::Strings::trim(cleanedArgs.back())));
+		}
+	}
+
+	private: void parseSwitchSpaceValue(const CommandLineStyle & derivedStyle,
+	                                    const std::vector<std::string> & args,
+	                                    bool ignoreFirst) {
+		size_t m = ignoreFirst ? 1 : 0;
+
+		for (; m < args.size(); m++) {
+			using ::toString;
+			std::string optionSwitch = toString(Util::Strings::trim(args[m]));
+
+			// Full switches must start with "--", abbreviated switches must start with "-".
+			// These are removed for the derivedSwitch.
+
+			if (Util::Strings::startsWith(optionSwitch, "--")) {
+				optionSwitch = optionSwitch.substr(2);
+			} else if (Util::Strings::startsWith(optionSwitch, "-")) {
+				optionSwitch = optionSwitch.substr(1);
+			} else {
+				// Not a switch.
+				finalValues.push_back(std::move(optionSwitch));
+				continue;
+			}
+
+			auto iter = keysBySwitch.find(optionSwitch);
+
+			if (iter == keysBySwitch.end()) {
+				ThrowBalauException(Exception::OptionNotFoundException, optionSwitch);
+			}
+
+			const auto & key = iter->second;
+			const auto & option = optionsByKey.at(key);
+
+			if (option.hasValue) {
+				if ((commandLineHasFinalValue >> finalValues.empty()) && args.size() - m < 2) {
+					ThrowBalauException(Exception::MissingFinalValueException, "");
+				} else if (args.size() - m < 1) {
+					ThrowBalauException(Exception::MissingOptionValueException, optionSwitch);
+				}
+
+				m++;
+				parsedValuesByKey[key] = toString(Util::Strings::trim(args[m]));
+			} else {
+				parsedValuesByKey[key] = "";
+			}
+		}
 	}
 
 	//
@@ -766,9 +795,10 @@ template <typename KeyT> class CommandLine {
 	//
 	private: template<typename T> T getFinalValueAs(const std::string & typeAsString,
 	                                                T parse(const std::string &),
+	                                                size_t index,
 	                                                bool orDefault = false,
 	                                                T defaultValue = T()) const {
-		if (!commandLineHasFinalValue || finalValue.empty()) {
+		if (!commandLineHasFinalValue || finalValues.size() <= index) {
 			if (orDefault) {
 				return defaultValue;
 			}
@@ -781,15 +811,15 @@ template <typename KeyT> class CommandLine {
 		}
 
 		try {
-			return parse(finalValue);
+			return parse(finalValues[index]);
 		} catch (const std::invalid_argument &) {
 			ThrowBalauException(
-				Exception::OptionValueException, std::string("Final value is not " + typeAsString + ": " + finalValue)
+				Exception::OptionValueException, std::string("Final value is not " + typeAsString + ": " + finalValues[index])
 			);
 		} catch (...) {
 			ThrowBalauException(
 				  Exception::OptionValueException
-				, std::string("Final value is not in the valid range for " + typeAsString + ": " + finalValue)
+				, std::string("Final value is not in the valid range for " + typeAsString + ": " + finalValues[index])
 			);
 		}
 	}
@@ -807,12 +837,12 @@ template <typename KeyT> class CommandLine {
 		       std::string shortSwitch_,
 		       std::string longSwitch_,
 		       bool hasValue_,
-		       const std::string & documentation_)
+		       std::string documentation_)
 			: key(std::move(key_))
 			, shortSwitch(std::move(shortSwitch_))
 			, longSwitch(std::move(longSwitch_))
 			, hasValue(hasValue_)
-			, documentation(documentation_) {}
+			, documentation(std::move(documentation_)) {}
 
 		Option & operator = (const Option & copy) = default;
 	};
@@ -822,7 +852,7 @@ template <typename KeyT> class CommandLine {
 	private: std::map<KeyT, Option> optionsByKey; // key, option info
 	private: std::map<KeyT, std::string> parsedValuesByKey; // key, value
 	private: bool commandLineHasFinalValue = false;
-	private: std::string finalValue;
+	private: std::vector<std::string> finalValues;
 };
 
 } // namespace Balau
