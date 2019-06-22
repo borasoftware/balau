@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../../bdml/BdmlHtml.xsl"?>
+
+<!--
+  - Balau core C++ library
+  -
+  - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+  -
+  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+  - See the LICENSE file for the full license text.
+  -
+  -->
+
+<document xmlns="http://boradoc.org/1.0">
+	<metadata>
+		<relative-root url=".." />
+		<header url="../common/header.bdml" target="html" />
+		<footer url="../common/footer.bdml" target="html" />
+		<stylesheet url="../resources/css/balau.css" target="html" />
+		<link rel="icon" type="image/png" href="../resources/images/BoraLogoC300-OS.png" />
+		<copyright>Copyright (C) 2008 Bora Software (contact@borasoftware.com)</copyright>
+
+		<title text="Balau core C++ library - Maven integration" />
+		<toc start="1" />
+
+		<script src="../bdml/js/Comments.js" type="text/javascript" />
+		<script src="../bdml/js/SyntaxHighlighter.js" type="text/javascript" />
+		<script src="../bdml/js/CppHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/VerbatimHighlighterDefinition.js" type="text/javascript" />
+		<script src="../bdml/js/MenuHider.js" type="text/javascript" />
+	</metadata>
+
+	<chapter title="Maven integration">
+		<para>This chapter discusses integration of CMake and the Balau test framework with Maven via the Balau Maven plugins.</para>
+
+		<para>The primary aim of the Balau Maven plugins is to facilitate the integration of CMake projects within a Maven based SDLC infrastructure, whilst maintaining CMake project build configurations for developers.</para>
+
+		<h1>SDLC overview</h1>
+
+		<para>A typical Maven based SDLC infrastructure includes:</para>
+
+		<bullets>
+			<entry>projects with Maven based build configurations, maintained in version control repositories;</entry>
+			<entry>a build automation server, providing automated building, testing, and releasing of artifacts;</entry>
+			<entry>a software artifact repository, in which build artifacts and released packages are stored;</entry>
+			<entry>a software package deployment system, which performs the installation of released packages.</entry>
+		</bullets>
+
+		<para>In order to integrate non-Maven projects into a primarily Maven based infrastructure, there are a variety of possible approaches. Different approaches place non-Maven SDLC configuration into different places in the SDLC chain.</para>
+
+		<para>The approach of the Balau Maven plugins is to integrate CMake specific configuration at the project level from within project pom files. This allows the whole of the SDLC chain to be based purely on Maven projects. in addition, project specific build configuration is restricted to being in the same version control repository as the source code it is working on.</para>
+
+		<para>The result of such an approach is a simplification of the configuration of SDLC components outside of project version control repositories. For example, a single build configuration template could be used for all projects in the build automation server, simplifying build configuration creation and maintenance.</para>
+
+		<para>The Balau Maven plugins allow the following configuration to be placed within project specific pom files inside CMake projects:</para>
+
+		<bullets>
+			<entry>cleaning of CMake produced build files;</entry>
+			<entry>configuing the project's build system by running CMake;</entry>
+			<entry>compiling production code targets via CMake's <emph>--build</emph> option;</entry>
+			<entry>compiling test code targets via CMake's <emph>--build</emph> option;</entry>
+			<entry>running unit tests via the Balau test framework;</entry>
+			<entry>running integration tests via the Balau test framework.</entry>
+		</bullets>
+
+		<para>Once these aspects of a project's configuration are in place, further SDLC tasks required for projects (artifact assembly, artifact upload, etc.) can be handled via standard Maven plugins such as the <ref url="http://maven.apache.org/plugins/maven-assembly-plugin/" type="raw" new="true">Maven Assembly Plugin</ref> and the <ref url="http://maven.apache.org/maven-release/maven-release-plugin/" type="raw" new="true">Maven Release Plugin</ref>.</para>
+
+		<para>The Balau Maven plugins are primarily aimed at SDLC automation rather than project building during development. Developers may thus continue to use their CMake based development environment and build mechanisms. Once changes are pushed to remote VCS, the Maven based build configuration is then used for automated build, test and release processes.</para>
+
+		<h1>CMake Maven Plugin</h1>
+
+		<para>The Balau <emph>cmake-maven-plugin</emph> provides a mechanism for driving CMake executions via Maven. The plugin allows a simple and concise way of integrating CMake projects into a Maven based SDLC infrastructure.</para>
+
+		<h2>Goals</h2>
+
+		<para>The following Maven goals are defined:</para>
+
+		<bullets>
+			<entry>clean;</entry>
+			<entry>configure;</entry>
+			<entry>compile;</entry>
+			<entry>test-compile.</entry>
+		</bullets>
+
+		<para>The <emph>clean</emph> goal binds by default to the <emph>clean</emph> Maven phase. The <emph>configure</emph> goal binds by default to the <emph>validate</emph> Maven phase. The <emph>compile</emph> goal binds by default to the <emph>compile</emph> Maven phase, and the <emph>test-compile</emph> goal binds by default to the <emph>test-compile</emph> Maven phase.</para>
+
+		<para>Three of the goals are similar to the standard Maven goals for cleaning build files, compiling production code, and compiling test code.</para>
+
+		<para>The <emph>configure</emph> goal executes CMake to create the project build system before compilation. For enterprise applications, the created build system will typically be <emph>Make</emph> based.</para>
+
+		<h2>Usage</h2>
+
+		<xml>
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>cmake-maven-plugin</artifactId>
+				<version>19.6.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+							<goal>configure</goal>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</xml>
+
+		<h2>Configuration</h2>
+
+		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML.</para>
+
+		<h3>cmakeSourceDirectory</h3>
+
+		<para>The root of the source code. If not absolute, the directory is relative to the project base directory. Defaults to <emph>${project.basedir}</emph>.</para>
+
+		<xml>
+			<cmakeSourceDirectory>${project.basedir}</cmakeSourceDirectory>
+		</xml>
+
+		<h3>cmakeBinaryDirectory</h3>
+
+		<para>The folder in which the CMake build will be made. If not absolute, the directory is relative to the project base directory. Defaults to <emph>${project.build.directory}/cmake</emph>.</para>
+
+		<xml>
+			<cmakeBinaryDirectory>${project.build.directory}/cmake</cmakeBinaryDirectory>
+		</xml>
+
+		<h3>cmakePath</h3>
+
+		<para>Optional path to CMake binary. If not specified, the path is searched for the cmake executable.</para>
+
+		<xml>
+			<cmakePath>/opt/cmake/cmake-3.12.4/bin/cmake</cmakePath>
+		</xml>
+
+		<h3>cmakeDefines</h3>
+
+		<para>Additional command line definitions specified when running CMake.</para>
+
+		<xml>
+			<cmakeDefines>
+				<!-- Some example CMake command line definitions. -->
+				<CMAKE_INSTALL_PREFIX>/opt/usr</CMAKE_INSTALL_PREFIX>
+				<CMAKE_CXX_COMPILER>/usr/bin/g++</CMAKE_CXX_COMPILER>
+				<CMAKE_C_COMPILER>/usr/bin/gcc</CMAKE_C_COMPILER>
+			</cmakeDefines>
+		</xml>
+
+		<h3>concurrency</h3>
+
+		<para>The concurrency value specified to make. Defaults to the number of logical cpu cores.</para>
+
+		<xml>
+			<concurrency>4</concurrency>
+		</xml>
+
+		<h3>compileTargets</h3>
+
+		<para>Attach Make targets to the Maven compile phase. If no targets are defined, Make will be run with its default target.</para>
+
+		<xml>
+			<compileTargets>
+				<!-- Some example Make targets. -->
+				<compileTarget>Lib</compileTarget>
+				<compileTarget>App</compileTarget>
+			</compileTargets>
+		</xml>
+
+		<h3>testCompileTargets</h3>
+
+		<para>Attach Make targets to the Maven test-compile phase.  If no targets are defined, no Make targets will be run.</para>
+
+		<para>When using the <emph>balau-unit-test-maven-plugin</emph> and <emph>balau-integration-test-maven-plugin</emph>, the same Balau based test application executable can be used for both unit and integration tests. By default, the <emph>balau-unit-test-maven-plugin</emph> and <emph>balau-integration-test-maven-plugin</emph> plugins will run different sets of tests groups (<emph>*Test::*</emph> for unit tests, <emph>*IT::*</emph> for integration tests). There is thus no need to define two CMake targets/executables.</para>
+
+		<xml>
+			<testCompileTargets>
+				<!-- Example Make target to build a test application. -->
+				<testCompileTarget>Tests</testCompileTarget>
+			</testCompileTargets>
+		</xml>
+
+		<h3>environmentVariables</h3>
+
+		<para>Extra evironment variables to be defined for the CMake process. Note that this does not set the environment variables prior to calling the CMake executable.</para>
+
+		<para>Use of existing environment variables within new environment variables can be achieved via the <emph>%ENV_VAR_NAME%</emph> syntax. This syntax avoids clashes with the Maven <emph>${ENV_VAR_NAME}</emph> syntax.</para>
+
+		<xml>
+			<environmentVariables>
+				<ABC>123</ABC>
+				<PATH>/opt/cppcheck/bin:%PATH%</PATH>
+			</environmentVariables>
+		</xml>
+
+		<h1>Balau unit test Maven plugin</h1>
+
+		<para>The <emph>balau-unit-test-maven-plugin</emph> provides a mechanism for driving unit test executions based on the Balau test framework. The plugin allows a simple and concise way of integrating the execution of Balau style unit tests into a Maven based SDLC infrastructure.</para>
+
+		<para>The <emph>balau-unit-test-maven-plugin</emph> includes configuration specific to the Balau test framework, allowing the test application to be configured from within the project's pom files.</para>
+
+		<h2>Goals</h2>
+
+		<para>The following Maven goal is defined:</para>
+
+		<bullets>
+			<entry>test.</entry>
+		</bullets>
+
+		<para>This goal binds by default to the <emph>test</emph> Maven phase.</para>
+
+		<para>The single <emph>test</emph> goal executes the default or specified Balau based test application. The Balau test framework configuration options specified in the plugin's configuration are passed to the application.</para>
+
+		<para>By default, test group classes matching the <emph>*Test::*</emph> glob are run.</para>
+
+		<h2>Usage</h2>
+
+		<xml>
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>balau-unit-test-maven-plugin</artifactId>
+				<version>19.6.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</xml>
+
+		<h2>Configuration</h2>
+
+		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML.</para>
+
+		<h3>cmakeBinaryDirectory</h3>
+
+		<para>The folder in which the CMake build was made. If not absolute, the directory is relative to the project base directory. Defaults to <emph>${project.build.directory}/cmake</emph>.</para>
+
+		<xml>
+			<cmakeBinaryDirectory>${project.build.directory}/cmake</cmakeBinaryDirectory>
+		</xml>
+
+		<h3>reportDirectory</h3>
+
+		<para>Unit test report directory. If not absolute, the directory is relative to the CMake build directory. Defaults to <emph>${project.build.directory}/cmake/unitTestReports</emph>.</para>
+
+		<xml>
+			<reportDirectory>${project.build.directory}/cmake/unitTestReports</reportDirectory>
+		</xml>
+
+		<h3>appPath</h3>
+
+		<para>Test application path relative to the CMake build directory. Defaults to <emph>bin/Tests</emph>
+if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
+
+		<xml>
+			<appPath>bin/Tests</appPath>
+		</xml>
+
+		<h3>executionModel</h3>
+
+		<para>Balau test framework execution model. Defaults to <emph>SingleThreaded</emph>.</para>
+
+		<xml>
+			<executionModel>SingleThreaded</executionModel>
+		</xml>
+
+		<h3>patterns</h3>
+
+		<para>Test name globs to run. Defaults to <emph>*Test::*</emph>.</para>
+
+		<xml>
+			<patterns>
+				<pattern>*Test::*</pattern>
+			</patterns>
+		</xml>
+
+		<h3>ldLibraryPath</h3>
+
+		<para>Custom <emph>LD_LIBRARY_PATH</emph> to use when running the test application. Defaults to empty <emph>LD_LIBRARY_PATH</emph>.</para>
+
+		<xml>
+			<ldLibraryPath>/opt/a:/opt/b</ldLibraryPath>
+		</xml>
+
+		<h1>Balau integration test Maven plugin</h1>
+
+		<para>The <emph>balau-integration-test-maven-plugin</emph> provides a mechanism for driving integration test executions based on the Balau test framework. The plugin allows a simple and concise way of integrating the execution of Balau style integration tests into a Maven based SDLC infrastructure.</para>
+
+		<para>The <emph>balau-integration-test-maven-plugin</emph> includes configuration specific to the Balau test framework, allowing the test application to be configured from within the project's pom files.</para>
+
+		<para>The <emph>balau-integration-test-maven-plugin</emph> is similar to the <emph>balau-unit-test-maven-plugin</emph>, and contains similar configuration options.</para>
+
+		<h2>Goals</h2>
+
+		<para>The following Maven goal is defined:</para>
+
+		<bullets>
+			<entry>test.</entry>
+		</bullets>
+
+		<para>This goal binds by default to the <emph>integration-test</emph> Maven phase.</para>
+
+		<para>The single <emph>test</emph> goal executes the default or specified Balau based test application. The Balau test framework configuration options specified in the plugin's configuration are passed to the application.</para>
+
+		<para>By default, test group classes matching the <emph>*IT::*</emph> glob are run.</para>
+
+		<h2>Usage</h2>
+
+		<xml>
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>balau-integration-test-maven-plugin</artifactId>
+				<version>19.6.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</xml>
+
+		<h2>Configuration</h2>
+
+		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML.</para>
+
+		<h3>cmakeBinaryDirectory</h3>
+
+		<para>The folder in which the CMake build was made. If not absolute, the directory is relative to the project base directory. Defaults to <emph>${project.build.directory}/cmake</emph>.</para>
+
+		<xml>
+			<cmakeBinaryDirectory>${project.build.directory}/cmake</cmakeBinaryDirectory>
+		</xml>
+
+		<h3>reportDirectory</h3>
+
+		<para>Integration test report directory. If not absolute, the directory is relative to the CMake build directory. Defaults to <emph>${project.build.directory}/cmake/integrationTestReports</emph>.</para>
+
+		<xml>
+			<reportDirectory>${project.build.directory}/cmake/integrationTestReports</reportDirectory>
+		</xml>
+
+		<h3>appPath</h3>
+
+		<para>Test application path relative to the CMake build directory. Defaults to <emph>bin/Tests</emph>
+			if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
+
+		<xml>
+			<appPath>bin/Tests</appPath>
+		</xml>
+
+		<h3>executionModel</h3>
+
+		<para>Balau test framework execution model. Defaults to <emph>SingleThreaded</emph>.</para>
+
+		<xml>
+			<executionModel>SingleThreaded</executionModel>
+		</xml>
+
+		<h3>patterns</h3>
+
+		<para>Test name globs to run. Defaults to <emph>*IT::*</emph>.</para>
+
+		<xml>
+			<patterns>
+				<pattern>*IT::*</pattern>
+			</patterns>
+		</xml>
+
+		<h3>ldLibraryPath</h3>
+
+		<para>Custom <emph>LD_LIBRARY_PATH</emph> to use when running the test application. Defaults to empty <emph>LD_LIBRARY_PATH</emph>.</para>
+
+		<xml>
+			<ldLibraryPath>/opt/a:/opt/b</ldLibraryPath>
+		</xml>
+	</chapter>
+</document>
