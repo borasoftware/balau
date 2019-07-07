@@ -10,10 +10,17 @@
 
 #include "Uri.hpp"
 #include "File.hpp"
-#include "Http.hpp"
-#include "Https.hpp"
-#include "ZipFile.hpp"
-#include "ZipEntry.hpp"
+
+#ifdef BALAU_ENABLE_HTTP
+	#include "Http.hpp"
+	#include "Https.hpp"
+#endif
+
+#ifdef BALAU_ENABLE_LIBZIP
+	#include "ZipFile.hpp"
+	#include "ZipEntry.hpp"
+#endif
+
 #include "../Type/Character.hpp"
 
 namespace Balau::Resource {
@@ -22,20 +29,24 @@ void fromString(std::unique_ptr<Uri> & uri, std::string_view value) {
 	const auto scheme = value.substr(0, value.find(':'));
 	std::string path;
 
-	if (scheme == "http") {
-		uri.reset(new Http(value));
-		return;
-	} else if (scheme == "https") {
-		uri.reset(new Https(value));
-		return;
-	} else if (scheme == "file") {
+	#ifdef BALAU_ENABLE_HTTP
+		if (scheme == "http") {
+			uri.reset(new Http(value));
+			return;
+		} else if (scheme == "https") {
+			uri.reset(new Https(value));
+			return;
+		}
+	#endif
+
+	if (scheme == "file") {
 		auto s = value.substr(value.find(':') + 1);
 		path = std::string(s.data(), s.length());
 	} else { // Implicit file schema or zip archive.
 		path = std::string(value);
 	}
 
-	#ifdef BALAU_LIBZIP_ENABLED
+	#ifdef BALAU_ENABLE_LIBZIP
 		if (Util::Strings::endsWith(path, ".zip")) {
 			uri.reset(new ZipFile(File(path)));
 		} else {
@@ -43,7 +54,7 @@ void fromString(std::unique_ptr<Uri> & uri, std::string_view value) {
 		}
 	#else
 		uri.reset(new File(path));
-	#endif // BALAU_LIBZIP_ENABLED
+	#endif
 }
 
 } // namespace Balau::Resource

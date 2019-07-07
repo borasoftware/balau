@@ -26,6 +26,7 @@
 #include <Balau/Logging/Impl/LoggerForwardDeclarations.hpp>
 #include <Balau/Type/SourceCodeLocation.hpp>
 
+#include <atomic>
 #include <functional>
 
 namespace Balau {

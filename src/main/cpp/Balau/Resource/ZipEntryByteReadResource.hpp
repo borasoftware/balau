@@ -17,8 +17,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE
 
-#ifdef BALAU_LIBZIP_ENABLED
-
 #include <Balau/Resource/ByteReadResource.hpp>
 #include <Balau/Resource/Impl/ZipEntrySource.hpp>
 
@@ -61,7 +59,5 @@ class ZipEntryByteReadResource : public ByteReadResource {
 };
 
 } // namespace Balau::Resource
-
-#endif // BALAU_LIBZIP_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE

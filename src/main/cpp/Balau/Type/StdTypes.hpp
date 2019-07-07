@@ -17,6 +17,9 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
 #define COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
 
+// Switches for optional features.
+#include <Balau/BalauConfig.hpp>
+
 /////////////////////////// Additional documentation //////////////////////////
 
 ///
@@ -110,6 +113,7 @@
 #include <limits>
 #include <ostream>
 #include <sstream>
+#include <typeindex>
 #include <utility>
 #include <vector>
 

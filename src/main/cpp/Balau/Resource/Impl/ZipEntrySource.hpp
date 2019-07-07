@@ -11,9 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE_IMPL__ZIP_ENTRY_SOURCE
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE_IMPL__ZIP_ENTRY_SOURCE
 
-#ifdef BALAU_LIBZIP_ENABLED
-
-#include <Balau/Util/Compression.hpp>
+#include <Balau/Util/Zip.hpp>
 
 #include <boost/iostreams/categories.hpp>
 #include <boost/iostreams/concepts.hpp>
@@ -62,7 +60,5 @@ class ZipEntrySource : public boost::iostreams::source {
 //};
 
 } // namespace Balau::Resource::Impl
-
-#endif // BALAU_LIBZIP_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE_IMPL__ZIP_ENTRY_SOURCE

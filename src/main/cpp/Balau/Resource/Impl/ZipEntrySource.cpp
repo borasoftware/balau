@@ -8,13 +8,12 @@
 // See the LICENSE file for the full license text.
 //
 
-#ifdef BALAU_LIBZIP_ENABLED
-
 #define _Nonnull
 #define _Nullable
 #include <zip.h>
 
 #include "ZipEntrySource.hpp"
+
 #include "../../Exception/ResourceExceptions.hpp"
 
 namespace Balau::Resource::Impl {
@@ -83,5 +82,3 @@ std::shared_ptr<void> ZipEntrySource::createZipFilePointer(Util::Unzipper & arch
 //}
 
 } // namespace Balau::Resource::Impl
-
-#endif // BALAU_LIBZIP_ENABLED

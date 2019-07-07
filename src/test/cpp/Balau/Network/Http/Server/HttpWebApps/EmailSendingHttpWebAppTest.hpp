@@ -11,8 +11,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST
 
-#ifdef BALAU_LIBCURL_ENABLED
-
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
@@ -33,7 +31,5 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 };
 
 } // namespace Balau::Network::Http::HttpWebApps
-
-#endif // BALAU_LIBCURL_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP_TEST

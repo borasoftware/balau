@@ -10,8 +10,6 @@
 
 #include "Balau/Testing/TestRunner.hpp"
 
-#include <boost/process.hpp>
-
 using namespace Balau;
 
 //
@@ -38,8 +36,21 @@ int runAllExecutionModels(int argc, char * argv[]) {
 
 	// Runs the test for a single execution model.
 	struct RunTests {
-		int runTests(const char * executable, Testing::ExecutionModel model, std::string testList) {
-			const int exitStatus = boost::process::system(executable, "-e", toString(model), testList);
+		int runTests(const char * executable, Testing::ExecutionModel model, const std::string & testList) {
+			auto modelStr = toString(model);
+
+			char * args[4];
+			args[0] = strdup("-e");
+			args[1] = strdup(modelStr.c_str());
+			args[2] = testList.empty() ? nullptr : strdup(testList.c_str());
+			args[3] = nullptr;
+
+			const int exitStatus = execvp(executable, args);
+
+			free(args[0]);
+			free(args[1]);
+			free(args[2]);
+
 			std::ostream & stream = exitStatus == 0 ? std::cout : std::cerr;
 			stream << "\n\n***** Test run for execution model " << toString(model)
 			       << " returned exit status " << exitStatus << " *****\n" << std::endl;

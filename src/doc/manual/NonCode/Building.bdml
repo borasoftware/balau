@@ -60,21 +60,27 @@
 
 			<body>
 				<row>
-					<cell>ENABLE_ZLIB</cell>
+					<cell>BALAU_ENABLE_ZLIB</cell>
 					<cell>ON</cell>
 					<cell>Enable ZLib library wrappers for gzip compression support.</cell>
 				</row>
 
 				<row>
-					<cell>ENABLE_ZIP</cell>
+					<cell>BALAU_ENABLE_ZIP</cell>
 					<cell>ON</cell>
 					<cell>Enable LibZip library wrappers (Zipper and Unzipper).</cell>
 				</row>
 
 				<row>
-					<cell>ENABLE_CURL</cell>
-					<cell>OFF</cell>
+					<cell>BALAU_ENABLE_CURL</cell>
+					<cell>ON</cell>
 					<cell>Enable use of Curl library (email sending web app).</cell>
+				</row>
+
+				<row>
+					<cell>BALAU_ENABLE_HTTP</cell>
+					<cell>ON</cell>
+					<cell>Enable use of HTTP components (disabled for Boost &lt; 1.68.0).</cell>
 				</row>
 			</body>
 		</table>

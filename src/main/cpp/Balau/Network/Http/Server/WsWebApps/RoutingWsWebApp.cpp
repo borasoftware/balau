@@ -9,6 +9,7 @@
 //
 
 #include "RoutingWsWebApp.hpp"
+
 #include "../WsSession.hpp"
 
 namespace Balau::Network::Http::WsWebApps {

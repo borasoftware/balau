@@ -1,0 +1,27 @@
+// @formatter:off
+//
+// Balau core C++ library
+//
+// Copyright (C) 2017 Bora Software (contact@borasoftware.com)
+//
+// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+// See the LICENSE file for the full license text.
+//
+
+#ifndef COM_BORA_SOFTWARE__BALAU_CONFIG
+#define COM_BORA_SOFTWARE__BALAU_CONFIG
+
+#cmakedefine BALAU_ENABLE_ZLIB
+#cmakedefine BALAU_ENABLE_ZIP
+#cmakedefine BALAU_ENABLE_CURL
+#cmakedefine BALAU_ENABLE_HTTP
+#cmakedefine BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR
+#cmakedefine BALAU_ENABLE_TRACE_LOGGING
+
+#ifdef BALAU_ENABLE_TRACE_LOGGING
+	#define BOOST_ASIO_ENABLE_HANDLER_TRACKING
+#endif // BALAU_ENABLE_TRACE_LOGGING
+
+#cmakedefine BALAU_ENABLE_STACKTRACES
+
+#endif // COM_BORA_SOFTWARE__BALAU_CONFIG

@@ -17,11 +17,7 @@
 
 namespace Balau::LoggingSystem {
 
-#ifndef BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR
-	#define BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR 0
-#endif
-
-#if BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR == 1
+#ifdef BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR
 
 #ifndef BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB
 	#define BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB 10
@@ -164,7 +160,7 @@ inline unsigned long long overAllocationCountImpl() {
 	return loggerAllocatorState.overAllocationCount();
 }
 
-#else
+#else // BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR
 
 /////////////// Default allocation //////////////
 
@@ -188,7 +184,7 @@ inline unsigned long long overAllocationCountImpl() {
 	return 0;
 }
 
-#endif
+#endif // BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR
 
 inline void makeStringVector2(LoggerStringVector & vector) {
 }

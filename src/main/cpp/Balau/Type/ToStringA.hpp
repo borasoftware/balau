@@ -25,6 +25,7 @@
 #include <boost/utility/string_view.hpp>
 
 #include <forward_list>
+#include <list>
 #include <map>
 #include <unordered_set>
 #include <unordered_map>

@@ -9,6 +9,7 @@
 //
 
 #include "HttpsClient.hpp"
+
 #include "../../../Resource/UriComponents.hpp"
 
 namespace Balau::Network::Http {

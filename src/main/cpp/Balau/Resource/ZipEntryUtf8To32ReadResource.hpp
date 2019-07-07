@@ -17,8 +17,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_UTF8_TO_32_READ_RESOURCE
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_UTF8_TO_32_READ_RESOURCE
 
-#ifdef BALAU_LIBZIP_ENABLED
-
 #include <Balau/Resource/Utf8To32ReadResource.hpp>
 #include <Balau/Resource/ByteReadResource.hpp>
 #include <Balau/Resource/Impl/ZipEntrySource.hpp>
@@ -75,7 +73,5 @@ class ZipEntryUtf8To32ReadResource : public Utf8To32ReadResource {
 };
 
 } // namespace Balau::Resource
-
-#endif // BALAU_LIBZIP_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_UTF8_TO_32_READ_RESOURCE

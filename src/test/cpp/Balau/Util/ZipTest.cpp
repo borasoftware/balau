@@ -8,19 +8,15 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "CompressionTest.hpp"
+#include "ZipTest.hpp"
 #include "../../TestResources.hpp"
 
 #include <Balau/Util/Hashing.hpp>
 #include <Balau/Type/OnScopeExit.hpp>
 
-#ifdef BALAU_LIBZIP_ENABLED
-
 #define _Nonnull
 #define _Nullable
 #include <zip.h>
-
-#endif // BALAU_LIBZIP_ENABLED
 
 namespace Balau {
 
@@ -29,8 +25,6 @@ using Testing::isNot;
 using Testing::isGreaterThan;
 
 namespace Util {
-
-#ifdef BALAU_LIBZIP_ENABLED
 
 const Resource::File resDir  = TestResources::BalauSourceTestResourcesFolder; // NOLINT
 const Resource::File testDir = TestResources::BalauTestResultsFolder; // NOLINT
@@ -419,8 +413,6 @@ void CompressionTest::libzipSoakTest3() {
 	t1.join();
 	t2.join();
 }
-
-#endif // BALAU_LIBZIP_ENABLED
 
 } // namespace Util
 

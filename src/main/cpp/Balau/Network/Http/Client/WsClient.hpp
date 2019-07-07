@@ -18,6 +18,7 @@
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__WS_CLIENT
 
 #include <Balau/Type/ToString.hpp>
+
 #include <Balau/Exception/NetworkExceptions.hpp>
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Resource/Url.hpp>

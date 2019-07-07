@@ -177,6 +177,13 @@ inline std::string toString(const TestRunnerOption & option) {
 		case TestRunnerOption::ConcurrencyLevel: return "ConcurrencyLevel";
 		case TestRunnerOption::ReportFolder:     return "ReportFolder";
 		case TestRunnerOption::Help:             return "Help";
+
+		default: {
+			ThrowBalauException(
+				  Exception::IllegalArgumentException
+				, ::toString("Unknown test option supplied to toString function: ", Util::Enums::toUnderlying(option))
+			);
+		}
 	}
 }
 
@@ -382,7 +389,7 @@ class TestRunner {
 			.withOption(TestRunnerOption::ConcurrencyLevel, "c", "concurrency",      true,  "The number of threads or processes to use to run the tests (default = detect).")
 			.withOption(TestRunnerOption::ReportFolder,     "r", "report-folder",    true,  "Generate test reports in the specified folder.")
 			.withOption(TestRunnerOption::Help,             "h", "help",             false, "Displays this help message.")
-			.withFinalValue();
+			.withOptionalFinalValue();
 	}
 
 	private: static void setReportOutputFolder(const Resource::File & reportOutputFolder,

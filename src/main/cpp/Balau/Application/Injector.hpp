@@ -305,6 +305,39 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		return GetInstance<ValueT>(this).get(name, defaultValue);
 	}
 
+	///
+	/// Get-instance method for values (non-polymorphic new instances).
+	///
+	/// If no suitable binding is found, a default value is obtained by the supplied function.
+	///
+	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	///
+	/// @tparam ValueT the type of the value binding
+	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
+	/// @return a new value or a default value from the function
+	///
+	public: template <typename ValueT>
+	ValueT getValue(const std::function<ValueT ()> & defaultValueSupplier) const {
+		return GetInstance<ValueT>(this).get(std::string_view(), defaultValueSupplier);
+	}
+
+	///
+	/// Get-instance method for values (non-polymorphic new instances).
+	///
+	/// If no suitable binding is found, a default value is obtained by the supplied function.
+	///
+	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	///
+	/// @tparam ValueT the type of the value binding
+	/// @param name the name of the binding
+	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
+	/// @return a new value or a copy of the supplied default value
+	///
+	public: template <typename ValueT>
+	ValueT getValue(std::string_view name, const std::function<ValueT ()> & defaultValueSupplier) const {
+		return GetInstance<ValueT>(this).get(name, defaultValueSupplier);
+	}
+
 	////////////////////////// Unique instantiation ///////////////////////////
 
 	///
@@ -360,6 +393,39 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// Get-instance method for unique pointers (polymorphic new instances).
 	///
+	/// If no suitable binding is found, a default value is obtained by the supplied function.
+	///
+	/// A std::unique_ptr may be instance sourced.
+	///
+	/// @tparam BaseT the base type of the unique binding
+	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
+	/// @return a unique pointer containing the new instance or the supplied default
+	///
+	public: template <typename BaseT>
+	std::unique_ptr<BaseT> getUnique(std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+		return GetInstance<std::unique_ptr<BaseT>>(this).get("", defaultValueSupplier);
+	}
+
+	///
+	/// Get-instance method for unique pointers (polymorphic new instances).
+	///
+	/// If no suitable binding is found, a default value is obtained by the supplied function.
+	///
+	/// A std::unique_ptr may be instance sourced.
+	///
+	/// @tparam BaseT the base type of the unique binding
+	/// @param name the name of the binding
+	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
+	/// @return a unique pointer containing the new instance or the supplied default
+	///
+	public: template <typename BaseT>
+	std::unique_ptr<BaseT> getUnique(std::string_view name, std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+		return GetInstance<std::unique_ptr<BaseT>>(this).get(name, defaultValueSupplier);
+	}
+
+	///
+	/// Get-instance method for unique pointers (polymorphic new instances).
+	///
 	/// Return an empty unique_ptr if there is no suitable binding.
 	///
 	/// A std::unique_ptr may be instance sourced.
@@ -398,7 +464,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param defaultValue a default reference to return if no suitable binding was found
 	/// @return the reference supplied by the binding or the supplied default reference
 	///
-	public: template <typename BaseT> BaseT & getReference(const BaseT & defaultValue) const {
+	public: template <typename BaseT> BaseT & getReference(BaseT & defaultValue) const {
 		return GetInstance<BaseT &>(this).get(std::string_view(), defaultValue);
 	}
 
@@ -412,7 +478,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param defaultValue a default reference to return if no suitable binding was found
 	/// @return the reference supplied by the binding or the supplied default reference
 	///
-	public: template <typename BaseT> BaseT & getReference(std::string_view name, const BaseT & defaultValue) const {
+	public: template <typename BaseT> BaseT & getReference(std::string_view name, BaseT & defaultValue) const {
 		return GetInstance<BaseT &>(this).get(name, defaultValue);
 	}
 
@@ -470,6 +536,39 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// Get-instance method for shared pointers (polymorphic thread-local or non-thread-local singletons).
 	///
+	/// If no suitable binding is found, a default value is obtained by the supplied function.
+	///
+	/// A std::shared_ptr may be singleton or thread-local singleton sourced.
+	///
+	/// @tparam BaseT the base type of the shared binding
+	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
+	/// @return a shared pointer containing the instance or the default pointer
+	///
+	public: template <typename BaseT>
+	std::shared_ptr<BaseT> getShared(const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+		return GetInstance<std::shared_ptr<BaseT>>(this).get(std::string_view(), defaultValueSupplier);
+	}
+
+	///
+	/// Get-instance method for shared pointers (polymorphic thread-local or non-thread-local singletons).
+	///
+	/// If no suitable binding is found, a default value is obtained by the supplied function.
+	///
+	/// A std::shared_ptr may be singleton or thread-local singleton sourced.
+	///
+	/// @tparam BaseT the base type of the shared binding
+	/// @param name the name of the binding
+	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
+	/// @return a shared pointer containing the instance or the default pointer
+	///
+	public: template <typename BaseT>
+	std::shared_ptr<BaseT> getShared(std::string_view name, const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+		return GetInstance<std::shared_ptr<BaseT>>(this).get(name, defaultValueSupplier);
+	}
+
+	///
+	/// Get-instance method for shared pointers (polymorphic thread-local or non-thread-local singletons).
+	///
 	/// Return an empty shared_ptr if no suitable binding is found.
 	///
 	/// A std::shared_ptr may be singleton or thread-local singleton sourced.
@@ -496,6 +595,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		T get(std::string_view name, const T & defaultValue) const {
 			return injector->getValueImpl<T>(name, defaultValue);
+		}
+
+		T get(std::string_view name, const std::function<T ()> & defaultValueSupplier) const {
+			return injector->getValueImpl<T>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -529,6 +632,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getValueImpl<U>(name, defaultValue);
 		}
 
+		U get(std::string_view name, const std::function<T ()> & defaultValueSupplier) const {
+			return injector->getValueImpl<U>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -555,6 +662,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		std::unique_ptr<BaseT> get(std::string_view name, std::unique_ptr<BaseT> & defaultValue) const {
 			return injector->getUniqueImpl<BaseT>(name, defaultValue);
+		}
+
+		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -586,6 +697,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getUniqueImpl<BaseT>(name, defaultValue);
 		}
 
+		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -615,6 +730,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getUniqueImpl<BaseT>(name, defaultValue);
 		}
 
+		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -642,6 +761,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		std::unique_ptr<BaseT> get(std::string_view name, std::unique_ptr<BaseT> & defaultValue) const {
 			return injector->getUniqueImpl<BaseT>(name, defaultValue);
+		}
+
+		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -729,6 +852,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getSharedImpl<BaseT>(name, defaultValue);
 		}
 
+		std::shared_ptr<BaseT> get(std::string_view name, const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<BaseT>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -756,6 +883,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		std::shared_ptr<BaseT> get(std::string_view name, const std::shared_ptr<BaseT> & defaultValue) const {
 			return injector->getSharedImpl<BaseT>(name, defaultValue);
+		}
+
+		std::shared_ptr<BaseT> get(std::string_view name, const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<BaseT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -788,6 +919,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getSharedImpl<const BaseT>(name, defaultValue);
 		}
 
+		std::shared_ptr<const BaseT> get(std::string_view name, const std::function<std::shared_ptr<const BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<const BaseT>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -815,6 +950,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		std::shared_ptr<const BaseT> get(std::string_view name, std::shared_ptr<const BaseT> & defaultValue) const {
 			return injector->getSharedImpl<const BaseT>(name, defaultValue);
+		}
+
+		std::shared_ptr<const BaseT> get(std::string_view name, const std::function<std::shared_ptr<const BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<const BaseT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -846,6 +985,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getSharedImpl<BaseT>(name, defaultValue);
 		}
 
+		std::shared_ptr<BaseT> get(std::string_view name, const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<BaseT>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -873,6 +1016,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		std::shared_ptr<BaseT> get(std::string_view name, std::shared_ptr<BaseT> & defaultValue) const {
 			return injector->getSharedImpl<BaseT>(name, defaultValue);
+		}
+
+		std::shared_ptr<BaseT> get(std::string_view name, const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<BaseT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -904,6 +1051,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return injector->getSharedImpl<const BaseT>(name, defaultValue);
 		}
 
+		std::shared_ptr<const BaseT> get(std::string_view name, const std::function<std::shared_ptr<const BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<const BaseT>(name, defaultValueSupplier);
+		}
+
 		bool hasBinding(std::string_view name) const {
 			return injector->hasBinding(createBindingKeyView(name));
 		}
@@ -931,6 +1082,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		std::shared_ptr<const BaseT> get(std::string_view name, std::shared_ptr<const BaseT> & defaultValue) const {
 			return injector->getSharedImpl<const BaseT>(name, defaultValue);
+		}
+
+		std::shared_ptr<const BaseT> get(std::string_view name, const std::function<std::shared_ptr<const BaseT> ()> & defaultValueSupplier) const {
+			return injector->getSharedImpl<const BaseT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -976,6 +1131,20 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			return parent->getValueImpl<T>(name, defaultValue);
 		} else {
 			return defaultValue;
+		}
+	}
+
+	private: template <typename T> T getValueImpl(std::string_view name, const std::function<T ()> & defaultValueSupplier) const {
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Value, T>), name);
+
+		const auto * binding = bindings->find(keyView);
+
+		if (binding != nullptr) {
+			return createValueInstance<T>(*binding);
+		} else if (parent) {
+			return parent->getValueImpl<T>(name, defaultValueSupplier);
+		} else {
+			return defaultValueSupplier();
 		}
 	}
 
@@ -1050,6 +1219,21 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	}
 
 	private: template <typename BaseT>
+	std::unique_ptr<BaseT> getUniqueImpl(std::string_view name, std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+
+		const auto * binding = bindings->find(keyView);
+
+		if (binding != nullptr) {
+			return createUniqueInstance<BaseT>(*binding);
+		} else if (parent) {
+			return parent->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		} else {
+			return defaultValueSupplier();
+		}
+	}
+
+	private: template <typename BaseT>
 	std::shared_ptr<BaseT> getSharedImpl(std::string_view name) const {
 		const auto typeIndex = std::type_index(typeid(BaseT));
 		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>), name);
@@ -1099,6 +1283,33 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 				return getSharedImpl<typename std::remove_const<BaseT>::type>(name, defaultValue);
 			} else {
 				return defaultValue;
+			}
+		}
+	}
+
+	private: template <typename BaseT>
+	std::shared_ptr<BaseT> getSharedImpl(std::string_view name, const std::function<std::shared_ptr<BaseT> ()> & defaultValueSupplier) const {
+		const auto typeIndex = std::type_index(typeid(BaseT));
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>), name);
+
+		const auto * binding = bindings->find(keyView);
+
+		if (binding != nullptr) {
+			return getSharedInstance<BaseT>(*binding);
+		} else if (typeIndex == std::type_index(typeid(Injector))) {
+			// If we are here, then BaseT == Injector and the cast disappears.
+			auto ptr = std::const_pointer_cast<Injector>(shared_from_this());
+			void * p1 = static_cast<void *>(&ptr);
+			auto * p2 = static_cast<std::shared_ptr<BaseT> *>(p1);
+			return *p2;
+		} else if (parent) {
+			return parent->getSharedImpl<BaseT>(name, defaultValueSupplier);
+		} else {
+			// Try a non-const binding?
+			if (Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>::isConst) {
+				return getSharedImpl<typename std::remove_const<BaseT>::type>(name, defaultValueSupplier);
+			} else {
+				return defaultValueSupplier();
 			}
 		}
 	}

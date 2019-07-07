@@ -33,6 +33,18 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2019.7.1</h1>
+
+		<para>** Pending changes **</para>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>improved Balau build options and introduced BalauConfig.hpp options switches header;</entry>
+			<entry>changed BALAU_ENABLE_CURL option to default on;</entry>
+			<entry>relaxed required Boost version to allow all Boost versions from 1.61.0 onwards.</entry>
+		</bullets>
+
 		<h1>V2019.6.1</h1>
 
 		<para>New features in this release:</para>
@@ -48,8 +60,8 @@
 		<para>New features in this release:</para>
 
 		<bullets>
-			<entry>corrected compilation with ENABLE_CURL option off;</entry>
-			<entry>changed ENABLE_CURL option to default off;</entry>
+			<entry>corrected compilation with BALAU_ENABLE_CURL option off;</entry>
+			<entry>changed BALAU_ENABLE_CURL option to default off;</entry>
 			<entry>added build option documentation.</entry>
 		</bullets>
 
@@ -82,7 +94,7 @@
 		<para>New features in this release:</para>
 
 		<bullets>
-			<entry>modifications to support GCC 6.2 (for RHEL DTS6).</entry>
+			<entry>modifications to support GCC 6 (for RHEL DTS6).</entry>
 		</bullets>
 
 		<h1>V2019.3.1</h1>

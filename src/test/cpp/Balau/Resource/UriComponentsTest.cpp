@@ -10,8 +10,6 @@
 
 #include "UriComponentsTest.hpp"
 
-#include <Balau/Resource/Http.hpp>
-
 namespace Balau {
 
 using Testing::is;
@@ -71,12 +69,12 @@ void UriComponentsTest::uriComponentsAssertions(const UriComponents & actual,
 ///////////////////////////////////////////////////////////////////////////////
 
 void UriComponentsTest::uriParse_full() {
-	const Http http("http://usr1@localhost:12345/path/to/doc?query-string#frag-string");
+	const std::string http = "http://usr1@localhost:12345/path/to/doc?query-string#frag-string";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 12, 22, 27, 40, 53, 12345 }
+		, UriComponents { http, 4, 7, 12, 22, 27, 40, 53, 12345 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, true, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -85,12 +83,12 @@ void UriComponentsTest::uriParse_full() {
 }
 
 void UriComponentsTest::uriParse_noUserinfo() {
-	const Http http("http://localhost:12345/path/to/doc?query-string#frag-string");
+	const std::string http = "http://localhost:12345/path/to/doc?query-string#frag-string";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, 17, 22, 35, 48, 12345 }
+		, UriComponents { http, 4, -1, 7, 17, 22, 35, 48, 12345 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, true, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -99,12 +97,12 @@ void UriComponentsTest::uriParse_noUserinfo() {
 }
 
 void UriComponentsTest::uriParse_noAuthority() {
-	const Http http("http:/path/to/doc?query-string#frag-string");
+	const std::string http = "http:/path/to/doc?query-string#frag-string";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, -1, -1, 5, 18, 31, 0 }
+		, UriComponents { http, 4, -1, -1, -1, 5, 18, 31, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -113,12 +111,12 @@ void UriComponentsTest::uriParse_noAuthority() {
 }
 
 void UriComponentsTest::uriParse_noPort() {
-	const Http http("http://localhost/path/to/doc?query-string#frag-string");
+	const std::string http = "http://localhost/path/to/doc?query-string#frag-string";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 16, 29, 42, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 16, 29, 42, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -127,12 +125,12 @@ void UriComponentsTest::uriParse_noPort() {
 }
 
 void UriComponentsTest::uriParse_noQuery() {
-	const Http http("http://localhost/path/to/doc#frag-string");
+	const std::string http = "http://localhost/path/to/doc#frag-string";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 16, -1, 29, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 16, -1, 29, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -141,12 +139,12 @@ void UriComponentsTest::uriParse_noQuery() {
 }
 
 void UriComponentsTest::uriParse_noFragment() {
-	const Http http("http://localhost/path/to/doc?query-string");
+	const std::string http = "http://localhost/path/to/doc?query-string";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 16, 29, -1, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 16, 29, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, true, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -155,12 +153,12 @@ void UriComponentsTest::uriParse_noFragment() {
 }
 
 void UriComponentsTest::uriParse_noQueryNoFragment() {
-	const Http http("http://localhost/path/to/doc.html");
+	const std::string http = "http://localhost/path/to/doc.html";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 16, -1, -1, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 16, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -169,12 +167,12 @@ void UriComponentsTest::uriParse_noQueryNoFragment() {
 }
 
 void UriComponentsTest::uriParse_noPortNoPathNoQueryNoFragment() {
-	const Http http("http://borasoftware.com");
+	const std::string http = "http://borasoftware.com";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 23, -1, -1, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 23, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -183,12 +181,12 @@ void UriComponentsTest::uriParse_noPortNoPathNoQueryNoFragment() {
 }
 
 void UriComponentsTest::uriParse_noPortNoPathNoFragment() {
-	const Http http("http://borasoftware.com?blah");
+	const std::string http = "http://borasoftware.com?blah";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 23, 24, -1, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 23, 24, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, true, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -197,12 +195,12 @@ void UriComponentsTest::uriParse_noPortNoPathNoFragment() {
 }
 
 void UriComponentsTest::uriParse_noPortNoPathNoQuery() {
-	const Http http("http://borasoftware.com#blah");
+	const std::string http = "http://borasoftware.com#blah";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 23, -1, 24, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 23, -1, 24, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -211,12 +209,12 @@ void UriComponentsTest::uriParse_noPortNoPathNoQuery() {
 }
 
 void UriComponentsTest::uriParse_noHostNoPortNoPathNoQuery() {
-	const Http http("http://");
+	const std::string http = "http://";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, -1, -1, 7, -1, -1, 0 }
+		, UriComponents { http, 4, -1, -1, -1, 7, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -225,12 +223,12 @@ void UriComponentsTest::uriParse_noHostNoPortNoPathNoQuery() {
 }
 
 void UriComponentsTest::uriParse_ipv6Host() {
-	const Http http("http://usr123@[1::1]:12345/a/path?query-string#fragment");
+	const std::string http = "http://usr123@[1::1]:12345/a/path?query-string#fragment";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 14, 21, 26, 34, 47, 12345 }
+		, UriComponents { http, 4, 7, 14, 21, 26, 34, 47, 12345 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, true, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -239,12 +237,12 @@ void UriComponentsTest::uriParse_ipv6Host() {
 }
 
 void UriComponentsTest::uriParse_ipv6HostNoPort() {
-	const Http http("http://usr123@[1::1]/a/path?query-string#fragment");
+	const std::string http = "http://usr123@[1::1]/a/path?query-string#fragment";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 14, -1, 20, 28, 41, 0 }
+		, UriComponents { http, 4, 7, 14, -1, 20, 28, 41, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, false, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -253,12 +251,12 @@ void UriComponentsTest::uriParse_ipv6HostNoPort() {
 }
 
 void UriComponentsTest::uriParse_ipv6HostEmptyPath() {
-	const Http http("http://usr123@[1::1]:12345?query-string#fragment");
+	const std::string http = "http://usr123@[1::1]:12345?query-string#fragment";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 14, 21, 26, 27, 40, 12345 }
+		, UriComponents { http, 4, 7, 14, 21, 26, 27, 40, 12345 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, true, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -267,12 +265,12 @@ void UriComponentsTest::uriParse_ipv6HostEmptyPath() {
 }
 
 void UriComponentsTest::uriParse_ipv6HostNoPortNoPathNoQueryNoFragment() {
-	const Http http("http://[1::1]");
+	const std::string http = "http://[1::1]";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 13, -1, -1, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 13, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -281,12 +279,12 @@ void UriComponentsTest::uriParse_ipv6HostNoPortNoPathNoQueryNoFragment() {
 }
 
 void UriComponentsTest::uriParse_ipv4Host() {
-	const Http http("http://usr123@123.45.67.89:12345/a/path?query-string#fragment");
+	const std::string http = "http://usr123@123.45.67.89:12345/a/path?query-string#fragment";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 14, 27, 32, 40, 53, 12345 }
+		, UriComponents { http, 4, 7, 14, 27, 32, 40, 53, 12345 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, true, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -295,12 +293,12 @@ void UriComponentsTest::uriParse_ipv4Host() {
 }
 
 void UriComponentsTest::uriParse_ipv4HostNoPort() {
-	const Http http("http://usr123@123.45.67.89/a/path?query-string#fragment");
+	const std::string http = "http://usr123@123.45.67.89/a/path?query-string#fragment";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 14, -1, 26, 34, 47, 0 }
+		, UriComponents { http, 4, 7, 14, -1, 26, 34, 47, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, false, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -309,12 +307,12 @@ void UriComponentsTest::uriParse_ipv4HostNoPort() {
 }
 
 void UriComponentsTest::uriParse_ipv4HostEmptyPath() {
-	const Http http("http://usr123@123.45.67.89:12345?query-string#fragment");
+	const std::string http = "http://usr123@123.45.67.89:12345?query-string#fragment";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, 7, 14, 27, 32, 33, 46, 12345 }
+		, UriComponents { http, 4, 7, 14, 27, 32, 33, 46, 12345 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, true, true, true, true, true
 		// scheme, userInfo, host, port, path, query, fragment
@@ -323,12 +321,12 @@ void UriComponentsTest::uriParse_ipv4HostEmptyPath() {
 }
 
 void UriComponentsTest::uriParse_ipv4HostNoPortNoPathNoQueryNoFragment() {
-	const Http http("http://123.45.67.89");
+	const std::string http = "http://123.45.67.89";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 19, -1, -1, 0 }
+		, UriComponents { http, 4, -1, 7, -1, 19, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -337,12 +335,12 @@ void UriComponentsTest::uriParse_ipv4HostNoPortNoPathNoQueryNoFragment() {
 }
 
 void UriComponentsTest::uriParse_mailto() {
-	const Http http("mailto:someone@example.com?subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body");
+	const std::string http = "mailto:someone@example.com?subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body";
 
 	uriComponentsAssertions(
 		UriComponents(http)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 6, -1, -1, -1, 7, 27, -1, 0 }
+		, UriComponents { http, 6, -1, -1, -1, 7, 27, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, true, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -351,7 +349,7 @@ void UriComponentsTest::uriParse_mailto() {
 }
 
 void UriComponentsTest::uriParse_full1000() {
-	const Http http("http://usr1@localhost:12345/path/to/doc?query-string#frag-string");
+	const std::string http = "http://usr1@localhost:12345/path/to/doc?query-string#frag-string";
 	size_t sum = 0U;
 
 	for (size_t m = 0U; m < 1000U; m++) {
@@ -372,12 +370,12 @@ void UriComponentsTest::uriParse_invalidUris() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example1() {
-	const Http ftp("ftp://ftp.is.co.za/rfc/rfc1808.txt");
+	const std::string r = "ftp://ftp.is.co.za/rfc/rfc1808.txt";
 
 	uriComponentsAssertions(
-		UriComponents(ftp)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { ftp.toUriString(), 3, -1, 6, -1, 18, -1, -1, 0 }
+		, UriComponents { r, 3, -1, 6, -1, 18, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -386,12 +384,12 @@ void UriComponentsTest::uriParse_RCF3986Example1() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example2() {
-	const Http http("http://www.ietf.org/rfc/rfc2396.txt");
+	const std::string r = "http://www.ietf.org/rfc/rfc2396.txt";
 
 	uriComponentsAssertions(
-		UriComponents(http)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { http.toUriString(), 4, -1, 7, -1, 19, -1, -1, 0 }
+		, UriComponents { r, 4, -1, 7, -1, 19, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -400,12 +398,12 @@ void UriComponentsTest::uriParse_RCF3986Example2() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example3() {
-	const Http ldap("ldap://[2001:db8::7]/c=GB?objectClass?one");
+	const std::string r = "ldap://[2001:db8::7]/c=GB?objectClass?one";
 
 	uriComponentsAssertions(
-		UriComponents(ldap)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { ldap.toUriString(), 4, -1, 7, -1, 20, 26, -1, 0 }
+		, UriComponents { r, 4, -1, 7, -1, 20, 26, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, false, true, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -414,12 +412,12 @@ void UriComponentsTest::uriParse_RCF3986Example3() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example4() {
-	const Http mailto("mailto:John.Doe@example.com");
+	const std::string r = "mailto:John.Doe@example.com";
 
 	uriComponentsAssertions(
-		UriComponents(mailto)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { mailto.toUriString(), 6, -1, -1, -1, 7, -1, -1, 0 }
+		, UriComponents { r, 6, -1, -1, -1, 7, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -428,12 +426,12 @@ void UriComponentsTest::uriParse_RCF3986Example4() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example5() {
-	const Http news("news:comp.infosystems.www.servers.unix");
+	const std::string r = "news:comp.infosystems.www.servers.unix";
 
 	uriComponentsAssertions(
-		UriComponents(news)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { news.toUriString(), 4, -1, -1, -1, 5, -1, -1, 0 }
+		, UriComponents { r, 4, -1, -1, -1, 5, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -442,12 +440,12 @@ void UriComponentsTest::uriParse_RCF3986Example5() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example6() {
-	const Http tel("tel:+1-816-555-1212");
+	const std::string r = "tel:+1-816-555-1212";
 
 	uriComponentsAssertions(
-		UriComponents(tel)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { tel.toUriString(), 3, -1, -1, -1, 4, -1, -1, 0 }
+		, UriComponents { r, 3, -1, -1, -1, 4, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -456,12 +454,12 @@ void UriComponentsTest::uriParse_RCF3986Example6() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example7() {
-	const Http telnet("telnet://192.0.2.16:80/");
+	const std::string r = "telnet://192.0.2.16:80/";
 
 	uriComponentsAssertions(
-		UriComponents(telnet)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { telnet.toUriString(), 6, -1, 9, 20, 22, -1, -1, 80 }
+		, UriComponents { r, 6, -1, 9, 20, 22, -1, -1, 80 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, true, false, true, true, false, false
 		// scheme, userInfo, host, port, path, query, fragment
@@ -470,12 +468,12 @@ void UriComponentsTest::uriParse_RCF3986Example7() {
 }
 
 void UriComponentsTest::uriParse_RCF3986Example8() {
-	const Http urn("urn:oasis:names:specification:docbook:dtd:xml:4.1.2");
+	const std::string r = "urn:oasis:names:specification:docbook:dtd:xml:4.1.2";
 
 	uriComponentsAssertions(
-		UriComponents(urn)
+		UriComponents(r)
 		// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
-		, UriComponents { urn.toUriString(), 3, -1, -1, -1, 4, -1, -1, 0 }
+		, UriComponents { r, 3, -1, -1, -1, 4, -1, -1, 0 }
 		// hasAuthority, hasUserInfo, hasHost, hasPort, hasQuery, hasFragment
 		, false, false, false, false, false, false
 		// scheme, userInfo, host, port, path, query, fragment

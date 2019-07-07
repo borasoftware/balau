@@ -18,7 +18,11 @@
 #define COM_BORA_SOFTWARE__BALAU_DEV__ASSERT
 
 #include <boost/core/ignore_unused.hpp>
-#include <boost/stacktrace.hpp>
+#include <string>
+
+#ifdef BALAU_ENABLE_STACKTRACES
+	#include <boost/stacktrace.hpp>
+#endif
 
 #include <iostream>
 #include <sstream>
@@ -93,10 +97,10 @@ class Assert {
 		boost::ignore_unused(testType);
 
 		#ifdef BALAU_DEBUG
-		if (!test) {
-			const std::string message = function();
-			abortProcess(message.c_str(), testType);
-		}
+			if (!test) {
+				const std::string message = function();
+				abortProcess(message.c_str(), testType);
+			}
 		#endif
 	}
 
@@ -107,10 +111,10 @@ class Assert {
 		boost::ignore_unused(testType);
 
 		#ifdef BALAU_DEBUG
-		if (!test()) {
-			const std::string message = function();
-			abortProcess(message.c_str(), testType);
-		}
+			if (!test()) {
+				const std::string message = function();
+				abortProcess(message.c_str(), testType);
+			}
 		#endif
 	}
 
@@ -120,9 +124,9 @@ class Assert {
 		boost::ignore_unused(testType);
 
 		#ifdef BALAU_DEBUG
-		if (!test) {
-			abortProcess(fatalMessage, testType);
-		}
+			if (!test) {
+				abortProcess(fatalMessage, testType);
+			}
 		#endif
 	}
 
@@ -133,9 +137,9 @@ class Assert {
 		boost::ignore_unused(testType);
 
 		#ifdef BALAU_DEBUG
-		if (!test()) {
-			abortProcess(fatalMessage, testType);
-		}
+			if (!test()) {
+				abortProcess(fatalMessage, testType);
+			}
 		#endif
 	}
 
@@ -148,7 +152,11 @@ class Assert {
 			str << testType << "\n";
 		}
 
-		str << "Stack trace: " << boost::stacktrace::stacktrace() << "\n" << "Program will abort now\n";
+		#ifdef BALAU_ENABLE_STACKTRACES
+			str << "Stack trace: " << boost::stacktrace::stacktrace() << "\n";
+		#endif
+
+		str << "Program will abort now\n";
 		std::cerr << str.str();
 		abort();
 	}

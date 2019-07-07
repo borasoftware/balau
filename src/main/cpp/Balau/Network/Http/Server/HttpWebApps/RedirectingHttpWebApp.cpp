@@ -9,6 +9,7 @@
 //
 
 #include "RedirectingHttpWebApp.hpp"
+
 #include "../HttpSession.hpp"
 #include "../../../../Application/EnvironmentProperties.hpp"
 #include "../../../../Resource/StringUri.hpp"

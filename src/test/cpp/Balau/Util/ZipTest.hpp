@@ -8,18 +8,16 @@
 // See the LICENSE file for the full license text.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION_TEST
-#define COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION_TEST
+#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__ZIP_TEST
+#define COM_BORA_SOFTWARE__BALAU_UTIL__ZIP_TEST
 
-#include <Balau/Util/Compression.hpp>
-
+#include <Balau/Util/Zip.hpp>
 #include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau::Util {
 
 struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	CompressionTest() {
-		#ifdef BALAU_LIBZIP_ENABLED
 		registerTest(&CompressionTest::fingerprintTest,       "fingerprintTest");
 		registerTest(&CompressionTest::unzipperTest,          "unzipperTest");
 		registerTest(&CompressionTest::encryptedUnzipperTest, "encryptedUnzipperTest");
@@ -28,10 +26,8 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 		registerTest(&CompressionTest::libzipSoakTest,        "libzipSoakTest");
 		registerTest(&CompressionTest::libzipSoakTest2,       "libzipSoakTest2");
 		registerTest(&CompressionTest::libzipSoakTest3,       "libzipSoakTest3");
-		#endif // BALAU_LIBZIP_ENABLED
 	}
 
-	#ifdef BALAU_LIBZIP_ENABLED
 	void fingerprintTest();
 	void unzipperTest();
 	void encryptedUnzipperTest();
@@ -40,9 +36,8 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	void libzipSoakTest();
 	void libzipSoakTest2();
 	void libzipSoakTest3();
-	#endif // BALAU_LIBZIP_ENABLED
 };
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION_TEST
+#endif // COM_BORA_SOFTWARE__BALAU_UTIL__ZIP_TEST

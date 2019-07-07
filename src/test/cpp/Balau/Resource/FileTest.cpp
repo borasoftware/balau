@@ -11,7 +11,9 @@
 #include "FileTest.hpp"
 #include "../../TestResources.hpp"
 
-#include "../../../../main/cpp/Balau/Resource/Http.hpp"
+#ifdef BALAU_ENABLE_HTTP
+	#include "../../../../main/cpp/Balau/Resource/Http.hpp"
+#endif
 
 namespace Balau {
 
@@ -94,8 +96,10 @@ void FileTest::resolve() {
 	// Prefixed with file schema - relative base file, empty path
 	AssertThat(*File("a/b/c.html").resolve("file://"), is(File("a/b")));
 
-	// Starts with non-file schema.
-	AssertThat(*File("a/b/c.html").resolve("http://d/e/f"), is(Http("http://d/e/f")));
+	#ifdef BALAU_ENABLE_HTTP
+		// Starts with non-file schema.
+		AssertThat(*File("a/b/c.html").resolve("http://d/e/f"), is(Http("http://d/e/f")));
+	#endif
 
 	/////////////////////////
 

@@ -62,6 +62,7 @@ void runSISO(SharedMemoryQueue<SMT> & queue) {
 			for (size_t messagesDequeued= 0; messagesDequeued < messageCount; ++messagesDequeued) {
 				if (queue.dequeue() != SMT { 42.0, 34 }) {
 					// TODO add fail message in shared state
+					std::cout << "runSISO test failed\n";
 					raise(SIGSEGV);
 				}
 			}

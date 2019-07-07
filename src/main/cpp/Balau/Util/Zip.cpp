@@ -8,10 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "Compression.hpp"
+#include "Zip.hpp"
 #include "Balau/Type/OnScopeExit.hpp"
-
-#ifdef BALAU_LIBZIP_ENABLED
 
 #define _Nonnull
 #define _Nullable
@@ -606,5 +604,3 @@ void Zipper::deleteFile(const std::string & cleanName) {
 }
 
 } // namespace Balau::Util
-
-#endif // BALAU_LIBZIP_ENABLED

@@ -20,10 +20,10 @@
 #include <Balau/Util/Macros.hpp>
 #include <Balau/Util/Strings.hpp>
 
-#include <boost/stacktrace.hpp>
-#include <exception>
+#ifdef BALAU_ENABLE_STACKTRACES
+	#include <boost/stacktrace.hpp>
+	#include <exception>
 
-#ifdef BALAU_STACK_TRACES
 	#define _ThrowBalauException_generateStackTrace                                \
 		std::ostringstream stStream;                                               \
 		stStream << boost::stacktrace::stacktrace();                               \

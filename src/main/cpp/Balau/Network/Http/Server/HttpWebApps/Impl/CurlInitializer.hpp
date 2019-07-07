@@ -11,9 +11,9 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WEBAPP_IMPL__CURL_INITIALIZER
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WEBAPP_IMPL__CURL_INITIALIZER
 
-namespace Balau::Network::Http::HttpWebApps::Impl {
+#include <Balau/Type/StdTypes.hpp>
 
-#ifdef BALAU_LIBCURL_ENABLED
+namespace Balau::Network::Http::HttpWebApps::Impl {
 
 //
 // All uses of Curl functionality in the library must call ensureCurlInitialization()
@@ -21,8 +21,7 @@ namespace Balau::Network::Http::HttpWebApps::Impl {
 //
 void ensureCurlInitialization();
 
-#endif // BALAU_LIBCURL_ENABLED
-
 } // namespace Balau::Network::Http::HttpWebApps::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WEBAPP_IMPL__CURL_INITIALIZER
+

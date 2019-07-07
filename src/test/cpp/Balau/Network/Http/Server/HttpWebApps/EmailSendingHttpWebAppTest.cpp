@@ -8,9 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#ifdef BALAU_LIBCURL_ENABLED
-
 #include "EmailSendingHttpWebAppTest.hpp"
+
 #include "../../../../../TestResources.hpp"
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
@@ -305,5 +304,3 @@ void EmailSendingHttpWebAppTest::injectedInstantiation() {
 } // namespace Network::Http::HttpWebApps
 
 } // namespace Balau
-
-#endif // BALAU_LIBCURL_ENABLED

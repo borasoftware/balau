@@ -169,7 +169,7 @@
 
 		<para>Balau requires a compiler that is compliant with C++17 or a later version of the specification, with certain exceptions. Notably, guaranteed copy elision is not required (since version 2019.5.1) and <emph>boost::string_view</emph> is used as a substitute for <emph>std::string_view</emph> if <emph>std::string_view</emph> is not available.</para>
 
-		<para>These exceptions allow Balau to be built with the partially C++17 compliant GCC version 6.2.</para>
+		<para>These exceptions allow Balau to be built with the partially C++17 compliant GCC version 6.</para>
 
 		<h2>Operating systems</h2>
 

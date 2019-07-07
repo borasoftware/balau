@@ -17,8 +17,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP
 
-#ifdef BALAU_LIBCURL_ENABLED
-
 #include <Balau/Network/Http/Server/HttpWebApp.hpp>
 #include <Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.hpp>
 
@@ -155,7 +153,5 @@ class EmailSendingHttpWebApp : public HttpWebApp {
 } // namespace Balau
 
 #pragma clang diagnostic pop
-
-#endif // BALAU_LIBCURL_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP

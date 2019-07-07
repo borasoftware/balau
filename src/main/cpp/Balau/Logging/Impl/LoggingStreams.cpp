@@ -10,12 +10,15 @@
 
 #include "LoggingStreams.hpp"
 #include "../../Exception/ResourceExceptions.hpp"
-#include "../../Util/Compression.hpp"
 #include "../../Util/DateTime.hpp"
 #include "../../Util/Files.hpp"
 #include "../../Util/Hashing.hpp"
 #include "../../Util/Strings.hpp"
 #include "../../Util/Vectors.hpp"
+
+#ifdef BALAU_ENABLE_ZLIB
+	#include "../../Util/Compression.hpp"
+#endif
 
 namespace Balau {
 
@@ -125,7 +128,7 @@ void FileLoggingStream::createNewStream() {
 
 	boost::filesystem::path previousPath(previousPathString);
 
-	#ifdef BALAU_ZLIB_ENABLED
+	#ifdef BALAU_ENABLE_ZLIB
 
 	if (boost::filesystem::exists(previousPath)) {
 		boost::filesystem::path previousPathGzip(previousPath.string() + ".gz");
@@ -153,7 +156,7 @@ void FileLoggingStream::createNewStream() {
 		}
 	}
 
-	#endif // BALAU_ZLIB_ENABLED
+	#endif // BALAU_ENABLE_ZLIB
 }
 
 void FileLoggingStream::updateFunction(FileLoggingStream * const self) {

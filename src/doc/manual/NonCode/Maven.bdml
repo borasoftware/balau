@@ -48,11 +48,11 @@
 
 		<para>In order to integrate non-Maven projects into a primarily Maven based infrastructure, there are a variety of possible approaches. Different approaches place non-Maven SDLC configuration into different places in the SDLC chain.</para>
 
-		<para>The approach of the Balau Maven plugins is to integrate CMake specific configuration at the project level from within project pom files. This allows the whole of the SDLC chain to be based purely on Maven projects. in addition, project specific build configuration is restricted to being in the same version control repository as the source code it is working on.</para>
+		<para>The approach of the Balau Maven plugins is to integrate CMake specific configuration at the project level from within project pom files. This allows the whole of the SDLC chain to be based purely on Maven projects. In addition, project specific build configuration is restricted to being in the same version control repository as the source code it is working on.</para>
 
 		<para>The result of such an approach is a simplification of the configuration of SDLC components outside of project version control repositories. For example, a single build configuration template could be used for all projects in the build automation server, simplifying build configuration creation and maintenance.</para>
 
-		<para>The Balau Maven plugins allow the following configuration to be placed within project specific pom files inside CMake projects:</para>
+		<para>The Balau Maven plugins allow configuration of the following activities to be placed within project specific pom files inside CMake projects:</para>
 
 		<bullets>
 			<entry>cleaning of CMake produced build files;</entry>
@@ -110,7 +110,17 @@
 
 		<h2>Configuration</h2>
 
-		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML.</para>
+		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML. All configuration entries are optional.</para>
+
+		<h3>generator</h3>
+
+		<para>Explicitly specify the generator to be used in the configure goal.</para>
+
+		<para>The default is to use the default generator on Unix like platforms and "NMake Makefiles" on Windows platforms.</para>
+
+		<xml>
+			<generator>Unix Makefiles</generator>
+		</xml>
 
 		<h3>cmakeSourceDirectory</h3>
 
@@ -147,6 +157,16 @@
 				<CMAKE_CXX_COMPILER>/usr/bin/g++</CMAKE_CXX_COMPILER>
 				<CMAKE_C_COMPILER>/usr/bin/gcc</CMAKE_C_COMPILER>
 			</cmakeDefines>
+		</xml>
+
+		<h3>makeOptions</h3>
+
+		<para>Additional command line options to be passed to the native Make tool when running <emph>cmake --build</emph>.</para>
+
+		<xml>
+			<makeOptions>
+				<makeOption>-d</makeOption>
+			</makeOptions>
 		</xml>
 
 		<h3>concurrency</h3>
@@ -234,7 +254,7 @@
 
 		<h2>Configuration</h2>
 
-		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML.</para>
+		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML. All configuration entries are optional.</para>
 
 		<h3>cmakeBinaryDirectory</h3>
 
@@ -328,7 +348,7 @@ if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 
 		<h2>Configuration</h2>
 
-		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML.</para>
+		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML. All configuration entries are optional.</para>
 
 		<h3>cmakeBinaryDirectory</h3>
 

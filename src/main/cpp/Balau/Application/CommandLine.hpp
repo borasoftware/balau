@@ -146,7 +146,15 @@ template <typename KeyT> class CommandLine {
 	/// Specify that the command line arguments include one (SEV style) or one or more (SSV style) final stand alone values.
 	///
 	public: CommandLine & withFinalValue() {
-		commandLineHasFinalValue = true;
+		commandLineHasFinalValue = HasFinalValue::Yes;
+		return *this;
+	}
+
+	///
+	/// Specify that the command line arguments include one (SEV style) or one or more (SSV style) final stand alone values.
+	///
+	public: CommandLine & withOptionalFinalValue() {
+		commandLineHasFinalValue = HasFinalValue::Maybe;
 		return *this;
 	}
 
@@ -214,7 +222,7 @@ template <typename KeyT> class CommandLine {
 		parsedValuesByKey.clear();
 
 		if (args.empty() || (ignoreFirst && args.size() == 1)) {
-			if (commandLineHasFinalValue) {
+			if (commandLineHasFinalValue == HasFinalValue::Yes) {
 				ThrowBalauException(Exception::MissingFinalValueException, "");
 			}
 
@@ -471,8 +479,15 @@ template <typename KeyT> class CommandLine {
 	/// @throw OptionNotFoundException if this parser does not have final values or the index is out of range
 	///
 	public: std::string getFinalValue(size_t index = 0) const {
-		if (!commandLineHasFinalValue) {
+		if (commandLineHasFinalValue == HasFinalValue::No) {
 			ThrowBalauException(Exception::OptionNotFoundException, "This parser does not have final values.");
+		}
+
+		if (finalValues.size() <= index) {
+			ThrowBalauException(
+				  Exception::OptionNotFoundException
+				, ::toString("This parser does not have a final value with index ", index)
+			);
 		}
 
 		return finalValues[index];
@@ -506,7 +521,7 @@ template <typename KeyT> class CommandLine {
 	/// Get the final value as a string or return the supplied default if no final value is available.
 	///
 	public: std::string getFinalValueOrDefault(const std::string & defaultValue, size_t index = 0) const {
-		if (!commandLineHasFinalValue || finalValues.size() <= index) {
+		if (finalValues.size() <= index) {
 			return defaultValue;
 		}
 
@@ -631,7 +646,7 @@ template <typename KeyT> class CommandLine {
 			return style;
 		}
 
-		if (commandLineHasFinalValue && argCount == 1) {
+		if (commandLineHasFinalValue == HasFinalValue::Yes && argCount == 1) {
 			// Doesn't matter.. only the final value argument is present.
 			return CommandLineStyle::SwitchSpaceValue;
 		}
@@ -663,7 +678,7 @@ template <typename KeyT> class CommandLine {
 			m++;
 		}
 
-		for (size_t m = 0; m < (commandLineHasFinalValue ? cleanedArgs.size() - 1 : cleanedArgs.size()); m++) {
+		for (size_t m = 0; m < (commandLineHasFinalValue == HasFinalValue::Yes ? cleanedArgs.size() - 1 : cleanedArgs.size()); m++) {
 			const std::string optionSwitch = toString(Util::Strings::trim(cleanedArgs[m]));
 			auto iter = keysBySwitch.find(optionSwitch);
 
@@ -675,7 +690,7 @@ template <typename KeyT> class CommandLine {
 			const auto & option = optionsByKey.at(key);
 
 			if (option.hasValue) {
-				if (commandLineHasFinalValue && cleanedArgs.size() - m < 2) {
+				if (commandLineHasFinalValue == HasFinalValue::Yes && cleanedArgs.size() - m < 2) {
 					ThrowBalauException(Exception::MissingFinalValueException, "");
 				} else if (cleanedArgs.size() - m < 1) {
 					ThrowBalauException(Exception::MissingOptionValueException, optionSwitch);
@@ -688,7 +703,7 @@ template <typename KeyT> class CommandLine {
 			}
 		}
 
-		if (commandLineHasFinalValue) {
+		if (commandLineHasFinalValue == HasFinalValue::Yes) {
 			finalValues.push_back(toString(Util::Strings::trim(cleanedArgs.back())));
 		}
 	}
@@ -710,6 +725,10 @@ template <typename KeyT> class CommandLine {
 			} else if (Util::Strings::startsWith(optionSwitch, "-")) {
 				optionSwitch = optionSwitch.substr(1);
 			} else {
+				if (commandLineHasFinalValue == HasFinalValue::No) {
+					ThrowBalauException(Exception::IllegalArgumentException, "Illegal value found when parsing.");
+				}
+
 				// Not a switch.
 				finalValues.push_back(std::move(optionSwitch));
 				continue;
@@ -725,9 +744,9 @@ template <typename KeyT> class CommandLine {
 			const auto & option = optionsByKey.at(key);
 
 			if (option.hasValue) {
-				if ((commandLineHasFinalValue >> finalValues.empty()) && args.size() - m < 2) {
+				if (commandLineHasFinalValue == HasFinalValue::Yes && finalValues.empty() && m + 2 == args.size()) {
 					ThrowBalauException(Exception::MissingFinalValueException, "");
-				} else if (args.size() - m < 1) {
+				} else if (m + 1 == args.size()) {
 					ThrowBalauException(Exception::MissingOptionValueException, optionSwitch);
 				}
 
@@ -798,16 +817,23 @@ template <typename KeyT> class CommandLine {
 	                                                size_t index,
 	                                                bool orDefault = false,
 	                                                T defaultValue = T()) const {
-		if (!commandLineHasFinalValue || finalValues.size() <= index) {
+		if (commandLineHasFinalValue == HasFinalValue::No) {
 			if (orDefault) {
 				return defaultValue;
 			}
 
-			if (!commandLineHasFinalValue) {
-				ThrowBalauException(Exception::OptionNotFoundException, "This parser does not have final values.");
-			} else {
-				ThrowBalauException(Exception::OptionNotFoundException, "No final value was supplied on the command line.");
+			ThrowBalauException(Exception::OptionNotFoundException, "This parser does not have final values.");
+		}
+
+		if (finalValues.size() <= index) {
+			if (orDefault) {
+				return defaultValue;
 			}
+
+			ThrowBalauException(
+				  Exception::OptionNotFoundException
+				, ::toString("This parser does not have a final value with index ", index)
+			);
 		}
 
 		try {
@@ -847,11 +873,15 @@ template <typename KeyT> class CommandLine {
 		Option & operator = (const Option & copy) = default;
 	};
 
+	private: enum class HasFinalValue {
+		No, Yes, Maybe
+	};
+
 	private: CommandLineStyle style;
 	private: std::map<std::string, KeyT> keysBySwitch; // switch, key
 	private: std::map<KeyT, Option> optionsByKey; // key, option info
 	private: std::map<KeyT, std::string> parsedValuesByKey; // key, value
-	private: bool commandLineHasFinalValue = false;
+	private: HasFinalValue commandLineHasFinalValue = HasFinalValue::No;
 	private: std::vector<std::string> finalValues;
 };
 

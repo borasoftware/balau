@@ -11,8 +11,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE_TEST
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE_TEST
 
-#ifdef BALAU_LIBZIP_ENABLED
-
 #include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau::Resource {
@@ -26,7 +24,5 @@ struct ZipEntryByteReadResourceTest : public Testing::TestGroup<ZipEntryByteRead
 };
 
 } // namespace Balau::Resource
-
-#endif // BALAU_LIBZIP_ENABLED
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY_BYTE_READ_RESOURCE_TEST

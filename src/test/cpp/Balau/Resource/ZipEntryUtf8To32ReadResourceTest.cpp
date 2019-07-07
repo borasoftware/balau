@@ -8,9 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#ifdef BALAU_LIBZIP_ENABLED
-
 #include "ZipEntryUtf8To32ReadResourceTest.hpp"
+
 #include "../../TestResources.hpp"
 
 #include <Balau/Resource/ZipFile.hpp>
@@ -72,5 +71,3 @@ void ZipEntryUtf8To32ReadResourceTest::test() {
 } // namespace Resource
 
 } // namespace Balau
-
-#endif // BALAU_LIBZIP_ENABLED
