@@ -1078,9 +1078,43 @@
 
 		<para>It is important to note that the instances of singleton and thread-local singleton bindings of the prototype will be shared between all child injectors created from the prototype. If this is not desired behaviour, then a new child injector must be created via the other <emph>createChild</emph> functions that instantiate their own bindings.</para>
 
+		<h1>Injector callbacks</h1>
+
+		<para>An additional feature of the injector is the ability to register post-construction and pre-destruction callbacks. Registered callbacks will then be called by the injector, either directly after injector creation (for post-construction callbacks), or immediately before injector destruction (for pre-destruction callbacks).</para>
+
+		<para>Registering callbacks provides a convenient way to execute program logic immediate after injector creation and/or immediately before injector destruction. Post-construction and pre-destruction callbacks are also useful for the explicit management of cyclic dependencies between singletons (discussed in the next section).</para>
+
+		<para>The only restriction to the program logic that may be run within a callback is that pre-destruction callbacks must be <emph>noexcept(true)</emph>. This is because the pre-destruction callbacks are run from within the injector desctructor.</para>
+
+		<para>The signatures of the callback registration methods are as follows.</para>
+
+		<code lang="C++">
+			// Post-construction callback registration.
+			void registerPostConstructionCall(const std::function&lt;void (const Injector &amp;)&gt; &amp; call) const;
+
+			// Pre-destruction callback registration.
+			void registerPreDestructionCall(const std::function&lt;void ()&gt; &amp; call) const;
+		</code>
+
+		<para>The signatures of the callbacks are thus:</para>
+
+		<code lang="C++">
+			// Post-construction function signature.
+			const std::function&lt;void (const Injector &amp;)&gt;
+
+			// Pre-destruction function signature.
+			const std::function&lt;void ()&gt;
+		</code>
+
+		<para>Post-construct callbacks are supplied with a reference to the injector. Pre-destruction callbacks are not. Although pre-destruction callbacks must be <emph>noexcept(true)</emph>, the pre-destruction function signature does not contain <emph>noexcept(true)</emph>, as this is not yet handled by <emph>std::function</emph> in C++17. Despite this, functions registered as pre-destruction callbacks must nevertheless be <emph>noexcept(true)</emph>.</para>
+
+		<para></para>
+
+		<para></para>
+
 		<h1>Cyclic dependencies</h1>
 
-		<para>This section discusses how cyclic dependencies are prevented by the injector.</para>
+		<para>This section discusses how automatic cyclic dependencies are prevented by the injector and how to manually manage cyclic dependencies between instances.</para>
 
 		<h2>Configuration cycles</h2>
 
@@ -1088,17 +1122,31 @@
 
 		<para>Due to this, the injector runs cyclic dependency analysis in the validation phase run during injector instantiation. If a cycle is found in the binding dependency tree constructed from the supplied configuration, a <emph>CyclicDependencyException</emph> is thrown.</para>
 
-		<para>If a cyclic relationship between two instances is required, this must be managed explicitly by the application. One way to do this is to inject one instance into the other, then call the injected instance inside the constructor. This requires a manually coded injectable constructor in one of the classes.</para>
+		<h2>Explicitly managed cycles</h2>
 
-		<para>If an explicitly constructed cyclic relationship approach is used using shared pointer containers, the normal rules in C++ regarding <emph>std::shared_ptr</emph> cycles apply and must be managed accordingly. If an approach is taken that uses a raw pointer, object lifetime mangement must be explicitly performed outside of the injector.</para>
+		<para>If a cyclic relationship between two instances is required, this must be managed explicitly by the application. If an explicitly constructed cyclic relationship approach is used using shared pointer containers, the normal rules in C++ regarding <emph>std::shared_ptr</emph> cycles apply and must be managed accordingly.</para>
+
+		<para>The best way to achieve an explicitly managed cyclic dependency is by creating a weak or shared pointer in one of the cyclically depedendent classes, then registering a post-construction callback with the injector from within the constructor of the class. This callback can then set the pointer container to point to the other instance, by obtaining the instance from the injector supplied in the callback.</para>
+
+		<para>The choice of weak or shared pointer will depend on the chosen destruction strategy. If no action is taken to explicitly remove the cyclic relationship, then a weak pointer should be used. This ensures that there is no permanent cyclic dependency in place. The inconvenince with using a weak pointer is that the pointer must be obtained via the <emph>lock</emph> call each time the pointer is required.</para>
+
+		<para>If a shared pointer is used, then a pre-destruction callback should be registered with the injector from within the constructor of one of the instances that form the cyclic dependency (typically the same class that contains the post-construction callback registration call). This pre-destruction callback should reset the shared pointer, breaking the cyclic dependency before the injector destructor destroys the binding map.</para>
+
+		<para>In order to perform explicit management of cyclic pointers, the injector needs to be injected into one of the cyclically dependent classes.</para>
+
+		<h2>Injecting the injector</h2>
+
+		<para>In order to inject the injector, it is sufficient to specify the injector type as a weak pointer, either via an injector macro that specifies the relevant injector field in the class (<emph>BalauInject</emph>, <emph>BalauInjectConstruct</emph>, <emph>BalauInjectNamed</emph>, or <emph>BalauInjectConstructNamed</emph>), or explicitly via an injector macro that specifies the exact type to be injected (<emph>BalauInjectTypes</emph>, or <emph>BalauInjectNamedTypes</emph>). Once this is done, the injector will inject itself during a get-instance call.</para>
+
+		<para>As singleton instances may be created during the creation of the injector, it is important to note that such singletons must not use the injector from within their constructor. Instead, a pointer to the injector should be maintained within a field of the class and set in the constructor initialisation list. The injector can then be used in non-constructor methods in the class.</para>
+
+		<para>If the injector is nevertheless required during construction, a post construct callback may be registered with the injected injector. This callback will be executed by the injector immmediate after construction is complete.</para>
+
+		<para>Injection of the injector can only be achieved via a <emph>std::weak_ptr&lt;Injector></emph>, either specified as a field of the injectable class, or explicitly via the injector macros that specify the exact types of the dependencies. This ensures that the writer of the injectable class be aware that maintaining a shared pointer to the injector in the instance will result in a cyclic dependency if the instance is a singleton (i.e. owned by the injector). If a shared pointer is used to reference the injected injector, the injector will become a node within an implicitly created dependency cycle.</para>
 
 		<h2>Injector cycles</h2>
 
-		<para>One feature that the Balau injector provides is the injection of the injector. If the injection macro of a class specifies the injector type, the injector will inject itself during a get-instance call.</para>
-
-		<para>In order to ensure that the injector does not become a node within an implicitly created dependency cycle, injection of the injector inside a <emph>Shared</emph> binding can only be performed if the receiving type is a <emph>std::weak_ptr&lt;Injector></emph>.</para>
-
-		<para>An example of this is illustrated in the following diagrams. The diagram below shows a set of relationships between an injector, two singleton bindings, and some shared pointers obtained from the injector by the application. Instances are shown in blue, shared pointers internal to the instances are shown in purple, and shared pointers in the application code are shown in brown.</para>
+		<para>As previously mentioned, injection of the injector can only be performed if the receiving type is a <emph>std::weak_ptr&lt;Injector></emph>. An example of what would happen if a shared pointer is used instead is illustrated in the following diagrams. The diagram below shows a set of relationships between an injector, two singleton bindings, and some shared pointers obtained from the injector by the application. Instances are shown in blue, shared pointers internal to the instances are shown in purple, and shared pointers in the application code are shown in brown.</para>
 
 		<graphic position="center" url="../resources/images/NoCyclicShared.png" width="160mm" />
 
@@ -1115,6 +1163,8 @@
 		<graphic position="center" url="../resources/images/WeakCyclicShared.png" width="160mm" />
 
 		<para>The <emph>std::weak_ptr&lt;Injector></emph> forms a dependency break in the pathways and consequently there are no cycles present in the dependency graph.</para>
+
+		<para>Regardless of the above, it is important to note that the normal rules of C++ still apply after the weak pointer is supplied. If an injector shared pointer is manually created in the injectable class' constructor from a supplied injector weak pointer and then subsequently used to set a shared pointer field, a cyclic dependency will be created and the injector will never be destroyed. Note that using a pre-destructor callback will not work either, as these callbacks are run from within the injector's destructor, which will never get called. It is thus essentially up the end developer to respect the requirement that pointers to the injector in injectable classes be maintained as weak pointers.</para>
 
 		<h1>Configuration testing</h1>
 
