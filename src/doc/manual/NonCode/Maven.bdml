@@ -108,6 +108,57 @@
 			</plugin>
 		</xml>
 
+		<para>A common requirement for a CMake based project is to pass CMake defines from the command line. In order to achieve this via the CMake Maven plugin, each required define can be added as a Maven property in the pom. For example, the Balau project's pom includes the following properties.</para>
+
+		<xml>
+			<project xmlns="http://maven.apache.org/POM/4.0.0"
+			         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+				<modelVersion>4.0.0</modelVersion>
+
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>balau</artifactId>
+				<version>19.7.1</version>
+				<packaging>pom</packaging>
+
+				<properties>
+					<CMAKE_PREFIX_PATH />
+					<CMAKE_INSTALL_PREFIX />
+					<CMAKE_CXX_COMPILER />
+					<CMAKE_C_COMPILER />
+				</properties>
+			</project>
+		</xml>
+
+		<para>All properties are empty by default.</para>
+
+		<para>Once a Maven property is defined (either empty or with a default value), then it can be added to the <emph>&lt;cmakeDefines&gt;</emph> property list in the CMake Maven plugin configuration. The Balau project's pom thus includes the following properties within the <emph>&lt;cmakeDefines&gt;</emph> property list.</para>
+
+		<xml>
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>cmake-maven-plugin</artifactId>
+				<version>19.7.1</version>
+
+				<configuration>
+					<cmakeDefines>
+						<CMAKE_PREFIX_PATH>${CMAKE_PREFIX_PATH}</CMAKE_PREFIX_PATH>
+						<CMAKE_INSTALL_PREFIX>${CMAKE_INSTALL_PREFIX}</CMAKE_INSTALL_PREFIX>
+						<CMAKE_CXX_COMPILER>${CMAKE_CXX_COMPILER}</CMAKE_CXX_COMPILER>
+						<CMAKE_C_COMPILER>${CMAKE_C_COMPILER}</CMAKE_C_COMPILER>
+					</cmakeDefines>
+				</configuration>
+			</plugin>
+		</xml>
+
+		<para>Once the properties are added to the CMake Maven plugin configuration, the CMake define can then be specified as a Maven property on the command line. The following example specifies the <emph>CMAKE_PREFIX_PATH</emph> CMake define via the Maven command line.</para>
+
+		<code>
+			mvn validate -DCMAKE_PREFIX_PATH="${HOME}/libs/boost.1.68.0"
+		</code>
+
+		<para>In a similar way, the make targets can be driven by the Maven command line if desired.</para>
+
 		<h2>Configuration</h2>
 
 		<para>Configuration entries are placed within the <emph>&lt;configuration&gt;</emph> element in the plugin's XML. All configuration entries are optional.</para>

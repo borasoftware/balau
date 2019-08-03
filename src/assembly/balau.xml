@@ -1,0 +1,65 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	<id>balau</id>
+
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+
+	<fileSets>
+		<fileSet>
+			<directory>src/main/cpp/Balau</directory>
+			<outputDirectory>/include/Balau-${project.version}/Balau</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<lineEnding>lf</lineEnding>
+
+			<includes>
+				<include>**/*.hpp</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
+			<directory>src/main/resources/BalauConfig</directory>
+			<outputDirectory>/include/Balau-${project.version}/BalauConfig</outputDirectory>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<lineEnding>lf</lineEnding>
+
+			<includes>
+				<include>**/*.thconf</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+
+	<files>
+		<file>
+			<source>target/cmake/Balau/BalauConfig.hpp</source>
+			<outputDirectory>include/Balau-${project.version}/Balau</outputDirectory>
+			<fileMode>644</fileMode>
+			<lineEnding>lf</lineEnding>
+		</file>
+
+		<file>
+			<source>target/cmake/lib/libBalau.a</source>
+			<outputDirectory>lib/Balau-${project.version}</outputDirectory>
+			<fileMode>644</fileMode>
+			<lineEnding>lf</lineEnding>
+		</file>
+
+		<file>
+			<source>src/main/cmake/BalauConfig.cmake</source>
+			<outputDirectory>lib/Balau-${project.version}</outputDirectory>
+			<fileMode>644</fileMode>
+			<lineEnding>lf</lineEnding>
+		</file>
+
+		<file>
+			<source>src/main/cmake/BalauConfigVersion.cmake</source>
+			<outputDirectory>lib/Balau-${project.version}</outputDirectory>
+			<fileMode>644</fileMode>
+			<lineEnding>lf</lineEnding>
+		</file>
+	</files>
+</assembly>

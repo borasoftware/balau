@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.10.2)
 #  - BalauConfigVersion.cmake
 #  - title-page.bdml
 #
-project(Balau VERSION 2019.6.2)
+project(Balau VERSION 2019.7.1)
 
 configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
@@ -719,6 +719,7 @@ install(DIRECTORY src/main/cpp/Balau/ DESTINATION "include/Balau-${PROJECT_VERSI
 install(TARGETS Balau DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/BalauConfig.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/BalauConfigVersion.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(FILES ${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${PROJECT_VERSION}/BalauConfig" FILES_MATCHING PATTERN "*.thconf")
 
 ################################# BALAU TESTS #################################

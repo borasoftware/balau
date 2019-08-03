@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.borasoftware.balau</groupId>
+	<artifactId>balau</artifactId>
+	<version>19.7.1</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<CMAKE_PREFIX_PATH />
+		<CMAKE_INSTALL_PREFIX />
+		<CMAKE_CXX_COMPILER />
+		<CMAKE_C_COMPILER />
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>cmake-maven-plugin</artifactId>
+				<version>19.7.1</version>
+
+				<configuration>
+					<compileTargets>
+						<compileTarget>Balau</compileTarget>
+					</compileTargets>
+
+					<testCompileTargets>
+						<testCompileTarget>BalauTests</testCompileTarget>
+					</testCompileTargets>
+
+					<cmakeDefines>
+						<CMAKE_PREFIX_PATH>${CMAKE_PREFIX_PATH}</CMAKE_PREFIX_PATH>
+						<CMAKE_INSTALL_PREFIX>${CMAKE_INSTALL_PREFIX}</CMAKE_INSTALL_PREFIX>
+						<CMAKE_CXX_COMPILER>${CMAKE_CXX_COMPILER}</CMAKE_CXX_COMPILER>
+						<CMAKE_C_COMPILER>${CMAKE_C_COMPILER}</CMAKE_C_COMPILER>
+					</cmakeDefines>
+				</configuration>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+							<goal>configure</goal>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>balau-unit-test-maven-plugin</artifactId>
+				<version>19.6.2</version>
+
+				<configuration>
+					<appPath>bin/BalauTests</appPath>
+					<executionModel>ProcessPerTest</executionModel>
+				</configuration>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.borasoftware.balau</groupId>
+				<artifactId>balau-integration-test-maven-plugin</artifactId>
+				<version>19.6.2</version>
+
+				<configuration>
+					<appPath>bin/BalauTests</appPath>
+					<executionModel>ProcessPerTest</executionModel>
+				</configuration>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.1</version>
+
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/balau.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
