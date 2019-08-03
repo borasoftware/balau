@@ -140,7 +140,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @throw SharedInjectorException if one of the injectable classes specifies a shared pointer injector dependency
 	///
 	public: template <typename ... Conf>
-	static ValidationParent validate(Conf & ... conf) {
+	static ValidationParent validate(const Conf & ... conf) {
 		return performValidation(std::shared_ptr<Injector>(), conf ...);
 	}
 
@@ -171,7 +171,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @throw SharedInjectorException if one of the injectable classes specifies a shared pointer injector dependency
 	///
 	public: template <typename ... Conf>
-	static ValidationParent validateChild(ValidationParent parent, Conf & ... conf) {
+	static ValidationParent validateChild(ValidationParent parent, const Conf & ... conf) {
 		return performValidation(parent.parent, conf ...);
 	}
 
