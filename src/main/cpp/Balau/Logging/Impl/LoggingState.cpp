@@ -493,7 +493,7 @@ std::unique_ptr<EnvironmentProperties> LoggingState::expandConfigurationTextMacr
 	const std::string homeDir = User::getHomeDirectory().toUriString();
 	const std::string executableName = exeLocation.filename().string();
 
-	auto bindings = std::make_unique<Impl::BindingMap>();
+	auto bindings = std::make_unique<::Balau::Impl::BindingMap>();
 
 	for (auto item : configuration) {
 		std::string_view name = item.getName();
@@ -515,14 +515,14 @@ std::unique_ptr<EnvironmentProperties> LoggingState::expandConfigurationTextMacr
 	return std::make_unique<EnvironmentProperties>(std::move(bindings));
 }
 
-std::unique_ptr<Impl::AbstractBinding>
-LoggingState::expandConfigurationValueTextMacros(Impl::BindingKey key,
+std::unique_ptr<::Balau::Impl::AbstractBinding>
+LoggingState::expandConfigurationValueTextMacros(::Balau::Impl::BindingKey key,
                                                  const std::shared_ptr<EnvironmentProperties> & configuration,
                                                  const boost::filesystem::path & exeLocation,
                                                  const std::string & homeDir,
                                                  const std::string & executableName,
                                                  const std::map<std::string, std::string> & encasedPlaceholders) {
-	auto bindings = std::make_unique<Impl::BindingMap>();
+	auto bindings = std::make_unique<::Balau::Impl::BindingMap>();
 
 	for (auto item : *configuration) {
 		std::string_view name = item.getName();
@@ -536,21 +536,21 @@ LoggingState::expandConfigurationValueTextMacros(Impl::BindingKey key,
 
 			bindings->put(
 				  item.getKey()
-				, std::unique_ptr<Impl::AbstractBinding>(new Impl::PrototypeBinding<std::string>(item.getKey(), value))
+				, std::unique_ptr<::Balau::Impl::AbstractBinding>(new ::Balau::Impl::PrototypeBinding<std::string>(item.getKey(), value))
 			);
 		} else if (item.isValue<bool>()) {
 			auto value = item.getValue<bool>();
 			bindings->put(
 				  item.getKey()
-				, std::unique_ptr<Impl::AbstractBinding>(new Impl::PrototypeBinding<bool>(item.getKey(), value))
+				, std::unique_ptr<::Balau::Impl::AbstractBinding>(new ::Balau::Impl::PrototypeBinding<bool>(item.getKey(), value))
 			);
 		} else {
 			fprintf(stderr, "WARN: unknown logging configuration value property: %s\n", std::string(name).c_str());
 		}
 	}
 
-	return std::unique_ptr<Impl::AbstractBinding>(
-		new Impl::ProvidedSingletonBinding<EnvironmentProperties>(
+	return std::unique_ptr<::Balau::Impl::AbstractBinding>(
+		new ::Balau::Impl::ProvidedSingletonBinding<EnvironmentProperties>(
 			std::move(key), std::make_shared<EnvironmentProperties>(std::move(bindings))
 		)
 	);

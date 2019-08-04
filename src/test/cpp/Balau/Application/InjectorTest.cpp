@@ -12,9 +12,11 @@
 
 #include "../../../../main/cpp/Balau/Application/Injectable.hpp"
 
+#include <memory>
 #include <thread>
 
 using Balau::Testing::is;
+using Balau::Testing::isA;
 using Balau::Testing::isGreaterThanOrEqualTo;
 using Balau::Testing::isNot;
 using Balau::Testing::throws;
@@ -94,8 +96,6 @@ class Base2 {
 /////////////////////////////// Implementations ///////////////////////////////
 
 class DerivedA : public Base {
-	BalauInject(DerivedA)
-
 	public: ~DerivedA() override = default;
 
 	public: explicit DerivedA(std::string aName) : name(std::move(aName)) {
@@ -115,11 +115,11 @@ class DerivedA : public Base {
 	}
 
 	private: const std::string name;
+
+	BalauInject(DerivedA)
 };
 
 class DerivedB : public Base {
-	BalauInject(DerivedB)
-
 	public: ~DerivedB() override = default;
 
 	private: DerivedB() {
@@ -129,11 +129,11 @@ class DerivedB : public Base {
 	public: void foo() override {
 		capture.add("DerivedB.foo");
 	}
+
+	BalauInject(DerivedB)
 };
 
 class Derived2 : public Base2 {
-	BalauInjectTypes(Derived2, std::shared_ptr<Base>)
-
 	private: explicit Derived2(std::shared_ptr<Base> aDependency)
 		: dependency(std::move(aDependency)) {
 		capture.add("explicit Derived2 constructor");
@@ -147,11 +147,11 @@ class Derived2 : public Base2 {
 	}
 
 	private: std::shared_ptr<Base> dependency;
+
+	BalauInjectTypes(Derived2, std::shared_ptr<Base>)
 };
 
 class Derived2WithNamed : public Base2 {
-	BalauInjectNamedTypes(Derived2WithNamed, std::shared_ptr<Base>, "namedBase")
-
 	private: explicit Derived2WithNamed(std::shared_ptr<Base> aDependency)
 		: dependency(std::move(aDependency)) {
 		capture.add("Derived2WithNamed constructor");
@@ -165,11 +165,11 @@ class Derived2WithNamed : public Base2 {
 	}
 
 	private: std::shared_ptr<Base> dependency;
+
+	BalauInjectNamedTypes(Derived2WithNamed, std::shared_ptr<Base>, "namedBase")
 };
 
 class Derived2Custom : public Base2 {
-	BalauInject(Derived2Custom)
-
 	private: Derived2Custom() {
 		capture.add("Derived2Custom constructor");
 	}
@@ -179,11 +179,11 @@ class Derived2Custom : public Base2 {
 	public: void foo2() override {
 		capture.add("Derived2Custom.foo2");
 	}
+
+	BalauInject(Derived2Custom)
 };
 
 class Derived2Custom2 : public Base2 {
-	BalauInject(Derived2Custom2)
-
 	private: Derived2Custom2() {
 		capture.add("Derived2Custom2 constructor");
 	}
@@ -193,11 +193,11 @@ class Derived2Custom2 : public Base2 {
 	public: void foo2() override {
 		capture.add("Derived2Custom2.foo2");
 	}
+
+	BalauInject(Derived2Custom2)
 };
 
 class Derived2Custom3 : public Base2 {
-	BalauInject(Derived2Custom3)
-
 	private: Derived2Custom3() {
 		capture.add("Derived2Custom3 constructor");
 	}
@@ -207,6 +207,8 @@ class Derived2Custom3 : public Base2 {
 	public: void foo2() override {
 		capture.add("Derived2Custom3.foo2");
 	}
+
+	BalauInject(Derived2Custom3)
 };
 
 //////////////////////////////////// Tests ////////////////////////////////////
@@ -716,11 +718,11 @@ struct CT {
 };
 
 class FloatProvider {
-	BalauInject(FloatProvider);
-
 	public: float operator () () {
 		return 432.1f;
 	}
+
+	BalauInject(FloatProvider);
 };
 
 struct I {
@@ -731,8 +733,6 @@ struct I {
 int cCounter = 0;
 
 struct C : public I {
-	BalauInject(C, value);
-
 	int value;
 
 	explicit C(int value_) : value(value_) {}
@@ -740,6 +740,8 @@ struct C : public I {
 	int getValue() override {
 		return value;
 	}
+
+	BalauInject(C, value);
 };
 
 struct J {
@@ -748,22 +750,22 @@ struct J {
 };
 
 struct Counter {
-	BalauInject(Counter);
-
 	std::atomic_int count { 100 };
 
 	private: Counter() noexcept = default;
 	private: Counter(Counter && rhs) noexcept : count(rhs.count.load()) {}
+
+	BalauInject(Counter);
 };
 
 struct D : public J {
 	int value;
 
-	BalauInjectConstruct(D, value);
-
 	int getValue() override {
 		return value;
 	}
+
+	BalauInjectConstruct(D, value);
 };
 
 class UProvider {
@@ -845,9 +847,9 @@ struct CCS {
 	// call to the injector must be auto &, not auto.
 	CCS(const CCS &) = delete;
 
-	BalauInjectConstruct(CCS, value);
-
 	private: CCS(CCS && rhs) noexcept : value(rhs.value) {}
+
+	BalauInjectConstruct(CCS, value);
 };
 
 struct CD {
@@ -990,9 +992,9 @@ void InjectorTest::allBindings() {
 
 struct AA {
 	double value;
-	BalauInjectConstruct(AA, value);
 	AA(const AA & ) = delete; // Prevent copying.
 	AA(AA && ) = default;
+	BalauInjectConstruct(AA, value);
 };
 
 const AA aa(543.2); // NOLINT
@@ -1173,7 +1175,7 @@ void InjectorTest::injectorCycleAvoidance() {
 
 class SingletonProvider {
 	public: std::shared_ptr<int> operator () () {
-		auto r = std::shared_ptr<int>(new int);
+		auto r = std::make_shared<int>();
 		*r = value;
 		return r;
 	}
@@ -1220,6 +1222,59 @@ void InjectorTest::providedSingletonProvider() {
 	auto provided = injector->getShared<int>();
 
 	AssertThat(*provided, is(expected));
+}
+
+} // namespace Balau
+
+#include "InjectorHeaderBody.hpp"
+
+namespace Balau {
+
+void InjectorTest::headerBodyMacros() {
+	class Configuration : public ApplicationConfiguration {
+		public: void configure() const override {
+			bind<HBBase1 >().toSingleton<HBDerived>();
+			bind<HBBase2 >().toSingleton<HBDerivedD>();
+			bind<HBBase1 >("ND").toSingleton<HBDerivedN>();
+			bind<HBBase2 >("ND").toSingleton<HBDerivedND>();
+			bind<HBBaseC1>().toSingleton<HBDerivedC>();
+			bind<HBBaseC2>().toSingleton<HBDerivedCD>();
+			bind<HBBaseC1>("ND").toSingleton<HBDerivedCN>();
+			bind<HBBaseC2>("ND").toSingleton<HBDerivedCND>();
+			bind<HBBaseT1>().toSingleton<HBDerivedT>();
+			bind<HBBaseT2>().toSingleton<HBDerivedTD>();
+			bind<HBBaseT1>("ND").toSingleton<HBDerivedTN>();
+			bind<HBBaseT2>("ND").toSingleton<HBDerivedTND>();
+		}
+	};
+
+	auto injector = Injector::create(Configuration());
+
+	auto a    = injector->getShared<HBBase1>();
+	auto aD   = injector->getShared<HBBase2>();
+	auto aN   = injector->getShared<HBBase1>("ND");
+	auto aND  = injector->getShared<HBBase2>("ND");
+	auto aC   = injector->getShared<HBBaseC1>();
+	auto aCD  = injector->getShared<HBBaseC2>();
+	auto aCN  = injector->getShared<HBBaseC1>("ND");
+	auto aCND = injector->getShared<HBBaseC2>("ND");
+	auto aT   = injector->getShared<HBBaseT1>();
+	auto aTD  = injector->getShared<HBBaseT2>();
+	auto aTN  = injector->getShared<HBBaseT1>("ND");
+	auto aTND = injector->getShared<HBBaseT2>("ND");
+
+	AssertThat(*a,    isA<HBDerived>());
+	AssertThat(*aD,   isA<HBDerivedD>());
+	AssertThat(*aN,   isA<HBDerivedN>());
+	AssertThat(*aND,  isA<HBDerivedND>());
+	AssertThat(*aC,   isA<HBDerivedC>());
+	AssertThat(*aCD,  isA<HBDerivedCD>());
+	AssertThat(*aCN,  isA<HBDerivedCN>());
+	AssertThat(*aCND, isA<HBDerivedCND>());
+	AssertThat(*aT,   isA<HBDerivedT>());
+	AssertThat(*aTD,  isA<HBDerivedTD>());
+	AssertThat(*aTN,  isA<HBDerivedTN>());
+	AssertThat(*aTND, isA<HBDerivedTND>());
 }
 
 } // namespace Balau

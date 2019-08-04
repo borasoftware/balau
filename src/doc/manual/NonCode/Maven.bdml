@@ -130,7 +130,7 @@
 			</project>
 		</xml>
 
-		<para>All properties are empty by default.</para>
+		<para>All properties in the Balau pom are empty by default.</para>
 
 		<para>Once a Maven property is defined (either empty or with a default value), then it can be added to the <emph>&lt;cmakeDefines&gt;</emph> property list in the CMake Maven plugin configuration. The Balau project's pom thus includes the following properties within the <emph>&lt;cmakeDefines&gt;</emph> property list.</para>
 

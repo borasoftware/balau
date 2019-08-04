@@ -17,19 +17,21 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
 #define COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
 
+#include <Balau/Type/ToString.hpp>
 #include <Balau/Util/Macros.hpp>
-#include <Balau/Util/Strings.hpp>
 
 #ifdef BALAU_ENABLE_STACKTRACES
 	#include <boost/stacktrace.hpp>
 	#include <exception>
+	#include <Balau/Util/Impl/StringsImpl.hpp>
 
-	#define _ThrowBalauException_generateStackTrace                                \
-		std::ostringstream stStream;                                               \
-		stStream << boost::stacktrace::stacktrace();                               \
-		std::string st = ::Balau::Util::Strings::replaceAll(                       \
-			stStream.str(), std::string(BalauString(BALAU_BASE_FOLDER_)) + "/", "" \
-		);
+	#define _ThrowBalauException_generateStackTrace                              \
+		std::ostringstream stStream;                                             \
+		stStream << boost::stacktrace::stacktrace();                             \
+		std::string st = stStream.str();                                         \
+		std::string match = std::string(BalauString(BALAU_BASE_FOLDER_)) + "/";  \
+		std::string replacement;                                                 \
+		::Balau::Util::Impl::replaceAllImpl(st, match, replacement, nullptr);
 #else
 	#define _ThrowBalauException_generateStackTrace std::string st;
 #endif

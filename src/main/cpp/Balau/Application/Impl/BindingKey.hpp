@@ -13,6 +13,7 @@
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Util/Enums.hpp>
+#include <Balau/Util/Strings.hpp>
 
 #include <typeindex>
 

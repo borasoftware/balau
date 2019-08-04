@@ -112,6 +112,11 @@ class Logger {
 	public: static void flushAll();
 
 	///
+	/// A predefined reference to the global logger.
+	///
+	public: static Logger & globalLogger();
+
+	///
 	/// Flush all current logging streams and configure the logging system with the supplied configuration text.
 	///
 	/// Any placeholders supplied in the placeholders map will be used to expand any macros found in the configuration text.
@@ -903,11 +908,6 @@ class Logger {
 	friend class LoggingSystem::LoggingState;
 	friend class BalauLogger;
 };
-
-///
-/// A predefined reference to the global logger.
-///
-extern Logger & globalLogger;
 
 } // namespace Balau
 

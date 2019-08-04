@@ -18,7 +18,10 @@ namespace Balau {
 using namespace Util;
 using namespace LoggingSystem;
 
-Logger & globalLogger = Logger::getLogger("");
+Logger & Logger::globalLogger() {
+	static Logger & logger = Logger::getLogger("");
+	return logger;
+}
 
 Logger & Logger::getLogger(std::string_view loggingNamespace) noexcept {
 	try {

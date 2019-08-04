@@ -39,11 +39,12 @@ int runAllExecutionModels(int argc, char * argv[]) {
 		int runTests(const char * executable, Testing::ExecutionModel model, const std::string & testList) {
 			auto modelStr = toString(model);
 
-			char * args[4];
-			args[0] = strdup("-e");
-			args[1] = strdup(modelStr.c_str());
-			args[2] = testList.empty() ? nullptr : strdup(testList.c_str());
-			args[3] = nullptr;
+			char * args[5];
+			args[0] = strdup(executable);
+			args[1] = strdup("-e");
+			args[2] = strdup(modelStr.c_str());
+			args[3] = testList.empty() ? nullptr : strdup(testList.c_str());
+			args[4] = nullptr;
 
 			const int exitStatus = execvp(executable, args);
 

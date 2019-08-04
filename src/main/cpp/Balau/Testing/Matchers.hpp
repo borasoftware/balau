@@ -117,6 +117,13 @@ inline ExpectedValue<E, MatcherCompareDoesNotContain, EvNotUsed, EvNotUsed> does
 }
 
 ///
+/// Is the type of the actual value castable to the specified type?
+///
+template <typename T> inline const IsAExpectation<T> isA() {
+	return IsAExpectation<T>();
+}
+
+///
 /// Does the code block throw the supplied expected exception type?
 ///
 template <typename E> inline const ThrowTypeExpectation<E> throws() {

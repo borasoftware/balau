@@ -198,7 +198,7 @@
 
 		<para>The parameter 'loggingNamespace' is the logging namespace that determines the configuration of the logger (logging level, streams, message format).</para>
 
-		<para>The <emph>Logger.hpp</emph> header also contains a static reference <emph>Balau::globalLogger</emph> that references the logger associated with the global namespace. This logger may be useful when logging to the global namespace is all that is required.</para>
+		<para>The <emph>Logger</emph> class also contains a static function <emph>globalLogger()</emph>. This logger references the logger associated with the global namespace. This logger may be useful when logging to the global namespace is all that is required.</para>
 
 		<para>Calls to getLogger() can be in static or instance contexts. Normally such calls are placed in static contexts.</para>
 

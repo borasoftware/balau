@@ -371,7 +371,12 @@ set(THIRD_PARTY_SOURCE_FILES
 set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
+	src/main/cpp/Balau/Application/Inject.hpp
 	src/main/cpp/Balau/Application/Injectable.hpp
+	src/main/cpp/Balau/Application/InjectBody.hpp
+	src/main/cpp/Balau/Application/InjectHeader.hpp
+	src/main/cpp/Balau/Application/InjectableBody.hpp
+	src/main/cpp/Balau/Application/InjectableHeader.hpp
 	src/main/cpp/Balau/Application/Injector.hpp
 	src/main/cpp/Balau/Application/ApplicationConfiguration.hpp
 	src/main/cpp/Balau/Application/EnvironmentConfiguration.hpp
@@ -384,6 +389,8 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderUtils.hpp
 	src/main/cpp/Balau/Application/Impl/InjectorLogger.cpp
 	src/main/cpp/Balau/Application/Impl/InjectorLogger.hpp
+	src/main/cpp/Balau/Application/Impl/InjectorBodyMacros.hpp
+	src/main/cpp/Balau/Application/Impl/InjectorHeaderMacros.hpp
 	src/main/cpp/Balau/Application/Impl/InjectorMacros.hpp
 	src/main/cpp/Balau/Application/Impl/PropertyBindingBuilderFactory.cpp
 	src/main/cpp/Balau/Application/Impl/PropertyBindingBuilderFactory.hpp
@@ -556,8 +563,9 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Util/Strings.hpp
 	src/main/cpp/Balau/Util/User.hpp
 	src/main/cpp/Balau/Util/Vectors.hpp
-	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
 	src/main/cpp/Balau/Util/Impl/MacrosImpl.hpp
+	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
+	src/main/cpp/Balau/Util/Impl/StringsImpl.hpp
 
 	src/main/cmake/BalauConfig.cmake
 	src/main/cmake/BalauConfigVersion.cmake
@@ -735,6 +743,8 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Application/CommandLineTest.hpp
 	src/test/cpp/Balau/Application/InjectorTest.cpp
 	src/test/cpp/Balau/Application/InjectorTest.hpp
+	src/test/cpp/Balau/Application/InjectorHeaderBody.cpp
+	src/test/cpp/Balau/Application/InjectorHeaderBody.hpp
 	src/test/cpp/Balau/Application/ToStringTest.cpp
 	src/test/cpp/Balau/Application/ToStringTest.hpp
 	src/test/cpp/Balau/Container/ArrayBlockingQueueTest.cpp

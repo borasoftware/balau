@@ -87,6 +87,12 @@ template <typename E, typename C, typename F> class ExpectedValue<E, C, EvNotUse
 	private: EvNotUsed v;
 };
 
+////////////////////////////// Is-a expectations //////////////////////////////
+
+template <typename T> class IsAExpectation {};
+
+//////////////////////////// Throwing expectations ////////////////////////////
+
 // An expected exception thrown.
 template <typename E> class ThrowExpectation {
 	public: const E & e; // NOLINT

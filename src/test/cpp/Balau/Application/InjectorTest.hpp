@@ -34,6 +34,7 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		registerTest(&InjectorTest::injectorCycleAvoidance,    "injectorCycleAvoidance");
 		registerTest(&InjectorTest::singletonProvider,         "singletonProvider");
 		registerTest(&InjectorTest::providedSingletonProvider, "providedSingletonProvider");
+		registerTest(&InjectorTest::headerBodyMacros,          "headerBodyMacros");
 	}
 
 	void creationAndDeletion();
@@ -52,6 +53,7 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	void injectorCycleAvoidance();
 	void singletonProvider();
 	void providedSingletonProvider();
+	void headerBodyMacros();
 };
 
 } // namespace Balau

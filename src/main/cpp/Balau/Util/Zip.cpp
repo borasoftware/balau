@@ -343,9 +343,6 @@ inline bool isDirectoryName(const std::string & name) {
 	return Strings::endsWith(name, "/");
 }
 
-static std::regex removeMultipleSeparators("//+");
-static std::regex removeFrontSeparator("^/");
-
 void Unzipper::openImpl(const Resource::File & path_, bool verify, const std::string & pw, int mode) {
 	int flags = mode;
 	const std::string modeStr = mode == ZIP_CREATE ? "writing" : "reading";
@@ -413,6 +410,9 @@ std::string Unzipper::cleanUpName(const std::string & name, EntryType entryType)
 			break;
 		}
 	}
+
+	static std::regex removeMultipleSeparators("//+");
+	static std::regex removeFrontSeparator("^/");
 
 	cleanedName = Strings::replaceAll(cleanedName, removeMultipleSeparators, "/");
 	return Strings::replaceAll(cleanedName, removeFrontSeparator, "");

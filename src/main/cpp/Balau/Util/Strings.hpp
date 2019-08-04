@@ -19,6 +19,7 @@
 
 #include <Balau/Type/Character.hpp>
 #include <Balau/Type/ToString.hpp>
+#include <Balau/Util/Impl/StringsImpl.hpp>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -217,7 +218,7 @@ struct Strings final {
 		size_t count = 0;
 
 		while ((index = str.find(substring, index)) != StringT<CharT, T ...>::npos) {
-			index += length(substring);
+			index += Balau::Util::Impl::length(substring);
 			++count;
 		}
 
@@ -876,7 +877,7 @@ struct Strings final {
 		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> ret(input);
 		auto m = std::string(match.data(), match.length());
 		auto r = std::string(replacement.data(), replacement.length());
-		replaceAllImpl(ret, m, r, count);
+		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -891,7 +892,7 @@ struct Strings final {
 		std::basic_string<CharT> ret(input);
 		auto m = std::string(match.data(), match.length());
 		auto r = std::string(replacement.data(), replacement.length());
-		replaceAllImpl(ret, m, r, count);
+		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -905,7 +906,7 @@ struct Strings final {
 		std::string ret(input);
 		auto m = std::string(match.data(), match.length());
 		auto r = std::string(replacement.data(), replacement.length());
-		replaceAllImpl(ret, m, r, count);
+		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -919,7 +920,7 @@ struct Strings final {
 		std::u32string ret(input);
 		auto m = std::u32string(match.data(), match.length());
 		auto r = std::u32string(replacement.data(), replacement.length());
-		replaceAllImpl(ret, m, r, count);
+		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -1374,50 +1375,14 @@ struct Strings final {
 	Strings(const Strings &) = delete;
 	Strings & operator = (const Strings &) = delete;
 
-	// Generic implementation of non-regex split methods.
-	private: template <typename CharT,
-	                   typename ... T,
-	                   template <typename ...> class StringT,
-	                   typename MatchT,
-	                   typename ReplacementT>
-	static void replaceAllImpl(StringT<CharT, T ...> & input,
-	                           const MatchT & match,
-	                           const ReplacementT & replacement,
-	                           size_t * count) {
-		const size_t matchLength = length(match);
-		const size_t replacementLength = length(replacement);
-		size_t pos = 0;
-
-		if (count) {
-			*count = 0;
-		}
-
-		while (true) {
-			pos = input.find(match, pos);
-
-			if (pos == StringT<CharT, T ...>::npos) {
-				break;
-			}
-
-			input.erase(pos, matchLength);
-			input.insert(pos, replacement);
-
-			if (count) {
-				++*count;
-			}
-
-			pos += replacementLength;
-		}
-	}
-
 	private: template <typename CharT>
 	static std::vector<std::basic_string_view<CharT>> splitImpl(std::basic_string_view<CharT> input,
 	                                                            std::basic_string_view<CharT> delimiter,
 	                                                            bool compress = true) {
 		std::vector<std::basic_string_view<CharT>> elements;
-		const size_t delimiterLength = length(delimiter);
+		const size_t delimiterLength = Balau::Util::Impl::length(delimiter);
 
-		if (length(delimiter) == 0) {
+		if (Balau::Util::Impl::length(delimiter) == 0) {
 			elements.emplace_back(input.data(), input.length());
 			return elements;
 		}
@@ -1451,7 +1416,7 @@ struct Strings final {
 	static bool delimiterFound(const StringT<CharT, T ...> & input, size_t currentIndex, const DelimiterT & delimiter) {
 		size_t inputIndex = currentIndex;
 		size_t delimiterIndex = 0;
-		const size_t delimiterLength = length(delimiter);
+		const size_t delimiterLength = Balau::Util::Impl::length(delimiter);
 
 		while (inputIndex < input.length() && delimiterIndex < delimiterLength) {
 			if (input[inputIndex] != delimiter[delimiterIndex]) {
@@ -1463,14 +1428,6 @@ struct Strings final {
 		}
 
 		return delimiterIndex == delimiterLength;
-	}
-
-	private: template <typename StringT> static size_t length(const StringT & str) {
-		return str.length();
-	}
-
-	private: template <typename CharT> static size_t length(const CharT * str) {
-		return std::char_traits<CharT>::length(str);
 	}
 
 	private: template <typename CharT, typename AllocatorT> static auto begin(const std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> & str) {
@@ -1490,7 +1447,7 @@ struct Strings final {
 	}
 
 	private: template <typename CharT> static auto end(const CharT * str) {
-		return str + length(str);
+		return str + Balau::Util::Impl::length(str);
 	}
 
 	private: template <typename CharT> static auto end(std::basic_string_view<CharT> str) {

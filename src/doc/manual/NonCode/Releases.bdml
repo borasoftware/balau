@@ -44,7 +44,8 @@
 			<entry>changed BALAU_ENABLE_CURL option to default on;</entry>
 			<entry>relaxed required Boost version to allow all Boost versions from 1.61.0 onwards (disables HTTP components for Boost &lt; 1.68.0);</entry>
 			<entry>new injector get methods that supply a default value via a supplied function;</entry>
-			<entry>Maven based build, test, and assembly using Balau Maven plugins.</entry>
+			<entry>Maven based build, test, and assembly using Balau Maven plugins;</entry>
+			<entry>new "isA" test assertion.</entry>
 		</bullets>
 
 		<h1>V2019.6.1</h1>

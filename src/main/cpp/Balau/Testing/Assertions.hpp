@@ -143,6 +143,104 @@ inline void assertThatNP(const A & actual, const ExpectedValue<E, C, V, F> & exp
 }
 
 ///
+/// Assert that the actual value's type is castable to the supplied one.
+///
+/// Print the supplied failure message on assertion failure.
+///
+template <typename A, typename T>
+inline void assertThat(const SourceCodeLocation & location, const std::string & failMessage, const A & actual, const IsAExpectation<T> & ) {
+	if (!dynamic_cast<const T *>(&actual)) {
+		ThrowBalauException(
+			  Exception::AssertionException
+			, toString(location) + " - " + failMessage + "\nIncompatible types: " + boost::core::demangle(typeid(actual).name()) + " is not a " + boost::core::demangle(typeid(T).name())
+		);
+	}
+}
+
+///
+/// Assert that the actual value's type is castable to the supplied one.
+///
+/// Print the supplied failure message on assertion failure.
+///
+template <typename A, typename T>
+inline void assertThat(const std::string & failMessage, const A & actual, const IsAExpectation<T> & ) {
+	if (!dynamic_cast<const T *>(&actual)) {
+		ThrowBalauException(
+			  Exception::AssertionException
+			, failMessage + "\nIncompatible types: " + boost::core::demangle(typeid(actual).name()) + " is not a " + boost::core::demangle(typeid(T).name())
+		);
+	}
+}
+
+///
+/// Assert that the actual value's type is castable to the supplied one.
+///
+template <typename A, typename T>
+inline void assertThat(const SourceCodeLocation & location, const A & actual, const IsAExpectation<T> & expected) {
+	assertThat(location, "", actual, expected);
+}
+
+///
+/// Assert that the actual value's type is castable to the supplied one.
+///
+template <typename A, typename T>
+inline void assertThat(const A & actual, const IsAExpectation<T> & expected) {
+	assertThat("", actual, expected);
+}
+
+///
+/// Assertion without printing a failure rendering.
+///
+/// Print the supplied failure message on assertion failure.
+///
+/// Best to use this one if the data types are huge, otherwise a great deal of
+/// logging will be generated on assertion failure.
+///
+template <typename A, typename T>
+inline void assertThatNP(const SourceCodeLocation & location, const std::string & failMessage, const A & actual, const IsAExpectation<T> & ) {
+	if (!dynamic_cast<const T *>(&actual)) {
+		ThrowBalauException(Exception::AssertionException, toString(location) + " - " + failMessage + "\n");
+	}
+}
+
+///
+/// Assertion without printing a failure rendering.
+///
+/// Print the supplied failure message on assertion failure.
+///
+/// Best to use this one if the data types are huge, otherwise a great deal of
+/// logging will be generated on assertion failure.
+///
+template <typename A, typename T>
+inline void assertThatNP(const std::string & failMessage, const A & actual, const IsAExpectation<T> & ) {
+	if (!dynamic_cast<const T *>(&actual)) {
+		ThrowBalauException(Exception::AssertionException, failMessage + "\n");
+	}
+}
+
+///
+/// Assertion without printing a failure rendering.
+///
+/// Best to use this one if the data types are huge, otherwise a great deal of
+/// logging will be generated on assertion failure.
+///
+template <typename A, typename T>
+inline void assertThatNP(const SourceCodeLocation & location, const A & actual, const IsAExpectation<T> & expected) {
+	assertThatNP(location, "", actual, expected);
+}
+
+///
+/// Assertion without printing a failure rendering.
+///
+/// Best to use this one if the data types are huge, otherwise a great deal of
+/// logging will be generated on assertion failure.
+///
+template <typename A, typename T>
+inline void assertThatNP(const A & actual, const IsAExpectation<T> & expected) {
+	assertThatNP("", actual, expected);
+}
+
+///
 /// Assert that the supplied function throws the supplied exception example instance.
 ///
 /// The standard equality assertion is used for comparison.

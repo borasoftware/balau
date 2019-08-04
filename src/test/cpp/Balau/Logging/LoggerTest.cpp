@@ -287,7 +287,7 @@ void LoggerTest::globalNamespace() {
 	Resource::File logFile = configureLoggerForTest("globalNamespace", configurationText);
 	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
 
-	globalLogger.warn("This is a test message with parameter {}", 2);
+	Logger::globalLogger().warn("This is a test message with parameter {}", 2);
 
 	Logger::flushAll();
 	const std::string actual = Files::readToString(logFile);
@@ -359,7 +359,7 @@ void LoggerTest::loggingWithLineAndFileName() {
 
 	Resource::File logFile = configureLoggerForTest("loggingWithLineAndFileName", configurationText);
 	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
-	Logger & log1 = globalLogger;
+	Logger & log1 = Logger::globalLogger();
 	Logger & log2 = Logger::getLogger("com.borasoftware");
 
 	log1.info(SourceCodeLocation(__FILE__, __LINE__), "hello {}", "mike");
@@ -392,7 +392,7 @@ void LoggerTest::functionBasedLogging() {
 
 	Resource::File logFile = configureLoggerForTest("functionBasedLogging", configurationText);
 	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
-	Logger & log1 = globalLogger;
+	Logger & log1 = Logger::globalLogger();
 
 	log1.info([] () { return "hello bob"; });
 
@@ -431,7 +431,7 @@ void LoggerTest::flushing() {
 
 	Resource::File logFile = configureLoggerForTest("flushing", configurationText);
 	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
-	Logger & log1 = globalLogger;
+	Logger & log1 = Logger::globalLogger();
 
 	log1.info([] () { return "hello bob"; });
 
@@ -471,7 +471,7 @@ void LoggerTest::customLoggingStream() {
 	Resource::File logFile = configureLoggerForTest("customLoggingStream", configurationText);
 	OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
 
-	Logger & log1 = globalLogger;
+	Logger & log1 = Logger::globalLogger();
 	Logger & log2 = Logger::getLogger("com.borasoftware");
 
 	BalauLogInfo(log1, "hello {}", "bob");
