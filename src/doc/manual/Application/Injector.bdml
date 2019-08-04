@@ -1082,6 +1082,8 @@
 
 		<para>An additional feature of the injector is the ability to register post-construction and pre-destruction callbacks. Registered callbacks will then be called by the injector, either directly after injector creation (for post-construction callbacks), or immediately before injector destruction (for pre-destruction callbacks).</para>
 
+		<h2>Standard callbacks</h2>
+
 		<para>Registering callbacks provides a convenient way to execute program logic immediate after injector creation and/or immediately before injector destruction. Post-construction and pre-destruction callbacks are also useful for the explicit management of cyclic dependencies between singletons (discussed in the next section).</para>
 
 		<para>The only restriction to the program logic that may be run within a callback is that pre-destruction callbacks must be <emph>noexcept(true)</emph>. This is because the pre-destruction callbacks are run from within the injector desctructor.</para>
@@ -1108,9 +1110,27 @@
 
 		<para>Post-construct callbacks are supplied with a reference to the injector. Pre-destruction callbacks are not. Although pre-destruction callbacks must be <emph>noexcept(true)</emph>, the pre-destruction function signature does not contain <emph>noexcept(true)</emph>, as this is not yet handled by <emph>std::function</emph> in C++17. Despite this, functions registered as pre-destruction callbacks must nevertheless be <emph>noexcept(true)</emph>.</para>
 
-		<para></para>
+		<h2>Singleton callback</h2>
 
-		<para></para>
+		<graphic position="right" url="../resources/images/StaticSingletons.png" width="70mm" />
+
+		<para>The static singleton call convenience method provides registration of shared pointer containers that will be managed by the injector post-construction and pre-destruction. This method allows a singleton to be statically available in the application, between the post-construction and pre-destruction exeuction points.</para>
+
+		<para>The signature of the static singleton registration method is as follows.</para>
+
+		<code lang="C++">
+			// Static singleton pointer registration.
+			template &lt;typename T&gt; void registerStaticSingleton(
+				  std::shared_ptr&lt;T&gt; * ptrPtr
+				, std::string_view name = std::string_view()
+			) const;
+		</code>
+
+		<para>The diagram on the right illustrates the region of validity for static singleton pointers registered via the <emph>registerStaticSingleton</emph> injector method. The execution time-line travels from top to bottom. Static singleton pointers are not guaranteed to be valid during binding creation or binding destruction. Dereferencing them directly or indirectly from within the constructors of other injectables may thus result in segmentation faults, depending on the non-deterministic order of the construction of singletons.</para>
+
+		<para>In order to ensure that the static singleton registrations methods are called during inject construction, singleton bindings containing static singleton registration calls must be eager, or the singletons must be dependencies of eager singletons. Otherwise, the singletons may not be constructed during binding construction and the registration callbacks will never be executed.</para>
+
+		<para>Static singleton registration is a feature that is aimed solely for developers that are rearchitecting a codebase with hard-wired singletons to one that uses dependency injection. Use of static singleton registration is not recommended for greenfield projects. Migration away from static singleton registration should also be planned for rearchitected codebases that have been moved to a dependency injection architecture.</para>
 
 		<h1>Cyclic dependencies</h1>
 

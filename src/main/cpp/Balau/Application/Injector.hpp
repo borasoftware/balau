@@ -48,8 +48,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param conf the runtime supplied InjectorConfiguration objects
 	/// @return a shared pointer to the newly created injector
 	///
-	public: template <typename ... Conf>
-	static std::shared_ptr<Injector> create(const Conf & ... conf) {
+	public: template <typename ... Conf> static std::shared_ptr<Injector> create(const Conf & ... conf) {
 		return createInjector(std::shared_ptr<Injector>(), conf ...);
 	}
 
@@ -63,6 +62,56 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		return createInjector(std::shared_ptr<Injector>(), conf);
 	}
 
+	///
+	/// Register with the injector a callback that will be called by the injector at the end of construction.
+	///
+	/// In order to use this method, inject the injector into the injectable via a
+	/// weak pointer and call the method.
+	///
+	/// @param call the callback
+	///
+	public: void registerPostConstructionCall(const std::function<void (const Injector &)> & call) const {
+		registerPostConstructionCallImpl(call);
+	}
+
+	///
+	/// Register with the injector a callback that will be called in the injector's destructor, before the bindings are deleted.
+	///
+	/// Although pre-destruction callbacks must be noexcept(true), the pre-destruction
+	/// function signature does not contain noexcept(true), as this is not yet handled
+	/// by std::function in C++17. Despite this, functions registered as pre-destruction
+	/// callbacks must nevertheless be noexcept(true).
+	///
+	/// In order to use this method, inject the injector into the injectable via a
+	/// weak pointer and call the method.
+	///
+	/// @param call the callback
+	///
+	public: void registerPreDestructionCall(const std::function<void ()> & call) const {
+		registerPreDestructionCallImpl(call);
+	}
+
+	///
+	/// Register a static singleton pointer that the injector will set up post-construction and invalidate pre-destruction.
+	///
+	/// The static pointer will be valid immediately after injection construction
+	/// up to the start of injector destruction.
+	///
+	/// This call is a convenience method for calling the registerPostConstructionCall
+	/// and registerPreDestructionCall methods in order to set up and tear down the static
+	/// singleton pointer.
+	///
+	/// In order to use this method, inject the injector into the injectable via a
+	/// weak pointer and call the method.
+	///
+	/// @param conf the runtime supplied InjectorConfiguration objects
+	/// @return a shared pointer to the newly created injector
+	///
+	public: template <typename T> void registerStaticSingleton(std::shared_ptr<T> * ptrPtr, std::string_view name = std::string_view()) const {
+		registerPostConstructionCallImpl([ptrPtr, name] (const Injector & injector) { *ptrPtr  = injector.getShared<T>(name); });
+		registerPreDestructionCallImpl([ptrPtr] () { ptrPtr->reset(); });
+	}
+
 	///////////////////////// Child injector creation /////////////////////////
 
 	///
@@ -72,8 +121,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param conf the runtime supplied InjectorConfiguration objects
 	/// @return a shared pointer to the newly created child injector
 	///
-	public: template <typename ... Conf>
-	std::shared_ptr<Injector> createChild(const Conf & ... conf) const {
+	public: template <typename ... Conf> std::shared_ptr<Injector> createChild(const Conf & ... conf) const {
 		return createInjector(shared_from_this(), conf ...);
 	}
 
@@ -1374,6 +1422,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		Impl::InjectorLogger::log.info(injector->printBindings(false).c_str());
+
+		for (auto f : injector->postConstructionCalls) {
+			f(*injector);
+		}
+
 		return injector;
 	}
 
@@ -1389,18 +1442,23 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		Impl::InjectorLogger::log.info(injector->printBindings(false).c_str());
+
+		for (auto f : injector->postConstructionCalls) {
+			f(*injector);
+		}
+
 		return injector;
 	}
 
 	// Main constructor.
 	private: template <typename ... Conf>
-	explicit Injector(const std::shared_ptr<const Injector> & parent_, const Conf & ... conf)
-		: parent(parent_)
+	explicit Injector(std::shared_ptr<const Injector> parent_, const Conf & ... conf)
+		: parent(std::move(parent_))
 		, bindings(createBindings(conf ...)) {}
 
 	// Main constructor.
-	private: Injector(const std::shared_ptr<const Injector> & parent_, const std::vector<std::shared_ptr<InjectorConfiguration>> & conf)
-		: parent(parent_)
+	private: Injector(std::shared_ptr<const Injector> parent_, const std::vector<std::shared_ptr<InjectorConfiguration>> & conf)
+		: parent(std::move(parent_))
 		, bindings(createBindings(conf)) {}
 
 	private: class PrototypeConstruction {};
@@ -1412,6 +1470,12 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	                  const std::shared_ptr<const Injector> & prototype)
 		: parent(std::move(parent_))
 		, bindings(prototype->bindings) {}
+
+	public: ~Injector() {
+		for (auto f : preDestructionCalls) {
+			f();
+		}
+	}
 
 	private: template <typename ... Conf>
 	static std::shared_ptr<Impl::BindingMap> createBindings(const Conf & ... conf) {
@@ -1444,6 +1508,16 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		return bindings;
+	}
+
+	private: void registerPostConstructionCallImpl(const std::function<void (const Injector &)> & call) const {
+		std::lock_guard<std::mutex> lock(callVectorSync);
+		postConstructionCalls.push_back(call);
+	}
+
+	private: void registerPreDestructionCallImpl(const std::function<void ()> & call) const {
+		std::lock_guard<std::mutex> lock(callVectorSync);
+		preDestructionCalls.push_back(call);
 	}
 
 	private: template <typename ... Conf>
@@ -1512,8 +1586,14 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 	}
 
+	// Main injector state.
 	private: const std::shared_ptr<const Injector> parent;
 	private: const std::shared_ptr<const Impl::BindingMap> bindings;
+
+	// Data structures for callbacks.
+	private: mutable std::vector<std::function<void (const Injector& )>> postConstructionCalls;
+	private: mutable std::vector<std::function<void ()>> preDestructionCalls;
+	private: mutable std::mutex callVectorSync;
 };
 
 } // namespace Balau
