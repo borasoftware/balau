@@ -393,10 +393,22 @@ template <typename T> class DependencyGraph {
 	/// Does the dependency graph have any cycles?
 	///
 	public: bool hasCycles() const {
-		bool hasCycle = false;
-		CycleDetector cycleDetector(hasCycle);
+		std::vector<std::pair<T, T>> cycleEdges;
+		CycleDetector cycleDetector(cycleEdges);
 		boost::depth_first_search(graph, boost::visitor(cycleDetector));
-		return hasCycle;
+		return !cycleEdges.empty();
+	}
+
+	///
+	/// Does the dependency graph have any cycles?
+	///
+	/// @param cycleEdges any edges that are found to have cycles are added to this vector
+	///
+	public: bool hasCycles(std::vector<std::pair<T, T>> & cycleEdges) const {
+		const auto sz = cycleEdges.size();
+		CycleDetector cycleDetector(cycleEdges);
+		boost::depth_first_search(graph, boost::visitor(cycleDetector));
+		return cycleEdges.size() > sz;
 	}
 
 	///
@@ -477,13 +489,15 @@ template <typename T> class DependencyGraph {
 	////////////////////////// Private implementation /////////////////////////
 
 	private: struct CycleDetector : public boost::dfs_visitor<> {
-		explicit CycleDetector(bool & hasCycle_) : hasCycle(hasCycle_) {}
+		explicit CycleDetector(std::vector<std::pair<T, T>> & cycleEdges_) : cycleEdges(cycleEdges_) {}
 
-		template <class Edge, class Graph> void back_edge(Edge, Graph &) {
-			hasCycle = true;
+		template <class Edge, class Graph> void back_edge(Edge e, Graph & g) {
+			T s = g[source(e, g)];
+			T t = g[target(e, g)];
+			cycleEdges.emplace_back(std::pair<T, T>(s, t));
 		}
 
-		protected: bool & hasCycle;
+		private: std::vector<std::pair<T, T>> & cycleEdges;
 	};
 
 	// This would not be required if the graph library had reverse vertex

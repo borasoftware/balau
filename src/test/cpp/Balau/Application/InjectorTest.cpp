@@ -1080,8 +1080,13 @@ void InjectorTest::sharedCycleChecks() {
 	};
 
 	AssertThat(
-		[] () {
-			Injector::create(Configuration1());
+		[this] () {
+			try {
+				Injector::create(Configuration1());
+			} catch (const Exception::BalauException & e) {
+				logLine(e.message);
+				throw;
+			}
 		}
 		, throws<Exception::CyclicDependencyException>()
 	);
@@ -1275,6 +1280,29 @@ void InjectorTest::headerBodyMacros() {
 	AssertThat(*aTD,  isA<HBDerivedTD>());
 	AssertThat(*aTN,  isA<HBDerivedTN>());
 	AssertThat(*aTND, isA<HBDerivedTND>());
+}
+
+void InjectorTest::printBindingsDetailed() {
+	class Configuration : public ApplicationConfiguration {
+		public: void configure() const override {
+			bind<HBBase1 >().toSingleton<HBDerived>();
+			bind<HBBase2 >().toSingleton<HBDerivedD>();
+			bind<HBBase1 >("ND").toSingleton<HBDerivedN>();
+			bind<HBBase2 >("ND").toSingleton<HBDerivedND>();
+			bind<HBBaseC1>().toSingleton<HBDerivedC>();
+			bind<HBBaseC2>().toSingleton<HBDerivedCD>();
+			bind<HBBaseC1>("ND").toSingleton<HBDerivedCN>();
+			bind<HBBaseC2>("ND").toSingleton<HBDerivedCND>();
+			bind<HBBaseT1>().toSingleton<HBDerivedT>();
+			bind<HBBaseT2>().toSingleton<HBDerivedTD>();
+			bind<HBBaseT1>("ND").toSingleton<HBDerivedTN>();
+			bind<HBBaseT2>("ND").toSingleton<HBDerivedTND>();
+		}
+	};
+
+	auto injector = Injector::create(Configuration());
+
+	logLine(injector->printBindingsDetailed());
 }
 
 } // namespace Balau

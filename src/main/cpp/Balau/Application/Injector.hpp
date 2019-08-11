@@ -281,6 +281,21 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		return performPrintBindings(printAncestor);
 	}
 
+	///
+	/// Print detailed bindings of this injector and the injector's ancestors.
+	///
+	/// This version of the print functions prints the bindings and their dependencies.
+	/// This can be useful for examining cyclic dependency issues.
+	///
+	/// The bindings will be printed to the "balau.injector" logging namespace at info level.
+	///
+	/// @param printAncestor print ancestor bindings as well (default = false)
+	/// @return a string containing a the binding printout
+	///
+	public: std::string printBindingsDetailed() const {
+		return performPrintBindingsDetailed();
+	}
+
 	/////////////////// Instantiation using full return type //////////////////
 
 	///
@@ -1423,7 +1438,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		Impl::InjectorLogger::log.info(injector->printBindings(false).c_str());
 
-		for (auto f : injector->postConstructionCalls) {
+		for (const auto & f : injector->postConstructionCalls) {
 			f(*injector);
 		}
 
@@ -1443,7 +1458,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		Impl::InjectorLogger::log.info(injector->printBindings(false).c_str());
 
-		for (auto f : injector->postConstructionCalls) {
+		for (const auto & f : injector->postConstructionCalls) {
 			f(*injector);
 		}
 
@@ -1472,7 +1487,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		, bindings(prototype->bindings) {}
 
 	public: ~Injector() {
-		for (auto f : preDestructionCalls) {
+		for (const auto & f : preDestructionCalls) {
 			f();
 		}
 	}
@@ -1563,8 +1578,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 		graph.logGraph(LoggingLevel::TRACE, "Injector dependency graph");
 
-		if (graph.hasCycles()) {
-			ThrowBalauException(Exception::CyclicDependencyException, performPrintBindings(true));
+		std::vector<std::pair<Impl::BindingKey, Impl::BindingKey>> cycleEdges;
+
+		if (graph.hasCycles(cycleEdges)) {
+			ThrowBalauException(Exception::CyclicDependencyException, "Cycle edges found:\n" + printCyclicEdges(cycleEdges));
 		}
 	}
 
@@ -1584,6 +1601,40 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		if (pa && parent) {
 			parent->performPrintBindings(builder, prefix, pa);
 		}
+	}
+
+	private: std::string performPrintBindingsDetailed() const {
+		std::ostringstream builder;
+		std::string_view prefix;
+		performPrintBindingsDetailed(builder, prefix);
+		return builder.str();
+	}
+
+	private: void performPrintBindingsDetailed(std::ostream & builder, std::string_view & prefix) const {
+		for (const auto & binding : (*bindings)) {
+			builder << prefix << Impl::toString(binding.key);
+			prefix = "\n";
+
+			for (const auto & dependency : binding.value->getDependencyKeys()) {
+				builder << prefix << "    " << Impl::toString(dependency);
+			}
+		}
+
+		if (parent) {
+			parent->performPrintBindingsDetailed(builder, prefix);
+		}
+	}
+
+	private: static std::string printCyclicEdges(const std::vector<std::pair<Impl::BindingKey, Impl::BindingKey>> & cycleEdges) {
+		std::ostringstream builder;
+		std::string_view prefix;
+
+		for (const auto & cycleEdge : cycleEdges) {
+			builder << prefix << Impl::toString(cycleEdge.first) << " --> " << Impl::toString(cycleEdge.second);
+			prefix = "\n";
+		}
+
+		return builder.str();
 	}
 
 	// Main injector state.
