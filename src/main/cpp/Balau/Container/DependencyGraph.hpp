@@ -452,7 +452,7 @@ template <typename T> class DependencyGraph {
 	/// is enabled for the supplied logging level.
 	///
 	public: void logGraph(LoggingLevel level, const char * title) {
-		if (!Impl::ContainerLogger::log.enabled(level)) {
+		if (!Impl::ContainerLogger::log().enabled(level)) {
 			return;
 		}
 
@@ -483,7 +483,7 @@ template <typename T> class DependencyGraph {
 			}
 		}
 
-		Impl::ContainerLogger::log.trace(builder.str().c_str());
+		Impl::ContainerLogger::log().trace(builder.str().c_str());
 	}
 
 	////////////////////////// Private implementation /////////////////////////

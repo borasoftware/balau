@@ -645,6 +645,32 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		return GetInstance<std::shared_ptr<BaseT>>(this).get(name, std::shared_ptr<BaseT>());
 	}
 
+	/////////////////////////// Singleton iteration ///////////////////////////
+
+	///
+	/// For all singleton bindings of the specified type, call the supplied function with the binding's singleton object.
+	///
+	/// @tparam BaseT the base type of the shared binding
+	/// @param func the function to call
+	/// @param includeThreadLocal if true then thread local bindings will be include (default is false)
+	///
+	public: template <typename BaseT>
+	void iterate(const std::function<void (std::shared_ptr<BaseT>)> & func, bool includeThreadLocal = false) const {
+		iterateOverShared<BaseT>(func, includeThreadLocal);
+	}
+
+	///
+	/// For all singleton bindings of the specified type, call the supplied function with the binding's singleton object.
+	///
+	/// @tparam BaseT the base type of the shared binding
+	/// @param func the function to call
+	/// @param includeThreadLocal if true then thread local bindings will be include (default is false)
+	///
+	public: template <typename BaseT>
+	void iterate(const std::function<void (std::shared_ptr<const BaseT>)> & func, bool includeThreadLocal = false) const {
+		iterateOverShared<BaseT>(func, includeThreadLocal);
+	}
+
 	///////////////////////// Private implementation //////////////////////////
 
 	//
@@ -1377,6 +1403,32 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 	}
 
+	private: template <typename BaseT>
+	void iterateOverShared(const std::function<void (std::shared_ptr<BaseT>)> & func, bool includeThreadLocal = false) {
+		const auto typeIndex = std::type_index(typeid(BaseT));
+
+		for (const auto & binding : (*bindings)) {
+			if (binding.key.getType() == typeIndex) {
+				if (includeThreadLocal || !binding.value->isThreadLocalBinding()) {
+					func(getSharedInstance<BaseT>(binding.value));
+				}
+			}
+		}
+	}
+
+	private: template <typename BaseT>
+	void iterateOverShared(const std::function<void (std::shared_ptr<const BaseT>)> & func, bool includeThreadLocal = false) {
+		const auto typeIndex = std::type_index(typeid(BaseT));
+
+		for (const auto & binding : (*bindings)) {
+			if (binding.key.getType() == typeIndex) {
+				if (includeThreadLocal || !binding.value->isThreadLocalBinding()) {
+					func(getSharedInstance<BaseT>(binding.value));
+				}
+			}
+		}
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 
 	// Create a non-polymorphic value from the supplied value, prototype, or value provider
@@ -1436,7 +1488,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			injector->bindings->get(key)->instantiateIfEager(*injector);
 		}
 
-		Impl::InjectorLogger::log.info(injector->printBindings(false).c_str());
+		Impl::InjectorLogger::log().info(injector->printBindings(false).c_str());
 
 		for (const auto & f : injector->postConstructionCalls) {
 			f(*injector);
@@ -1456,7 +1508,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			injector->bindings->get(key)->instantiateIfEager(*injector);
 		}
 
-		Impl::InjectorLogger::log.info(injector->printBindings(false).c_str());
+		Impl::InjectorLogger::log().info(injector->printBindings(false).c_str());
 
 		for (const auto & f : injector->postConstructionCalls) {
 			f(*injector);
@@ -1494,14 +1546,32 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 	private: template <typename ... Conf>
 	static std::shared_ptr<Impl::BindingMap> createBindings(const Conf & ... conf) {
+		std::vector<const InjectorConfiguration *> extraConfiguration;
+
 		auto builders = Util::Memory::makeSharedV<InjectorConfiguration, Impl::BindingBuilderBase>(
-			[] (const InjectorConfiguration & conf) { return conf.execute(); }, conf ...
+			[&extraConfiguration] (const InjectorConfiguration & conf) {
+				auto b = conf.execute();
+				auto extra = conf.getExtraConfiguration();
+				extraConfiguration.insert(extraConfiguration.end(), extra.begin(), extra.end());
+				return b;
+			}
+			, conf ...
 		);
+
+		for (const auto & c : extraConfiguration) {
+			Util::Vectors::append(builders, c->execute());
+		}
 
 		auto bindings = std::make_shared<Impl::BindingMap>();
 
 		for (auto & builder : builders) {
 			Impl::BindingKey key(builder->key);
+
+			// Check for duplicates.
+			if (bindings->hasBinding(key)) {
+				ThrowBalauException(Exception::DuplicateBindingException, key);
+			}
+
 			bindings->put(key, builder->build());
 		}
 
@@ -1515,10 +1585,22 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			Util::Vectors::append(builders, c->execute());
 		}
 
+		for (const auto & c : conf) {
+			for (const auto * c2 : c->getExtraConfiguration()) {
+				Util::Vectors::append(builders, c2->execute());
+			}
+		}
+
 		auto bindings = std::make_shared<Impl::BindingMap>();
 
 		for (auto & builder : builders) {
 			Impl::BindingKey key(builder->key);
+
+			// Check for duplicates.
+			if (bindings->hasBinding(key)) {
+				ThrowBalauException(Exception::DuplicateBindingException, key);
+			}
+
 			bindings->put(key, builder->build());
 		}
 
@@ -1526,12 +1608,12 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	}
 
 	private: void registerPostConstructionCallImpl(const std::function<void (const Injector &)> & call) const {
-		std::lock_guard<std::mutex> lock(callVectorSync);
+		std::lock_guard<std::recursive_mutex> lock(callSync);
 		postConstructionCalls.push_back(call);
 	}
 
 	private: void registerPreDestructionCallImpl(const std::function<void ()> & call) const {
-		std::lock_guard<std::mutex> lock(callVectorSync);
+		std::lock_guard<std::recursive_mutex> lock(callSync);
 		preDestructionCalls.push_back(call);
 	}
 
@@ -1642,9 +1724,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	private: const std::shared_ptr<const Impl::BindingMap> bindings;
 
 	// Data structures for callbacks.
-	private: mutable std::vector<std::function<void (const Injector& )>> postConstructionCalls;
-	private: mutable std::vector<std::function<void ()>> preDestructionCalls;
-	private: mutable std::mutex callVectorSync;
+	private: mutable std::list<std::function<void (const Injector& )>> postConstructionCalls;
+	private: mutable std::list<std::function<void ()>> preDestructionCalls;
+	private: mutable std::recursive_mutex callSync;
 };
 
 } // namespace Balau

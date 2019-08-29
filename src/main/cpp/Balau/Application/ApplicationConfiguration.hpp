@@ -40,11 +40,19 @@ class ApplicationConfiguration : public InjectorConfiguration {
 		return Bind<BaseT>(*this).bind(name);
 	}
 
+	protected: void addConfiguration(const ApplicationConfiguration & conf) const {
+		extraConfiguration.push_back(&conf);
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> build() const override {
 		// Move the vector because it is not used anymore after this call from the injector.
 		return std::move(builders);
+	}
+
+	private: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
+		return extraConfiguration;
 	}
 
 	private: template <typename T> struct Bind {
@@ -86,6 +94,7 @@ class ApplicationConfiguration : public InjectorConfiguration {
 	};
 
 	private: mutable std::vector<std::shared_ptr<Impl::BindingBuilderBase>> builders;
+	private: mutable std::vector<const InjectorConfiguration *> extraConfiguration;
 };
 
 } // namespace Balau

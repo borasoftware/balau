@@ -46,7 +46,7 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	///
 	/// A new instance of the type will be created each time a value is requested.
 	///
-	public: template <typename ValueT = BaseT> void toValue() {
+	public: void toValue() {
 		warnInvalidConstQualifier(Impl::BindingMetaType::Value);
 		using U = typename std::remove_const<BaseT>::type;
 		using T = Impl::BindingKeyType<Impl::BindingMetaType::Value, U>;
@@ -200,7 +200,17 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	///
 	public: template <typename DerivedT> void toSingleton() {
 		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
-		supplier = std::unique_ptr<BindingSupplier>(new LazySingletonBindingSupplier<DerivedT>());
+		supplier = std::unique_ptr<BindingSupplier>(new LazySingletonBindingSupplier<DerivedT, std::default_delete<DerivedT>>());
+	}
+
+	///
+	/// Bind an interface to a concrete singleton type, using the supplied deleter type.
+	///
+	/// The singleton will be instantiated lazily.
+	///
+	public: template <typename DerivedT, typename DeleterT> void toSingleton() {
+		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
+		supplier = std::unique_ptr<BindingSupplier>(new LazySingletonBindingSupplier<DerivedT, DeleterT>());
 	}
 
 	///
@@ -210,7 +220,7 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	///
 	public: void toSingleton() {
 		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
-		supplier = std::unique_ptr<BindingSupplier>(new LazySingletonBindingSupplier<BaseT>());
+		supplier = std::unique_ptr<BindingSupplier>(new LazySingletonBindingSupplier<BaseT, std::default_delete<BaseT>>());
 	}
 
 	///
@@ -241,6 +251,20 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	}
 
 	///
+	/// Bind an interface to a specific instance, via a pointer container type syntax and using the supplied deleter type.
+	///
+	/// The injector takes ownership of the supplied pointer.
+	///
+	/// Do not use this binding call in order to bind an owned raw pointer,
+	/// as such a call will result in a defective application. Only use this
+	/// call as if you are initialising a pointer container with a new object.
+	///
+	public: template <typename DeleterT> void toSingleton(BaseT * instance) {
+		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
+		toSingleton(std::shared_ptr<BaseT>(instance, DeleterT()));
+	}
+
+	///
 	/// Bind an interface to a singleton provider class.
 	///
 	/// The provider will be called once when the singleton is first requested.
@@ -263,13 +287,33 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	}
 
 	///
+	/// Bind an interface to a singleton provider function.
+	///
+	/// The provider will be called once when the singleton is first requested.
+	///
+	public: void toSingletonProvider(std::function<std::shared_ptr<BaseT> ()> & provider) {
+		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
+		supplier = std::unique_ptr<BindingSupplier>(new ProvidingFunctionSingletonBindingSupplier(provider));
+	}
+
+	///
 	/// Bind an interface to a concrete singleton type.
 	///
 	/// The singleton will be instantiated eagerly.
 	///
 	public: template <typename DerivedT> void toEagerSingleton() {
 		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
-		supplier = std::unique_ptr<BindingSupplier>(new EagerSingletonBindingSupplier<DerivedT>());
+		supplier = std::unique_ptr<BindingSupplier>(new EagerSingletonBindingSupplier<DerivedT, std::default_delete<DerivedT>>());
+	}
+
+	///
+	/// Bind an interface to a concrete singleton type, using the supplied deleter type.
+	///
+	/// The singleton will be instantiated eagerly.
+	///
+	public: template <typename DerivedT, typename DeleterT> void toEagerSingleton() {
+		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
+		supplier = std::unique_ptr<BindingSupplier>(new EagerSingletonBindingSupplier<DerivedT, DeleterT>());
 	}
 
 	///
@@ -279,7 +323,7 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	///
 	public: void toEagerSingleton() {
 		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
-		supplier = std::unique_ptr<BindingSupplier>(new EagerSingletonBindingSupplier<BaseT>());
+		supplier = std::unique_ptr<BindingSupplier>(new EagerSingletonBindingSupplier<BaseT, std::default_delete<BaseT>>());
 	}
 
 	////////////////////////// Private implementation /////////////////////////
@@ -334,7 +378,7 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	};
 
 	private: template <typename ProviderT> class ProvidingClassInstanceValueBindingSupplier : public BindingSupplier {
-		public: ProvidingClassInstanceValueBindingSupplier(std::shared_ptr<ProviderT> && provider_)
+		public: explicit ProvidingClassInstanceValueBindingSupplier(std::shared_ptr<ProviderT> && provider_) noexcept
 			: provider(std::move(provider_)) {}
 
 		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
@@ -389,7 +433,7 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	};
 
 	private: template <typename ProviderT> class ProvidingClassInstanceUniquePtrBindingSupplier : public BindingSupplier {
-		public: ProvidingClassInstanceUniquePtrBindingSupplier(std::shared_ptr<ProviderT> && provider_)
+		public: explicit ProvidingClassInstanceUniquePtrBindingSupplier(std::shared_ptr<ProviderT> && provider_) noexcept
 			: provider(std::move(provider_)) {}
 
 		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
@@ -431,7 +475,7 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 	};
 
 	private: template <typename ProviderT> class ProvidingClassInstanceSingletonBindingSupplier : public BindingSupplier {
-		public: ProvidingClassInstanceSingletonBindingSupplier(std::shared_ptr<ProviderT> && provider_)
+		public: explicit ProvidingClassInstanceSingletonBindingSupplier(std::shared_ptr<ProviderT> && provider_) noexcept
 			: provider(std::move(provider_)) {}
 
 		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
@@ -443,25 +487,38 @@ template <typename BaseT> class BindingBuilder final : public Impl::BindingBuild
 		private: std::shared_ptr<ProviderT> provider;
 	};
 
-	private: template <typename DerivedT> class LazySingletonBindingSupplier : public BindingSupplier {
+	private: class ProvidingFunctionSingletonBindingSupplier : public BindingSupplier {
+		public: explicit ProvidingFunctionSingletonBindingSupplier(const std::function<std::shared_ptr<BaseT> ()> & provider_) noexcept
+			: provider(provider_) {}
+
 		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
 			return std::unique_ptr<Impl::AbstractBinding>(
-				new Impl::LazySingletonBinding<BaseT, DerivedT>(std::move(key))
+				new Impl::ProvidingFunctionSingletonBinding<BaseT>(std::move(key), provider)
+			);
+		}
+
+		private: const std::function<std::shared_ptr<BaseT> ()> provider;
+	};
+
+	private: template <typename DerivedT, typename Deleter> class LazySingletonBindingSupplier : public BindingSupplier {
+		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
+			return std::unique_ptr<Impl::AbstractBinding>(
+				new Impl::LazySingletonBinding<BaseT, DerivedT, Deleter>(std::move(key))
 			);
 		}
 	};
 
-	private: template <typename DerivedT> class EagerSingletonBindingSupplier : public BindingSupplier {
+	private: template <typename DerivedT, typename Deleter> class EagerSingletonBindingSupplier : public BindingSupplier {
 		public: std::unique_ptr<Impl::AbstractBinding> build(Impl::BindingKey && key) const override {
 			return std::unique_ptr<Impl::AbstractBinding>(
-				new Impl::EagerSingletonBinding<BaseT, DerivedT>(std::move(key))
+				new Impl::EagerSingletonBinding<BaseT, DerivedT, Deleter>(std::move(key))
 			);
 		}
 	};
 
 	private: void warnInvalidConstQualifier(Impl::BindingMetaType metaType) {
 		if (!std::is_same<BaseT, typename std::remove_const<BaseT>::type>::value) {
-			Impl::InjectorLogger::log.warn(
+			Impl::InjectorLogger::log().warn(
 				  "{} binding key {} has been defined with a const type. This "
 				  "qualifier will be removed from the key because {} types cannot "
 				  "be const qualified. This will not affect binding semantics."

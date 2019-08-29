@@ -16,7 +16,10 @@
 namespace Balau::Impl {
 
 class InjectorLogger {
-	public: static BalauLogger log;
+	public: static BalauLogger & log() {
+		static BalauLogger instance("balau.injector");
+		return instance;
+	}
 };
 
 } // namespace Balau::Impl

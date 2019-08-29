@@ -124,6 +124,19 @@ class BindingMap {
 		ThrowBalauException(Exception::NoBindingException, key);
 	}
 
+	public: const std::unique_ptr<Impl::AbstractBinding> * find(const BindingKey & key) const {
+		auto bucketIndex = key.hashcode() % buckets.size();
+		auto & bucket = buckets[bucketIndex];
+
+		for (const auto & entry : bucket) {
+			if (entry.key == key) {
+				return &entry.value;
+			}
+		}
+
+		return nullptr;
+	}
+
 	public: const std::unique_ptr<Impl::AbstractBinding> * find(const BindingKeyView & key) const {
 		auto bucketIndex = key.hashcode() % buckets.size();
 		auto & bucket = buckets[bucketIndex];
@@ -135,6 +148,10 @@ class BindingMap {
 		}
 
 		return nullptr;
+	}
+
+	public: bool hasBinding(const BindingKey & key) const {
+		return find(key) != nullptr;
 	}
 
 	public: bool hasBinding(const BindingKeyView & key) const {

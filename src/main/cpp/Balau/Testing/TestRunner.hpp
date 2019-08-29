@@ -629,13 +629,19 @@ class TestRunner {
 			, [] (const Impl::TestResult & message) { return message.result == Impl::TestResult::Result::Failure; }
 		);
 
+		const auto errorCount = (size_t) std::count_if(
+			  testResults.begin()
+			, testResults.end()
+			, [] (const Impl::TestResult & message) { return message.result == Impl::TestResult::Result::Error; }
+		);
+
 		const auto ignoredCount = (size_t) std::count_if(
 			  testResults.begin()
 			, testResults.end()
 			, [] (const Impl::TestResult & message) { return message.result == Impl::TestResult::Result::Ignored; }
 		);
 
-		const size_t successCount = testResults.size() - ignoredCount - failureCount;
+		const size_t successCount = testResults.size() - ignoredCount - failureCount - errorCount;
 		const std::string totalCoreDuration = Impl::TestRunnerExecutor::durationStr(runner.getTotalCoreTime());
 		const std::string totalClockDuration = Impl::TestRunnerExecutor::durationStr(duration);
 		const std::string testAverageDuration = runner.getTestResults().empty() ? "n/a" : Impl::TestRunnerExecutor::durationStr(runner.getTotalCoreTime() / runner.getTestResults().size());
@@ -645,7 +651,7 @@ class TestRunner {
 		       << "\nAverage duration (test run clock time)    = " << testAverageDuration
 		       << "\nTotal duration   (application clock time) = " << totalClockDuration << "\n";
 
-		if (failureCount == 0) {
+		if (failureCount == 0 && errorCount == 0) {
 			writer << "\nALL TESTS PASSED"
 			       << "\n  tests passed:  " << Util::Strings::padLeft(::toString(successCount), 6)
 			       << "\n  tests ignored: " << Util::Strings::padLeft(::toString(ignoredCount), 6)
@@ -657,13 +663,13 @@ class TestRunner {
 			       << "\n  tests ignored: " << Util::Strings::padLeft(::toString(ignoredCount), 6)
 			       << "\n  tests failed:  " << Util::Strings::padLeft(::toString(failureCount), 6)
 			       << "\n\n"
-			       << "Failed tests:\n";
+			       << "Failed/errored tests:\n";
 
 			std::for_each(
 				  testResults.begin()
 				, testResults.end()
 				, [&tests, this] (const Impl::TestResult & message) {
-					if (message.result == Impl::TestResult::Result::Failure) {
+					if (message.result == Impl::TestResult::Result::Failure || message.result == Impl::TestResult::Result::Error) {
 						writer << "      " << tests[message.testIndex].testName << "\n";
 					}
 				}
@@ -672,7 +678,7 @@ class TestRunner {
 			writer << "\n";
 		}
 
-		return failureCount == 0;
+		return failureCount == 0 && errorCount == 0;
 	}
 
 	private: void registerTest(Impl::TestGroupBase * group,

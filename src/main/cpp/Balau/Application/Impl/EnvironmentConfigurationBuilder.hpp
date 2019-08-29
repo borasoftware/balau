@@ -234,7 +234,7 @@ class EnvironmentConfigurationBuilder {
 					using ::toString;
 
 					if (factoryNodeIter != bindingBuilderFactoryVector.end() && !(*factoryNodeIter)->isComposite()) {
-						InjectorLogger::log.warn(
+						InjectorLogger::log().warn(
 							"Typed property factory declaration found for composite environment configuration"
 							"node (property name hierarchy = {}). Please remove this typed property factory "
 							"declaration from the associated environment configuration class in order to avoid "
@@ -321,7 +321,7 @@ class EnvironmentConfigurationBuilder {
 					using ::toString;
 
 					if (factoryNodeIter != bindingBuilderFactoryVector.end() && !(*factoryNodeIter)->isComposite()) {
-						InjectorLogger::log.warn(
+						InjectorLogger::log().warn(
 							"Typed property factory declaration found for composite environment configuration"
 							"node (property name hierarchy = {}). Please remove this typed property factory "
 							"declaration from the associated environment configuration class in order to avoid "

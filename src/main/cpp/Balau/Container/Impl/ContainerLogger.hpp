@@ -16,7 +16,7 @@
 namespace Balau::Container::Impl {
 
 class ContainerLogger {
-	public: static BalauLogger log;
+	public: static BalauLogger & log();
 };
 
 } // namespace Balau::Container::Impl

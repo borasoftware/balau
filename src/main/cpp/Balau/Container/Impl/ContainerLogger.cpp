@@ -12,6 +12,9 @@
 
 namespace Balau::Container::Impl {
 
-BalauLogger ContainerLogger::log("balau.container");
+BalauLogger & ContainerLogger::log() {
+	static BalauLogger instance("balau.container");
+	return instance;
+}
 
 } // namespace Balau::Container::Impl

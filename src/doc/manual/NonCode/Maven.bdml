@@ -71,6 +71,8 @@
 
 		<para>The Balau <emph>cmake-maven-plugin</emph> provides a mechanism for driving CMake executions via Maven. The plugin allows a simple and concise way of integrating CMake projects into a Maven based SDLC infrastructure.</para>
 
+		<para>The minimum version of CMake that is supported by the plugin is v3.12.</para>
+
 		<h2>Goals</h2>
 
 		<para>The following Maven goals are defined:</para>
@@ -94,7 +96,7 @@
 			<plugin>
 				<groupId>com.borasoftware.balau</groupId>
 				<artifactId>cmake-maven-plugin</artifactId>
-				<version>19.6.3</version>
+				<version>19.7.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -270,7 +272,7 @@
 
 		<para>The <emph>balau-unit-test-maven-plugin</emph> provides a mechanism for driving unit test executions based on the Balau test framework. The plugin allows a simple and concise way of integrating the execution of Balau style unit tests into a Maven based SDLC infrastructure.</para>
 
-		<para>The <emph>balau-unit-test-maven-plugin</emph> includes configuration specific to the Balau test framework, allowing the test application to be configured from within the project's pom files.</para>
+		<para>The <emph>balau-unit-test-maven-plugin</emph> includes configuration specific to the Balau test framework, allowing test applications to be configured from within the project's pom files.</para>
 
 		<h2>Goals</h2>
 
@@ -282,7 +284,7 @@
 
 		<para>This goal binds by default to the <emph>test</emph> Maven phase.</para>
 
-		<para>The single <emph>test</emph> goal executes the default or specified Balau based test application. The Balau test framework configuration options specified in the plugin's configuration are passed to the application.</para>
+		<para>The single <emph>test</emph> goal executes the default or specified Balau based test application(s). The Balau test framework configuration options specified in the plugin's configuration are passed to the applications.</para>
 
 		<para>By default, test group classes matching the <emph>*Test::*</emph> glob are run.</para>
 
@@ -292,7 +294,7 @@
 			<plugin>
 				<groupId>com.borasoftware.balau</groupId>
 				<artifactId>balau-unit-test-maven-plugin</artifactId>
-				<version>19.6.2</version>
+				<version>19.8.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -325,11 +327,21 @@
 
 		<h3>appPath</h3>
 
-		<para>Test application path relative to the CMake build directory. Defaults to <emph>bin/Tests</emph>
-if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
+		<para>Specify a single test application path relative to the CMake build directory. If neither an <emph>appPath</emph> element nor <emph>appPaths</emph> element is defined, the test application will default to <emph>bin/Tests</emph> if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 
 		<xml>
 			<appPath>bin/Tests</appPath>
+		</xml>
+
+		<h3>appPaths</h3>
+
+		<para>Specify multiple test application paths relative to the CMake build directory. If neither an <emph>appPath</emph> element nor <emph>appPaths</emph> element is defined, the test application will default to <emph>bin/Tests</emph> if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
+
+		<xml>
+			<appPaths>
+				<appPath>bin/App1Tests</appPath>
+				<appPath>bin/App2Tests</appPath>
+			</appPaths>
 		</xml>
 
 		<h3>executionModel</h3>
@@ -362,7 +374,7 @@ if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 
 		<para>The <emph>balau-integration-test-maven-plugin</emph> provides a mechanism for driving integration test executions based on the Balau test framework. The plugin allows a simple and concise way of integrating the execution of Balau style integration tests into a Maven based SDLC infrastructure.</para>
 
-		<para>The <emph>balau-integration-test-maven-plugin</emph> includes configuration specific to the Balau test framework, allowing the test application to be configured from within the project's pom files.</para>
+		<para>The <emph>balau-integration-test-maven-plugin</emph> includes configuration specific to the Balau test framework, allowing test applications to be configured from within the project's pom files.</para>
 
 		<para>The <emph>balau-integration-test-maven-plugin</emph> is similar to the <emph>balau-unit-test-maven-plugin</emph>, and contains similar configuration options.</para>
 
@@ -386,7 +398,7 @@ if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 			<plugin>
 				<groupId>com.borasoftware.balau</groupId>
 				<artifactId>balau-integration-test-maven-plugin</artifactId>
-				<version>19.6.2</version>
+				<version>19.8.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -419,11 +431,21 @@ if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 
 		<h3>appPath</h3>
 
-		<para>Test application path relative to the CMake build directory. Defaults to <emph>bin/Tests</emph>
-			if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
+		<para>Specify a single test application path relative to the CMake build directory. If neither an <emph>appPath</emph> element nor <emph>appPaths</emph> element is defined, the test application will default to <emph>bin/Tests</emph> if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 
 		<xml>
 			<appPath>bin/Tests</appPath>
+		</xml>
+
+		<h3>appPaths</h3>
+
+		<para>Specify multiple test application paths relative to the CMake build directory. If neither an <emph>appPath</emph> element nor <emph>appPaths</emph> element is defined, the test application will default to <emph>bin/Tests</emph> if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
+
+		<xml>
+			<appPaths>
+				<appPath>bin/App1Tests</appPath>
+				<appPath>bin/App2Tests</appPath>
+			</appPaths>
 		</xml>
 
 		<h3>executionModel</h3>
@@ -453,3 +475,4 @@ if an executable exists in that path, then <emph>Tests</emph> otherwise.</para>
 		</xml>
 	</chapter>
 </document>
+

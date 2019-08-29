@@ -57,6 +57,15 @@ OPTION(BALAU_ENABLE_CURL "Enable use of Curl library" ON)
 OPTION(BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR "Enable thread local logging allocator" OFF)
 OPTION(BALAU_ENABLE_TRACE_LOGGING "Enable trace logging in ASIO" OFF)
 
+OPTION(ENABLE_BACKTRACE "Enable use of backtrace library" ON)
+OPTION(ENABLE_OLD_ABI "Enable use of old GLIBCXX ABI" OFF)
+OPTION(ENABLE_BOOST_STATIC_LIBRARIES "Force use of Boost static libraries" OFF)
+
+if (ENABLE_OLD_ABI)
+	ADD_DEFINITIONS("-D_GLIBCXX_USE_CXX11_ABI=0")
+	message(STATUS "_GLIBCXX_USE_CXX11_ABI set to 0 - compiling with old ABI")
+endif ()
+
 ############################## USER CONFIGURATION #############################
 
 #
@@ -182,23 +191,34 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+	set(BALAU_DEBUG ON)
+endif ()
+
 ############################### BOOST LIBRARIES ###############################
 
-set(Boost_DETAILED_FAILURE_MSG ON)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
+if (USE_BOOST_STATIC_LIBRARIES)
+	set(Boost_USE_STATIC_LIBS ON)
+endif ()
 
-find_package(Boost COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+if (ENABLE_HTTP_COMPONENTS)
+	set(MINIMUM_BOOST_VERSION 1.68.0)
+else ()
+	set(MINIMUM_BOOST_VERSION 1.61.0)
+endif ()
+
+set(Boost_DETAILED_FAILURE_MSG ON)
+
+find_package(Boost ${MINIMUM_BOOST_VERSION} COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
 
 if (Boost_STACKTRACE_BACKTRACE_FOUND)
-	find_package(Boost REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+	find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
 	message(STATUS "Stack traces will be available (Boost support present). Adding libbacktrace to link libraries.")
 	set(BALAU_ENABLE_STACKTRACES ON)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_STACKTRACE_LINK -DBOOST_STACKTRACE_USE_BACKTRACE")
 	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES} backtrace)
 else ()
-	find_package(Boost REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+	find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
 	message(STATUS "No stack traces will be available (no Boost support).")
 	set(BALAU_ENABLE_STACKTRACES OFF)
 	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
@@ -213,6 +233,7 @@ if((Boost_VERSION GREATER 106800) OR (Boost_VERSION EQUAL 106800))
 else ()
 	message(STATUS "Boost version ${Boost_VERSION} HTTP support not available: Balau HTTP components are not enabled.")
 	set(BALAU_ENABLE_HTTP OFF)
+	set(BALAU_ENABLE_CURL OFF)
 endif ()
 
 ############################# BALAU OPTION HEADER #############################
@@ -309,8 +330,9 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})
 message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-set(ALL_LIBS ${ALL_LIBS} rt)
+set(ALL_LIBS ${ALL_LIBS} rt bz2)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
+link_directories(/usr/lib64)
 
 ################################## BACKPORTS ##################################
 
@@ -369,6 +391,8 @@ set(THIRD_PARTY_SOURCE_FILES
 )
 
 set(BALAU_SOURCE_FILES
+
+	${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
 	src/main/cpp/Balau/Application/Inject.hpp
@@ -572,6 +596,8 @@ set(BALAU_SOURCE_FILES
 
 	src/doc
 )
+
+set_source_files_properties(${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp PROPERTIES GENERATED TRUE)
 
 if (BALAU_ENABLE_HTTP)
 	set(BALAU_HTTP_SOURCE_FILES
@@ -967,8 +993,10 @@ add_dependencies(RunCppCheck BalauTests)
 
 ################################# EXAMPLE APPS ################################
 
-add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
-target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
+if (BALAU_ENABLE_HTTP)
+	add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
+	target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
+endif ()
 
 add_executable(ExampleSkeletonApp src/examples/SkeletonApp/SkeletonApp.cpp)
 target_link_libraries(ExampleSkeletonApp Balau ${ALL_LIBS})

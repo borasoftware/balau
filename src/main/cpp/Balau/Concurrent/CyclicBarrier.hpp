@@ -63,7 +63,7 @@ class CyclicBarrier {
 
 	///////////////////////// Private implementation //////////////////////////
 
-	private: static Logger & LOG;
+	private: static Logger & LOG();
 
 	private: std::mutex mutex;
 	private: Semaphore turnstile1;

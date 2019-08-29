@@ -100,6 +100,8 @@ class AbstractBinding {
 
 	private: virtual BindingKey determineFinalBindingKey() const = 0;
 
+	private: virtual bool isThreadLocalBinding() const = 0;
+
 	protected: BindingKey key;
 };
 
@@ -120,6 +122,10 @@ class AbstractValueBinding : public AbstractBinding {
 	private: BindingKey determineFinalBindingKey() const override {
 		return key;
 	}
+
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
 };
 
 // Abstract base class of the unique pointer bindings.
@@ -137,6 +143,10 @@ class AbstractUniquePtrBinding : public AbstractBinding {
 	private: BindingKey determineFinalBindingKey() const override {
 		return key;
 	}
+
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
 };
 
 // Abstract base class of the reference bindings.
@@ -153,6 +163,10 @@ class AbstractReferenceBinding : public AbstractBinding {
 
 	private: BindingKey determineFinalBindingKey() const override {
 		return key;
+	}
+
+	private: bool isThreadLocalBinding() const override {
+		return false;
 	}
 };
 
@@ -190,12 +204,12 @@ class InstantiatingValueBinding : public AbstractValueBinding<T> {
 		return T::_Balau_newStackInstance(*injector);
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return T::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -212,11 +226,11 @@ class PrototypeBinding : public AbstractValueBinding<T> {
 		return prototype; // Calls copy constructor.
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -233,11 +247,11 @@ class ProvidingFunctionValueBinding : public AbstractValueBinding<T> {
 		return provide();
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -253,12 +267,12 @@ class ProvidingClassValueBinding : public AbstractValueBinding<T> {
 		return (*provide)();
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return ProviderT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		provide = std::unique_ptr<ProviderT>(ProviderT::_Balau_newHeapInstance(injector));
 	}
@@ -276,11 +290,11 @@ class ProvidingClassInstanceValueBinding : public AbstractValueBinding<T> {
 		return (*provide)();
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -295,12 +309,12 @@ class InstantiatingUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
 		return std::unique_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(*injector));
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return DerivedT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -319,11 +333,11 @@ class ProvidingFunctionUniquePtrBinding : public AbstractUniquePtrBinding<BaseT>
 		return provide();
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -339,12 +353,12 @@ class ProvidingClassUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
 		return (*provide)();
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return ProviderT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		provide = std::unique_ptr<ProviderT>(ProviderT::_Balau_newHeapInstance(injector));
 	}
@@ -362,11 +376,11 @@ class ProvidingClassInstanceUniquePtrBinding : public AbstractUniquePtrBinding<B
 		return (*provide)();
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -383,11 +397,11 @@ class StandardReferenceBinding : public AbstractReferenceBinding<BaseT> {
 		return reference;
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -409,12 +423,16 @@ class ThreadLocalSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 		);
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return DerivedT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: bool isThreadLocalBinding() const override {
+		return true;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -431,11 +449,15 @@ class ProvidedSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 		return instance;
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
@@ -451,12 +473,16 @@ class ProvidingClassSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 		return instance;
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return ProviderT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		std::unique_ptr<ProviderT> provide = std::unique_ptr<ProviderT>(ProviderT::_Balau_newHeapInstance(injector));
 		instance = (*provide)();
@@ -476,18 +502,79 @@ class ProvidingClassInstanceSingletonBinding : public AbstractSharedPtrBinding<B
 		return instance;
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		return {};
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
 		instance = (*provide)();
 		provide.reset(); // Single use provider.
 	}
 };
 
-template <typename BaseT, typename DerivedT>
+template <typename BaseT>
+class ProvidingFunctionSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
+	private: const std::function<std::shared_ptr<BaseT> ()> provide;
+	private: std::shared_ptr<BaseT> instance;
+
+	public: ProvidingFunctionSingletonBinding(BindingKey && key_, const std::function<std::shared_ptr<BaseT> ()> & provide_)
+		: AbstractSharedPtrBinding<BaseT>(std::move(key_))
+		, provide(provide_) {}
+
+	public: std::shared_ptr<BaseT> get(const Injector * ) const override {
+		return instance;
+	}
+
+	private: std::vector<BindingKey> getDependencyKeys() const override {
+		return {};
+	}
+
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
+		instance = provide();
+	}
+};
+
+template <typename BaseT, typename DerivedT, typename DeleterT>
 class LazySingletonBinding : public AbstractSharedPtrBinding<BaseT> {
+	// Mutable in order to allow lazy evaluation.
+	private: mutable Concurrent::LazyValue<std::shared_ptr<BaseT>> instance;
+
+	public: explicit LazySingletonBinding(BindingKey && key_)
+		: AbstractSharedPtrBinding<BaseT>(std::move(key_)) {}
+
+	public: std::shared_ptr<BaseT> get(const Injector * injector) const override {
+		return instance(
+			[&injector] () {
+				// Compilation error? Did you forget to add an injection macro to your class?
+				return std::shared_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(*injector), DeleterT());
+			}
+		);
+	}
+
+	private: std::vector<BindingKey> getDependencyKeys() const override {
+		// Compilation error? Did you forget to add an injection macro to your class?
+		return DerivedT::_Balau_getDependencyKeys();
+	}
+
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
+		// NOP
+	}
+};
+
+template <typename BaseT, typename DerivedT>
+class LazySingletonBinding<BaseT, DerivedT, std::default_delete<DerivedT>> : public AbstractSharedPtrBinding<BaseT> {
 	// Mutable in order to allow lazy evaluation.
 	private: mutable Concurrent::LazyValue<std::shared_ptr<BaseT>> instance;
 
@@ -503,17 +590,21 @@ class LazySingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 		);
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return DerivedT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
 		// NOP
 	}
 };
 
-template <typename BaseT, typename DerivedT>
+template <typename BaseT, typename DerivedT, typename DeleterT>
 class EagerSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 	private: std::shared_ptr<BaseT> instance;
 
@@ -524,12 +615,42 @@ class EagerSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 		return instance;
 	}
 
-	public: std::vector<BindingKey> getDependencyKeys() const override {
+	private: std::vector<BindingKey> getDependencyKeys() const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		return DerivedT::_Balau_getDependencyKeys();
 	}
 
-	public: void instantiateIfEager(Injector & injector) override {
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
+		// Compilation error? Did you forget to add an injection macro to your class?
+		instance = std::shared_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(injector), DeleterT());
+	}
+};
+
+template <typename BaseT, typename DerivedT>
+class EagerSingletonBinding<BaseT, DerivedT, std::default_delete<DerivedT>> : public AbstractSharedPtrBinding<BaseT> {
+	private: std::shared_ptr<BaseT> instance;
+
+	public: explicit EagerSingletonBinding(BindingKey && key_)
+		: AbstractSharedPtrBinding<BaseT>(std::move(key_)) {}
+
+	public: std::shared_ptr<BaseT> get(const Injector * ) const override {
+		return instance;
+	}
+
+	private: std::vector<BindingKey> getDependencyKeys() const override {
+		// Compilation error? Did you forget to add an injection macro to your class?
+		return DerivedT::_Balau_getDependencyKeys();
+	}
+
+	private: bool isThreadLocalBinding() const override {
+		return false;
+	}
+
+	private: void instantiateIfEager(Injector & injector) override {
 		// Compilation error? Did you forget to add an injection macro to your class?
 		instance = std::shared_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(injector));
 	}
@@ -545,7 +666,7 @@ class BindingBuilderBase {
 	// Construct a BindingBuilderBase with a partial key.
 	// The meta-type will be set on the second fluent call.
 	//
-	protected: BindingBuilderBase(std::string && name) : key(std::move(name)) {}
+	protected: explicit BindingBuilderBase(std::string && name) : key(std::move(name)) {}
 
 	friend class ::Balau::Injector;
 	friend class ::Balau::EnvironmentConfiguration;

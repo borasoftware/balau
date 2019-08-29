@@ -443,6 +443,10 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 		return builders;
 	}
 
+	private: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
+		return std::vector<const InjectorConfiguration *>();
+	}
+
 	private: static std::shared_ptr<Resource::Uri> verifyPropertyFileExists(const Resource::File & propertyFile) {
 		using ::toString;
 

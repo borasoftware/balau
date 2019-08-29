@@ -13,15 +13,18 @@
 
 namespace Balau::Concurrent {
 
-Logger & CyclicBarrier::LOG = Logger::getLogger("balau.concurrent");
+Logger & CyclicBarrier::LOG() {
+	static Logger & instance = Logger::getLogger("balau.concurrent");
+	return instance;
+}
 
 void CyclicBarrier::countdown() {
-	BalauLogTrace(LOG, "A enter latch");
+	BalauLogTrace(LOG(), "A enter latch");
 
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 		count -= 1;
-		BalauLogTrace(LOG, "B counted down to {}", count);
+		BalauLogTrace(LOG(), "B counted down to {}", count);
 
 		if (count == 0) {
 			turnstile2.decrement();
@@ -35,7 +38,7 @@ void CyclicBarrier::countdown() {
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 		count += 1;
-		BalauLogTrace(LOG, "H counted up to {}", count);
+		BalauLogTrace(LOG(), "H counted up to {}", count);
 
 		if (count == number) {
 			turnstile1.decrement();
@@ -46,7 +49,7 @@ void CyclicBarrier::countdown() {
 	turnstile2.decrement();
 	turnstile2.increment();
 
-	BalauLogTrace(LOG, "M exit latch, count = {}", count);
+	BalauLogTrace(LOG(), "M exit latch, count = {}", count);
 }
 
 } // namespace Balau::Concurrent

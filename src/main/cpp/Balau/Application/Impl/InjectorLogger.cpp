@@ -12,6 +12,4 @@
 
 namespace Balau::Impl {
 
-BalauLogger InjectorLogger::log("balau.injector");
-
 } // namespace Balau::Impl
