@@ -8,7 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "ConfigurationWebAppTest.hpp"
+#include <Balau/Documentation/ConfigurationWebApp.hpp>
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 using namespace Balau::Network;
@@ -20,8 +21,14 @@ using Balau::Testing::isGreaterThan;
 
 namespace Balau::Documentation {
 
-void ConfigurationWebAppTest::test() {
-	// TODO
-}
+struct ConfigurationWebAppTest : public Testing::TestGroup<ConfigurationWebAppTest> {
+	ConfigurationWebAppTest() {
+		registerTest(&ConfigurationWebAppTest::test, "test");
+	}
+
+	void test() {
+		// TODO
+	}
+};
 
 } // namespace Balau::Documentation

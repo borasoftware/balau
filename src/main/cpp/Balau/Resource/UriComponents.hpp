@@ -59,9 +59,11 @@ struct UriComponents {
 	public: static std::string normalizePath(std::string_view path);
 
 	///
-	/// The URI string contained within the URI component structure.
+	/// Get the URI string contained within the URI component structure.
 	///
-	public: const std::string uri;
+	public: const std::string & getUri() const {
+		return uri;
+	}
 
 	///
 	/// Parse the URI into its components.
@@ -310,6 +312,7 @@ struct UriComponents {
 		, fragmentOffset(fragmentOffset_)
 		, parsedPort(parsedPort_) {}
 
+	private: std::string uri;
 	private: short schemeEndOffset;
 	private: short userinfoOffset;
 	private: short hostOffset;
@@ -318,6 +321,8 @@ struct UriComponents {
 	private: short queryOffset;
 	private: short fragmentOffset;
 	private: unsigned short parsedPort;
+
+	friend bool operator == (const UriComponents & lhs, const UriComponents & rhs);
 };
 
 ///
@@ -340,7 +345,7 @@ inline bool operator == (const UriComponents & lhs, const UriComponents & rhs) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const UriComponents & uriComponents) {
-	return toString<AllocatorT>(uriComponents.uri);
+	return toString<AllocatorT>(uriComponents.getUri());
 }
 
 ///
@@ -351,7 +356,7 @@ inline Balau::U8String<AllocatorT> toString(const UriComponents & uriComponents)
 /// @return a UTF-8 string representing the URI components
 ///
 inline std::string toString(const UriComponents & uriComponents) {
-	return uriComponents.uri;
+	return uriComponents.getUri();
 }
 
 } // namespace Balau::Resource

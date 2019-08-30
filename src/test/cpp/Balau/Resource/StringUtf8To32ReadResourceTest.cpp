@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "StringUtf8To32ReadResourceTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 #include <Balau/Resource/StringUri.hpp>
@@ -20,24 +20,30 @@ using Testing::is;
 
 namespace Resource {
 
-void StringUtf8To32ReadResourceTest::test() {
-	const std::string text = "some random text";
-	const std::u32string expected = toString32("some random text");
+struct StringUtf8To32ReadResourceTest : public Testing::TestGroup<StringUtf8To32ReadResourceTest> {
+	explicit StringUtf8To32ReadResourceTest() {
+		registerTest(&StringUtf8To32ReadResourceTest::test, "test");
+	}
 
-	StringUri uri(text);
+	void test() {
+		const std::string text = "some random text";
+		const std::u32string expected = toString32("some random text");
 
-	auto stringReadResource = uri.getUtf8To32ReadResource();
-	auto uriReadResource = uri.utf8To32ReadResource();
+		StringUri uri(text);
 
-	std::u32istream & stringReadStream = stringReadResource.readStream();
-	std::u32istream & uriReadStream = uriReadResource->readStream();
+		auto stringReadResource = uri.getUtf8To32ReadResource();
+		auto uriReadResource = uri.utf8To32ReadResource();
 
-	auto actualStringData = toString32(stringReadStream);
-	auto actualUriData = toString32(uriReadStream);
+		std::u32istream & stringReadStream = stringReadResource.readStream();
+		std::u32istream & uriReadStream = uriReadResource->readStream();
 
-	AssertThat(actualStringData, is(expected));
-	AssertThat(actualUriData, is(expected));
-}
+		auto actualStringData = toString32(stringReadStream);
+		auto actualUriData = toString32(uriReadStream);
+
+		AssertThat(actualStringData, is(expected));
+		AssertThat(actualUriData, is(expected));
+	}
+};
 
 } // namespace Resource
 

@@ -96,33 +96,28 @@ class PropertyNode { // Abstract
 		while (inOffset < (int) input.length()) {
 			c = Character::getNextUtf8Safe(input, inOffset);
 
-			switch (c) {
-				case U'\\': {
-					if (inOffset == (int) input.length()) {
-						break; // Last character is a backslash.
-					}
-
-					c = Character::getNextUtf8Safe(input, inOffset);
-
-					switch (c) {
-						case U'\r':
-						case U'\n': {
-							skipLineContinuation(input, inOffset, output, outOffset);
-							break;
-						}
-
-						default: {
-							Character::setUtf8AndAdvanceOffset(output, outOffset, c);
-							break;
-						}
-					}
-
-					break;
+			if (c == U'\\') {
+				if (inOffset == (int) input.length()) {
+					break; // Last character is a backslash.
 				}
 
-				default: {
-					Character::setUtf8AndAdvanceOffset(output, outOffset, c);
+				c = Character::getNextUtf8Safe(input, inOffset);
+
+				switch (c) {
+					case U'\r':
+					case U'\n': {
+						skipLineContinuation(input, inOffset, output, outOffset);
+						break;
+					}
+
+					default: {
+						Character::setUtf8AndAdvanceOffset(output, outOffset, c);
+						break;
+					}
 				}
+
+			} else {
+				Character::setUtf8AndAdvanceOffset(output, outOffset, c);
 			}
 		}
 
@@ -471,7 +466,7 @@ class EmptyLinePropertyNode final : public PropertyNode {
 	///
 	/// Create a blank line property node with the supplied data.
 	///
-	public: EmptyLinePropertyNode(const CodeSpan & codeSpan_)
+	public: explicit EmptyLinePropertyNode(const CodeSpan & codeSpan_)
 		: PropertyNode(codeSpan_) {}
 
 	///

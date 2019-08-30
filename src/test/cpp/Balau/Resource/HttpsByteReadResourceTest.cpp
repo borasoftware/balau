@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "HttpsByteReadResourceTest.hpp"
-
+#include <Balau/Testing/TestRunner.hpp>
 #include <Balau/Resource/Https.hpp>
 #include <Balau/Util/Streams.hpp>
 
@@ -20,38 +19,45 @@ using Testing::endsWith;
 
 namespace Resource {
 
-void HttpsByteReadResourceTest::emptyPath() {
-	performTest("http://borasoftware.com", "<html>\r\n<head><title>302 Found</title></head>");
-}
+struct HttpsByteReadResourceTest : public Testing::TestGroup<HttpsByteReadResourceTest> {
+	HttpsByteReadResourceTest() {
+		registerTest(&HttpsByteReadResourceTest::emptyPath, "emptyPath");
+		registerTest(&HttpsByteReadResourceTest::nonEmptyPath, "nonEmptyPath");
+	}
 
-void HttpsByteReadResourceTest::nonEmptyPath() {
-	performTest("https://borasoftware.com/en/index.html", "<!DOCTYPE html");
-}
+	void performTest(const std::string & url_, const std::string & expectedStart) {
+		try {
+			Https url(url_);
 
-void HttpsByteReadResourceTest::performTest(const std::string & url_, const std::string & expectedStart) {
-	try {
-		Https url(url_);
+			auto httpsReadResource = url.getByteReadResource();
+			auto uriReadResource = url.byteReadResource();
 
-		auto httpsReadResource = url.getByteReadResource();
-		auto uriReadResource = url.byteReadResource();
+			std::istream & httpsReadStream = httpsReadResource.readStream();
+			std::istream & uriReadStream = uriReadResource->readStream();
 
-		std::istream & httpsReadStream = httpsReadResource.readStream();
-		std::istream & uriReadStream = uriReadResource->readStream();
+			auto actualHttpsData = ::toString(httpsReadStream);
+			auto actualUriData = ::toString(uriReadStream);
 
-		auto actualHttpsData = ::toString(httpsReadStream);
-		auto actualUriData = ::toString(uriReadStream);
-
-		AssertThat(actualHttpsData, startsWith(expectedStart));
-		AssertThat(actualUriData, startsWith(expectedStart));
-	} catch (const boost::system::system_error & e) {
-		if (e.code() == boost::system::errc::device_or_resource_busy) {
-			// Ignore due to no network available.
-			ignore();
-		} else {
-			throw;
+			AssertThat(actualHttpsData, startsWith(expectedStart));
+			AssertThat(actualUriData, startsWith(expectedStart));
+		} catch (const boost::system::system_error & e) {
+			if (e.code() == boost::system::errc::device_or_resource_busy) {
+				// Ignore due to no network available.
+				ignore();
+			} else {
+				throw;
+			}
 		}
 	}
-}
+
+	void emptyPath() {
+		performTest("http://borasoftware.com", "<html>\r\n<head><title>302 Found</title></head>");
+	}
+
+	void nonEmptyPath() {
+		performTest("https://borasoftware.com/en/index.html", "<!DOCTYPE html");
+	}
+};
 
 } // namespace Resource
 

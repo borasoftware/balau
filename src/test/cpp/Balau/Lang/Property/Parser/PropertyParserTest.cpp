@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "PropertyParserTest.hpp"
-
+#include <Balau/Testing/TestRunner.hpp>
 #include <Balau/Lang/Property/Util/PropertyAstToString.hpp>
 #include <Balau/Lang/Property/PropertyParserService.hpp>
 #include <Balau/Resource/StringUri.hpp>
@@ -75,26 +74,36 @@ const std::string rootIncludesText = 1 + R"Property(
 @extra-sites/special.site
 )Property";
 
-void PropertyParserTest::simpleHierarchy() {
-	PropertyParserTest_test(simpleHierarchyText);
-}
+struct PropertyParserTest : public Testing::TestGroup<PropertyParserTest> {
+	PropertyParserTest() {
+		registerTest(&PropertyParserTest::simpleHierarchy,    "simpleHierarchy");
+		registerTest(&PropertyParserTest::specialSymbolNames, "specialSymbolNames");
+		registerTest(&PropertyParserTest::complexNames,       "complexNames");
+		registerTest(&PropertyParserTest::rootIncludes,       "rootIncludes");
+		registerTest(&PropertyParserTest::normalisation,      "normalisation");
+	}
 
-void PropertyParserTest::specialSymbolNames() {
-	PropertyParserTest_test(specialSymbolNamesText);
-}
-
-void PropertyParserTest::complexNames() {
-	PropertyParserTest_test(complexNamesText);
-}
-
-void PropertyParserTest::rootIncludes() {
-	PropertyParserTest_test(rootIncludesText);
-}
-
-void PropertyParserTest::normalisation() {
-	AssertThat(PropertyNode::normalise("\\{"), is("{"));
-	AssertThat(PropertyNode::normalise("abc\\\n  def\\\n  ghi"), is("abcdefghi"));
-}
+	void simpleHierarchy() {
+		PropertyParserTest_test(simpleHierarchyText);
+	}
+	
+	void specialSymbolNames() {
+		PropertyParserTest_test(specialSymbolNamesText);
+	}
+	
+	void complexNames() {
+		PropertyParserTest_test(complexNamesText);
+	}
+	
+	void rootIncludes() {
+		PropertyParserTest_test(rootIncludesText);
+	}
+	
+	void normalisation() {
+		AssertThat(PropertyNode::normalise("\\{"), is("{"));
+		AssertThat(PropertyNode::normalise("abc\\\n  def\\\n  ghi"), is("abcdefghi"));
+	}
+};
 
 } // namespace Lang::Property
 

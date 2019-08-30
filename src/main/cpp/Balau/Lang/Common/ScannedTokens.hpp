@@ -65,7 +65,7 @@ template <typename TokenT> class IterativeScannedTokens;
 ///
 /// When used by a parser, the scanner API provides a traditional scanner API with
 /// infinite lookahead and putback. The whitespace policy may be set dynamically by
-/// pushing and popping whitespace modes during consumation of the tokens.
+/// pushing and popping whitespace modes during consummation of the tokens.
 ///
 /// For other uses, the random access and iterative APIs may be used.
 ///
@@ -452,7 +452,7 @@ template <typename TokenT> class ScannedToken {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	private: ScannedToken(TokenT token_, CodeSpan codeSpan_, std::string_view text_)
+	private: ScannedToken(TokenT token_, const CodeSpan & codeSpan_, std::string_view text_)
 		: token(token_)
 		, codeSpan(codeSpan_)
 		, text(text_) {}

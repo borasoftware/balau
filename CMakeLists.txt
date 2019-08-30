@@ -343,10 +343,10 @@ include(CheckIncludeFileCXX)
 check_include_file_cxx(string_view STRING_VIEW_AVAILABLE)
 
 if (STRING_VIEW_AVAILABLE)
-	message(STATUS "std::string_view is available. Setting -DBALAU_STD_STRING_VIEW_AVAILABLE")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_STD_STRING_VIEW_AVAILABLE")
+	message(STATUS "std::string_view is available.")
 else ()
 	message(STATUS "std::string_view is not available. Using boost::string_view")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_USE_BOOST_STRING_VIEW")
 endif ()
 
 ############################### STATUS PRINTOUT ###############################
@@ -766,102 +766,57 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/TestMain.cpp
 
 	src/test/cpp/Balau/Application/CommandLineTest.cpp
-	src/test/cpp/Balau/Application/CommandLineTest.hpp
 	src/test/cpp/Balau/Application/InjectorTest.cpp
-	src/test/cpp/Balau/Application/InjectorTest.hpp
 	src/test/cpp/Balau/Application/InjectorHeaderBody.cpp
 	src/test/cpp/Balau/Application/InjectorHeaderBody.hpp
 	src/test/cpp/Balau/Application/ToStringTest.cpp
-	src/test/cpp/Balau/Application/ToStringTest.hpp
 	src/test/cpp/Balau/Container/ArrayBlockingQueueTest.cpp
-	src/test/cpp/Balau/Container/ArrayBlockingQueueTest.hpp
 	src/test/cpp/Balau/Container/DependencyGraphTest.cpp
-	src/test/cpp/Balau/Container/DependencyGraphTest.hpp
 	src/test/cpp/Balau/Container/ObjectTrieTest.cpp
-	src/test/cpp/Balau/Container/ObjectTrieTest.hpp
 	src/test/cpp/Balau/Interprocess/SharedMemoryQueueTest.cpp
-	src/test/cpp/Balau/Interprocess/SharedMemoryQueueTest.hpp
 	src/test/cpp/Balau/Lang/Common/ScannedTokensTest.cpp
-	src/test/cpp/Balau/Lang/Common/ScannedTokensTest.hpp
 	src/test/cpp/Balau/Lang/Property/Parser/PropertyParserTest.cpp
-	src/test/cpp/Balau/Lang/Property/Parser/PropertyParserTest.hpp
 	src/test/cpp/Balau/Logging/LoggerTest.cpp
-	src/test/cpp/Balau/Logging/LoggerTest.hpp
 	src/test/cpp/Balau/Logging/Impl/LoggingStreamsTest.cpp
-	src/test/cpp/Balau/Logging/Impl/LoggingStreamsTest.hpp
 	src/test/cpp/Balau/Resource/FileByteReadResourceTest.cpp
-	src/test/cpp/Balau/Resource/FileByteReadResourceTest.hpp
 	src/test/cpp/Balau/Resource/FileByteWriteResourceTest.cpp
-	src/test/cpp/Balau/Resource/FileByteWriteResourceTest.hpp
 	src/test/cpp/Balau/Resource/FileTest.cpp
-	src/test/cpp/Balau/Resource/FileTest.hpp
 	src/test/cpp/Balau/Resource/FileUtf32To8WriteResourceTest.cpp
-	src/test/cpp/Balau/Resource/FileUtf32To8WriteResourceTest.hpp
 	src/test/cpp/Balau/Resource/FileUtf8To32ReadResourceTest.cpp
-	src/test/cpp/Balau/Resource/FileUtf8To32ReadResourceTest.hpp
 	src/test/cpp/Balau/Resource/StringByteReadResourceTest.cpp
-	src/test/cpp/Balau/Resource/StringByteReadResourceTest.hpp
 	src/test/cpp/Balau/Resource/StringUtf8To32ReadResourceTest.cpp
-	src/test/cpp/Balau/Resource/StringUtf8To32ReadResourceTest.hpp
 	src/test/cpp/Balau/Resource/UriComponentsTest.cpp
-	src/test/cpp/Balau/Resource/UriComponentsTest.hpp
 	src/test/cpp/Balau/System/SystemClockTest.cpp
-	src/test/cpp/Balau/System/SystemClockTest.hpp
 	src/test/cpp/Balau/Testing/AssertionsTest.cpp
-	src/test/cpp/Balau/Testing/AssertionsTest.hpp
 	src/test/cpp/Balau/Testing/AssertionsTestData.hpp
 	src/test/cpp/Balau/ThirdParty/HashLibrary/HashLibraryTest.cpp
-	src/test/cpp/Balau/ThirdParty/HashLibrary/HashLibraryTest.hpp
 	src/test/cpp/Balau/Type/CharacterTest.cpp
-	src/test/cpp/Balau/Type/CharacterTest.hpp
 	src/test/cpp/Balau/Util/DateTimeTest.cpp
-	src/test/cpp/Balau/Util/DateTimeTest.hpp
 	src/test/cpp/Balau/Util/PrettyPrintTest.cpp
-	src/test/cpp/Balau/Util/PrettyPrintTest.hpp
 	src/test/cpp/Balau/Util/RandomTest.cpp
-	src/test/cpp/Balau/Util/RandomTest.hpp
 	src/test/cpp/Balau/Util/StreamsTest.cpp
-	src/test/cpp/Balau/Util/StreamsTest.hpp
 	src/test/cpp/Balau/Util/StringsTest.cpp
-	src/test/cpp/Balau/Util/StringsTest.hpp
 )
 
 if (BALAU_ENABLE_HTTP)
 	set(BALAU_TESTS_HTTP_SOURCE_FILES
 		src/test/cpp/Balau/Application/EnvironmentConfigurationTest.cpp
-		src/test/cpp/Balau/Application/EnvironmentConfigurationTest.hpp
 		src/test/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderTest.cpp
-		src/test/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderTest.hpp
 		src/test/cpp/Balau/Documentation/ConfigurationWebAppTest.cpp
-		src/test/cpp/Balau/Documentation/ConfigurationWebAppTest.hpp
 		src/test/cpp/Balau/Network/Http/Client/HttpClientTest.cpp
-		src/test/cpp/Balau/Network/Http/Client/HttpClientTest.hpp
 		src/test/cpp/Balau/Network/Http/Client/HttpsClientTest.cpp
-		src/test/cpp/Balau/Network/Http/Client/HttpsClientTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/HttpServerTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpServerTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.hpp
 		src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.hpp
 		src/test/cpp/Balau/Network/Utilities/UrlDecodeTest.cpp
-		src/test/cpp/Balau/Network/Utilities/UrlDecodeTest.hpp
 		src/test/cpp/Balau/Resource/HttpByteReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpByteReadResourceTest.hpp
 		src/test/cpp/Balau/Resource/HttpsByteReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpsByteReadResourceTest.hpp
 		src/test/cpp/Balau/Resource/HttpsUtf8To32ReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpsUtf8To32ReadResourceTest.hpp
 		src/test/cpp/Balau/Resource/HttpUtf8To32ReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpUtf8To32ReadResourceTest.hpp
 	)
 else ()
 	set(BALAU_TESTS_HTTP_SOURCE_FILES)
@@ -870,7 +825,6 @@ endif ()
 if (BALAU_ENABLE_CURL)
 	set(BALAU_TESTS_CURL_SOURCE_FILES
 		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.hpp
 	)
 else ()
 	set(BALAU_TESTS_CURL_SOURCE_FILES)
@@ -879,13 +833,9 @@ endif ()
 if (BALAU_ENABLE_ZIP)
 	set(BALAU_TESTS_ZIP_SOURCE_FILES
 		src/test/cpp/Balau/Resource/ZipEntryByteReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/ZipEntryByteReadResourceTest.hpp
 		src/test/cpp/Balau/Resource/ZipEntryUtf8To32ReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/ZipEntryUtf8To32ReadResourceTest.hpp
 		src/test/cpp/Balau/Resource/ZipFileTest.cpp
-		src/test/cpp/Balau/Resource/ZipFileTest.hpp
 		src/test/cpp/Balau/Util/ZipTest.cpp
-		src/test/cpp/Balau/Util/ZipTest.hpp
 	)
 else ()
 	set(BALAU_TESTS_ZIP_SOURCE_FILES)
@@ -900,6 +850,8 @@ add_executable(
 )
 
 target_link_libraries(BalauTests Balau ${ALL_LIBS})
+
+target_compile_options(BalauTests PUBLIC "-Wno-string-plus-int")
 
 #
 # Copy logging test resource to build/bin directory.

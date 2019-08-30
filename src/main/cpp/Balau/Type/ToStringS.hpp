@@ -46,7 +46,7 @@ inline std::string toString(const std::string_view & value) {
 	return std::string(value);
 }
 
-#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+#ifndef BALAU_USE_BOOST_STRING_VIEW
 
 ///
 /// Creates a string from the Boost string view.
@@ -399,7 +399,7 @@ inline std::u16string toString16(const std::string_view & value) {
 	return toString16(std::string(value));
 }
 
-#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+#ifndef BALAU_USE_BOOST_STRING_VIEW
 
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-16 string.
@@ -733,7 +733,7 @@ inline std::u32string toString32(const std::string_view & value) {
 	return toString32(std::string(value));
 }
 
-#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+#ifndef BALAU_USE_BOOST_STRING_VIEW
 
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-32 string.

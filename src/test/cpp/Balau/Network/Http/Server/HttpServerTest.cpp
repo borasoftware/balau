@@ -8,13 +8,13 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "HttpServerTest.hpp"
+
+#include <Balau/Network/Http/Server/NetworkTypes.hpp>
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../../../TestResources.hpp"
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
-#include <Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebApp.hpp>
-#include <Balau/Network/Http/Server/WsWebApps/NullWsWebApp.hpp>
 #include <Balau/Testing/Util/NetworkTesting.hpp>
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/Util/Files.hpp>
@@ -27,127 +27,133 @@ using Testing::isGreaterThan;
 
 namespace Network::Http {
 
-template <typename ResponseT> void assertResponse(const ResponseT & response,
-                                                  const char * expectedReason,
-                                                  Status expectedStatus,
-                                                  bool expectedNeedEof,
-                                                  bool expectedHasContentLength) {
-	const auto & header = response.base();
-	auto reason = header.reason();
-	auto result = header.result();
-	auto chunked = response.chunked();
-	auto hasContentLength = response.has_content_length();
-	auto keepAlive = response.keep_alive();
-	auto needEof = response.need_eof();
-	auto version = response.version();
+struct HttpServerTest : public Testing::TestGroup<HttpServerTest> {
+	HttpServerTest() {
+		registerTest(&HttpServerTest::injectedInstantiation, "injectedInstantiation");
+	}
 
-	AssertThat(reason, is(expectedReason));
-	AssertThat(result, is(expectedStatus));
-	AssertThat(chunked, is(false));
-	AssertThat(hasContentLength, is(expectedHasContentLength));
-	AssertThat(keepAlive, is(true));
-	AssertThat(needEof, is(expectedNeedEof));
-	AssertThat(version, is(11U));
-}
+	template <typename ResponseT> static void assertResponse(const ResponseT & response,
+	                                                         const char * expectedReason,
+	                                                         Status expectedStatus,
+	                                                         bool expectedNeedEof,
+	                                                         bool expectedHasContentLength) {
+		const auto & header = response.base();
+		auto reason = header.reason();
+		auto result = header.result();
+		auto chunked = response.chunked();
+		auto hasContentLength = response.has_content_length();
+		auto keepAlive = response.keep_alive();
+		auto needEof = response.need_eof();
+		auto version = response.version();
 
-void HttpServerTest::injectedInstantiation() {
-	const auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		AssertThat(reason, is(expectedReason));
+		AssertThat(result, is(expectedStatus));
+		AssertThat(chunked, is(false));
+		AssertThat(hasContentLength, is(expectedHasContentLength));
+		AssertThat(keepAlive, is(true));
+		AssertThat(needEof, is(expectedNeedEof));
+		AssertThat(version, is(11U));
+	}
 
-	std::shared_ptr<HttpServer> server;
+	void injectedInstantiation() {
+		const auto documentRoot = TestResources::BalauSourceFolder / "doc";
 
-	const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-		[&server, documentRoot] () {
-			class Wiring : public ApplicationConfiguration {
-				public: void configure() const override {
-					bind<System::Clock>().toSingleton<System::SystemClock>();
-					bind<HttpServer>().toSingleton();
-				}
-			};
+		std::shared_ptr<HttpServer> server;
 
-			class EnvConfig : public EnvironmentConfiguration {
-				public: explicit EnvConfig(const Resource::Uri & input) : EnvironmentConfiguration(input) {}
+		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
+			[&server, documentRoot] () {
+				class Wiring : public ApplicationConfiguration {
+					public: void configure() const override {
+						bind<System::Clock>().toSingleton<System::SystemClock>();
+						bind<HttpServer>().toSingleton();
+					}
+				};
 
-				public: void configure() const override {
-					const unsigned short testPortStart = 43270;
+				class EnvConfig : public EnvironmentConfiguration {
+					public: explicit EnvConfig(const Resource::Uri & input) : EnvironmentConfiguration(input) {}
 
-					value<bool>("http.server.register.signal.handler", false);
+					public: void configure() const override {
+						const unsigned short testPortStart = 43270;
 
-					group("http.server"
-						, value<std::string>("logging.ns", "http.server")
-						, value<std::string>("access.log", "stream: stdout")
-						, value<std::string>("error.log", "stream: stderr")
-						, value<std::string>("server.id", "Test Server")
-						, value<int>("worker.count", 2)
-						, value<Endpoint>("listen", makeEndpoint("127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)))
+						value<bool>("http.server.register.signal.handler", false);
 
-						, group("mime.types"
-							, value<std::string>("text/html", "html")
-						)
+						group("http.server"
+							, value<std::string>("logging.ns", "http.server")
+							, value<std::string>("access.log", "stream: stdout")
+							, value<std::string>("error.log", "stream: stderr")
+							, value<std::string>("server.id", "Test Server")
+							, value<int>("worker.count", 2)
+							, value<Endpoint>("listen", makeEndpoint("127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)))
 
-						, group("http"
-							, group("files"
-								, value<std::string>("location")
-								, value<std::string>("log.ns", "http.server.files")
-								, value<std::string>("access.log", "stream: stdout")
-								, value<std::string>("error.log", "stream: stderr")
-								, unique<Resource::Uri>("root")
-								, value<std::string>("index", "index.html")
+							, group("mime.types"
+								, value<std::string>("text/html", "html")
 							)
-						)
-					);
-				}
 
-				private: const Resource::File documentRoot;
-			};
+							, group("http"
+								, group("files"
+									, value<std::string>("location")
+									, value<std::string>("log.ns", "http.server.files")
+									, value<std::string>("access.log", "stream: stdout")
+									, value<std::string>("error.log", "stream: stderr")
+									, unique<Resource::Uri>("root")
+									, value<std::string>("index", "index.html")
+								)
+							)
+						);
+					}
 
-			const Resource::StringUri env(
-				R"(
-					# Main HTTP server environment configuration.
-					http.server {
-						http {
-							files {
-								location = /
-								root = )" + documentRoot.toUriString() + R"(
+					private: const Resource::File documentRoot;
+				};
+
+				const Resource::StringUri env(
+					R"(
+						# Main HTTP server environment configuration.
+						http.server {
+							http {
+								files {
+									location = /
+									root = )" + documentRoot.toUriString() + R"(
+								}
 							}
 						}
-					}
-				)"
-			);
+					)"
+				);
 
-			auto injector = Injector::create(Wiring(), EnvConfig(env));
+				auto injector = Injector::create(Wiring(), EnvConfig(env));
 
-			server = injector->getShared<HttpServer>();
-			server->startAsync();
-			return server->getPort();
-		}
-	);
+				server = injector->getShared<HttpServer>();
+				server->startAsync();
+				return server->getPort();
+			}
+		);
 
-	OnScopeExit stopServer([&server] () { server->stop(); });
+		OnScopeExit stopServer([&server] () { server->stop(); });
 
-	AssertThat(server->isRunning(), is(true));
+		AssertThat(server->isRunning(), is(true));
 
-	HttpClient client("localhost", port);
+		HttpClient client("localhost", port);
 
-	std::string path = "/manual/index.bdml";
-	Response<CharVectorBody> response = client.get(path);
+		std::string path = "/manual/index.bdml";
+		Response<CharVectorBody> response = client.get(path);
 
-	assertResponse(response, "OK", Status::ok, false, true);
+		assertResponse(response, "OK", Status::ok, false, true);
 
-	auto payloadSize = response.payload_size();
+		auto payloadSize = response.payload_size();
 
-	AssertThat(payloadSize.is_initialized(), is(true));
-	AssertThat(payloadSize.value(), isGreaterThan(0ULL));
+		AssertThat(payloadSize.is_initialized(), is(true));
+		AssertThat(payloadSize.value(), isGreaterThan(0ULL));
 
-	const std::vector<char> & actualBody = response.body();
-	const std::vector<char> expectedBody = Util::Files::readToVector(documentRoot / path);
+		const std::vector<char> & actualBody = response.body();
+		const std::vector<char> expectedBody = Util::Files::readToVector(documentRoot / path);
 
-	AssertThat(actualBody, is(expectedBody));
+		AssertThat(actualBody, is(expectedBody));
 
-	std::string path2 = "/";
-	Response<CharVectorBody> response2 = client.get(path2);
+		std::string path2 = "/";
+		Response<CharVectorBody> response2 = client.get(path2);
 
-	AssertThat(response2.base().result(), is(Status::not_found));
-}
+		AssertThat(response2.base().result(), is(Status::not_found));
+	}
+};
 
 } // namespace Network::Http
 

@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "ArrayBlockingQueueTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 
 #include <Balau/Container/ArrayBlockingQueue.hpp>
 #include <Balau/Container/SynchronizedQueue.hpp>
@@ -85,32 +85,38 @@ class TestExecutor {
 	}
 };
 
-void ArrayBlockingQueueTest::fullQueue() {
-	ArrayBlockingQueue<Element> queue(QueueSize);
-	TestExecutor executor(queue);
-
-	for (size_t m = 1; m <= 10; m++) {
-		const size_t first  = m * 3;
-		const size_t second = first + 1;
-		const size_t third  = first + 2;
-
-		queue.enqueue(Element(first));
-		queue.enqueue(Element(second));
-		executor.enqueueInThread(Element(third));
-
-		AssertThat(queue.empty(), is(false));
-		AssertThat(queue.full(), is(true));
-
-		AssertThat(queue.dequeue().value, is(first));
-		AssertThat(queue.dequeue().value, is(second));
-		AssertThat(queue.dequeue().value, is(third));
-
-		AssertThat(queue.empty(), is(true));
-		AssertThat(queue.full(), is(false));
+struct ArrayBlockingQueueTest : public Testing::TestGroup<ArrayBlockingQueueTest> {
+	ArrayBlockingQueueTest() {
+		registerTest(&ArrayBlockingQueueTest::fullQueue,  "fullQueue");
 	}
 
-	executor.finish();
-}
+	void fullQueue() {
+		ArrayBlockingQueue<Element> queue(QueueSize);
+		TestExecutor executor(queue);
+
+		for (size_t m = 1; m <= 10; m++) {
+			const size_t first  = m * 3;
+			const size_t second = first + 1;
+			const size_t third  = first + 2;
+
+			queue.enqueue(Element(first));
+			queue.enqueue(Element(second));
+			executor.enqueueInThread(Element(third));
+
+			AssertThat(queue.empty(), is(false));
+			AssertThat(queue.full(), is(true));
+
+			AssertThat(queue.dequeue().value, is(first));
+			AssertThat(queue.dequeue().value, is(second));
+			AssertThat(queue.dequeue().value, is(third));
+
+			AssertThat(queue.empty(), is(true));
+			AssertThat(queue.full(), is(false));
+		}
+
+		executor.finish();
+	}
+};
 
 } // namespace Container
 

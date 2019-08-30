@@ -8,7 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "AssertionsTest.hpp"
+#include "AssertionsTestData.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 
 namespace Balau {
 
@@ -25,78 +26,85 @@ using Testing::contains;
 using Testing::doesNotContain;
 using Testing::throws;
 
-void AssertionsTest::test() {
-	AssertThat(true,  is(true));
-	AssertThat(false, is(false));
+// This test group tests the assertions of the test runner.
+struct AssertionsTest : public Testing::TestGroup<AssertionsTest> {
+	AssertionsTest() {
+		registerTest(&AssertionsTest::test, "test");
+	}
 
-	AssertThat(true,  isNot(false));
-	AssertThat(false, isNot(true));
+	void test() {
+		AssertThat(true,  is(true));
+		AssertThat(false, is(false));
 
-	AssertThat(A{1}, is(A{1}));
-	AssertThat(A{1}, is(B{1}));
-	AssertThat(B{1}, is(A{1}));
-	AssertThat(B{1}, is(B{1}));
+		AssertThat(true,  isNot(false));
+		AssertThat(false, isNot(true));
 
-	AssertThat(A{1}, isNot(A{2}));
-	AssertThat(A{1}, isNot(B{3}));
-	AssertThat(B{1}, isNot(A{4}));
-	AssertThat(B{1}, isNot(B{5}));
+		AssertThat(A{1}, is(A{1}));
+		AssertThat(A{1}, is(B{1}));
+		AssertThat(B{1}, is(A{1}));
+		AssertThat(B{1}, is(B{1}));
 
-	AssertThat(A{2}, isGreaterThan(A{1}));
-	AssertThat(A{3}, isGreaterThan(B{1}));
-	AssertThat(B{4}, isGreaterThan(A{1}));
-	AssertThat(B{5}, isGreaterThan(B{1}));
+		AssertThat(A{1}, isNot(A{2}));
+		AssertThat(A{1}, isNot(B{3}));
+		AssertThat(B{1}, isNot(A{4}));
+		AssertThat(B{1}, isNot(B{5}));
 
-	AssertThat(A{1}, isGreaterThanOrEqualTo(A{1}));
-	AssertThat(A{2}, isGreaterThanOrEqualTo(B{1}));
-	AssertThat(B{3}, isGreaterThanOrEqualTo(A{1}));
-	AssertThat(B{4}, isGreaterThanOrEqualTo(B{1}));
+		AssertThat(A{2}, isGreaterThan(A{1}));
+		AssertThat(A{3}, isGreaterThan(B{1}));
+		AssertThat(B{4}, isGreaterThan(A{1}));
+		AssertThat(B{5}, isGreaterThan(B{1}));
 
-	AssertThat(A{1}, isLessThan(A{2}));
-	AssertThat(A{1}, isLessThan(B{3}));
-	AssertThat(B{1}, isLessThan(A{4}));
-	AssertThat(B{1}, isLessThan(B{5}));
+		AssertThat(A{1}, isGreaterThanOrEqualTo(A{1}));
+		AssertThat(A{2}, isGreaterThanOrEqualTo(B{1}));
+		AssertThat(B{3}, isGreaterThanOrEqualTo(A{1}));
+		AssertThat(B{4}, isGreaterThanOrEqualTo(B{1}));
 
-	AssertThat(A{1}, isLessThanOrEqualTo(A{1}));
-	AssertThat(A{1}, isLessThanOrEqualTo(B{2}));
-	AssertThat(B{1}, isLessThanOrEqualTo(A{3}));
-	AssertThat(B{1}, isLessThanOrEqualTo(B{4}));
+		AssertThat(A{1}, isLessThan(A{2}));
+		AssertThat(A{1}, isLessThan(B{3}));
+		AssertThat(B{1}, isLessThan(A{4}));
+		AssertThat(B{1}, isLessThan(B{5}));
 
-	AssertThat(A{1}, isAlmostEqual(A{1}, 0));
-	AssertThat(A{1}, isAlmostEqual(B{2}, 1));
-	AssertThat(B{1}, isAlmostEqual(A{3}, 2));
-	AssertThat(B{1}, isAlmostEqual(B{4}, 3));
+		AssertThat(A{1}, isLessThanOrEqualTo(A{1}));
+		AssertThat(A{1}, isLessThanOrEqualTo(B{2}));
+		AssertThat(B{1}, isLessThanOrEqualTo(A{3}));
+		AssertThat(B{1}, isLessThanOrEqualTo(B{4}));
 
-	AssertThat(C{"test"}, startsWith(C{"te"}));
-	AssertThat(C{"test"}, startsWith(D{"te"}));
-	AssertThat(D{"test"}, startsWith(C{"te"}));
-	AssertThat(D{"test"}, startsWith(D{"te"}));
+		AssertThat(A{1}, isAlmostEqual(A{1}, 0));
+		AssertThat(A{1}, isAlmostEqual(B{2}, 1));
+		AssertThat(B{1}, isAlmostEqual(A{3}, 2));
+		AssertThat(B{1}, isAlmostEqual(B{4}, 3));
 
-	AssertThat(C{"test"}, endsWith(C{"est"}));
-	AssertThat(C{"test"}, endsWith(D{"est"}));
-	AssertThat(D{"test"}, endsWith(C{"est"}));
-	AssertThat(D{"test"}, endsWith(D{"est"}));
+		AssertThat(C{"test"}, startsWith(C{"te"}));
+		AssertThat(C{"test"}, startsWith(D{"te"}));
+		AssertThat(D{"test"}, startsWith(C{"te"}));
+		AssertThat(D{"test"}, startsWith(D{"te"}));
 
-	AssertThat(C{"test"}, contains(C{"est"}));
-	AssertThat(C{"test"}, contains(D{"est"}));
-	AssertThat(D{"test"}, contains(C{"est"}));
-	AssertThat(D{"test"}, contains(D{"est"}));
+		AssertThat(C{"test"}, endsWith(C{"est"}));
+		AssertThat(C{"test"}, endsWith(D{"est"}));
+		AssertThat(D{"test"}, endsWith(C{"est"}));
+		AssertThat(D{"test"}, endsWith(D{"est"}));
 
-	AssertThat(C{"test"}, doesNotContain(C{"ets"}));
-	AssertThat(C{"test"}, doesNotContain(D{"ets"}));
-	AssertThat(D{"test"}, doesNotContain(C{"ets"}));
-	AssertThat(D{"test"}, doesNotContain(D{"ets"}));
+		AssertThat(C{"test"}, contains(C{"est"}));
+		AssertThat(C{"test"}, contains(D{"est"}));
+		AssertThat(D{"test"}, contains(C{"est"}));
+		AssertThat(D{"test"}, contains(D{"est"}));
 
-	AssertThat([&] () { foo(); }, throws<Exception::SizeException>());
-	AssertThat([&] () { foo(); }, throws(Exception::SizeException("", 0, "", "testing")));
+		AssertThat(C{"test"}, doesNotContain(C{"ets"}));
+		AssertThat(C{"test"}, doesNotContain(D{"ets"}));
+		AssertThat(D{"test"}, doesNotContain(C{"ets"}));
+		AssertThat(D{"test"}, doesNotContain(D{"ets"}));
 
-	AssertThat(
-		  [&] () { foo(); }
-		, throws(
-			Exception::SizeException("", 0, "", "testing")
-			, [] (auto a, auto e) { return std::string(a.message) == e.message; }
-		)
-	);
-}
+		AssertThat([&] () { foo(); }, throws<Exception::SizeException>());
+		AssertThat([&] () { foo(); }, throws(Exception::SizeException("", 0, "", "testing")));
+
+		AssertThat(
+			  [&] () { foo(); }
+			, throws(
+				  Exception::SizeException("", 0, "", "testing")
+				, [] (auto a, auto e) { return std::string(a.message) == e.message; }
+			)
+		);
+	}
+};
 
 } // namespace Balau

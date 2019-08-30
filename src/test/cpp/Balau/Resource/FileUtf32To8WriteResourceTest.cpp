@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "FileUtf32To8WriteResourceTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 #include <Balau/Type/OnScopeExit.hpp>
@@ -20,50 +20,56 @@ using Testing::is;
 
 namespace Resource {
 
-File FileUtf32To8WriteResourceTest::prepWritePath(const std::string & testName, const std::string & text) {
-	const std::string filename = std::string("FileUtf32To8WriteResourceTest-") + testName + ".log";
-	File file = TestResources::BalauTestResultsFolder / "Resource" / filename;
-	const std::string fileUriStr = file.toUriString();
+struct FileUtf32To8WriteResourceTest : public Testing::TestGroup<FileUtf32To8WriteResourceTest> {
+	explicit FileUtf32To8WriteResourceTest() {
+		registerTest(&FileUtf32To8WriteResourceTest::test, "test");
+	}
 
-	file.getParentDirectory().createDirectories();
-	AssertThat(file.getParentDirectory().exists(), is(true));
-	file.removeFile();
-	AssertThat(file.exists(), is(false));
+	static File prepWritePath(const std::string & testName, const std::string & text) {
+		const std::string filename = std::string("FileUtf32To8WriteResourceTest-") + testName + ".log";
+		File file = TestResources::BalauTestResultsFolder / "Resource" / filename;
+		const std::string fileUriStr = file.toUriString();
 
-	return file;
-}
+		file.getParentDirectory().createDirectories();
+		AssertThat(file.getParentDirectory().exists(), is(true));
+		file.removeFile();
+		AssertThat(file.exists(), is(false));
 
-void FileUtf32To8WriteResourceTest::test() {
-	const std::string expected =
-		"Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-		"sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+		return file;
+	}
 
-	File fileA = prepWritePath("test_a", expected);
-	File fileB = prepWritePath("test_b", expected);
-	OnScopeExit removeFileA([=] () mutable { fileA.removeFile(); });
-	OnScopeExit removeFileB([=] () mutable { fileB.removeFile(); });
+	void test() {
+		const std::string expected =
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+			"sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
-	auto fileWriteResource = fileA.getUtf32To8WriteResource();
-	auto uriWriteResource = fileB.utf32To8WriteResource();
+		File fileA = prepWritePath("test_a", expected);
+		File fileB = prepWritePath("test_b", expected);
+		OnScopeExit removeFileA([=] () mutable { fileA.removeFile(); });
+		OnScopeExit removeFileB([=] () mutable { fileB.removeFile(); });
 
-	std::u32ostream & fileWriteStream = fileWriteResource.writeStream();
-	std::u32ostream & uriWriteStream = uriWriteResource->writeStream();
+		auto fileWriteResource = fileA.getUtf32To8WriteResource();
+		auto uriWriteResource = fileB.utf32To8WriteResource();
 
-	fileWriteStream << toString32(expected);
-	uriWriteStream << toString32(expected);
+		std::u32ostream & fileWriteStream = fileWriteResource.writeStream();
+		std::u32ostream & uriWriteStream = uriWriteResource->writeStream();
 
-	fileWriteStream.flush();
-	uriWriteStream.flush();
+		fileWriteStream << toString32(expected);
+		uriWriteStream << toString32(expected);
 
-	fileWriteResource.close();
-	uriWriteResource->close();
+		fileWriteStream.flush();
+		uriWriteStream.flush();
 
-	const std::string actualA = Util::Files::readToString(fileA);
-	const std::string actualB = Util::Files::readToString(fileA);
+		fileWriteResource.close();
+		uriWriteResource->close();
 
-	AssertThat(actualA, is(expected));
-	AssertThat(actualB, is(expected));
-}
+		const std::string actualA = Util::Files::readToString(fileA);
+		const std::string actualB = Util::Files::readToString(fileA);
+
+		AssertThat(actualA, is(expected));
+		AssertThat(actualB, is(expected));
+	}
+};
 
 } // namespace Resource
 

@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "FileByteReadResourceTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 #include <Balau/Util/Streams.hpp>
@@ -20,27 +20,33 @@ using Testing::endsWith;
 
 namespace Resource {
 
-void FileByteReadResourceTest::test() {
-	File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+struct FileByteReadResourceTest : public Testing::TestGroup<FileByteReadResourceTest> {
+	FileByteReadResourceTest() {
+		registerTest(&FileByteReadResourceTest::test, "test");
+	}
 
-	auto fileReadResource = file.getByteReadResource();
-	auto uriReadResource = file.byteReadResource();
+	void test() {
+		File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
 
-	std::istream & fileReadStream = fileReadResource.readStream();
-	std::istream & uriReadStream = uriReadResource->readStream();
+		auto fileReadResource = file.getByteReadResource();
+		auto uriReadResource = file.byteReadResource();
 
-	const std::string expectedStart = "# @formatter:off\n";
-	const std::string expectedEnd = "balau.network   = level: debug\n";
+		std::istream & fileReadStream = fileReadResource.readStream();
+		std::istream & uriReadStream = uriReadResource->readStream();
 
-	auto actualFileData = ::toString(fileReadStream);
-	auto actualUriData = ::toString(uriReadStream);
+		const std::string expectedStart = "# @formatter:off\n";
+		const std::string expectedEnd = "balau.network   = level: debug\n";
 
-	AssertThat(actualFileData, startsWith(expectedStart));
-	AssertThat(actualUriData, startsWith(expectedStart));
+		auto actualFileData = ::toString(fileReadStream);
+		auto actualUriData = ::toString(uriReadStream);
 
-	AssertThat(actualFileData, endsWith(expectedEnd));
-	AssertThat(actualUriData, endsWith(expectedEnd));
-}
+		AssertThat(actualFileData, startsWith(expectedStart));
+		AssertThat(actualUriData, startsWith(expectedStart));
+
+		AssertThat(actualFileData, endsWith(expectedEnd));
+		AssertThat(actualUriData, endsWith(expectedEnd));
+	}
+};
 
 } // namespace Resource
 

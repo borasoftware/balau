@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "ZipEntryByteReadResourceTest.hpp"
-
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 #include <Balau/Resource/ZipFile.hpp>
@@ -21,52 +20,58 @@ using Testing::is;
 
 namespace Resource {
 
-void ZipEntryByteReadResourceTest::test() {
-	File file = TestResources::BalauSourceTestResourcesFolder / "Zips" / "ZipFile.zip";
-	ZipFile zipFile(file);
+struct ZipEntryByteReadResourceTest : public Testing::TestGroup<ZipEntryByteReadResourceTest> {
+	ZipEntryByteReadResourceTest() {
+		registerTest(&ZipEntryByteReadResourceTest::test, "test");
+	}
 
-	auto iterator = zipFile.recursiveIterator();
+	void test() {
+		File file = TestResources::BalauSourceTestResourcesFolder / "Zips" / "ZipFile.zip";
+		ZipFile zipFile(file);
 
-	const std::map<std::string, std::string> expectedEntries = {
-		  std::make_pair(std::string("a/aa"),     "aaaaaaaa\n")
-		, std::make_pair(std::string("a/ab"),     "aaaabbbb\n")
-		, std::make_pair(std::string("c/ca"),     "ccccaaaa\n")
-		, std::make_pair(std::string("e/ed/eda"), "eeeeddddaaaa\n")
-		, std::make_pair(std::string("e/ed/edb"), "eeeeddddbbbb\n")
-		, std::make_pair(std::string("e/ea"),     "eeeeaaaa\n")
-		, std::make_pair(std::string("e/eb"),     "eeeebbbb\n")
-		, std::make_pair(std::string("e/ec"),     "eeeecccc\n")
-		, std::make_pair(std::string("b"),        "bbbb\n")
-		, std::make_pair(std::string("d"),        "dddd\n")
-		, std::make_pair(std::string("f"),        "ffff\n")
-	};
+		auto iterator = zipFile.recursiveIterator();
 
-	while (iterator->hasNext()) {
-		auto next = iterator->next();
-		auto & zipEntry = * dynamic_cast<ZipEntry *>(next.get());
-		auto p = zipEntry.name();
+		const std::map<std::string, std::string> expectedEntries = {
+			  std::make_pair(std::string("a/aa"),     "aaaaaaaa\n")
+			, std::make_pair(std::string("a/ab"),     "aaaabbbb\n")
+			, std::make_pair(std::string("c/ca"),     "ccccaaaa\n")
+			, std::make_pair(std::string("e/ed/eda"), "eeeeddddaaaa\n")
+			, std::make_pair(std::string("e/ed/edb"), "eeeeddddbbbb\n")
+			, std::make_pair(std::string("e/ea"),     "eeeeaaaa\n")
+			, std::make_pair(std::string("e/eb"),     "eeeebbbb\n")
+			, std::make_pair(std::string("e/ec"),     "eeeecccc\n")
+			, std::make_pair(std::string("b"),        "bbbb\n")
+			, std::make_pair(std::string("d"),        "dddd\n")
+			, std::make_pair(std::string("f"),        "ffff\n")
+		};
 
-		if (!Util::Strings::endsWith(p, "/")) {
-			auto iter = expectedEntries.find(p);
+		while (iterator->hasNext()) {
+			auto next = iterator->next();
+			auto & zipEntry = * dynamic_cast<ZipEntry *>(next.get());
+			auto p = zipEntry.name();
 
-			AssertThat(iter == expectedEntries.end(), is(false));
+			if (!Util::Strings::endsWith(p, "/")) {
+				auto iter = expectedEntries.find(p);
 
-			const auto & expected = iter->second;
+				AssertThat(iter == expectedEntries.end(), is(false));
 
-			auto zipEntryReadResource = zipEntry.getByteReadResource();
-			auto uriReadResource = zipEntry.byteReadResource();
+				const auto & expected = iter->second;
 
-			std::istream & zipEntryReadStream = zipEntryReadResource.readStream();
-			std::istream & uriReadStream = uriReadResource->readStream();
+				auto zipEntryReadResource = zipEntry.getByteReadResource();
+				auto uriReadResource = zipEntry.byteReadResource();
 
-			auto actualZipEntryData = ::toString(zipEntryReadStream);
-			auto actualUriData = ::toString(uriReadStream);
+				std::istream & zipEntryReadStream = zipEntryReadResource.readStream();
+				std::istream & uriReadStream = uriReadResource->readStream();
 
-			AssertThat(actualZipEntryData, is(expected));
-			AssertThat(actualUriData, is(expected));
+				auto actualZipEntryData = ::toString(zipEntryReadStream);
+				auto actualUriData = ::toString(uriReadStream);
+
+				AssertThat(actualZipEntryData, is(expected));
+				AssertThat(actualUriData, is(expected));
+			}
 		}
 	}
-}
+};
 
 } // namespace Resource
 

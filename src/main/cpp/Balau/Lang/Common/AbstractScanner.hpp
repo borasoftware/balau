@@ -72,7 +72,7 @@ template <typename TokenT> class AbstractScanner {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	protected: AbstractScanner(std::shared_ptr<Resource::Uri> uri_)
+	protected: explicit AbstractScanner(std::shared_ptr<Resource::Uri> uri_)
 		: currentChar(0)
 		, uri(std::move(uri_))
 		, text(::toString(uri->byteReadResource()->readStream()))

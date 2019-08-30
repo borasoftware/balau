@@ -48,11 +48,11 @@ class Fork {
 	/// handle child termination.
 	///
 	/// @param  function the function to run in the child process
-	/// @param  exitChild if set to true, exit(int) is called with the the exit state of the function
+	/// @param  exitChild if set to true, _Exit(int) is called with the the exit state of the function
 	/// @return the child pid for the parent process, the exit state of the function for the child process if it returns
 	/// @throw ForkException if the fork call failed
 	///
-	public: template <typename ChildFunction> static int performFork(ChildFunction function, bool exitChild) {
+	public: static int performFork(const std::function<int ()> & function, bool exitChild) {
 		Assert::assertion(forkSupported(), "fork() called for platform that does not support it.");
 
 		const int pid = ::fork();
@@ -61,7 +61,7 @@ class Fork {
 			const int status = function();
 
 			if (exitChild) {
-				exit(status);
+				_Exit(status);
 			} else {
 				return status;
 			}
@@ -84,7 +84,7 @@ class Fork {
 	/// @return the child pid for the parent process and zero for the child process
 	/// @throw ForkException if the fork call failed
 	///
-	public: template <typename ChildFunction> static int performFork(ChildFunction function) {
+	public: static int performFork(const std::function<int ()> & function) {
 		Assert::assertion(forkSupported(), "fork() called for platform that does not support it.");
 
 		const int pid = ::fork();
@@ -116,19 +116,27 @@ class Fork {
 		///
 		int code;
 
-		TerminationReport() : pid(0), code(0) {}
+		///
+		/// The exit status.
+		///
+		int exitStatus;
 
-		TerminationReport(int pid_, int code_) : pid(pid_), code(code_) {}
+		TerminationReport() : pid(0), code(0), exitStatus(0) {}
+
+		TerminationReport(int pid_, int code_, int exitStatus_)
+			: pid(pid_), code(code_), exitStatus(exitStatus_) {}
 
 		TerminationReport(const TerminationReport & copy) = default;
 
-		TerminationReport(TerminationReport && rhs) noexcept : pid(rhs.pid), code(rhs.code) {}
+		TerminationReport(TerminationReport && rhs) noexcept
+			: pid(rhs.pid), code(rhs.code), exitStatus(rhs.exitStatus) {}
 
 		TerminationReport & operator = (const TerminationReport & copy) = default;
 
 		TerminationReport & operator = (TerminationReport && rhs) noexcept {
 			pid = rhs.pid;
 			code = rhs.code;
+			exitStatus = rhs.exitStatus;
 			return *this;
 		}
 	};
@@ -155,7 +163,7 @@ class Fork {
 		if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
 			ThrowBalauException(Exception::WaitException, errno);
 		} else if (infop.si_pid) {
-			return TerminationReport(pid, infop.si_code);
+			return TerminationReport(pid, infop.si_code, infop.si_status);
 		}
 
 		// TODO what else may happen here?
@@ -176,7 +184,7 @@ class Fork {
 	///
 	public: static TerminationReport checkForTermination(int pid) {
 		if (pid <= 0) {
-			return TerminationReport(0, 0);
+			return TerminationReport();
 		}
 
 		siginfo_t infop;
@@ -191,7 +199,7 @@ class Fork {
 				case CLD_EXITED:
 				case CLD_KILLED:
 				case CLD_DUMPED: {
-					return TerminationReport(pid, infop.si_code);
+					return TerminationReport(pid, infop.si_code, infop.si_status);
 				}
 
 				default: {
@@ -200,7 +208,7 @@ class Fork {
 			}
 		}
 
-		return TerminationReport(0, 0);
+		return TerminationReport();
 	}
 
 	///
@@ -229,7 +237,7 @@ class Fork {
 					case CLD_EXITED:
 					case CLD_KILLED:
 					case CLD_DUMPED: {
-						reports.emplace_back(pid, infop.si_code);
+						reports.emplace_back(pid, infop.si_code, infop.si_status);
 					}
 
 					default: {
@@ -254,7 +262,7 @@ class Fork {
 	///
 	public: static TerminationReport terminateProcess(int pid) {
 		if (pid <= 0) {
-			return TerminationReport(0, 0);
+			return TerminationReport();
 		}
 
 		siginfo_t infop;
@@ -269,7 +277,7 @@ class Fork {
 				case CLD_EXITED:
 				case CLD_KILLED:
 				case CLD_DUMPED: {
-					return TerminationReport(pid, infop.si_code);
+					return TerminationReport(pid, infop.si_code, infop.si_status);
 				}
 
 				default: {
@@ -279,7 +287,7 @@ class Fork {
 			}
 		}
 
-		return TerminationReport(0, 0);
+		return TerminationReport();
 	}
 };
 

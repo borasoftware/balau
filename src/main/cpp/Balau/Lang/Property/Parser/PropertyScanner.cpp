@@ -9,7 +9,6 @@
 //
 
 #include "PropertyScanner.hpp"
-#include "../../../Exception/ParsingExceptions.hpp"
 
 namespace Balau::Lang::Property {
 

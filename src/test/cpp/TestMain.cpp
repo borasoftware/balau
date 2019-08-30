@@ -9,6 +9,7 @@
 //
 
 #include "Balau/Testing/TestRunner.hpp"
+#include <Balau/Concurrent/Fork.hpp>
 
 using namespace Balau;
 
@@ -36,7 +37,7 @@ int runAllExecutionModels(int argc, char * argv[]) {
 
 	// Runs the test for a single execution model.
 	struct RunTests {
-		int runTests(const char * executable, Testing::ExecutionModel model, const std::string & testList) {
+		static int runTests(const char * executable, Testing::ExecutionModel model, const std::string & testList) {
 			auto modelStr = toString(model);
 
 			char * args[5];
@@ -46,29 +47,37 @@ int runAllExecutionModels(int argc, char * argv[]) {
 			args[3] = testList.empty() ? nullptr : strdup(testList.c_str());
 			args[4] = nullptr;
 
-			const int exitStatus = execvp(executable, args);
+			const int pid = Concurrent::Fork::performFork(
+				[&] () {
+					return execvp(executable, args);
+				}
+				, true
+			);
+
+			Concurrent::Fork::TerminationReport report = Concurrent::Fork::waitOnProcess(pid);
 
 			free(args[0]);
 			free(args[1]);
 			free(args[2]);
+			free(args[3]);
 
-			std::ostream & stream = exitStatus == 0 ? std::cout : std::cerr;
+			std::ostream & stream = report.exitStatus == 0 ? std::cout : std::cerr;
 			stream << "\n\n***** Test run for execution model " << toString(model)
-			       << " returned exit status " << exitStatus << " *****\n" << std::endl;
-			return exitStatus;
+			       << " returned exit status " << report.exitStatus << " *****\n" << std::endl;
+			return report.exitStatus;
 		}
 	};
 
 	int thisExitStatus;
 	int exitStatus = 0;
 
-	thisExitStatus = RunTests().runTests(argv[0], Testing::SingleThreaded, testList);
+	thisExitStatus = RunTests::runTests(argv[0], Testing::SingleThreaded, testList);
 	exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
-	thisExitStatus = RunTests().runTests(argv[0], Testing::WorkerThreads, testList);
+	thisExitStatus = RunTests::runTests(argv[0], Testing::WorkerThreads, testList);
 	exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
-	thisExitStatus = RunTests().runTests(argv[0], Testing::WorkerProcesses, testList);
+	thisExitStatus = RunTests::runTests(argv[0], Testing::WorkerProcesses, testList);
 	exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
-	thisExitStatus = RunTests().runTests(argv[0], Testing::ProcessPerTest, testList);
+	thisExitStatus = RunTests::runTests(argv[0], Testing::ProcessPerTest, testList);
 	exitStatus = thisExitStatus != 0 ? thisExitStatus : exitStatus;
 
 	std::cout << "Finished running tests with all execution models in turn.\n";

@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "StringByteReadResourceTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 #include <Balau/Resource/StringUri.hpp>
@@ -20,23 +20,29 @@ using Testing::is;
 
 namespace Resource {
 
-void StringByteReadResourceTest::test() {
-	const std::string expected = "some random text";
+struct StringByteReadResourceTest : public Testing::TestGroup<StringByteReadResourceTest> {
+	StringByteReadResourceTest() {
+		registerTest(&StringByteReadResourceTest::test, "test");
+	}
 
-	StringUri uri(expected);
+	void test() {
+		const std::string expected = "some random text";
 
-	auto stringReadResource = uri.getByteReadResource();
-	auto uriReadResource = uri.byteReadResource();
+		StringUri uri(expected);
 
-	std::istream & stringReadStream = stringReadResource.readStream();
-	std::istream & uriReadStream = uriReadResource->readStream();
+		auto stringReadResource = uri.getByteReadResource();
+		auto uriReadResource = uri.byteReadResource();
 
-	auto actualStringData = ::toString(stringReadStream);
-	auto actualUriData = ::toString(uriReadStream);
+		std::istream & stringReadStream = stringReadResource.readStream();
+		std::istream & uriReadStream = uriReadResource->readStream();
 
-	AssertThat(actualStringData, is(expected));
-	AssertThat(actualUriData, is(expected));
-}
+		auto actualStringData = ::toString(stringReadStream);
+		auto actualUriData = ::toString(uriReadStream);
+
+		AssertThat(actualStringData, is(expected));
+		AssertThat(actualUriData, is(expected));
+	}
+};
 
 } // namespace Resource
 

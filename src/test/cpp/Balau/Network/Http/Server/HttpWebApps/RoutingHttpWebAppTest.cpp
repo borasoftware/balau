@@ -8,7 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "RoutingHttpWebAppTest.hpp"
+#include <Balau/Network/Http/Server/NetworkTypes.hpp>
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../../../../TestResources.hpp"
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
@@ -20,6 +21,12 @@
 #include <Balau/Type/OnScopeExit.hpp>
 #include <Balau/Logging/Logger.hpp>
 
+namespace {
+
+const unsigned short routingHttpWebAppTestPortStart = 43254;
+
+} // namespace
+
 namespace Balau {
 
 using Testing::is;
@@ -27,83 +34,87 @@ using Testing::isGreaterThan;
 
 namespace Network::Http::HttpWebApps {
 
-void assertResponse(const CharVectorResponse & response, const Resource::File & filePath) {
-	const auto & header = response.base();
-	auto reason = header.reason();
-	auto result = header.result();
-	auto chunked = response.chunked();
-	auto hasContentLength = response.has_content_length();
-	auto keepAlive = response.keep_alive();
-	auto needEof = response.need_eof();
-	auto payloadSize = response.payload_size();
-	auto version = response.version();
+struct RoutingHttpWebAppTest : public Testing::TestGroup<RoutingHttpWebAppTest> {
+	RoutingHttpWebAppTest() {
+		registerTest(&RoutingHttpWebAppTest::test, "test");
+	}
 
-	AssertThat(reason, is("OK"));
-	AssertThat(result, is(Status::ok));
-	AssertThat(chunked, is(false));
-	AssertThat(hasContentLength, is(true));
-	AssertThat(keepAlive, is(true));
-	AssertThat(needEof, is(false));
-	AssertThat(payloadSize.is_initialized(), is(true));
-	AssertThat(payloadSize.value(), isGreaterThan(0ULL));
-	AssertThat(version, is(11U));
+	static void assertResponse(const CharVectorResponse & response, const Resource::File & filePath) {
+		const auto & header = response.base();
+		auto reason = header.reason();
+		auto result = header.result();
+		auto chunked = response.chunked();
+		auto hasContentLength = response.has_content_length();
+		auto keepAlive = response.keep_alive();
+		auto needEof = response.need_eof();
+		auto payloadSize = response.payload_size();
+		auto version = response.version();
 
-	const std::vector<char> & actualBody = response.body();
-	const std::vector<char> expectedBody = Util::Files::readToVector(filePath);
+		AssertThat(reason, is("OK"));
+		AssertThat(result, is(Status::ok));
+		AssertThat(chunked, is(false));
+		AssertThat(hasContentLength, is(true));
+		AssertThat(keepAlive, is(true));
+		AssertThat(needEof, is(false));
+		AssertThat(payloadSize.is_initialized(), is(true));
+		AssertThat(payloadSize.value(), isGreaterThan(0ULL));
+		AssertThat(version, is(11U));
 
-	AssertThat(actualBody, is(expectedBody));
-}
+		const std::vector<char> & actualBody = response.body();
+		const std::vector<char> expectedBody = Util::Files::readToVector(filePath);
 
-const unsigned short routingHttpWebAppTestPortStart = 43254;
+		AssertThat(actualBody, is(expectedBody));
+	}
 
-Logger & logger = Logger::getLogger("TestMain"); // NOLINT
+	Logger & logger = Logger::getLogger("TestMain"); // NOLINT
 
-void RoutingHttpWebAppTest::test() {
-	const auto documentRoot = TestResources::BalauSourceFolder / "doc";
+	void test() {
+		const auto documentRoot = TestResources::BalauSourceFolder / "doc";
 
-	RoutingHttpWebApp::Routing routing;
+		RoutingHttpWebApp::Routing routing;
 
-	routing.add(routingNode<FileServingHttpWebApp>("manual", Resource::File(documentRoot)))
-		.add(routingNode<FileServingHttpWebApp>("bdml",  Resource::File(documentRoot)));
+		routing.add(routingNode<FileServingHttpWebApp>("manual", Resource::File(documentRoot)))
+			.add(routingNode<FileServingHttpWebApp>("bdml",  Resource::File(documentRoot)));
 
-	auto handler = std::shared_ptr<HttpWebApp>(new RoutingHttpWebApp(std::move(routing)));
+		auto handler = std::shared_ptr<HttpWebApp>(new RoutingHttpWebApp(std::move(routing)));
 
-	std::shared_ptr<HttpServer> server;
+		std::shared_ptr<HttpServer> server;
 
-	const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-		[&server, &handler] () {
-			auto endpoint = makeEndpoint(
-				  "127.0.0.1"
-				, Testing::NetworkTesting::getFreeTcpPort(routingHttpWebAppTestPortStart, 50)
-			);
+		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
+			[&server, &handler] () {
+				auto endpoint = makeEndpoint(
+					  "127.0.0.1"
+					, Testing::NetworkTesting::getFreeTcpPort(routingHttpWebAppTestPortStart, 50)
+				);
 
-			auto clock = std::shared_ptr<System::Clock>(new System::SystemClock());
+				auto clock = std::shared_ptr<System::Clock>(new System::SystemClock());
 
-			server = std::shared_ptr<HttpServer>(
-				new HttpServer(clock, "BalauTest", endpoint, "RoutingHandler", 4, handler)
-			);
+				server = std::shared_ptr<HttpServer>(
+					new HttpServer(clock, "BalauTest", endpoint, "RoutingHandler", 4, handler)
+				);
 
-			server->startAsync();
-			return server->getPort();
-		}
-	);
+				server->startAsync();
+				return server->getPort();
+			}
+		);
 
-	HttpClient client("localhost", port);
+		HttpClient client("localhost", port);
 
-	const std::string bdmlPath = "/manual/index.bdml";
-	const std::string cssPath = "/bdml/css/bdml.css";
+		const std::string bdmlPath = "/manual/index.bdml";
+		const std::string cssPath = "/bdml/css/bdml.css";
 
-	auto bdmlResponse = client.get(bdmlPath);
-	auto cssResponse = client.get(cssPath);
+		auto bdmlResponse = client.get(bdmlPath);
+		auto cssResponse = client.get(cssPath);
 
-	assertResponse(bdmlResponse, documentRoot / bdmlPath);
+		assertResponse(bdmlResponse, documentRoot / bdmlPath);
 
-	logger.info("Received bdml page: {}", bdmlPath);
+		logger.info("Received bdml page: {}", bdmlPath);
 
-	assertResponse(cssResponse, documentRoot / cssPath);
+		assertResponse(cssResponse, documentRoot / cssPath);
 
-	logger.info("Received css page: {}", bdmlPath);
-}
+		logger.info("Received css page: {}", bdmlPath);
+	}
+};
 
 } // namespace Network::Http::HttpWebApps
 

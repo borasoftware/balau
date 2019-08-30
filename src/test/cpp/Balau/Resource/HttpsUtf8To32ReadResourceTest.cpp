@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "HttpsUtf8To32ReadResourceTest.hpp"
-
+#include <Balau/Testing/TestRunner.hpp>
 #include <Balau/Resource/Https.hpp>
 #include <Balau/Util/Streams.hpp>
 
@@ -21,38 +20,45 @@ using Testing::is;
 
 namespace Resource {
 
-void HttpsUtf8To32ReadResourceTest::emptyPath() {
-	performTest("http://borasoftware.com", U"<html>\r\n<head><title>302 Found</title></head>");
-}
+struct HttpsUtf8To32ReadResourceTest : public Testing::TestGroup<HttpsUtf8To32ReadResourceTest> {
+	explicit HttpsUtf8To32ReadResourceTest() {
+		registerTest(&HttpsUtf8To32ReadResourceTest::nonEmptyPath, "nonEmptyPath");
+		registerTest(&HttpsUtf8To32ReadResourceTest::emptyPath, "emptyPath");
+	}
 
-void HttpsUtf8To32ReadResourceTest::nonEmptyPath() {
-	performTest("https://borasoftware.com/en/index.html", U"<!DOCTYPE html");
-}
+	void performTest(const std::string & url_, const std::u32string & expectedStart) {
+		try {
+			Https url(url_);
 
-void HttpsUtf8To32ReadResourceTest::performTest(const std::string & url_, const std::u32string & expectedStart) {
-	try {
-		Https url(url_);
+			auto httpsReadResource = url.getUtf8To32ReadResource();
+			auto uriReadResource = url.utf8To32ReadResource();
 
-		auto httpsReadResource = url.getUtf8To32ReadResource();
-		auto uriReadResource = url.utf8To32ReadResource();
+			std::u32istream & httpsReadStream = httpsReadResource.readStream();
+			std::u32istream & uriReadStream = uriReadResource->readStream();
 
-		std::u32istream & httpsReadStream = httpsReadResource.readStream();
-		std::u32istream & uriReadStream = uriReadResource->readStream();
+			auto actualHttpsData = toString32(httpsReadStream);
+			auto actualUriData = toString32(uriReadStream);
 
-		auto actualHttpsData = toString32(httpsReadStream);
-		auto actualUriData = toString32(uriReadStream);
-
-		AssertThat(actualHttpsData, startsWith(expectedStart));
-		AssertThat(actualUriData, startsWith(expectedStart));
-	} catch (const boost::system::system_error & e) {
-		if (e.code() == boost::system::errc::device_or_resource_busy) {
-			// Ignore due to no network available.
-			ignore();
-		} else {
-			throw;
+			AssertThat(actualHttpsData, startsWith(expectedStart));
+			AssertThat(actualUriData, startsWith(expectedStart));
+		} catch (const boost::system::system_error & e) {
+			if (e.code() == boost::system::errc::device_or_resource_busy) {
+				// Ignore due to no network available.
+				ignore();
+			} else {
+				throw;
+			}
 		}
 	}
-}
+
+	void emptyPath() {
+		performTest("http://borasoftware.com", U"<html>\r\n<head><title>302 Found</title></head>");
+	}
+
+	void nonEmptyPath() {
+		performTest("https://borasoftware.com/en/index.html", U"<!DOCTYPE html");
+	}
+};
 
 } // namespace Resource
 

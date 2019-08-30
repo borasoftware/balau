@@ -98,7 +98,7 @@ inline Balau::U8String<AllocatorT> toString(const std::string_view & value) {
 	return Balau::U8String<AllocatorT>(value);
 }
 
-#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+#ifndef BALAU_USE_BOOST_STRING_VIEW
 
 ///
 /// Creates a string from the Boost string view.
@@ -495,7 +495,7 @@ inline Balau::U16String<AllocatorT> toString16(const std::string_view & value) {
 }
 
 
-#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+#ifndef BALAU_USE_BOOST_STRING_VIEW
 
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-16 string.
@@ -877,7 +877,7 @@ inline Balau::U32String<AllocatorT> toString32(const std::string_view & value) {
 	return toString32<AllocatorT>(Balau::U8String<AllocatorT>(value));
 }
 
-#ifdef BALAU_STD_STRING_VIEW_AVAILABLE
+#ifndef BALAU_USE_BOOST_STRING_VIEW
 
 ///
 /// Convert the supplied UTF-8 Boost string view to a UTF-32 string.

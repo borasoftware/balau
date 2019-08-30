@@ -93,7 +93,7 @@ class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
 		for (unsigned int childProcessIndex = 0; childProcessIndex < concurrencyLevel; ++childProcessIndex) {
 			if (childPids[childProcessIndex] == 0) {
 				const int pid = Concurrent::Fork::performFork(
-					[&, this] () {
+					[&, this] () -> int {
 						// Child process.
 
 						if (!singleShot) {
@@ -106,8 +106,9 @@ class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
 
 						runChildLogic(childProcessIndex, singleShot);
 						reportChildProcessCompletion();
-						exit(0);
+						return 0;
 					}
+					, true
 				);
 
 				// Parent process.

@@ -8,8 +8,9 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "DateTimeTest.hpp"
-
+// Include before test runner for toString functions.
+#include <Balau/Util/DateTime.hpp>
+#include <Balau/Testing/TestRunner.hpp>
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/System/Sleep.hpp>
 
@@ -29,28 +30,36 @@ const std::vector<std::pair<std::chrono::milliseconds, std::string>> testData = 
 
 const char * Format = "%H:%M:%S";
 
-void DateTimeTest::toStringString() {
-	for (const auto & element : testData) {
-		const std::string s = DateTime::toString(Format, element.first);
-		AssertThat(s, is(std::string(element.second)));
+struct DateTimeTest : public Testing::TestGroup<DateTimeTest> {
+	DateTimeTest() {
+		registerTest(&DateTimeTest::toStringString, "toStringString");
+		registerTest(&DateTimeTest::toStringStream, "toStringStream");
+		registerTest(&DateTimeTest::toDuration,     "toTimePoint");
 	}
-}
 
-void DateTimeTest::toStringStream() {
-	for (const auto & element : testData) {
-		std::ostringstream stream;
-		DateTime::toString(stream, Format, element.first);
-		const std::string actual = stream.str();
-		AssertThat(actual, is(std::string(element.second)));
+	void toStringString() {
+		for (const auto & element : testData) {
+			const std::string s = DateTime::toString(Format, element.first);
+			AssertThat(s, is(std::string(element.second)));
+		}
 	}
-}
 
-void DateTimeTest::toDuration() {
-	for (const auto & element : testData) {
-		const auto d = DateTime::toDuration<int64_t, std::nano>(Format, std::string(element.second));
-		AssertThat(d, is(element.first));
+	void toStringStream() {
+		for (const auto & element : testData) {
+			std::ostringstream stream;
+			DateTime::toString(stream, Format, element.first);
+			const std::string actual = stream.str();
+			AssertThat(actual, is(std::string(element.second)));
+		}
 	}
-}
+
+	void toDuration() {
+		for (const auto & element : testData) {
+			const auto d = DateTime::toDuration<int64_t, std::nano>(Format, std::string(element.second));
+			AssertThat(d, is(element.first));
+		}
+	}
+};
 
 } // namespace Util
 

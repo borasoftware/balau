@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "FileUtf8To32ReadResourceTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
 
 #include <Balau/Util/Streams.hpp>
@@ -20,27 +20,33 @@ using Testing::endsWith;
 
 namespace Resource {
 
-void FileUtf8To32ReadResourceTest::test() {
-	File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+struct FileUtf8To32ReadResourceTest : public Testing::TestGroup<FileUtf8To32ReadResourceTest> {
+	explicit FileUtf8To32ReadResourceTest() {
+		registerTest(&FileUtf8To32ReadResourceTest::test, "test");
+	}
 
-	auto fileReadResource = file.getUtf8To32ReadResource();
-	auto uriReadResource = file.utf8To32ReadResource();
+	void test() {
+		File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
 
-	std::u32istream & fileReadStream = fileReadResource.readStream();
-	std::u32istream & uriReadStream = uriReadResource->readStream();
+		auto fileReadResource = file.getUtf8To32ReadResource();
+		auto uriReadResource = file.utf8To32ReadResource();
 
-	const std::u32string expectedStart = U"# @formatter:off\n";
-	const std::u32string expectedEnd = U"balau.network   = level: debug\n";
+		std::u32istream & fileReadStream = fileReadResource.readStream();
+		std::u32istream & uriReadStream = uriReadResource->readStream();
 
-	auto actualFileData = toString32(fileReadStream);
-	auto actualUriData = toString32(uriReadStream);
+		const std::u32string expectedStart = U"# @formatter:off\n";
+		const std::u32string expectedEnd = U"balau.network   = level: debug\n";
 
-	AssertThat(actualFileData, startsWith(expectedStart));
-	AssertThat(actualUriData, startsWith(expectedStart));
+		auto actualFileData = toString32(fileReadStream);
+		auto actualUriData = toString32(uriReadStream);
 
-	AssertThat(actualFileData, endsWith(expectedEnd));
-	AssertThat(actualUriData, endsWith(expectedEnd));
-}
+		AssertThat(actualFileData, startsWith(expectedStart));
+		AssertThat(actualUriData, startsWith(expectedStart));
+
+		AssertThat(actualFileData, endsWith(expectedEnd));
+		AssertThat(actualUriData, endsWith(expectedEnd));
+	}
+};
 
 } // namespace Resource
 

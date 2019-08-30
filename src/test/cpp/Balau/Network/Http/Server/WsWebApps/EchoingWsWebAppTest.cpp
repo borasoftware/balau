@@ -8,7 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "EchoingWsWebAppTest.hpp"
+#include <Balau/Network/Http/Server/NetworkTypes.hpp>
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../../../../TestResources.hpp"
 
 #include <Balau/Network/Http/Client/WsClient.hpp>
@@ -25,46 +26,52 @@ using Testing::is;
 
 namespace Network::Http::WsWebApps {
 
-void EchoingWsWebAppTest::test() {
-	const unsigned short testPortStart = 47291;
-	auto documentRoot = TestResources::BalauSourceFolder / "doc";
+struct EchoingWsWebAppTest : public Testing::TestGroup<EchoingWsWebAppTest> {
+	EchoingWsWebAppTest() {
+		// WIP registerTest(&EchoingWsWebAppTest::test, "test");
+	}
 
-	HttpWebApps::RoutingHttpWebApp::Routing httpRouting(HttpWebApps::routingNode<HttpWebApps::FailingHttpWebApp>(""));
+	void test() {
+		const unsigned short testPortStart = 47291;
+		auto documentRoot = TestResources::BalauSourceFolder / "doc";
 
-	RoutingWsWebApp::Routing wsRouting(WsWebApps::routingNode<WsWebApps::EchoingWsWebApp>(""));
+		HttpWebApps::RoutingHttpWebApp::Routing httpRouting(HttpWebApps::routingNode<HttpWebApps::FailingHttpWebApp>(""));
 
-	std::shared_ptr<HttpServer> server;
-	auto httpHandler = std::shared_ptr<HttpWebApp>(new HttpWebApps::RoutingHttpWebApp(std::move(httpRouting)));
-	auto wsHandler = std::shared_ptr<WsWebApp>(new WsWebApps::RoutingWsWebApp(std::move(wsRouting)));
+		RoutingWsWebApp::Routing wsRouting(WsWebApps::routingNode<WsWebApps::EchoingWsWebApp>(""));
 
-	const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-		[&server, &httpHandler, &wsHandler] () {
-			auto endpoint = makeEndpoint(
-				"127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
-			);
+		std::shared_ptr<HttpServer> server;
+		auto httpHandler = std::shared_ptr<HttpWebApp>(new HttpWebApps::RoutingHttpWebApp(std::move(httpRouting)));
+		auto wsHandler = std::shared_ptr<WsWebApp>(new WsWebApps::RoutingWsWebApp(std::move(wsRouting)));
 
-			auto clock = std::shared_ptr<System::Clock>(new System::SystemClock());
+		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
+			[&server, &httpHandler, &wsHandler] () {
+				auto endpoint = makeEndpoint(
+					"127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
+				);
 
-			server = std::shared_ptr<HttpServer>(
-				new HttpServer(clock, "BalauTest", endpoint, "RoutingHandler", 4, httpHandler, wsHandler)
-			);
+				auto clock = std::shared_ptr<System::Clock>(new System::SystemClock());
 
-			server->startAsync();
-			return server->getPort();
-		}
-	);
+				server = std::shared_ptr<HttpServer>(
+					new HttpServer(clock, "BalauTest", endpoint, "RoutingHandler", 4, httpHandler, wsHandler)
+				);
 
-	WsClient client("localhost", port);
+				server->startAsync();
+				return server->getPort();
+			}
+		);
 
-	const std::string path = "/";
-	const std::string testData = "qwertyuiopasdfghjklzxcvbnm";
+		WsClient client("localhost", port);
 
-	auto data = boost::asio::buffer(std::string(testData));
+		const std::string path = "/";
+		const std::string testData = "qwertyuiopasdfghjklzxcvbnm";
 
-	Buffer response = client.send<Buffer>(path, data);
+		auto data = boost::asio::buffer(std::string(testData));
 
-	AssertThat(std::string_view((char *) response.data().data(), response.size()), is(testData));
-}
+		auto response = client.send<Buffer>(path, data);
+
+		AssertThat(std::string_view((char *) response.data().data(), response.size()), is(testData));
+	}
+};
 
 } // namespace Network::Http::WsWebApps
 

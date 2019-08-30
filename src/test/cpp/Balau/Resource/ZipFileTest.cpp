@@ -8,10 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "ZipFileTest.hpp"
-
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
-
 #include <Balau/Resource/ZipFile.hpp>
 
 namespace Balau {
@@ -20,30 +18,37 @@ using Testing::is;
 
 namespace Resource {
 
-void ZipFileTest::iteration() {
-	ZipFile root(TestResources::BalauSourceTestResourcesFolder / "Zips" / "ZipFile.zip");
-	auto iterator = root.recursiveZipFileIterator();
 
-	size_t regularEntryCount = 0;
-	size_t regularEntryCumulativeSize = 0;
-	size_t directoryEntryCount = 0;
-
-	while (iterator.hasNext()) {
-		auto entry = iterator.next();
-
-		if (entry.isEntryFile()) {
-			++regularEntryCount;
-			regularEntryCumulativeSize += entry.size();
-		} else if (entry.isEntryDirectory()) {
-			++directoryEntryCount;
-		}
+struct ZipFileTest : public Testing::TestGroup<ZipFileTest> {
+	ZipFileTest() {
+		registerTest(&ZipFileTest::iteration, "iteration");
 	}
 
-	AssertThat(regularEntryCount, is(11U));
-	AssertThat(directoryEntryCount, is(4U));
+	void iteration() {
+		ZipFile root(TestResources::BalauSourceTestResourcesFolder / "Zips" / "ZipFile.zip");
+		auto iterator = root.recursiveZipFileIterator();
 
-	AssertThat(regularEntryCumulativeSize, is(95U));
-}
+		size_t regularEntryCount = 0;
+		size_t regularEntryCumulativeSize = 0;
+		size_t directoryEntryCount = 0;
+
+		while (iterator.hasNext()) {
+			auto entry = iterator.next();
+
+			if (entry.isEntryFile()) {
+				++regularEntryCount;
+				regularEntryCumulativeSize += entry.size();
+			} else if (entry.isEntryDirectory()) {
+				++directoryEntryCount;
+			}
+		}
+
+		AssertThat(regularEntryCount, is(11U));
+		AssertThat(directoryEntryCount, is(4U));
+
+		AssertThat(regularEntryCumulativeSize, is(95U));
+	}
+};
 
 } // namespace Resource
 

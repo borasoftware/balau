@@ -8,8 +8,9 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "SystemClockTest.hpp"
-
+// Include before test runner for toString functions.
+#include <Balau/Util/DateTime.hpp>
+#include <Balau/Testing/TestRunner.hpp>
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/System/Sleep.hpp>
 
@@ -20,31 +21,38 @@ using Testing::isGreaterThan;
 
 namespace System {
 
-void SystemClockTest::nanotime() {
-	std::chrono::nanoseconds n1 = SystemClock().nanotime();
-	Sleep::nanoSleep(100);
-	std::chrono::nanoseconds n2 = SystemClock().nanotime();
+struct SystemClockTest : public Testing::TestGroup<SystemClockTest> {
+	SystemClockTest() {
+		registerTest(&SystemClockTest::nanotime,  "nanotime");
+		registerTest(&SystemClockTest::millitime, "millitime");
+	}
 
-	AssertThat(n2, isGreaterThan(n1));
-}
+	void nanotime() {
+		std::chrono::nanoseconds n1 = SystemClock().nanotime();
+		Sleep::nanoSleep(100);
+		std::chrono::nanoseconds n2 = SystemClock().nanotime();
 
-void SystemClockTest::millitime() {
-	std::chrono::milliseconds m1 = SystemClock().millitime();
-	Sleep::milliSleep(10);
-	std::chrono::milliseconds m2 = SystemClock().millitime();
+		AssertThat(n2, isGreaterThan(n1));
+	}
 
-	AssertThat(m2, isGreaterThan(m1));
+	void millitime() {
+		std::chrono::milliseconds m1 = SystemClock().millitime();
+		Sleep::milliSleep(10);
+		std::chrono::milliseconds m2 = SystemClock().millitime();
 
-	std::chrono::milliseconds m3 = SystemClock().millitime();
-	Sleep::milliSleep(10);
-	std::chrono::nanoseconds n = SystemClock().nanotime();
-	Sleep::milliSleep(10);
-	std::chrono::milliseconds m4 = SystemClock().millitime();
+		AssertThat(m2, isGreaterThan(m1));
 
-	AssertThat(n, isGreaterThan(m3));
-	AssertThat(m4, isGreaterThan(n));
-	AssertThat(n, isGreaterThan(m3));
-}
+		std::chrono::milliseconds m3 = SystemClock().millitime();
+		Sleep::milliSleep(10);
+		std::chrono::nanoseconds n = SystemClock().nanotime();
+		Sleep::milliSleep(10);
+		std::chrono::milliseconds m4 = SystemClock().millitime();
+
+		AssertThat(n, isGreaterThan(m3));
+		AssertThat(m4, isGreaterThan(n));
+		AssertThat(n, isGreaterThan(m3));
+	}
+};
 
 } // namespace System
 

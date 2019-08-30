@@ -107,8 +107,8 @@ class WsClient {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	private: const std::string host;
-	private: const unsigned short port;
+	private: std::string host;
+	private: unsigned short port;
 };
 
 } // namespace Balau::Network::Http

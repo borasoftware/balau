@@ -6,8 +6,7 @@
 //   see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#include "HashLibraryTest.hpp"
-
+#include <Balau/Testing/TestRunner.hpp>
 #include <Balau/ThirdParty/HashLibrary/crc32.h>
 #include <Balau/ThirdParty/HashLibrary/md5.h>
 #include <Balau/ThirdParty/HashLibrary/sha1.h>
@@ -156,192 +155,198 @@ TestSet testset[NumTests] =
   { "433c5303131624c0021d868a30825475e8d0bd3052a022180398f4ca4423b98214b6beaac21c8807a2c33f8c93bd42b092cc1b06cedf3224d5ed1ec29784444f22e08a55aa58542b524b02cd3d5d5f6907afe71c5d7462224a3f9d9e53e7e0846dcbb4ce", "5c444498", "9dc41264137166fe20aebb253ecce43e", "e9c3b6728e90f15a3703d1b9906e8f957ce0d4e5", "19acbb45e086963576fa1847f933f6ed78e777a4a27aca0609969362a72e3abf", "90e10b1ca8d352794d7dbd7bae410bef25f0ec7d080e053f48674237e33ea45f" } // 100
 };
 
-// return number of failed hashes
-template <typename HashMethod, typename Container>
-int check(const Container& input, const std::string & expectedResult) {
-  HashMethod hasher;
-  std::string hash = hasher(&input[0], input.size());
-  if (hash == expectedResult)
-    return 0;
+struct HashLibraryTest : public Testing::TestGroup<HashLibraryTest> {
+    HashLibraryTest() {
+      registerTest(&HashLibraryTest::test, "test");
+    }
 
-  // error
-  std::cerr << "hash failed ! expected \"" << expectedResult << "\" but library computed \"" << hash << "\"" << std::endl;
-  return 1;
-}
+	// return number of failed hashes
+	template <typename HashMethod, typename Container>
+	static int check(const Container& input, const std::string & expectedResult) {
+	  HashMethod hasher;
+	  std::string hash = hasher(&input[0], input.size());
+	  if (hash == expectedResult)
+	    return 0;
 
-
-// same as above for SHA3/Keccak with variable hash size
-template <typename HashMethod, int HashSize, typename Container>
-int check(const Container& input, const std::string & expectedResult) {
-  auto hasher = HashMethod(typename HashMethod::Bits(HashSize));
-  hasher.add(&input[0], input.size());
-  std::string hash = hasher.getHash();
-  if (hash == expectedResult)
-    return 0;
-
-  // error
-  std::cerr << "hash/" << HashSize << " failed ! expected \"" << expectedResult << "\" but library computed \"" << hash << "\"" << std::endl;
-  return 1;
-}
+	  // error
+	  std::cerr << "hash failed ! expected \"" << expectedResult << "\" but library computed \"" << hash << "\"" << std::endl;
+	  return 1;
+	}
 
 
-// same as above but convert input from hex to raw bytes first (can contain zeros)
-template <typename HashMethod, typename InputContainer, typename KeyContainer>
-int checkHmac(const InputContainer& input, const KeyContainer& key, const std::string & expectedResult) {
-  std::string hash = hmac<HashMethod>(&input[0], input.size(), &key[0], key.size());
-  if (hash == expectedResult)
-    return 0;
+	// same as above for SHA3/Keccak with variable hash size
+	template <typename HashMethod, int HashSize, typename Container>
+	static int check(const Container& input, const std::string & expectedResult) {
+	  auto hasher = HashMethod(typename HashMethod::Bits(HashSize));
+	  hasher.add(&input[0], input.size());
+	  std::string hash = hasher.getHash();
+	  if (hash == expectedResult)
+	    return 0;
 
-  // error
-  std::cerr << "hmac hash failed ! expected \"" << expectedResult << "\" but library computed \"" << hash << "\"" << std::endl;
-  return 1;
-}
+	  // error
+	  std::cerr << "hash/" << HashSize << " failed ! expected \"" << expectedResult << "\" but library computed \"" << hash << "\"" << std::endl;
+	  return 1;
+	}
 
 
-// convert from hex to binary
-std::vector<unsigned char> hex2bin(const std::string & hex) {
-  std::vector<unsigned char> result;
-  for (size_t i = 0; i < hex.size(); i++) {
-    unsigned char high = hex[i] >= 'a' ? hex[i] - 'a' + 10 : hex[i] - '0';
-    i++;
-    unsigned char low  = hex[i] >= 'a' ? hex[i] - 'a' + 10 : hex[i] - '0';
-    result.push_back(high * 16 + low);
-  }
-  return result;
-}
+	// same as above but convert input from hex to raw bytes first (can contain zeros)
+	template <typename HashMethod, typename InputContainer, typename KeyContainer>
+	static int checkHmac(const InputContainer& input, const KeyContainer& key, const std::string & expectedResult) {
+	  std::string hash = hmac<HashMethod>(&input[0], input.size(), &key[0], key.size());
+	  if (hash == expectedResult)
+	    return 0;
 
-void HashLibraryTest::test() {
-  int errors = 0;
+	  // error
+	  std::cerr << "hmac hash failed ! expected \"" << expectedResult << "\" but library computed \"" << hash << "\"" << std::endl;
+	  return 1;
+	}
 
-  // http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/SHA_All.pdf
-  // or more compact overview: http://www.di-mgt.com.au/sha_testvectors.html
-  std::string empty;
-  std::string abc = "abc";
-  std::string abc448bits = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-  std::string abc896bits = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu";
-  std::string million(1000000, 'a');
 
-  //std::cout << "test SHA1 ...\n";
-  errors += check<SHA1>(empty,      "da39a3ee5e6b4b0d3255bfef95601890afd80709");
-  errors += check<SHA1>(abc,        "a9993e364706816aba3e25717850c26c9cd0d89d");
-  errors += check<SHA1>(abc448bits, "84983e441c3bd26ebaae4aa1f95129e5e54670f1");
-  errors += check<SHA1>(abc896bits, "a49b2446a02c645bf419f995b67091253a04a259");
-  errors += check<SHA1>(million,    "34aa973cd4c4daa4f61eeb2bdbad27316534016f");
+	// convert from hex to binary
+	static std::vector<unsigned char> hex2bin(const std::string & hex) {
+	  std::vector<unsigned char> result;
+	  for (size_t i = 0; i < hex.size(); i++) {
+	    unsigned char high = hex[i] >= 'a' ? hex[i] - 'a' + 10 : hex[i] - '0';
+	    i++;
+	    unsigned char low  = hex[i] >= 'a' ? hex[i] - 'a' + 10 : hex[i] - '0';
+	    result.push_back(high * 16 + low);
+	  }
+	  return result;
+	}
 
-	//std::cout << "test SHA2/256 ...\n";
-  errors += check<SHA256>(empty,      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-  errors += check<SHA256>(abc,        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
-  errors += check<SHA256>(abc448bits, "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1");
-  errors += check<SHA256>(abc896bits, "cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1");
-  errors += check<SHA256>(million,    "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0");
+	void test() {
+	  int errors = 0;
 
-	//std::cout << "test SHA3/256 ...\n";
-  errors += check<SHA3>(empty,      "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a");
-  errors += check<SHA3>(abc,        "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532");
-  errors += check<SHA3>(abc448bits, "41c0dba2a9d6240849100376a8235e2c82e1b9998a999e21db32dd97496d3376");
-  errors += check<SHA3>(abc896bits, "916f6061fe879741ca6469b43971dfdb28b1a32dc36cb3254e812be27aad1d18");
-  errors += check<SHA3>(million,    "5c8875ae474a3634ba4fd55ec85bffd661f32aca75c6d699d0cdcb6c115891c1");
+	  // http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/SHA_All.pdf
+	  // or more compact overview: http://www.di-mgt.com.au/sha_testvectors.html
+	  std::string empty;
+	  std::string abc = "abc";
+	  std::string abc448bits = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+	  std::string abc896bits = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu";
+	  std::string million(1000000, 'a');
 
-  // next test case produced an error until February 2015, reported by Gary Singer
-  // note: automatic test case 71 failed, too, same bug
-	//std::cout << "test SHA3/512 ...\n";
-  SHA3 sha3_512(SHA3::Bits512);
-  std::vector<unsigned char> sha3bug = hex2bin("13bd2811f6ed2b6f04ff3895aceed7bef8dcd45eb121791bc194a0f806206bffc3b9281c2b308b1a729ce008119dd3066e9378acdcc50a98a82e20738800b6cddbe5fe9694ad6d");
-  if (sha3_512(sha3bug.data(), sha3bug.size())
-      != "def4ab6cda8839729a03e000846604b17f03c5d5d7ec23c483670a13e11573c1e9347a63ec69a5abb21305f9382ecdaaabc6850f92840e86f88f4dabfcd93cc0") {
-    std::cerr << "SHA3/512 bug present" << std::endl;
-    errors++;
-  }
+	  //std::cout << "test SHA1 ...\n";
+	  errors += check<SHA1>(empty,      "da39a3ee5e6b4b0d3255bfef95601890afd80709");
+	  errors += check<SHA1>(abc,        "a9993e364706816aba3e25717850c26c9cd0d89d");
+	  errors += check<SHA1>(abc448bits, "84983e441c3bd26ebaae4aa1f95129e5e54670f1");
+	  errors += check<SHA1>(abc896bits, "a49b2446a02c645bf419f995b67091253a04a259");
+	  errors += check<SHA1>(million,    "34aa973cd4c4daa4f61eeb2bdbad27316534016f");
 
-  // hex conversion failed for SHA3/224 (last eight hex digits [32 bits] were missing)
-  // reported by Alexander Moch in March 2015
-	//std::cout << "test SHA3/224 ...\n";
-  SHA3 sha3_224(SHA3::Bits224);
-  if (check<SHA3, SHA3::Bits224>(empty, "6b4e03423667dbb73b6e15454f0eb1abd4597f9a1b078e3f5b5a6bc7")) {
-    std::cerr << "SHA3/224 bug present" << std::endl;
-    errors++;
-  }
+		//std::cout << "test SHA2/256 ...\n";
+	  errors += check<SHA256>(empty,      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+	  errors += check<SHA256>(abc,        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+	  errors += check<SHA256>(abc448bits, "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1");
+	  errors += check<SHA256>(abc896bits, "cf5b16a778af8380036ce59e7b0492370b249b11e8f07a51afac45037afee9d1");
+	  errors += check<SHA256>(million,    "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0");
 
-	//std::cout << "test Keccak/224 ...\n";
-  Keccak keccak224(Keccak::Keccak224);
-  if (keccak224("") != "f71837502ba8e10837bdd8d365adb85591895602fc552b48b7390abd") {
-    std::cerr << "Keccak/224 bug present" << std::endl;
-    errors++;
-  }
+		//std::cout << "test SHA3/256 ...\n";
+	  errors += check<SHA3>(empty,      "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a");
+	  errors += check<SHA3>(abc,        "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532");
+	  errors += check<SHA3>(abc448bits, "41c0dba2a9d6240849100376a8235e2c82e1b9998a999e21db32dd97496d3376");
+	  errors += check<SHA3>(abc896bits, "916f6061fe879741ca6469b43971dfdb28b1a32dc36cb3254e812be27aad1d18");
+	  errors += check<SHA3>(million,    "5c8875ae474a3634ba4fd55ec85bffd661f32aca75c6d699d0cdcb6c115891c1");
 
-  // check all automatically generated testsets
-	//std::cout << "generic testsets (CRC32,MD5,SHA1,SHA256,SHA3) ..." << std::endl;
-  for (auto & i : testset) {
-    errors += check<CRC32 >(hex2bin(i.input), i.crc32b);
-    errors += check< MD5  >(hex2bin(i.input), i.md5);
-    errors += check< SHA1 >(hex2bin(i.input), i.sha1);
-    errors += check<SHA256>(hex2bin(i.input), i.sha256);
-    errors += check< SHA3 >(hex2bin(i.input), i.sha3_256);
-  }
+	  // next test case produced an error until February 2015, reported by Gary Singer
+	  // note: automatic test case 71 failed, too, same bug
+		//std::cout << "test SHA3/512 ...\n";
+	  SHA3 sha3_512(SHA3::Bits512);
+	  std::vector<unsigned char> sha3bug = hex2bin("13bd2811f6ed2b6f04ff3895aceed7bef8dcd45eb121791bc194a0f806206bffc3b9281c2b308b1a729ce008119dd3066e9378acdcc50a98a82e20738800b6cddbe5fe9694ad6d");
+	  if (sha3_512(sha3bug.data(), sha3bug.size())
+	      != "def4ab6cda8839729a03e000846604b17f03c5d5d7ec23c483670a13e11573c1e9347a63ec69a5abb21305f9382ecdaaabc6850f92840e86f88f4dabfcd93cc0") {
+	    std::cerr << "SHA3/512 bug present" << std::endl;
+	    errors++;
+	  }
 
-  // HMAC MD5 and SHA1 test vectors from RFC2202 http://www.ietf.org/rfc/rfc2202.txt
-	//std::cout << "test HMAC(MD5) ...\n";
-  errors += checkHmac< MD5  >(std::string("Hi There"),
-                              hex2bin("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"),
-                              "9294727a3638bb1c13f48ef8158bfc9d");
-  errors += checkHmac< SHA1 >(std::string("Hi There"),
-                              hex2bin("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"),
-                              "b617318655057264e28bc0b6fb378c8ef146be00");
-  errors += checkHmac< MD5  >(std::string("what do ya want for nothing?"),
-                              std::string("Jefe"),
-                              "750c783e6ab0b503eaa86e310a5db738");
-  errors += checkHmac< SHA1 >(std::string("what do ya want for nothing?"),
-                              std::string("Jefe"),
-                              "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79");
-  errors += checkHmac< MD5  >(hex2bin("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "56be34521d144c88dbb8c733f0e8b3f6");
-  errors += checkHmac< SHA1 >(hex2bin("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "125d7342b9ac11cd91a39af48aa17b4f63f175d3");
-  errors += checkHmac< MD5  >(hex2bin("cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"),
-                              hex2bin("0102030405060708090a0b0c0d0e0f10111213141516171819"),
-                              "697eaf0aca3a3aea3a75164746ffaa79");
-  errors += checkHmac< SHA1 >(hex2bin("cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"),
-                              hex2bin("0102030405060708090a0b0c0d0e0f10111213141516171819"),
-                              "4c9007f4026250c6bc8414f9bf50c86c2d7235da");
-  // test case 5 skipped
-  errors += checkHmac< MD5  >(std::string("Test Using Larger Than Block-Size Key - Hash Key First"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd");
-  errors += checkHmac< SHA1 >(std::string("Test Using Larger Than Block-Size Key - Hash Key First"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "aa4ae5e15272d00e95705637ce8a3b55ed402112");
-  errors += checkHmac< MD5  >(std::string("Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "6f630fad67cda0ee1fb1f562db3aa53e");
-  errors += checkHmac< SHA1 >(std::string("Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "e8e99d0f45237d786d6bbaa7965c7808bbff1a91");
+	  // hex conversion failed for SHA3/224 (last eight hex digits [32 bits] were missing)
+	  // reported by Alexander Moch in March 2015
+		//std::cout << "test SHA3/224 ...\n";
+	  SHA3 sha3_224(SHA3::Bits224);
+	  if (check<SHA3, SHA3::Bits224>(empty, "6b4e03423667dbb73b6e15454f0eb1abd4597f9a1b078e3f5b5a6bc7")) {
+	    std::cerr << "SHA3/224 bug present" << std::endl;
+	    errors++;
+	  }
 
-  // HMAC SHA256 test vectors from RFC4231 http://www.ietf.org/rfc/rfc4231.txt
-	//std::cout << "test HMAC(SHA256) ...\n";
-  errors += checkHmac<SHA256>(std::string("Hi There"),
-                              hex2bin("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"),
-                              "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7");
-  errors += checkHmac<SHA256>(std::string("what do ya want for nothing?"),
-                              std::string("Jefe"),
-                              "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843");
-  errors += checkHmac<SHA256>(hex2bin("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514ced565fe");
-  errors += checkHmac<SHA256>(hex2bin("cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"),
-                              hex2bin("0102030405060708090a0b0c0d0e0f10111213141516171819"),
-                              "82558a389a443c0ea4cc819899f2083a85f0faa3e578f8077a2e3ff46729665b");
-  // test case 5 skipped
-  errors += checkHmac<SHA256>(std::string("Test Using Larger Than Block-Size Key - Hash Key First"),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54");
-  errors += checkHmac<SHA256>(std::string("This is a test using a larger than block-size key and a larger than block-size data. The key needs to be hashed before being used by the HMAC algorithm."),
-                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-                              "9b09ffa71b942fcb27635fbcd5b0e944bfdc63644f0713938a7f51535c3a35e2");
+		//std::cout << "test Keccak/224 ...\n";
+	  Keccak keccak224(Keccak::Keccak224);
+	  if (keccak224("") != "f71837502ba8e10837bdd8d365adb85591895602fc552b48b7390abd") {
+	    std::cerr << "Keccak/224 bug present" << std::endl;
+	    errors++;
+	  }
 
-  AssertThat(errors, is(0));
-}
+	  // check all automatically generated testsets
+		//std::cout << "generic testsets (CRC32,MD5,SHA1,SHA256,SHA3) ..." << std::endl;
+	  for (auto & i : testset) {
+	    errors += check<CRC32 >(hex2bin(i.input), i.crc32b);
+	    errors += check< MD5  >(hex2bin(i.input), i.md5);
+	    errors += check< SHA1 >(hex2bin(i.input), i.sha1);
+	    errors += check<SHA256>(hex2bin(i.input), i.sha256);
+	    errors += check< SHA3 >(hex2bin(i.input), i.sha3_256);
+	  }
+
+	  // HMAC MD5 and SHA1 test vectors from RFC2202 http://www.ietf.org/rfc/rfc2202.txt
+		//std::cout << "test HMAC(MD5) ...\n";
+	  errors += checkHmac< MD5  >(std::string("Hi There"),
+	                              hex2bin("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"),
+	                              "9294727a3638bb1c13f48ef8158bfc9d");
+	  errors += checkHmac< SHA1 >(std::string("Hi There"),
+	                              hex2bin("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"),
+	                              "b617318655057264e28bc0b6fb378c8ef146be00");
+	  errors += checkHmac< MD5  >(std::string("what do ya want for nothing?"),
+	                              std::string("Jefe"),
+	                              "750c783e6ab0b503eaa86e310a5db738");
+	  errors += checkHmac< SHA1 >(std::string("what do ya want for nothing?"),
+	                              std::string("Jefe"),
+	                              "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79");
+	  errors += checkHmac< MD5  >(hex2bin("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "56be34521d144c88dbb8c733f0e8b3f6");
+	  errors += checkHmac< SHA1 >(hex2bin("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "125d7342b9ac11cd91a39af48aa17b4f63f175d3");
+	  errors += checkHmac< MD5  >(hex2bin("cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"),
+	                              hex2bin("0102030405060708090a0b0c0d0e0f10111213141516171819"),
+	                              "697eaf0aca3a3aea3a75164746ffaa79");
+	  errors += checkHmac< SHA1 >(hex2bin("cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"),
+	                              hex2bin("0102030405060708090a0b0c0d0e0f10111213141516171819"),
+	                              "4c9007f4026250c6bc8414f9bf50c86c2d7235da");
+	  // test case 5 skipped
+	  errors += checkHmac< MD5  >(std::string("Test Using Larger Than Block-Size Key - Hash Key First"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd");
+	  errors += checkHmac< SHA1 >(std::string("Test Using Larger Than Block-Size Key - Hash Key First"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "aa4ae5e15272d00e95705637ce8a3b55ed402112");
+	  errors += checkHmac< MD5  >(std::string("Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "6f630fad67cda0ee1fb1f562db3aa53e");
+	  errors += checkHmac< SHA1 >(std::string("Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "e8e99d0f45237d786d6bbaa7965c7808bbff1a91");
+
+	  // HMAC SHA256 test vectors from RFC4231 http://www.ietf.org/rfc/rfc4231.txt
+		//std::cout << "test HMAC(SHA256) ...\n";
+	  errors += checkHmac<SHA256>(std::string("Hi There"),
+	                              hex2bin("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"),
+	                              "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7");
+	  errors += checkHmac<SHA256>(std::string("what do ya want for nothing?"),
+	                              std::string("Jefe"),
+	                              "5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843");
+	  errors += checkHmac<SHA256>(hex2bin("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514ced565fe");
+	  errors += checkHmac<SHA256>(hex2bin("cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"),
+	                              hex2bin("0102030405060708090a0b0c0d0e0f10111213141516171819"),
+	                              "82558a389a443c0ea4cc819899f2083a85f0faa3e578f8077a2e3ff46729665b");
+	  // test case 5 skipped
+	  errors += checkHmac<SHA256>(std::string("Test Using Larger Than Block-Size Key - Hash Key First"),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54");
+	  errors += checkHmac<SHA256>(std::string("This is a test using a larger than block-size key and a larger than block-size data. The key needs to be hashed before being used by the HMAC algorithm."),
+	                              hex2bin("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+	                              "9b09ffa71b942fcb27635fbcd5b0e944bfdc63644f0713938a7f51535c3a35e2");
+
+	  AssertThat(errors, is(0));
+	}
+};
 
 } // namespace Balau

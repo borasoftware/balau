@@ -8,9 +8,8 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "StreamsTest.hpp"
+#include <Balau/Testing/TestRunner.hpp>
 #include "../../TestResources.hpp"
-
 #include <Balau/Util/Streams.hpp>
 
 namespace Balau {
@@ -46,32 +45,39 @@ const std::vector<std::string> expectedLines = {
 	, "balau.network   = level: debug"
 };
 
-void StreamsTest::readLinesToVector() {
-	Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
-	auto fileReadResource = file.getByteReadResource();
-	std::istream & fileReadStream = fileReadResource.readStream();
+struct StreamsTest : public Testing::TestGroup<StreamsTest> {
+	StreamsTest() {
+		registerTest(&StreamsTest::readLinesToVector, "readLinesToVector");
+		registerTest(&StreamsTest::consume,           "consume");
+	}
 
-	std::vector<std::string> actual = Streams::readLinesToVector(fileReadStream);
+	void readLinesToVector() {
+		Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+		auto fileReadResource = file.getByteReadResource();
+		std::istream & fileReadStream = fileReadResource.readStream();
 
-	const auto & expected = expectedLines;
+		std::vector<std::string> actual = Streams::readLinesToVector(fileReadStream);
 
-	AssertThat(actual, is(expected));
-}
+		const auto & expected = expectedLines;
 
-void StreamsTest::consume() {
-	Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
-	auto fileReadResource = file.getByteReadResource();
-	std::istream & src = fileReadResource.readStream();
+		AssertThat(actual, is(expected));
+	}
 
-	std::ostringstream dst;
+	void consume() {
+		Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+		auto fileReadResource = file.getByteReadResource();
+		std::istream & src = fileReadResource.readStream();
 
-	Streams::consume(dst, src);
+		std::ostringstream dst;
 
-	const std::string expected = Strings::joinContainer("\n", expectedLines) + "\n";
-	const std::string actual = dst.str();
+		Streams::consume(dst, src);
 
-	AssertThat(actual, is(expected));
-}
+		const std::string expected = Strings::joinContainer("\n", expectedLines) + "\n";
+		const std::string actual = dst.str();
+
+		AssertThat(actual, is(expected));
+	}
+};
 
 } // namespace Util
 
