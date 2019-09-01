@@ -141,6 +141,14 @@ class IllegalArgumentException : public BalauException {
 };
 
 ///
+/// Thrown when a variable is not in a valid state or when a section of code has been executed at an inappropriate time.
+///
+class IllegalStateException : public BalauException {
+	public: IllegalStateException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "IllegalState", text) {}
+};
+
+///
 /// Thrown when a feature is not yet implemented.
 ///
 class NotImplementedException : public BalauException {
