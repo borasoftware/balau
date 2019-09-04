@@ -22,31 +22,8 @@ cmake_minimum_required(VERSION 3.10.2)
 #
 project(Balau VERSION 2019.7.1)
 
-configure_file(src/doc/api/Doxyfile.in Doxyfile)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testResults)
-
-include_directories(src/main/cpp)
-include_directories(${CMAKE_BINARY_DIR})
-
-#################################### OPTIONS ##################################
-
-OPTION(BALAU_ENABLE_ZLIB "Enable ZLib library wrappers for gzip support" ON)
-OPTION(BALAU_ENABLE_ZIP  "Enable LibZip library wrappers Zipper and Unzipper" ON)
-OPTION(BALAU_ENABLE_HTTP "Enable HTTP components (requires Boost version 1.68.0 or greater)" ON)
-OPTION(BALAU_ENABLE_CURL "Enable use of Curl library" ON)
-OPTION(BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR "Enable thread local logging allocator" OFF)
-OPTION(BALAU_ENABLE_TRACE_LOGGING "Enable trace logging in ASIO" OFF)
-
-OPTION(ENABLE_BACKTRACE "Enable use of backtrace library" ON)
-OPTION(ENABLE_OLD_ABI "Enable use of old GLIBCXX ABI" OFF)
-OPTION(ENABLE_BOOST_STATIC_LIBRARIES "Force use of Boost static libraries" OFF)
-
-if (ENABLE_OLD_ABI)
-	ADD_DEFINITIONS("-D_GLIBCXX_USE_CXX11_ABI=0")
-	message(STATUS "_GLIBCXX_USE_CXX11_ABI set to 0 - compiling with old ABI")
-endif ()
+include(${CMAKE_SOURCE_DIR}/src/main/cmake/CMakeListsDefaultPaths.cmake)
+include(${CMAKE_SOURCE_DIR}/src/main/cmake/CMakeListsDefaultConfiguration.cmake)
 
 ################################## DEFINITIONS ################################
 
@@ -79,13 +56,33 @@ if (DEFINED BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB)
 	add_definitions("-DBALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB=${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB}")
 endif ()
 
-############################# BALAU OPTION HEADER #############################
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testResults)
+
+include_directories(src/main/cpp)
+include_directories(${CMAKE_BINARY_DIR})
+
+############################### STATUS PRINTOUT ###############################
+
+message(STATUS "Include directories:")
+get_property(ALL_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+
+foreach (INCLUDE_DIRECTORY ${ALL_INCLUDE_DIRECTORIES})
+	message(STATUS "    ${INCLUDE_DIRECTORY}")
+endforeach ()
+
+message(STATUS "Libraries:")
+
+foreach (LIB ${ALL_LIBS})
+	message(STATUS "    ${LIB}")
+endforeach ()
+
+message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")
+
+############################### GENERATED FILES ###############################
 
 configure_file(src/main/cmake/BalauConfig.hpp.in Balau/BalauConfig.hpp @ONLY)
-
-######################### BALAU CMAKE DEFAULT CONFIG ##########################
-
-include(${CMAKE_SOURCE_DIR}/src/main/cmake/CMakeListsDefaults.cmake)
+configure_file(src/doc/api/Doxyfile.in Doxyfile)
 
 ################################# BALAU LIBRARY ###############################
 
@@ -114,6 +111,7 @@ set(THIRD_PARTY_SOURCE_FILES
 set(BALAU_SOURCE_FILES
 
 	${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp
+
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
 	src/main/cpp/Balau/Application/Inject.hpp
@@ -142,6 +140,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Application/Impl/PropertyString.hpp
 	src/main/cpp/Balau/Application/Impl/PropertyTypeSpecificationVisitor.cpp
 	src/main/cpp/Balau/Application/Impl/PropertyTypeSpecificationVisitor.hpp
+
 	src/main/cpp/Balau/Concurrent/CyclicBarrier.cpp
 	src/main/cpp/Balau/Concurrent/CyclicBarrier.hpp
 	src/main/cpp/Balau/Concurrent/Fork.hpp
@@ -149,6 +148,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Concurrent/Semaphore.hpp
 	src/main/cpp/Balau/Concurrent/SingleTimeExecutor.hpp
 	src/main/cpp/Balau/Concurrent/ThreadLocalInstance.hpp
+
 	src/main/cpp/Balau/Container/ArrayBlockingQueue.hpp
 	src/main/cpp/Balau/Container/BlockingQueue.hpp
 	src/main/cpp/Balau/Container/DependencyGraph.hpp
@@ -157,7 +157,9 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Container/Queue.hpp
 	src/main/cpp/Balau/Container/Impl/ContainerLogger.cpp
 	src/main/cpp/Balau/Container/Impl/ContainerLogger.hpp
+
 	src/main/cpp/Balau/Dev/Assert.hpp
+
 	src/main/cpp/Balau/Exception/BalauException.hpp
 	src/main/cpp/Balau/Exception/ContainerExceptions.hpp
 	src/main/cpp/Balau/Exception/CommandLineExceptions.hpp
@@ -169,6 +171,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Exception/ResourceExceptions.hpp
 	src/main/cpp/Balau/Exception/SystemExceptions.hpp
 	src/main/cpp/Balau/Exception/TestExceptions.hpp
+
 	src/main/cpp/Balau/Interprocess/MSharedMemoryObject.hpp
 	src/main/cpp/Balau/Interprocess/USharedMemoryObject.hpp
 	src/main/cpp/Balau/Interprocess/SharedMemoryQueue.hpp
@@ -176,6 +179,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Interprocess/SharedMemoryUtils.hpp
 	src/main/cpp/Balau/Interprocess/Impl/SharedMemoryQueueImpl.cpp
 	src/main/cpp/Balau/Interprocess/Impl/SharedMemoryQueueImpl.hpp
+
 	src/main/cpp/Balau/Lang/Common/AbstractScanner.hpp
 	src/main/cpp/Balau/Lang/Common/CodeSpan.hpp
 	src/main/cpp/Balau/Lang/Common/ScannedTokens.hpp
@@ -189,6 +193,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Lang/Property/Parser/PropertyScanner.hpp
 	src/main/cpp/Balau/Lang/Property/Util/PropertyAstToString.hpp
 	src/main/cpp/Balau/Lang/Property/Util/PropertyVisitor.hpp
+
 	src/main/cpp/Balau/Logging/Logger.cpp
 	src/main/cpp/Balau/Logging/Logger.hpp
 	src/main/cpp/Balau/Logging/LoggingLevel.hpp
@@ -209,6 +214,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Logging/Impl/LoggingState.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggingStreams.cpp
 	src/main/cpp/Balau/Logging/Impl/LoggingStreams.hpp
+
 	src/main/cpp/Balau/Resource/ByteReadResource.hpp
 	src/main/cpp/Balau/Resource/ByteWriteResource.hpp
 	src/main/cpp/Balau/Resource/File.hpp
@@ -237,18 +243,19 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Resource/UriDispatcher.hpp
 	src/main/cpp/Balau/Resource/Utf32To8WriteResource.hpp
 	src/main/cpp/Balau/Resource/Utf8To32ReadResource.hpp
+
 	src/main/cpp/Balau/Serialization/SerializationMacros.hpp
+
 	src/main/cpp/Balau/System/Clock.hpp
 	src/main/cpp/Balau/System/SystemClock.hpp
 	src/main/cpp/Balau/System/Sleep.hpp
 	src/main/cpp/Balau/System/ThreadName.cpp
 	src/main/cpp/Balau/System/ThreadName.hpp
+
 	src/main/cpp/Balau/Testing/Assertions.hpp
 	src/main/cpp/Balau/Testing/Matchers.hpp
 	src/main/cpp/Balau/Testing/TestRunner.hpp
 	src/main/cpp/Balau/Testing/ExecutionModel.hpp
-	src/main/cpp/Balau/Testing/Writers.cpp
-	src/main/cpp/Balau/Testing/Writers.hpp
 	src/main/cpp/Balau/Testing/Impl/CompositeWriter.hpp
 	src/main/cpp/Balau/Testing/Impl/FlattenedTestCase.hpp
 	src/main/cpp/Balau/Testing/Impl/HexContainerRendererImpl.hpp
@@ -258,7 +265,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Impl/SingleThreadedTestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/StandardRenderers.hpp
 	src/main/cpp/Balau/Testing/Impl/TestCase.hpp
-	src/main/cpp/Balau/Testing/Impl/TestGroupBase.cpp
 	src/main/cpp/Balau/Testing/Impl/TestGroupBase.hpp
 	src/main/cpp/Balau/Testing/Impl/TestMethodBase.hpp
 	src/main/cpp/Balau/Testing/Impl/TestResult.hpp
@@ -282,6 +288,11 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Renderers/HexSignedLongLongRenderer.hpp
 	src/main/cpp/Balau/Testing/Reporters/SurefireTestReportGenerator.cpp
 	src/main/cpp/Balau/Testing/Reporters/SurefireTestReportGenerator.hpp
+	src/main/cpp/Balau/Testing/Writers/TestWriter.hpp
+	src/main/cpp/Balau/Testing/Writers/StdWriters.hpp
+	src/main/cpp/Balau/Testing/Writers/LogWriter.cpp
+	src/main/cpp/Balau/Testing/Writers/LogWriter.hpp
+
 	src/main/cpp/Balau/Type/Character.hpp
 	src/main/cpp/Balau/Type/FromString.hpp
 	src/main/cpp/Balau/Type/MovableOnScopeExit.hpp
@@ -294,6 +305,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Type/UUID.hpp
 	src/main/cpp/Balau/Type/Impl/FromStringImpl.hpp
 	src/main/cpp/Balau/Type/Impl/ToStringImpl.hpp
+
 	src/main/cpp/Balau/Util/Containers.hpp
 	src/main/cpp/Balau/Util/DateTime.hpp
 	src/main/cpp/Balau/Util/Enums.hpp
@@ -474,6 +486,8 @@ install(DIRECTORY src/main/cpp/Balau/ DESTINATION "include/Balau-${PROJECT_VERSI
 install(TARGETS Balau DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/BalauConfig.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/BalauConfigVersion.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(FILES src/main/cmake/CMakeListsDefaultPaths.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
+install(FILES src/main/cmake/CMakeListsDefaultConfiguration.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(FILES ${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${PROJECT_VERSION}/BalauConfig" FILES_MATCHING PATTERN "*.thconf")
 

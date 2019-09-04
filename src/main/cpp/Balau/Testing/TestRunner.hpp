@@ -27,11 +27,12 @@
 #include <Balau/Testing/ExecutionModel.hpp>
 #include <Balau/Testing/Impl/SingleThreadedTestRunnerExecutor.hpp>
 #include <Balau/Testing/Impl/ProcessPerTestTestRunnerExecutor.hpp>
-#include <Balau/Testing/Impl/TestGroupBase.hpp>
+#include <Balau/Testing/Impl/TestGroup.hpp>
 #include <Balau/Testing/Impl/TestMethodBase.hpp>
 #include <Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp>
 #include <Balau/Testing/Impl/WorkerThreadsTestRunnerExecutor.hpp>
 #include <Balau/Testing/Reporters/SurefireTestReportGenerator.hpp>
+#include <Balau/Testing/Writers/StdWriters.hpp>
 #include <Balau/Util/DateTime.hpp>
 
 #include <termios.h>
@@ -41,124 +42,6 @@
 #include <boost/predef.h>
 
 namespace Balau::Testing {
-
-//////////////////////////// Test group base class ////////////////////////////
-
-///
-/// Templated base class of all test classes.
-///
-/// Test group classes should extend this class, specifying themselves as the
-/// template parameter.
-///
-template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
-	private: using Method = void (TestGroupT::*)();
-
-	// Container for test instance and test method.
-	private: class TestMethod : public Impl::TestMethodBase {
-		private: TestGroupT & testClassInstance;
-		private: Method method;
-
-		public: TestMethod(TestGroupT & testClassInstance_, Method method_)
-			: testClassInstance(testClassInstance_), method(method_) {}
-
-		private: void run() override {
-			(testClassInstance.*method)();
-		}
-	};
-
-	///
-	/// Signal that the currently executing test case has been ignored by the test itself.
-	///
-	public: void ignore();
-
-	///
-	/// Write additional logging to the test writers.
-	///
-	public: void log(const std::string & string);
-
-	///
-	/// Write additional logging to the test writers.
-	///
-	/// A line break is written after the string.
-	///
-	public: void logLine(const std::string & string = "");
-
-	///
-	/// Write additional logging to the test writers.
-	///
-	/// This version of log line accepts a variable number of references, and
-	/// concatenates them together by calling toString.
-	///
-	/// A line break is written after the string.
-	///
-	public: template <typename S, typename ... SR> void logLine(const S & p, const SR & ... pRest);
-
-	public: const std::string & getGroupName() const final {
-		return testGroupName;
-	}
-
-	///
-	/// Create a test group that runs on all execution models.
-	///
-	protected: TestGroup();
-
-	///
-	/// Create a test group that runs only when the test run has the specified execution model(s).
-	///
-	/// The execution models can be ORed together if the test group should be
-	/// run for multiple execution models.
-	///
-	protected: explicit TestGroup(unsigned int executionModels_);
-
-	///
-	/// Register a test case with the runner.
-	///
-	/// @param method the method of the test case to register
-	/// @param testName the name of the test case to register
-	///
-	protected: void registerTest(Method method, const std::string & testName);
-
-	///
-	/// This method is called before each test is called.
-	///
-	/// This method should be overridden by test classes which require a setup method.
-	///
-	protected: void setup() override {
-		// Default is NOP.
-	}
-
-	///
-	/// This method is called after each test is called.
-	///
-	/// This method should be overridden by test classes which require a teardown method.
-	///
-	protected: void teardown() override {
-		// Default is NOP.
-	}
-
-	////////////////////////// Private implementation /////////////////////////
-
-	private: void setGroupName(std::string && name) final {
-		testGroupName = std::move(name);
-	}
-
-	private: unsigned int getExecutionModels() const final {
-		return executionModels;
-	}
-
-	//
-	// The single instance of the implementing test group class.
-	// This is forcibly instantiated.
-	//
-	private: static TestGroupT instance;
-
-	private: unsigned int executionModels;
-	private: std::string testGroupName;
-};
-
-template <typename TestGroupT> TestGroupT TestGroup<TestGroupT>::instance;
-
-////////////////////////////// Test runner class //////////////////////////////
 
 enum class TestRunnerOption {
 	  ExecutionModel
@@ -197,7 +80,7 @@ inline std::string toString(const TestRunnerOption & option) {
 /// WorkerProcesses and the default concurrency level is one thread/process
 /// per available CPU logical core.
 ///
-class TestRunner {
+class TestRunner : public Impl::TestRunnerBase {
 	///
 	/// Run the test runner after parsing the supplied input arguments.
 	///
@@ -433,10 +316,8 @@ class TestRunner {
 		, useNamespaces(false)
 		, pauseAtExit(false) {}
 
-	friend Impl::TestGroupBase::TestGroupBase();
-
 	// Called by the test group base class in order to get a unique index.
-	private: static unsigned int getGroupIndex() {
+	private: unsigned int getGroupIndex() override {
 		std::lock_guard<std::mutex> lock(runner().mutex);
 		return runner().currentGroupIndex++;
 	}
@@ -760,14 +641,16 @@ inline void TestGroup<TestClassT>::logLine(const S & p, const SR & ... pRest) {
 
 template <typename TestClassT>
 inline TestGroup<TestClassT>::TestGroup()
-	: executionModels(SingleThreaded | WorkerThreads | WorkerProcesses | ProcessPerTest)
+	: TestGroupBase(TestRunner::runner())
+	, executionModels(SingleThreaded | WorkerThreads | WorkerProcesses | ProcessPerTest)
 	, testGroupName(Impl::TestRunnerExecutor::extractTypeName(typeid(*this).name(), false)) {
 	(void) &instance; // force instantiation
 }
 
 template <typename TestClassT>
 inline TestGroup<TestClassT>::TestGroup(unsigned int executionModels_)
-	: executionModels(executionModels_)
+	: TestGroupBase(TestRunner::runner())
+	, executionModels(executionModels_)
 	, testGroupName(Impl::TestRunnerExecutor::extractTypeName(typeid(*this).name(), false)) {
 	(void) &instance; // force instantiation
 }

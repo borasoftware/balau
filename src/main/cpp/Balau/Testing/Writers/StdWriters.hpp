@@ -9,68 +9,24 @@
 //
 
 ///
-/// @file Writers.hpp
+/// @file StdWriters.hpp
 ///
-/// Pre-defined test writer classes.
+/// Pre-defined test writer classes for stdout, stderr, and files.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__WRITERS
-#define COM_BORA_SOFTWARE__BALAU_TESTING__WRITERS
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedStructInspection"
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__STD_WRITERS
+#define COM_BORA_SOFTWARE__BALAU_TESTING__STD_WRITERS
 
 #include <Balau/Resource/FileByteWriteResource.hpp>
 #include <Balau/Resource/File.hpp>
 #include <Balau/Resource/Uri.hpp>
 #include <Balau/Testing/Assertions.hpp>
+#include <Balau/Testing/Writers/TestWriter.hpp>
 #include <Balau/Util/Vectors.hpp>
 
 #include <mutex>
 
-namespace Balau {
-
-class Logger;
-
-namespace Testing {
-
-///
-/// Base class of test writers.
-///
-class TestWriter {
-	///
-	/// Destroy a test writer instance.
-	///
-	public: virtual ~TestWriter() = default;
-
-	///
-	/// Convert the supplied value to a UTF-8 string and write the string to the writer's output stream(s).
-	///
-	/// @param value the object to write
-	///
-	public: template<typename T> void write(T value) {
-		using ::toString;
-
-		writeString(toString(value));
-	}
-
-	///
-	/// Write the supplied UTF-8 string to the writer's output stream(s).
-	///
-	/// @param value the string to write
-	///
-	public: virtual void writeString(const std::string & value) = 0;
-
-	///
-	/// Clone the writer instance.
-	///
-	/// @return a clone of the writer
-	///
-	public: virtual std::unique_ptr<TestWriter> clone() const = 0;
-
-	protected: TestWriter() = default;
-};
+namespace Balau::Testing {
 
 ///
 /// A test writer that writes to stdout.
@@ -125,30 +81,6 @@ class OStreamTestWriter : public TestWriter {
 	private: std::ostream & stream;
 };
 
-///
-/// A test writer that writes to the specified %Balau logger.
-///
-class LoggerTestWriter : public TestWriter {
-	public: explicit LoggerTestWriter(const Logger & logger_)
-		: logger(logger_) {}
+} // namespace Balau::Testing
 
-	public: explicit LoggerTestWriter(const std::string & loggingNamespace = "testrunner");
-
-	public: void writeString(const std::string & str) override;
-
-	public: std::unique_ptr<TestWriter> clone() const override {
-		return std::unique_ptr<TestWriter>(new LoggerTestWriter(logger));
-	}
-
-	////////////////////////// Private implementation /////////////////////////
-
-	private: const Logger & logger;
-};
-
-} // namespace Testing
-
-} // namespace Balau
-
-#pragma clang diagnostic pop
-
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__WRITERS
+#endif // COM_BORA_SOFTWARE__BALAU_TESTING__STD_WRITERS

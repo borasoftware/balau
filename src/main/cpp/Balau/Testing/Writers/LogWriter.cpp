@@ -8,16 +8,16 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "Writers.hpp"
+#include "LogWriter.hpp"
 
-#include "../Logging/Logger.hpp"
+#include "Balau/Logging/Logger.hpp"
 
 namespace Balau::Testing {
 
-LoggerTestWriter::LoggerTestWriter(const std::string & loggingNamespace)
+LogWriter::LogWriter(const std::string & loggingNamespace)
 	: logger(Logger::getLogger(loggingNamespace)) {}
 
-void LoggerTestWriter::writeString(const std::string & str) {
+void LogWriter::writeString(const std::string & str) {
 	logger.info(str.c_str());
 }
 

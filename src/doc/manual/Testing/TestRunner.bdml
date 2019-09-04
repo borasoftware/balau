@@ -416,7 +416,7 @@
 				<row> <cell>StdOutTestWriter</cell>  <cell>Write to stdout.</cell> </row>
 				<row> <cell>FileTestWriter</cell>    <cell>Write to the specified file.</cell> </row>
 				<row> <cell>OStreamTestWriter</cell> <cell>Write to the previously constructed output stream.</cell> </row>
-				<row> <cell>LoggerTestWriter</cell>  <cell>Write to the specified Balau logger.</cell> </row>
+				<row> <cell>LogWriter</cell>  <cell>Write to the specified Balau logger.</cell> </row>
 			</body>
 		</table>
 
@@ -429,7 +429,7 @@
 				// Run the test runner with two writers.
 				TestRunner::run(
 					  argc, argv, 1, false, false
-					, LoggerTestWriter("balau.test.output")
+					, LogWriter("balau.test.output")
 					, FileTestWriter(Resource::File("testOutput.log"))
 				);
 			}

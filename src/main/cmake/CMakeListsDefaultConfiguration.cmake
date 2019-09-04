@@ -1,36 +1,21 @@
 
-############################# CMAKE CONFIGURATION #############################
+#################################### OPTIONS ##################################
 
-## Disallow in-source builds
-if ("${PROJECT_BINARY_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
-	message(FATAL_ERROR
-		"
-No in-source builds please."
-		"
-  mkdir build; cd build; cmake .."
-		"
-Please first remove the files created by this failed run with"
-		"
-  rm -rf CMakeCache.txt CMakeFiles"
-)
+OPTION(BALAU_ENABLE_ZLIB "Enable ZLib library wrappers for gzip support" ON)
+OPTION(BALAU_ENABLE_ZIP  "Enable LibZip library wrappers Zipper and Unzipper" ON)
+OPTION(BALAU_ENABLE_HTTP "Enable HTTP components (requires Boost version 1.68.0 or greater)" ON)
+OPTION(BALAU_ENABLE_CURL "Enable use of Curl library" ON)
+OPTION(BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR "Enable thread local logging allocator" OFF)
+OPTION(BALAU_ENABLE_TRACE_LOGGING "Enable trace logging in ASIO" OFF)
+
+OPTION(ENABLE_BACKTRACE "Enable use of backtrace library" ON)
+OPTION(ENABLE_OLD_ABI "Enable use of old GLIBCXX ABI" OFF)
+OPTION(ENABLE_BOOST_STATIC_LIBRARIES "Force use of Boost static libraries" OFF)
+
+if (ENABLE_OLD_ABI)
+	ADD_DEFINITIONS("-D_GLIBCXX_USE_CXX11_ABI=0")
+	message(STATUS "_GLIBCXX_USE_CXX11_ABI set to 0 - compiling with old ABI")
 endif ()
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-if (NOT DEFINED CMAKE_PREFIX_PATH)
-	set(CMAKE_PREFIX_PATH /data/libraries/usr)
-endif ()
-
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	set(CMAKE_INSTALL_PREFIX "/data/libraries/usr" CACHE PATH "..." FORCE)
-endif()
-
-message(STATUS "CMAKE_PREFIX_PATH:    ${CMAKE_PREFIX_PATH}")
-message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "USER_INCLUDE_DIR:     ${USER_INCLUDE_DIR}")
-message(STATUS "USER_LIB_DIR:         ${USER_LIB_DIR}")
 
 ################################### COMPILER ##################################
 
@@ -128,7 +113,6 @@ else ()
 	set(BALAU_ENABLE_CURL OFF)
 endif ()
 
-
 ##################################### ICU #####################################
 
 #
@@ -225,8 +209,6 @@ link_directories(/usr/lib64)
 
 ################################## BACKPORTS ##################################
 
-# TODO work out how to automate this once installed.
-
 include(CheckIncludeFileCXX)
 
 check_include_file_cxx(string_view STRING_VIEW_AVAILABLE)
@@ -237,20 +219,3 @@ else ()
 	message(STATUS "std::string_view is not available. Using boost::string_view")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_USE_BOOST_STRING_VIEW")
 endif ()
-
-############################### STATUS PRINTOUT ###############################
-
-message(STATUS "Include directories:")
-get_property(ALL_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-
-foreach (INCLUDE_DIRECTORY ${ALL_INCLUDE_DIRECTORIES})
-	message(STATUS "    ${INCLUDE_DIRECTORY}")
-endforeach ()
-
-message(STATUS "Libraries:")
-
-foreach (LIB ${ALL_LIBS})
-	message(STATUS "    ${LIB}")
-endforeach ()
-
-message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")

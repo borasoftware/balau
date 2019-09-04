@@ -11,8 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE
 #define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE
 
-#include <memory>
-#include <string>
+#include <Balau/Testing/Impl/TestRunnerBase.hpp>
 
 namespace Balau::Testing {
 
@@ -35,21 +34,32 @@ class TestGroupBase {
 	friend class WorkerProcessesTestRunnerExecutor;
 	friend class ProcessPerTestTestRunnerExecutor;
 
-	protected: TestGroupBase();
+	protected: TestGroupBase(TestRunnerBase & runner) : groupIndex(runner.getGroupIndex()) {}
 
-	public: bool currentIsIgnored();
+	public: static bool currentIsIgnored() {
+		return getCurrentIsIgnored();
+	}
 
-	public: void resetIgnoreCurrent();
+	public: static void resetIgnoreCurrent() {
+		getCurrentIsIgnored() = false;
+	}
+
+	public: static void ignoreCurrent() {
+		getCurrentIsIgnored() = true;
+	}
 
 	public: virtual const std::string & getGroupName() const = 0;
-
-	protected: void ignoreCurrent();
 
 	public: virtual ~TestGroupBase() = default;
 
 	private: virtual void setup() = 0;
 
 	private: virtual void teardown() = 0;
+
+	private: static bool & getCurrentIsIgnored() {
+		thread_local bool currentIgnored = false;
+		return currentIgnored;
+	}
 
 	// Set the test class' name following a useNamespace update.
 	private: virtual void setGroupName(std::string && name) = 0;
