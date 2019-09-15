@@ -1,0 +1,44 @@
+// @formatter:off
+//
+// Balau core C++ library
+//
+// Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+//
+// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
+// See the LICENSE file for the full license text.
+//
+
+#include "TestResources.hpp"
+
+#include <Balau/Util/Macros.hpp>
+#include <Balau/Util/Files.hpp>
+#include <Balau/Testing/Assertions.hpp>
+
+namespace Balau {
+
+const Resource::File TestResources::BaseFolder                = Resource::File("@BALAU_BASE_FOLDER@");
+const Resource::File TestResources::SourceFolder              = Resource::File("@BALAU_SOURCE_FOLDER@");
+const Resource::File TestResources::SourceMainFolder          = Resource::File("@BALAU_SOURCE_MAIN_FOLDER@");
+const Resource::File TestResources::SourceTestFolder          = Resource::File("@BALAU_SOURCE_TEST_FOLDER@");
+const Resource::File TestResources::SourceTestResourcesFolder = Resource::File("@BALAU_SOURCE_TEST_RESOURCES_FOLDER@");
+const Resource::File TestResources::TargetFolder              = Resource::File("@BALAU_TARGET_FOLDER@");
+const Resource::File TestResources::TestResultsFolder         = Resource::File("@BALAU_TEST_RESULTS_FOLDER@");
+
+
+const std::string TestResources::TestEmailHost                = "@BALAU_TEST_EMAIL_HOST@";
+const std::string TestResources::TestEmailPort                = "@BALAU_TEST_EMAIL_PORT@";
+const std::string TestResources::TestEmailSenderUser          = "@BALAU_TEST_EMAIL_SENDER_USER@";
+const std::string TestResources::TestEmailSenderPassword      = "@BALAU_TEST_EMAIL_SENDER_PASSWORD@";
+const std::string TestResources::TestEmailTo                  = "@BALAU_TEST_EMAIL_TO@";
+
+Resource::File TestResources::assertTestResourceFileExists(const std::string & relativePath) {
+	Resource::File path = SourceTestResourcesFolder / relativePath;
+	AssertThat(path.exists(), is(true));
+	return path;
+}
+
+std::string TestResources::getTestResourceAsString(const std::string & relativePath) {
+	return Util::Files::readToString(SourceTestResourcesFolder / relativePath);
+}
+
+} // namespace Balau

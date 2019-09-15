@@ -9,15 +9,10 @@
 //
 
 #include <Balau/Documentation/ConfigurationWebApp.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 using namespace Balau::Network;
 using namespace Balau::Network::Http;
-
-using Balau::Testing::assertThat;
-using Balau::Testing::is;
-using Balau::Testing::isGreaterThan;
 
 namespace Balau::Documentation {
 

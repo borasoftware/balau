@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 #include <Balau/Resource/ZipFile.hpp>
 
 namespace Balau {
@@ -25,7 +24,7 @@ struct ZipFileTest : public Testing::TestGroup<ZipFileTest> {
 	}
 
 	void iteration() {
-		ZipFile root(TestResources::BalauSourceTestResourcesFolder / "Zips" / "ZipFile.zip");
+		ZipFile root(TestResources::SourceTestResourcesFolder / "Zips" / "ZipFile.zip");
 		auto iterator = root.recursiveZipFileIterator();
 
 		size_t regularEntryCount = 0;

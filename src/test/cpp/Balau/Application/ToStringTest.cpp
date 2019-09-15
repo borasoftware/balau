@@ -8,15 +8,10 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
-using Balau::Testing::assertThat;
-using Balau::Testing::contains;
-using Balau::Testing::is;
-using Balau::Testing::startsWith;
 
 struct ToStringTest : public Balau::Testing::TestGroup<ToStringTest> {
 	ToStringTest() {
@@ -109,6 +104,7 @@ struct ToStringTest : public Balau::Testing::TestGroup<ToStringTest> {
 		registerTest(&ToStringTest::toString32_parameter_pack,            "toString32_parameter_pack");
 		registerTest(&ToStringTest::toStringStruct,                       "toStringStruct");
 	}
+
 	void toString_string() {
 		AssertThat(::toString(std::string("qwerty")), is(std::string("qwerty")));
 	}

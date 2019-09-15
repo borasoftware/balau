@@ -9,7 +9,7 @@
 //
 
 #include <Balau/Resource/UriComponents.hpp>
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 
 namespace Balau {
 

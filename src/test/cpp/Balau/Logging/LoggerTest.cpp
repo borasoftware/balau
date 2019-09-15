@@ -9,8 +9,7 @@
 //
 
 #include <Balau/Logging/Logger.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Exception/LoggingExceptions.hpp>
 #include <Balau/Exception/ParsingExceptions.hpp>
@@ -87,7 +86,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 	
 	static Resource::File configureLoggerForTest(const std::string & testName) {
 		const std::string filename = std::string("LoggerTest-") + testName + ".log";
-		Resource::File logFile = TestResources::BalauTestResultsFolder / filename;
+		Resource::File logFile = TestResources::TestResultsFolder / filename;
 		const std::string logFileUriStr = logFile.toUriString();
 	
 		logFile.getParentDirectory().createDirectories();
@@ -108,7 +107,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 	// which is replace with the file stream string.
 	static Resource::File configureLoggerForTest(const std::string & testName, const std::string & configurationText) {
 		const std::string filename = std::string("LoggerTest-") + testName + ".log";
-		Resource::File logFile = TestResources::BalauTestResultsFolder / filename;
+		Resource::File logFile = TestResources::TestResultsFolder / filename;
 		const std::string logFileUriStr = logFile.toUriString();
 	
 		logFile.getParentDirectory().createDirectories();

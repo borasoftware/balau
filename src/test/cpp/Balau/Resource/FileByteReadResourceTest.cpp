@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Util/Streams.hpp>
 
@@ -26,7 +25,7 @@ struct FileByteReadResourceTest : public Testing::TestGroup<FileByteReadResource
 	}
 
 	void test() {
-		File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+		File file(TestResources::SourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
 
 		auto fileReadResource = file.getByteReadResource();
 		auto uriReadResource = file.byteReadResource();

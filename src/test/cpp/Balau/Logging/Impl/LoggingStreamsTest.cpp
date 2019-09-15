@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../../TestResources.hpp"
+#include <TestResources.hpp>
 #include <Balau/Logging/Impl/LoggingStreams.hpp>
 
 namespace Balau {
@@ -60,7 +59,7 @@ struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
 	};
 
 	void fileRotation() {
-		const Resource::File uriBase = TestResources::BalauTestResultsFolder / "LoggingStreamsTest";
+		const Resource::File uriBase = TestResources::TestResultsFolder / "LoggingStreamsTest";
 
 		const Date::year_month_day today = Date::year{2017}/02/20;
 		const Date::year_month_day tomorrow = Date::year{2017}/02/21;

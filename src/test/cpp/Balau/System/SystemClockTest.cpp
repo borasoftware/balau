@@ -10,7 +10,7 @@
 
 // Include before test runner for toString functions.
 #include <Balau/Util/DateTime.hpp>
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include <Balau/System/SystemClock.hpp>
 #include <Balau/System/Sleep.hpp>
 

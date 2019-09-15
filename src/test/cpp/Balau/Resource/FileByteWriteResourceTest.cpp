@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Type/OnScopeExit.hpp>
 #include <Balau/Util/Files.hpp>
@@ -27,7 +26,7 @@ struct FileByteWriteResourceTest : public Testing::TestGroup<FileByteWriteResour
 
 	static File prepWritePath(const std::string & testName, const std::string & text) {
 		const std::string filename = std::string("FileByteWriteResourceTest-") + testName + ".log";
-		File file = TestResources::BalauTestResultsFolder / "Resource" / filename;
+		File file = TestResources::TestResultsFolder / "Resource" / filename;
 		const std::string fileUriStr = file.toUriString();
 
 		file.getParentDirectory().createDirectories();

@@ -6,7 +6,7 @@
 //   see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include <Balau/ThirdParty/HashLibrary/crc32.h>
 #include <Balau/ThirdParty/HashLibrary/md5.h>
 #include <Balau/ThirdParty/HashLibrary/sha1.h>

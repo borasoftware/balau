@@ -8,16 +8,12 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstring-plus-int"
 #pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
 #pragma ide diagnostic ignored "cert-err58-cpp"
-
-using Balau::Testing::assertThat;
-using Balau::Testing::is;
-using Balau::Testing::throws;
 
 namespace {
 

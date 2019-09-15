@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "Balau/Testing/TestRunner.hpp"
+#include <TestResources.hpp>
 #include <Balau/Concurrent/Fork.hpp>
 
 using namespace Balau;
@@ -96,6 +96,9 @@ int runAllExecutionModels(int argc, char * argv[]) {
 //  - as a single run with the specified execution model otherwise.
 //
 int main(int argc, char * argv[]) {
+	auto pwd = boost::filesystem::current_path();
+	boost::filesystem::current_path(TestResources::TestResultsFolder.getEntry());
+
 	// Special Balau test run mode that runs all four execution models.
 	if (argc > 1 && Util::Strings::toLower(argv[1]) == "all") {
 		return runAllExecutionModels(argc, argv);

@@ -9,7 +9,7 @@
 //
 
 #include <Balau/Exception/InjectorExceptions.hpp>
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 
 #include "../../../../main/cpp/Balau/Application/Injectable.hpp"
 #include "InjectorHeaderBody.hpp"
@@ -20,12 +20,6 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
-using Balau::Testing::is;
-using Balau::Testing::isA;
-using Balau::Testing::isGreaterThanOrEqualTo;
-using Balau::Testing::isNot;
-using Balau::Testing::throws;
 
 namespace Balau {
 

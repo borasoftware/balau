@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 #include <Balau/Util/Streams.hpp>
 
 namespace Balau {
@@ -52,7 +51,7 @@ struct StreamsTest : public Testing::TestGroup<StreamsTest> {
 	}
 
 	void readLinesToVector() {
-		Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+		Resource::File file(TestResources::SourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
 		auto fileReadResource = file.getByteReadResource();
 		std::istream & fileReadStream = fileReadResource.readStream();
 
@@ -64,7 +63,7 @@ struct StreamsTest : public Testing::TestGroup<StreamsTest> {
 	}
 
 	void consume() {
-		Resource::File file(TestResources::BalauSourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
+		Resource::File file(TestResources::SourceTestFolder / "resources" / "Util" / "readLinesToVector.logconf");
 		auto fileReadResource = file.getByteReadResource();
 		std::istream & src = fileReadResource.readStream();
 

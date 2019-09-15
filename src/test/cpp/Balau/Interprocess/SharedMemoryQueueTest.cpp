@@ -43,7 +43,7 @@ inline bool operator != (const SMT & lhs, const SMT & rhs) {
 
 } // namespace Balau::Interprocess
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include "Balau/Concurrent/Semaphore.hpp"
 #include "Balau/Interprocess/USharedMemoryObject.hpp"
 #include "Balau/Interprocess/SharedMemoryQueue.hpp"

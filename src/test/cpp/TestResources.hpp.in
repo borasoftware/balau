@@ -11,24 +11,26 @@
 #ifndef COM_BORA_SOFTWARE__BALAU__TEST_RESOURCES
 #define COM_BORA_SOFTWARE__BALAU__TEST_RESOURCES
 
-#include <Balau/Resource/File.hpp>
+#include <Balau/Testing/TestRunner.hpp>
+
+using namespace Balau::Testing;
 
 namespace Balau {
 
 struct TestResources final {
-	const static Resource::File BalauBaseFolder;
-	const static Resource::File BalauSourceFolder;
-	const static Resource::File BalauSourceMainFolder;
-	const static Resource::File BalauSourceTestFolder;
-	const static Resource::File BalauSourceTestResourcesFolder;
-	const static Resource::File BalauTargetFolder;
-	const static Resource::File BalauTestResultsFolder;
+	const static Resource::File BaseFolder;
+	const static Resource::File SourceFolder;
+	const static Resource::File SourceMainFolder;
+	const static Resource::File SourceTestFolder;
+	const static Resource::File SourceTestResourcesFolder;
+	const static Resource::File TargetFolder;
+	const static Resource::File TestResultsFolder;
 
-	const static std::string BalauTestEmailHost;
-	const static std::string BalauTestEmailPort;
-	const static std::string BalauTestEmailSenderUser;
-	const static std::string BalauTestEmailSenderPassword;
-	const static std::string BalauTestEmailTo;
+	const static std::string TestEmailHost;
+	const static std::string TestEmailPort;
+	const static std::string TestEmailSenderUser;
+	const static std::string TestEmailSenderPassword;
+	const static std::string TestEmailTo;
 
 	///
 	/// Asserts that the test resource file exists and returns a file pointing to it.

@@ -8,15 +8,9 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../../TestResources.hpp"
+#include <TestResources.hpp>
 #include <Balau/Application/Impl/EnvironmentConfigurationBuilder.hpp>
 #include <Balau/Resource/Https.hpp>
-
-using Balau::Testing::assertThat;
-using Balau::Testing::is;
-using Balau::Testing::isGreaterThan;
-using Balau::Testing::throws;
 
 namespace Balau {
 
@@ -46,7 +40,7 @@ struct EnvironmentConfigurationBuilderTest : public Testing::TestGroup<Environme
 	}
 	
 	void mixed() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "composite.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -90,7 +84,7 @@ struct EnvironmentConfigurationBuilderTest : public Testing::TestGroup<Environme
 	}
 	
 	void mixedWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "composite-with-defaults.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	

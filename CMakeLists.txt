@@ -37,20 +37,20 @@ endif ()
 # Balau test app variables
 #
 
-add_definitions("-DBALAU_TEST_EMAIL_HOST_=$ENV{BALAU_TEST_EMAIL_HOST}")
-add_definitions("-DBALAU_TEST_EMAIL_PORT_=$ENV{BALAU_TEST_EMAIL_PORT}")
-add_definitions("-DBALAU_TEST_EMAIL_SENDER_USER_=$ENV{BALAU_TEST_EMAIL_SENDER_USER}")
-add_definitions("-DBALAU_TEST_EMAIL_SENDER_PASSWORD_=$ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD}")
-add_definitions("-DBALAU_TEST_EMAIL_TO_=$ENV{BALAU_TEST_EMAIL_TO}")
+set(BALAU_VERSION ${PROJECT_VERSION})
+set(BALAU_BASE_FOLDER ${CMAKE_SOURCE_DIR})
+set(BALAU_SOURCE_FOLDER ${CMAKE_SOURCE_DIR}/src)
+set(BALAU_SOURCE_MAIN_FOLDER ${CMAKE_SOURCE_DIR}/src/main)
+set(BALAU_SOURCE_TEST_FOLDER ${CMAKE_SOURCE_DIR}/src/test)
+set(BALAU_SOURCE_TEST_RESOURCES_FOLDER ${CMAKE_SOURCE_DIR}/src/test/resources)
+set(BALAU_TARGET_FOLDER ${CMAKE_BINARY_DIR})
+set(BALAU_TEST_RESULTS_FOLDER ${CMAKE_BINARY_DIR}/testResults)
 
-add_definitions("-DBALAU_VERSION_=${PROJECT_VERSION}")
-add_definitions("-DBALAU_BASE_FOLDER_=${CMAKE_SOURCE_DIR}")
-add_definitions("-DBALAU_SOURCE_FOLDER_=${CMAKE_SOURCE_DIR}/src")
-add_definitions("-DBALAU_SOURCE_MAIN_FOLDER_=${CMAKE_SOURCE_DIR}/src/main")
-add_definitions("-DBALAU_SOURCE_TEST_FOLDER_=${CMAKE_SOURCE_DIR}/src/test")
-add_definitions("-DBALAU_SOURCE_TEST_RESOURCES_FOLDER_=${CMAKE_SOURCE_DIR}/src/test/resources")
-add_definitions("-DBALAU_TARGET_FOLDER_=${CMAKE_BINARY_DIR}")
-add_definitions("-DBALAU_TEST_RESULTS_FOLDER_=${CMAKE_BINARY_DIR}/testResults")
+set(BALAU_TEST_EMAIL_HOST $ENV{BALAU_TEST_EMAIL_HOST})
+set(BALAU_TEST_EMAIL_PORT $ENV{BALAU_TEST_EMAIL_PORT})
+set(BALAU_TEST_EMAIL_SENDER_USER $ENV{BALAU_TEST_EMAIL_SENDER_USER})
+set(BALAU_TEST_EMAIL_SENDER_PASSWORD $ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD})
+set(BALAU_TEST_EMAIL_TO $ENV{BALAU_TEST_EMAIL_TO})
 
 if (DEFINED BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB)
 	add_definitions("-DBALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB=${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB}")
@@ -83,6 +83,8 @@ message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")
 
 configure_file(src/main/cmake/BalauConfig.hpp.in Balau/BalauConfig.hpp @ONLY)
 configure_file(src/doc/api/Doxyfile.in Doxyfile)
+configure_file(src/test/cpp/TestResources.cpp.in TestResources.cpp @ONLY)
+configure_file(src/test/cpp/TestResources.hpp.in TestResources.hpp @ONLY)
 
 ################################# BALAU LIBRARY ###############################
 
@@ -496,8 +498,8 @@ install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${P
 set(BALAU_TESTS_SOURCE_FILES
 	src/test/resources
 
-	src/test/cpp/TestResources.cpp
-	src/test/cpp/TestResources.hpp
+	${CMAKE_BINARY_DIR}/TestResources.cpp
+	${CMAKE_BINARY_DIR}/TestResources.hpp
 	src/test/cpp/TestMain.cpp
 
 	src/test/cpp/Balau/Application/CommandLineTest.cpp
@@ -585,7 +587,7 @@ add_executable(
 )
 
 target_link_libraries(BalauTests Balau ${ALL_LIBS})
-
+target_include_directories(BalauTests PUBLIC ${CMAKE_BINARY_DIR})
 target_compile_options(BalauTests PUBLIC "-Wno-string-plus-int")
 
 #

@@ -8,8 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #ifdef BALAU_ENABLE_HTTP
 	#include "../../../../main/cpp/Balau/Resource/Http.hpp"
@@ -30,7 +29,7 @@ struct FileTest : public Testing::TestGroup<FileTest> {
 	}
 
 	void iteration() {
-		File root(TestResources::BalauSourceFolder / "doc" / "manual");
+		File root(TestResources::SourceFolder / "doc" / "manual");
 		auto iterator = root.recursiveFileIterator();
 
 		size_t regularFileCount = 0;
@@ -59,26 +58,29 @@ struct FileTest : public Testing::TestGroup<FileTest> {
 	}
 
 	void resolve() {
-		auto source = TestResources::BalauSourceFolder.toAbsolutePath().toRawString();
-		auto target = TestResources::BalauTargetFolder;
+		auto source = TestResources::SourceFolder.toAbsolutePath().toRawString();
+		auto target = TestResources::TargetFolder;
+
+		auto fileTestDirectory = TestResources::TestResultsFolder.getParentDirectory() / "fileTestDirectory";
+		fileTestDirectory.createDirectories();
 
 		// Prefixed with file schema - absolute base folder, relative path
 		AssertThat(*target.resolve("file:../d/e.html"), is(File(target.getParentDirectory() / "d" / "e.html")));
 
 		// Prefixed with file schema - relative base folder, relative path
-		AssertThat(*File("../bin").resolve("file:../d/e.html"), is(File("..") / "d" / "e.html"));
+		AssertThat(*File("../fileTestDirectory").resolve("file:../d/e.html"), is(File("..") / "d" / "e.html"));
 
 		// Prefixed with file schema - absolute base folder, absolute path
 		AssertThat(*target.resolve("file://" + source), is(File(source)));
 
 		// Prefixed with file schema - relative base folder, absolute path
-		AssertThat(*File("../bin").resolve("file://" + source), is(File(source)));
+		AssertThat(*File("../fileTestDirectory").resolve("file://" + source), is(File(source)));
 
 		// Prefixed with file schema - absolute base folder, empty path
 		AssertThat(*target.resolve("file://"), is(target));
 
 		// Prefixed with file schema - relative base folder, empty path
-		AssertThat(*File("../bin").resolve("file://"), is(File("../bin")));
+		AssertThat(*File("../fileTestDirectory").resolve("file://"), is(File("../fileTestDirectory")));
 
 		/////////////////////////
 

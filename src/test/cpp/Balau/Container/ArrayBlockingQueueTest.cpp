@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 
 #include <Balau/Container/ArrayBlockingQueue.hpp>
 #include <Balau/Container/SynchronizedQueue.hpp>

@@ -8,13 +8,10 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include <Balau/Lang/Property/Util/PropertyAstToString.hpp>
 #include <Balau/Lang/Property/PropertyParserService.hpp>
 #include <Balau/Resource/StringUri.hpp>
-#include <Balau/Util/Files.hpp>
-
-#include "../../../../TestResources.hpp"
 
 namespace Balau {
 

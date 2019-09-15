@@ -9,8 +9,7 @@
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../../../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Network/Http/Client/WsClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
@@ -33,7 +32,7 @@ struct EchoingWsWebAppTest : public Testing::TestGroup<EchoingWsWebAppTest> {
 
 	void test() {
 		const unsigned short testPortStart = 47291;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 
 		HttpWebApps::RoutingHttpWebApp::Routing httpRouting(HttpWebApps::routingNode<HttpWebApps::FailingHttpWebApp>(""));
 

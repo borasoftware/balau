@@ -9,9 +9,7 @@
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-
-#include "../../../../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
@@ -67,7 +65,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void getFile() {
 		const unsigned short testPortStart = 43240;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
@@ -113,7 +111,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void getNotFoundFile() {
 		const unsigned short testPortStart = 47241;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
@@ -150,7 +148,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void headFile() {
 		const unsigned short testPortStart = 43242;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
@@ -187,7 +185,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void headNotFoundFile() {
 		const unsigned short testPortStart = 43243;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
@@ -224,7 +222,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void getFile1000Serial() {
 		const unsigned short testPortStart = 43244;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
@@ -296,7 +294,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void getFile1000Parallel() {
 		const unsigned short testPortStart = 23245;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
@@ -349,7 +347,7 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	void getFiles() {
 		const unsigned short testPortStart = 43546;
-		auto documentRoot = TestResources::BalauSourceFolder / "doc" / "manual";
+		auto documentRoot = TestResources::SourceFolder / "doc" / "manual";
 	
 		std::shared_ptr<HttpServer> server;
 	

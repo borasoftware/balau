@@ -9,8 +9,7 @@
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../../../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
@@ -69,7 +68,7 @@ struct RoutingHttpWebAppTest : public Testing::TestGroup<RoutingHttpWebAppTest> 
 	Logger & logger = Logger::getLogger("TestMain"); // NOLINT
 
 	void test() {
-		const auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		const auto documentRoot = TestResources::SourceFolder / "doc";
 
 		RoutingHttpWebApp::Routing routing;
 

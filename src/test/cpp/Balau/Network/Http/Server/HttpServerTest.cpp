@@ -10,8 +10,7 @@
 
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
@@ -56,7 +55,7 @@ struct HttpServerTest : public Testing::TestGroup<HttpServerTest> {
 	}
 
 	void injectedInstantiation() {
-		const auto documentRoot = TestResources::BalauSourceFolder / "doc";
+		const auto documentRoot = TestResources::SourceFolder / "doc";
 
 		std::shared_ptr<HttpServer> server;
 

@@ -9,8 +9,7 @@
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
@@ -28,11 +27,6 @@
 
 using namespace Balau::Network;
 using namespace Balau::Network::Http;
-
-using Balau::Testing::assertThat;
-using Balau::Testing::is;
-using Balau::Testing::isGreaterThan;
-using Balau::Testing::throws;
 
 namespace Balau {
 
@@ -69,7 +63,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 
 	void derivedEmpty() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
 		class EnvConfig : public EnvironmentConfiguration {
@@ -97,7 +91,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void derivedSimple() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
 		class EnvConfig : public EnvironmentConfiguration {
@@ -124,7 +118,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void derivedComposite() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
 		class EnvConfig : public EnvironmentConfiguration {
@@ -161,7 +155,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void directEmpty() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "empty.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -181,7 +175,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void directSimple() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "simple.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -204,7 +198,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void directComposite() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "composite.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -228,7 +222,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void mixedEmpty() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "empty.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -255,7 +249,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void mixedSimple() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "simple.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -284,7 +278,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void mixedComposite() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "composite.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env1.hconf";
 	
@@ -327,7 +321,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void derivedSimpleWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	
 		class EnvConfig : public EnvironmentConfiguration {
@@ -355,7 +349,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void derivedCompositeWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	
 		class EnvConfig : public EnvironmentConfiguration {
@@ -414,7 +408,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void directSimpleWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "simple-with-defaults.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	
@@ -432,7 +426,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void directCompositeWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "composite-with-defaults.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	
@@ -451,7 +445,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void mixedSimpleWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "simple-with-defaults.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	
@@ -482,7 +476,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void mixedCompositeWithDefaults() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		const auto spec = resourceFolder / "Application" / "EnvironmentConfiguration" / "composite-with-defaults.thconf";
 		const auto env = resourceFolder / "Application" / "EnvironmentConfiguration" / "env2.hconf";
 	
@@ -533,7 +527,7 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 	}
 	
 	void includedFilesConfig() {
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		Resource::File env = resourceFolder / "Application" / "EnvironmentConfiguration" / "hasDescendantInclude.properties";
 	
 		class EnvConfig : public EnvironmentConfiguration {
@@ -582,11 +576,11 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 		// ///////////////// ///////////////// ///////////////// //
 	
 		// The Balau environment configuration property specifications.
-		const auto srcFolder = TestResources::BalauSourceMainFolder;
+		const auto srcFolder = TestResources::SourceMainFolder;
 		Resource::File specs = srcFolder / "resources" / "BalauConfig" / "balau.thconf";
 	
 		// Example environment.
-		const auto resourceFolder = TestResources::BalauSourceTestResourcesFolder;
+		const auto resourceFolder = TestResources::SourceTestResourcesFolder;
 		Resource::File env = resourceFolder / "Application" / "EnvironmentConfiguration" / "testenv" / "env.hconf";
 		Resource::File creds = resourceFolder / "Application" / "EnvironmentConfiguration" / "testenv" / "creds.hconf";
 	

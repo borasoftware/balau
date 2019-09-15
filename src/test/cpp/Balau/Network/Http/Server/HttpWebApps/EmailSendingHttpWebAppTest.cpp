@@ -9,9 +9,7 @@
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-
-#include "../../../../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/Network/Http/Server/HttpServer.hpp>
@@ -105,11 +103,11 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 	}
 	
 	bool checkEnvironmentVariables() {
-		return checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_HOST",            TestResources::BalauTestEmailHost)
-			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_PORT",            TestResources::BalauTestEmailPort)
-			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_SENDER_USER",     TestResources::BalauTestEmailSenderUser)
-			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_SENDER_PASSWORD", TestResources::BalauTestEmailSenderPassword)
-			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_TO",              TestResources::BalauTestEmailTo);
+		return checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_HOST",            TestResources::TestEmailHost)
+			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_PORT",            TestResources::TestEmailPort)
+			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_SENDER_USER",     TestResources::TestEmailSenderUser)
+			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_SENDER_PASSWORD", TestResources::TestEmailSenderPassword)
+			&& checkEnvironmentVariableSourcedString("BALAU_TEST_EMAIL_TO",              TestResources::TestEmailTo);
 	}
 	
 	void directInstantiation() {
@@ -126,21 +124,21 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 		);
 	
 		unsigned short emailPort;
-		fromString(emailPort, TestResources::BalauTestEmailPort);
+		fromString(emailPort, TestResources::TestEmailPort);
 	
 		std::shared_ptr<HttpWebApp> emailHandler = std::shared_ptr<HttpWebApp>(
 			new EmailSendingHttpWebApp(
 				  createTestEmailBody
 				, cannedSuccess
 				, cannedFailure
-				, TestResources::BalauTestEmailHost
+				, TestResources::TestEmailHost
 				, emailPort
-				, TestResources::BalauTestEmailSenderUser
-				, TestResources::BalauTestEmailSenderPassword
+				, TestResources::TestEmailSenderUser
+				, TestResources::TestEmailSenderPassword
 				, "BalauTest"
 				, "Test subject"
-				, TestResources::BalauTestEmailTo
-				, TestResources::BalauTestEmailTo
+				, TestResources::TestEmailTo
+				, TestResources::TestEmailTo
 			)
 		);
 	
@@ -248,12 +246,12 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 								http {
 									email.sender {
 										location = /1/send-message
-										host       = )" + TestResources::BalauTestEmailHost + R"(
-										port       = )" + TestResources::BalauTestEmailPort + R"(
-										user       = )" + TestResources::BalauTestEmailSenderUser + R"(
+										host       = )" + TestResources::TestEmailHost + R"(
+										port       = )" + TestResources::TestEmailPort + R"(
+										user       = )" + TestResources::TestEmailSenderUser + R"(
 										subject    = test message
-										from       = )" + TestResources::BalauTestEmailTo + R"(
-										to         = )" + TestResources::BalauTestEmailTo + R"(
+										from       = )" + TestResources::TestEmailTo + R"(
+										to         = )" + TestResources::TestEmailTo + R"(
 										user-agent = BalauTest
 										success    = /1/success.html
 										failure    = /1/failed.html
@@ -276,7 +274,7 @@ struct EmailSendingHttpWebAppTest : public Testing::TestGroup<EmailSendingHttpWe
 							http.server {
 								http {
 									email.sender {
-										password = )" + TestResources::BalauTestEmailSenderPassword + R"(
+										password = )" + TestResources::TestEmailSenderPassword + R"(
 									}
 								}
 							}

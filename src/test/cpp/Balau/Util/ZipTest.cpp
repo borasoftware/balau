@@ -9,8 +9,7 @@
 //
 
 #include <Balau/Util/Zip.hpp>
-#include <Balau/Testing/TestRunner.hpp>
-#include "../../TestResources.hpp"
+#include <TestResources.hpp>
 
 #include <Balau/Util/Hashing.hpp>
 #include <Balau/Type/OnScopeExit.hpp>
@@ -27,16 +26,16 @@ using Testing::isGreaterThan;
 
 namespace Util {
 
-const Resource::File resDir  = TestResources::BalauSourceTestResourcesFolder; // NOLINT
-const Resource::File testDir = TestResources::BalauTestResultsFolder; // NOLINT
+const Resource::File resDir  = TestResources::SourceTestResourcesFolder;
+const Resource::File testDir = TestResources::TestResultsFolder;
 
-const Resource::File zipFile                 = resDir / "Zips" / "ZipFile.zip"; // NOLINT
-const Resource::File encryptedZipFile        = resDir / "Zips" / "EncryptedZipFile.zip"; // NOLINT
+const Resource::File zipFile                 = resDir / "Zips" / "ZipFile.zip";
+const Resource::File encryptedZipFile        = resDir / "Zips" / "EncryptedZipFile.zip";
 
-const Resource::File mutatedZipFile          = testDir / "Zips" / "MutatedZipFile.zip"; // NOLINT
-const Resource::File mutatedEncryptedZipFile = testDir / "Zips" / "MutatedEncryptedZipFile.zip"; // NOLINT
+const Resource::File mutatedZipFile          = testDir / "Zips" / "MutatedZipFile.zip";
+const Resource::File mutatedEncryptedZipFile = testDir / "Zips" / "MutatedEncryptedZipFile.zip";
 
-const std::string testPassword = "testPW"; // NOLINT
+const std::string testPassword = "testPW";
 
 struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	CompressionTest() {
@@ -392,7 +391,11 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	
 	static void unzipperTestImpl2() {
 		int error = 0;
-		zip_t * archive = zip_open("../../src/test/resources/Zips/ZipFile.zip", ZIP_RDONLY | ZIP_CHECKCONS, &error);
+
+		zip_t * archive = zip_open(
+			(resDir / "Zips" / "ZipFile.zip").toRawString().c_str(), ZIP_RDONLY | ZIP_CHECKCONS, &error
+		);
+
 		if (error) { throw std::exception(); }
 		zip_discard(archive);
 	}

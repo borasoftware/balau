@@ -9,7 +9,7 @@
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include <Balau/Network/Http/Client/HttpsClient.hpp>
 
 namespace Balau {

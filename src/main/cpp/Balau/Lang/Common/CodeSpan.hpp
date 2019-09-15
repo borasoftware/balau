@@ -130,22 +130,22 @@ class CodeSpan {
 	///
 	/// Create a code span equal to the supplied start and end positions.
 	///
-	public: CodeSpan(const std::shared_ptr<const Resource::Uri> & uri_,
+	public: CodeSpan(std::shared_ptr<const Resource::Uri> uri_,
 	                 unsigned int lineStart_,
 	                 unsigned int columnStart_,
 	                 unsigned int lineEnd_,
 	                 unsigned int columnEnd_)
-		: uri(uri_)
+		: uri(std::move(uri_))
 		, start(lineStart_, columnStart_)
 		, end(lineEnd_, columnEnd_) {}
 
 	///
 	/// Create a code span equal to the supplied start and end positions.
 	///
-	public: CodeSpan(const std::shared_ptr<const Resource::Uri> & uri_,
+	public: CodeSpan(std::shared_ptr<const Resource::Uri> uri_,
 	                 const CodePosition & start_,
 	                 const CodePosition & end_)
-		: uri(uri_)
+		: uri(std::move(uri_))
 		, start(start_)
 		, end(end_) {}
 
@@ -155,12 +155,25 @@ class CodeSpan {
 	public: CodeSpan(const CodeSpan & copy) = default;
 
 	///
-	/// Assign the supplied code span to the current code span.
+	/// Create a code span by moving the supplied code span.
+	///
+	public: CodeSpan( CodeSpan && copy) = default;
+
+	///
+	/// Copy assign the supplied code span to the current code span.
 	///
 	/// @param rhs the code span to assign from
 	/// @return the current object
 	///
 	public: CodeSpan & operator = (const CodeSpan & rhs) = default;
+
+	///
+	/// Move assign the supplied code span to the current code span.
+	///
+	/// @param rhs the code span to assign from
+	/// @return the current object
+	///
+	public: CodeSpan & operator = (CodeSpan && rhs) = default;
 
 	///
 	/// Returns true if the current code span is equal to the supplied code span.

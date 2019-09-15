@@ -23,7 +23,7 @@ inline std::string toString(const ObjectTrieTestValue & value) {
 	return toString("{ ", value.key, ", ", value.value, " }");
 }
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include "Balau/Container/ObjectTrie.hpp"
 
 #pragma clang diagnostic push

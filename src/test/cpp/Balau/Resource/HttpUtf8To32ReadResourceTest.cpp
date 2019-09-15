@@ -8,7 +8,7 @@
 // See the LICENSE file for the full license text.
 //
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include <Balau/Resource/Http.hpp>
 #include <Balau/Util/Streams.hpp>
 

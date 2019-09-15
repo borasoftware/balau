@@ -45,7 +45,7 @@ template <> struct hash<Balau::Container::Dep> {
 
 } // namespace std
 
-#include <Balau/Testing/TestRunner.hpp>
+#include <TestResources.hpp>
 #include "../../../../main/cpp/Balau/Container/DependencyGraph.hpp"
 
 #include <iostream>
