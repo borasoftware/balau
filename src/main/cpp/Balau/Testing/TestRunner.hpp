@@ -539,10 +539,11 @@ class TestRunner : public Impl::TestRunnerBase {
 			       << "\n";
 		} else {
 			writer << "\n***** THERE WERE TEST FAILURES. *****\n"
-			       << "\nTotal tests run: " << (successCount + failureCount + ignoredCount) << "\n\n"
+			       << "\nTotal tests run: " << (successCount + ignoredCount + failureCount + errorCount) << "\n"
 			       << "\n  tests passed:  " << Util::Strings::padLeft(::toString(successCount), 6)
 			       << "\n  tests ignored: " << Util::Strings::padLeft(::toString(ignoredCount), 6)
 			       << "\n  tests failed:  " << Util::Strings::padLeft(::toString(failureCount), 6)
+			       << "\n  tests errored: " << Util::Strings::padLeft(::toString(errorCount), 6)
 			       << "\n\n"
 			       << "Failed/errored tests:\n";
 
@@ -625,6 +626,13 @@ inline void TestGroup<TestClassT>::ignore() {
 template <typename TestClassT>
 inline void TestGroup<TestClassT>::log(const std::string & string) {
 	return Testing::TestRunner::runner().log(string);
+}
+
+template <typename TestClassT>
+template <typename S, typename ... SR>
+inline void TestGroup<TestClassT>::log(const S & p, const SR & ... pRest) {
+	using ::toString;
+	log(toString(p, pRest ...));
 }
 
 template <typename TestClassT>

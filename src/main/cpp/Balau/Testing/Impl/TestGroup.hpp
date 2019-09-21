@@ -52,6 +52,14 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 	///
 	/// Write additional logging to the test writers.
 	///
+	/// This version of the log method accepts a variable number of references, and
+	/// concatenates them together by calling toString.
+	///
+	public: template <typename S, typename ... SR> void log(const S & p, const SR & ... pRest);
+
+	///
+	/// Write additional logging to the test writers.
+	///
 	/// A line break is written after the string.
 	///
 	public: void logLine(const std::string & string = "");
