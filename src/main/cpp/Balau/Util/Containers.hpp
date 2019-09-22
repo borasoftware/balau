@@ -68,6 +68,28 @@ struct Containers final {
 		return ret;
 	}
 
+	///
+	/// Does the container contain the supplied value?
+	///
+	template <template <typename ...> class C, typename ... T, typename U>
+	static bool contains(C<T ...> & container, const U & value) {
+		return std::find(container.begin(), container.end(), value) != container.end();
+	}
+
+	///
+	/// Does the container contain one of the supplied values?
+	///
+	template <template <typename ...> class C, typename ... T, template <typename ...> class V, typename ... U>
+	static bool contains(C<T ...> & container, const V<U ...> & values) {
+		for (const auto & value : values) {
+			if (std::find(container.begin(), container.end(), value) != container.end()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 
 	Containers() = delete;
