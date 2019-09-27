@@ -104,7 +104,8 @@ std::string render(const A & actual, const E & expected) {
 	        << "      "
 	        << std::right << std::setw((int) maxLineNumberWidth) << "#"
 	        << "  "
-	        << "EXPECTED" << std::endl;
+	        << "EXPECTED"
+	        << std::endl;
 
 	const size_t minLineCount = actualLineCount < expectedLineCount ? actualLineCount : expectedLineCount;
 
@@ -118,10 +119,14 @@ std::string render(const A & actual, const E & expected) {
 		        << "  " << (actualLine == expectedLine ? "==" : "!=") << "  "
 		        << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
 		        << "  "
-		        << replaceNonPrintableCharacters(expectedLine) << std::endl;
+		        << replaceNonPrintableCharacters(expectedLine)
+		        << std::endl;
 
 		++lineCount;
 	}
+
+	bool actualExtra = false;
+	bool expectedExtra = false;
 
 	while (std::getline(actualStream, actualLine)) {
 		builder << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
@@ -133,6 +138,7 @@ std::string render(const A & actual, const E & expected) {
 		        << std::endl;
 
 		++lineCount;
+		actualExtra = true;
 	}
 
 	while (std::getline(expectedStream, expectedLine)) {
@@ -146,7 +152,32 @@ std::string render(const A & actual, const E & expected) {
 		}
 
 		builder << "  !=  "
-		        << replaceNonPrintableCharacters(expectedLine) << std::endl;
+		        << replaceNonPrintableCharacters(expectedLine)
+		        << std::endl;
+	}
+
+	const bool actualEndsWithNewline = actualString.back() == '\n';
+	const bool expectedEndsWithNewline = expectedString.back() == '\n';
+
+	if (actualEndsWithNewline && (actualExtra || !expectedExtra)) {
+		builder << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
+		        << "  "
+		        << std::left << std::setw((int) maxActualWidth) << " "
+		        << "  !=  "
+		        << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
+		        << "  "
+		        << std::endl;
+	} else if (expectedEndsWithNewline && (expectedExtra || !actualExtra)) {
+		builder << std::right
+		        << std::setw((int) maxLineNumberWidth)
+		        << toString(lineCount)
+		        << "  ";
+
+		for (size_t m = 0; m < maxActualWidth; m++) {
+			builder << " ";
+		}
+
+		builder << "  !=  " << std::endl;
 	}
 
 	return builder.str();

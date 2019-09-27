@@ -180,9 +180,9 @@ class TestRunnerExecutor {
 		TestResult::Result result;
 
 		try {
-			testToRun.group->resetIgnoreCurrent();
+			Balau::Testing::Impl::TestGroupBase::resetIgnoreCurrent();
 			testToRun.method->run();
-			return testToRun.group->currentIsIgnored() ? TestResult::Result::Ignored : TestResult::Result::Success;
+			return Balau::Testing::Impl::TestGroupBase::currentIsIgnored() ? TestResult::Result::Ignored : TestResult::Result::Success;
 		} catch (const Exception::AssertionException & e) {
 			output << " - FAILED!\n\n"
 			       << "Assertion failed: " << e.message << "\n\n";
@@ -375,7 +375,7 @@ class TestRunnerExecutor {
 	}
 
 	private: std::vector<FlattenedTestCase> addTests(GroupedTestCaseMap & testCasesByGroup, const std::string & testList) {
-		std::vector<FlattenedTestCase> tests;
+		std::vector<FlattenedTestCase> addedTests;
 		unsigned int testIndex = 0;
 		const auto regexes = parseTestList(testList);
 
@@ -410,7 +410,7 @@ class TestRunnerExecutor {
 					continue;
 				}
 
-				tests.emplace_back(
+				addedTests.emplace_back(
 					FlattenedTestCase(
 						  testIndex
 						, testCase.group->getExecutionModels()
@@ -430,11 +430,11 @@ class TestRunnerExecutor {
 			groupSizeByName[testGroupName] = testCasesAdded;
 
 			if (testCasesAdded) {
-				tests.back().postText = "\n== " + testCaseSetIterator.first + " group completed.";
+				addedTests.back().postText = "\n== " + testCaseSetIterator.first + " group completed.";
 			}
 		}
 
-		return tests;
+		return addedTests;
 	}
 
 	friend class ::Balau::Testing::TestRunner;
