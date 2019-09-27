@@ -615,11 +615,54 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 		get();
 
 		if (std::find(tokens.begin(), tokens.end(), scannedTokens.tokens[currentIndex]) != tokens.end()) {
-			if (currentIndex < tokens.size() - 1) {
-				advanceCurrentIndex();
-			}
+			advanceCurrentIndex();
 		} else {
 			ThrowBalauException(Exception::SyntaxErrorException, std::string(errorMessage), getCurrentCodeSpan());
+		}
+	}
+
+	///
+	/// A position marker that can be obtained at any point during parsing, in order to put back multiple tokens.
+	///
+	public: class Marker {
+		public: Marker(const Marker & rhs) noexcept : index(rhs.index) {}
+
+		public: Marker(Marker && rhs) noexcept : index(rhs.index) {}
+
+		public: Marker & operator = (const Marker & rhs) noexcept {
+			index = rhs.index;
+			return *this;
+		}
+
+		public: Marker & operator = (const Marker && rhs) noexcept {
+			index = rhs.index;
+			return *this;
+		}
+
+		private: Marker(size_t index_) : index(index_) {}
+
+		private: size_t index;
+
+		friend class ScannerApiScannedTokens;
+	};
+
+	public: Marker mark() const {
+		return Marker(currentIndex);
+	}
+
+	public: void putBack(const Marker & marker) {
+		if (marker.index > currentIndex) {
+			ThrowBalauException(
+				  Exception::IndexOutOfRangeException
+				, ::toString("Marker index (", marker.index, ") is greater than current index (", currentIndex, ")")
+				, marker.index
+			);
+		}
+
+		const auto steps = currentIndex - marker.index;
+
+		for (size_t m = 0; m < steps; m++) {
+			putBack();
 		}
 	}
 
@@ -722,8 +765,34 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	/// Is the next token whitespace?
 	///
 	public: bool currentIsWhitespace() const {
+		if (currentIndex >= scannedTokens.tokens.size()) {
+			return false;
+		}
+
 		const TokenT token = scannedTokens.tokens[currentIndex];
-		return currentIndex < scannedTokens.tokens.size() && (token == TokenT::Blank || token == TokenT::LineBreak);
+		return token == TokenT::Blank || token == TokenT::LineBreak;
+	}
+
+	///
+	/// Is the marked token a blank?
+	///
+	public: bool isBlank(const Marker & marker) const {
+		return scannedTokens.tokens[marker.index] == TokenT::Blank;
+	}
+
+	///
+	/// Is the marked token line break?
+	///
+	public: bool isLineBreak(const Marker & marker) const {
+		return scannedTokens.tokens[marker.index] == TokenT::LineBreak;
+	}
+
+	///
+	/// Is the marked token whitespace?
+	///
+	public: bool isWhitespace(const Marker & marker) const {
+		const TokenT token = scannedTokens.tokens[marker.index];
+		return token == TokenT::Blank || token == TokenT::LineBreak;
 	}
 
 	///

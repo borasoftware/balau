@@ -28,7 +28,7 @@ struct Enums final {
 	///
 	/// Convert the strongly typed enum to its underlying integer.
 	///
-	template <typename E> static auto toUnderlying(E e) noexcept -> typename std::underlying_type<E>::type
+	template <typename E> static constexpr auto toUnderlying(E e) noexcept -> typename std::underlying_type<E>::type
 	{
 		return static_cast<typename std::underlying_type<E>::type>(e);
 	}
