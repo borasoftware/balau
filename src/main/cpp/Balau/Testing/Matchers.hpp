@@ -138,6 +138,16 @@ template <typename E> inline const ThrowExpectation<E> throws(const E & expected
 }
 
 ///
+/// Does the code block throw the supplied exception type?
+///
+/// Examine the exception with the supplied predicate function.
+///
+template <typename E>
+inline const ThrowExpectationWithPredicate<E> throws(const std::function<bool (const E & )> & predicate) {
+	return ThrowExpectationWithPredicate<E>(predicate);
+}
+
+///
 /// Does the code block throw the supplied exception (including the exception's data)?
 ///
 /// Perform the comparison with the supplied function.

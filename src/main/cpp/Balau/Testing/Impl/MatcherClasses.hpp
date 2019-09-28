@@ -114,6 +114,18 @@ template <typename E, typename F> class ThrowExpectationWithFunction {
 	}
 };
 
+// An expected exception thrown which includes a compare function.
+template <typename E> class ThrowExpectationWithPredicate {
+	public: const std::function<bool (const E &)> predicate;
+
+	public: explicit ThrowExpectationWithPredicate(const std::function<bool (const E &)> & predicate_)
+		: predicate(predicate_) {}
+
+	public: bool compare(const E & thrownException) const {
+		return predicate(thrownException);
+	}
+};
+
 template <typename AllocatorT, typename E, typename F>
 inline Balau::U8String<AllocatorT> toString(const ThrowExpectationWithFunction<E, F> & e) {
 	using ::toString;

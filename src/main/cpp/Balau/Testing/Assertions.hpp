@@ -342,6 +342,46 @@ inline void assertThat(const SourceCodeLocation & location, const std::string & 
 }
 
 ///
+/// Assert that the supplied function throws an exception, checked by the supplied predicate.
+///
+/// Print the supplied failure message on assertion failure.
+///
+/// If any exception is throw which does not derive from std::exception,
+/// the test application will fail.
+///
+template <typename F, typename E>
+inline void assertThat(const SourceCodeLocation & location, const std::string & failMessage, F function, const ThrowExpectationWithPredicate<E> & predicate) {
+	try {
+		function();
+	} catch (const E & actualException) {
+		if (!predicate.compare(actualException)) {
+			ThrowBalauException(
+				  Exception::AssertionException
+				, ::toString(
+					  location
+					, " - "
+					, failMessage
+					, "\nThe exception's state was unexpected: "
+					, actualException
+				)
+			);
+		} else {
+			return;
+		}
+	} catch (const std::exception & actualException) {
+		ThrowBalauException(
+			  Exception::AssertionException
+			, toString(location) + " - " + failMessage + "\nA different standard exception was thrown: " + actualException.what()
+		);
+	}
+
+	ThrowBalauException(
+		  Exception::AssertionException
+		, toString(location) + " - " + failMessage + "\nThe expected exception was not thrown."
+	);
+}
+
+///
 /// Assert that the supplied function throws the supplied exception example instance.
 ///
 /// The supplied function is used for comparison.
@@ -363,6 +403,44 @@ inline void assertThat(const std::string & failMessage, F function, const ThrowE
 					, "\nThe exception's state was not identical to the supplied exception: "
 					, e
 					, " != "
+					, actualException
+				)
+			);
+		} else {
+			return;
+		}
+	} catch (const std::exception & actualException) {
+		ThrowBalauException(
+			  Exception::AssertionException
+			, failMessage + "\nA different standard exception was thrown: " + actualException.what()
+		);
+	}
+
+	ThrowBalauException(
+		  Exception::AssertionException
+		, failMessage + "\nThe expected exception was not thrown."
+	);
+}
+
+///
+/// Assert that the supplied function throws an exception, checked by the supplied predicate.
+///
+/// Print the supplied failure message on assertion failure.
+///
+/// If any exception is throw which does not derive from std::exception,
+/// the test application will fail.
+///
+template <typename F, typename E>
+inline void assertThat(const std::string & failMessage, F function, const ThrowExpectationWithPredicate<E> & predicate) {
+	try {
+		function();
+	} catch (const E & actualException) {
+		if (!predicate.compare(actualException)) {
+			ThrowBalauException(
+				  Exception::AssertionException
+				, ::toString(
+					  failMessage
+					, "\nThe exception's state was unexpected: "
 					, actualException
 				)
 			);
@@ -478,6 +556,17 @@ inline void assertThat(const SourceCodeLocation & location, F function, const Th
 }
 
 ///
+/// Assert that the supplied function throws an exception, checked by the supplied predicate.
+///
+/// If any exception is throw which does not derive from std::exception,
+/// the test application will fail.
+///
+template <typename F, typename E>
+inline void assertThat(const SourceCodeLocation & location, F function, const ThrowExpectationWithPredicate<E> & predicate) {
+	assertThat(location, "", function, predicate);
+}
+
+///
 /// Assert that the supplied function throws the supplied exception example instance.
 ///
 /// The supplied function is used for comparison.
@@ -488,6 +577,17 @@ inline void assertThat(const SourceCodeLocation & location, F function, const Th
 template <typename F, typename E, typename C>
 inline void assertThat(F function, const ThrowExpectationWithFunction<E, C> & expectedException) {
 	assertThat("", function, expectedException);
+}
+
+///
+/// Assert that the supplied function throws an exception, checked by the supplied predicate.
+///
+/// If any exception is throw which does not derive from std::exception,
+/// the test application will fail.
+///
+template <typename F, typename E>
+inline void assertThat(F function, const ThrowExpectationWithPredicate<E> & predicate) {
+	assertThat("", function, predicate);
 }
 
 ///

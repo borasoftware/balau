@@ -154,30 +154,26 @@ std::string render(const A & actual, const E & expected) {
 		builder << "  !=  "
 		        << replaceNonPrintableCharacters(expectedLine)
 		        << std::endl;
+
+		expectedExtra = true;
 	}
 
 	const bool actualEndsWithNewline = actualString.back() == '\n';
 	const bool expectedEndsWithNewline = expectedString.back() == '\n';
 
-	if (actualEndsWithNewline && (actualExtra || !expectedExtra)) {
+	if (actualEndsWithNewline && actualExtra) {
 		builder << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
 		        << "  "
 		        << std::left << std::setw((int) maxActualWidth) << " "
-		        << "  !=  "
-		        << std::right << std::setw((int) maxLineNumberWidth) << toString(lineCount)
-		        << "  "
+		        << "  !="
 		        << std::endl;
-	} else if (expectedEndsWithNewline && (expectedExtra || !actualExtra)) {
-		builder << std::right
-		        << std::setw((int) maxLineNumberWidth)
-		        << toString(lineCount)
-		        << "  ";
-
-		for (size_t m = 0; m < maxActualWidth; m++) {
-			builder << " ";
-		}
-
-		builder << "  !=  " << std::endl;
+	} else if (expectedEndsWithNewline && expectedExtra) {
+		builder << std::right << std::setw((int) maxLineNumberWidth) << " "
+		        << "  "
+		        << std::left << std::setw((int) maxActualWidth) << " "
+		        << "  !=  "
+		        << std::right << std::setw((int) maxLineNumberWidth) << "  "
+		        << std::endl;
 	}
 
 	return builder.str();

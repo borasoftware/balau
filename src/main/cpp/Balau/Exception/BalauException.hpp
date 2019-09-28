@@ -42,10 +42,10 @@
 /// If you do not wish to see the ThrowBalau prefix on each of your throw
 /// statements in your code, define an alias macro for this macro.
 ///
-#define ThrowBalauException(ExceptionClass, ...) {             \
-	_ThrowBalauException_generateStackTrace                    \
+#define ThrowBalauException(ExceptionClass, ...) {            \
+	_ThrowBalauException_generateStackTrace                   \
 	throw ExceptionClass(__FILE__, __LINE__, st, __VA_ARGS__); \
-}
+} _Balau_SwallowSemiColon_()
 
 namespace Balau::Exception {
 

@@ -104,6 +104,15 @@ struct AssertionsTest : public Testing::TestGroup<AssertionsTest> {
 				, [] (auto a, auto e) { return std::string(a.message) == e.message; }
 			)
 		);
+
+		AssertThat(
+			  [&] () { foo(); }
+			, throws<Exception::SizeException>(
+				[] (const Exception::SizeException & e) {
+					return Util::Strings::contains(e.what(), "testing");
+				}
+			)
+		);
 	}
 };
 

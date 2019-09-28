@@ -164,12 +164,19 @@ static_assert(sizeof(uint64_t)           == 8, "uint64_t is not 64 bits");
 	#include <string_view>
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// Balau version ////////////////////////////////
 
 ///
 /// The version of the Balau library.
 ///
 extern const std::string BalauVersion;
+
+//////////////////////// Miscellaneous basic utilities ////////////////////////
+
+/// Empty inline function that is used to force a semicolon at the end of a
+/// macro and to prevent empty statement warnings from occurring from code
+/// checkers that do take into account semicolon swallowing.
+inline void _Balau_SwallowSemiColon_() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
