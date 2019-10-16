@@ -817,6 +817,22 @@ struct Strings final {
 	///////////////////////////////////
 
 	///
+	/// Simplify whitespace (conflate blanks) from the supplied UTF-8 string.
+	///
+	/// Multiple blanks (tab/space) are conflated to single blanks and whitespace from
+	/// the start and end of the string is removed.
+	///
+	/// As this is a destructive process, a new string is returned.
+	///
+	static std::string simplify(const std::string_view & input) {
+		static const std::regex conflater("[\t ]+");
+		auto trimmed = trim(input);
+		return replaceAll(trimmed, conflater, " ");
+	}
+
+	///////////////////////////////////
+
+	///
 	/// Replace all occurrences of the specified string with the supplied replacement.
 	///
 	template <typename CharT,
