@@ -189,8 +189,6 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	///
 	/// This method will iterate through all the tokens in order to build the code span.
 	///
-	/// TODO finalise API doc
-	///
 	/// @return the overall code span for the supplied scanned tokens
 	///
 	public: static CodeSpan determineCodeSpan(const std::shared_ptr<Resource::Uri> & uri,
@@ -203,8 +201,6 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	/// Utility to determine the overall code span for the specified index.
 	///
 	/// This method will iterate through all the tokens in order to build the code span.
-	///
-	/// TODO finalise API doc
 	///
 	/// @throw IndexOutOfRangeException if the specified index is greater or equal to the vector size
 	///
@@ -322,6 +318,8 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	                                     unsigned int nextOffset,
 	                                     CodePosition & endPosition,
 	                                     std::vector<unsigned int> & lineLengthCache) {
+		static const std::regex endLineBreakRegex = std::regex("(\n\r|\r\n|\n|\r)$");
+
 		if (token == TokenT::LineBreak || token == TokenT::CommentLine || token == TokenT::CommentBlock) {
 			const std::string thisText = fullText.substr(thisOffset, nextOffset - thisOffset);
 			const std::vector<size_t> lineLengths = Util::Strings::lineLengths(thisText);
@@ -372,9 +370,6 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 		}
 	}
 
-	private: static const std::regex lineBreakRegex;
-	private: static const std::regex endLineBreakRegex;
-
 	// Updates in place the supplied start position when retreating.
 	// Also updates the line length cache when a line break is encountered.
 	private: static void determineNewStart(TokenT token,
@@ -383,6 +378,8 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	                                       unsigned int nextOffset,
 	                                       CodePosition & startPosition,
 	                                       std::vector<unsigned int> & lineLengthCache) {
+		static const std::regex lineBreakRegex = std::regex("\n\r|\r\n|\n|\r");
+
 		if (token == TokenT::LineBreak || token == TokenT::CommentLine || token == TokenT::CommentBlock) {
 			const unsigned int lineBreaks = (unsigned int) Util::Strings::occurrences(fullText.substr(thisOffset, nextOffset - thisOffset), lineBreakRegex);
 
@@ -390,12 +387,15 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 
 			Assert::assertion(
 				  lineBreaks != 0
-				, [&] () { return std::string(
-					"A line break token was supplied in the determineNewStart function"
-					"call but no line end was found in the supplied text. "
-					"Start offset = "
-				) + toString(thisOffset) + ", end offset = " +
-				toString(nextOffset) + ", token text = " + fullText.substr(thisOffset, nextOffset - thisOffset); }
+				, [&] () {
+				  	return toString(
+						  "A line break token was supplied in the determineNewStart function"
+						, "call but no line end was found in the supplied text. "
+						, "Start offset = ", thisOffset
+						, ", end offset = ", nextOffset
+						, ", token text = ", fullText.substr(thisOffset, nextOffset - thisOffset)
+					);
+				}
 			);
 
 			for (size_t m = 0; m < lineBreaks; m++) {
@@ -414,12 +414,6 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	private: ScannedTokens<TokenT> scannedTokens;
 	private: std::vector<CodeSpan> codeSpans;
 };
-
-template <typename TokenT>
-const std::regex RandomAccessScannedTokens<TokenT>::lineBreakRegex = std::regex("\n\r|\r\n|\n|\r");
-
-template <typename TokenT>
-const std::regex RandomAccessScannedTokens<TokenT>::endLineBreakRegex = std::regex("(\n\r|\r\n|\n|\r)$");
 
 /////////////////////////// ScannerApiScannedTokens ///////////////////////////
 
@@ -452,9 +446,9 @@ template <typename TokenT> class ScannedToken {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	private: ScannedToken(TokenT token_, const CodeSpan & codeSpan_, std::string_view text_)
+	private: ScannedToken(TokenT token_, CodeSpan codeSpan_, std::string_view text_)
 		: token(token_)
-		, codeSpan(codeSpan_)
+		, codeSpan(std::move(codeSpan_))
 		, text(text_) {}
 
 	friend class ScannerApiScannedTokens<TokenT>;
@@ -589,6 +583,8 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	/// Throws a syntax error exception with the supplied error message if the
 	/// supplied token does not match the current token.
 	///
+	/// @param token the expected token
+	/// @param errorMessage an error message to pass to the exception
 	/// @throw SyntaxErrorException if the token was not found
 	///
 	public: void expect(const TokenT token, std::string_view errorMessage) {
@@ -600,6 +596,35 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 			}
 		} else {
 			ThrowBalauException(Exception::SyntaxErrorException, std::string(errorMessage), getCurrentCodeSpan());
+		}
+	}
+
+	///
+	/// Expect the supplied token.
+	///
+	/// Adds an error report to the supplied error report container and returns false if the
+	/// supplied token does not match the current token.
+	///
+	/// @param token the expected token
+	/// @param container the error report container to add the error report to
+	/// @param errorReport a function that generates the error report
+	/// @return true if the expected token was matched, false otherwise
+	///
+	public: template <template <typename ...> class ContainerT, typename ... ArgT, typename ReportT>
+	bool expect(const TokenT token,
+	            ContainerT<ReportT, ArgT ...> & container,
+	            const std::function<ReportT (const TokenT &, const CodeSpan &)> & errorReport) {
+		get();
+
+		if (scannedTokens.tokens[currentIndex] == token) {
+			if (currentIndex < scannedTokens.tokens.size() - 1) {
+				advanceCurrentIndex();
+			}
+
+			return true;
+		} else {
+			container.push_back(errorReport(token, getCurrentCodeSpan()));
+			return false;
 		}
 	}
 
@@ -622,6 +647,32 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	}
 
 	///
+	/// Expect one of the supplied tokens.
+	///
+	/// Adds an error report to the supplied error report container and returns false if none
+	/// of the supplied tokens match the current token.
+	///
+	/// @param token the expected token
+	/// @param container the error report container to add the error report to
+	/// @param errorReport a function that generates the error report
+	/// @return true if one of the expected tokens was matched, false otherwise
+	///
+	public: template <template <typename ...> class TokenContainerT, template <typename ...> class ContainerT, typename ... TokenArgT, typename ... ArgT, typename ReportT>
+	bool expect(const TokenContainerT<TokenT, TokenArgT ...> & tokens,
+	            ContainerT<ReportT, ArgT ...> & container,
+	            const std::function<ReportT (const TokenContainerT<TokenT, TokenArgT ...> &, const CodeSpan &)> & errorReport) {
+		get();
+
+		if (std::find(tokens.begin(), tokens.end(), scannedTokens.tokens[currentIndex]) != tokens.end()) {
+			advanceCurrentIndex();
+			return true;
+		} else {
+			container.push_back(errorReport(tokens, getCurrentCodeSpan()));
+			return false;
+		}
+	}
+
+	///
 	/// A position marker that can be obtained at any point during parsing, in order to put back multiple tokens.
 	///
 	public: class Marker {
@@ -634,12 +685,12 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 			return *this;
 		}
 
-		public: Marker & operator = (const Marker && rhs) noexcept {
+		public: Marker & operator = (Marker && rhs) noexcept {
 			index = rhs.index;
 			return *this;
 		}
 
-		private: Marker(size_t index_) : index(index_) {}
+		private: explicit Marker(size_t index_) : index(index_) {}
 
 		private: size_t index;
 

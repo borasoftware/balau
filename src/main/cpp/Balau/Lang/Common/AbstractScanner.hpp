@@ -99,6 +99,22 @@ template <typename TokenT> class AbstractScanner {
 		}
 	}
 
+	protected: template <typename ContainerT, typename ReportT>
+	bool readNextChar(ContainerT & container, const std::function<ReportT (const CodeSpan &)> & errorReport) {
+		if (currentEndOffset == (int) text.length()) {
+			currentChar = std::char_traits<char32_t>::eof();
+		} else {
+			currentChar = Character::getNextUtf8(text, currentEndOffset);
+
+			if (currentChar < 0) {
+				container.push_back(errorReport(calculateCurrentCodeSpan()));
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	protected: void putBackCurrentChar() {
 		if (currentChar == std::char_traits<char32_t>::eof() || text.length() == 0 || currentEndOffset == 0) {
 			return;
@@ -136,6 +152,34 @@ template <typename TokenT> class AbstractScanner {
 						  Exception::SyntaxErrorException
 						, "End of file found during parsing of string literal", calculateCurrentCodeSpan()
 					);
+				}
+
+				default: {
+					continue;
+				}
+			}
+		}
+	}
+
+	protected: template <typename ContainerT, typename ReportT>
+	bool extractStringConstantDoubleQuotes(ContainerT & container, const std::function<ReportT (const CodeSpan &)> & errorReport) {
+		// The current character must already be the double quote character.
+		while (true) {
+			readNextChar();
+
+			switch (currentChar) {
+				case U'"': {
+					return true;
+				}
+
+				case U'\\': { // Escaped character.
+					readNextChar();
+					continue;
+				}
+
+				case std::char_traits<char32_t>::eof(): {
+					container.push_back(errorReport(calculateCurrentCodeSpan()));
+					return false;
 				}
 
 				default: {
