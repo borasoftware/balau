@@ -232,7 +232,7 @@ template <typename TokenT> class AbstractScanner {
 
 	protected: CodeSpan calculateCurrentCodeSpan() {
 		return RandomAccessScannedTokens<TokenT>::determineCodeSpan(
-			uri, text, tokens, startOffsets, (unsigned int) tokens.size() - 1
+			text, tokens, startOffsets, (unsigned int) tokens.size() - 1
 		);
 	}
 

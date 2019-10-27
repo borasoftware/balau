@@ -20,7 +20,7 @@ namespace Lang {
 using UInt = unsigned int;
 
 inline CodeSpan C(unsigned int lineStart, unsigned int columnStart, unsigned int lineEnd, unsigned int columnEnd) {
-	return CodeSpan(std::shared_ptr<Resource::Uri>(), lineStart, columnStart, lineEnd, columnEnd);
+	return CodeSpan(lineStart, columnStart, lineEnd, columnEnd);
 }
 
 enum Token { Text, Blank, LineBreak, CommentLine, CommentBlock, EndOfFile };

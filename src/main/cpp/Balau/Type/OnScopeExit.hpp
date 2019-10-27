@@ -44,6 +44,28 @@ class OnScopeExit final {
 		function();
 	}
 
+	///
+	/// Set to the function to NOP (cancels scheduled execution).
+	///
+	public: void clear() {
+		function = [] () {};
+	}
+
+	///
+	/// Set to the function to a different function (cancels previously scheduled execution).
+	///
+	public: void rest(std::function<void ()> function_) {
+		function = function_;
+	}
+
+	///
+	/// Execute the function now and then clear it.
+	///
+	public: void executeNow() {
+		function();
+		clear();
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	public: OnScopeExit() = delete;

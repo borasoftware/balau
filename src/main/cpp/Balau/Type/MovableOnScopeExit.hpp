@@ -17,6 +17,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TYPE__MOVEABLE_ON_SCOPE_EXIT
 #define COM_BORA_SOFTWARE__BALAU_TYPE__MOVEABLE_ON_SCOPE_EXIT
 
+#include <functional>
 #include <memory>
 
 namespace Balau {
@@ -46,6 +47,20 @@ class MovableOnScopeExit final {
 	public: MovableOnScopeExit(MovableOnScopeExit && rhs) noexcept
 		: exiter(std::move(rhs.exiter)) {}
 
+	///
+	/// Set to the function to NOP (cancels scheduled execution).
+	///
+	public: void clear() {
+		exiter->clear();
+	}
+
+	///
+	/// Execute the function now and then clear it.
+	///
+	public: void executeNow() {
+		exiter->executeNow();
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	public: MovableOnScopeExit(const MovableOnScopeExit &) = delete;
@@ -53,6 +68,9 @@ class MovableOnScopeExit final {
 
 	private: struct ContainerBase {
 		virtual ~ContainerBase() = default;
+		public: virtual void clear() = 0;
+		public: virtual void reset(std::function<void ()> function_) = 0;
+		public: virtual void executeNow() = 0;
 	};
 
 	private: template <typename FunctionT> struct ContainerImpl : public ContainerBase {
@@ -65,6 +83,16 @@ class MovableOnScopeExit final {
 		ContainerImpl(const ContainerImpl &) = delete;
 		ContainerImpl & operator =(const ContainerImpl &) = delete;
 
+		public: void clear() override {
+			function = [] () {};
+		}
+
+		public: void executeNow() override {
+			function();
+			clear();
+		}
+
+		friend class MovableOnScopeExit;
 		private: FunctionT function;
 	};
 

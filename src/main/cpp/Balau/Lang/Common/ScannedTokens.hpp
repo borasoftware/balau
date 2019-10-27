@@ -89,11 +89,6 @@ template <typename TokenT> class IterativeScannedTokens;
 /// @tparam TokenT the language token enum type
 ///
 template <typename TokenT> class ScannedTokens final {
-	///
-	/// The source URI from which the tokens were scanned.
-	///
-	public: const std::shared_ptr<const Resource::Uri> uri;
-
 	public: ScannedTokens(std::shared_ptr<const Resource::Uri> uri_,
 	                      std::string && text_,
 	                      std::vector<TokenT> && tokens_,
@@ -128,14 +123,24 @@ template <typename TokenT> class ScannedTokens final {
 	///
 	/// The scanned tokens instance must not be used after the move is performed.
 	///
-	/// @return the input text string as an rvalue
+	/// @return the input text string as an rvalue reference
 	///
 	public: std::string && moveTextOut() {
 		return std::move(text);
 	}
 
+	///
+	/// Get the input uri.
+	///
+	/// @return the input uri
+	///
+	public: std::shared_ptr<const Resource::Uri> getUri() {
+		return uri;
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
+	private: std::shared_ptr<const Resource::Uri> uri;
 	private: std::string text;
 	private: std::vector<TokenT> tokens;
 	private: std::vector<unsigned int> startOffsets;
@@ -191,10 +196,9 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	///
 	/// @return the overall code span for the supplied scanned tokens
 	///
-	public: static CodeSpan determineCodeSpan(const std::shared_ptr<Resource::Uri> & uri,
-	                                          const ScannedTokens<TokenT> & scannedTokens,
+	public: static CodeSpan determineCodeSpan(const ScannedTokens<TokenT> & scannedTokens,
 	                                          unsigned int index) {
-		return determineCodeSpan(uri, scannedTokens.text, scannedTokens.tokens, scannedTokens.startOffsets, index);
+		return determineCodeSpan(scannedTokens.text, scannedTokens.tokens, scannedTokens.startOffsets, index);
 	}
 
 	///
@@ -204,8 +208,7 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 	///
 	/// @throw IndexOutOfRangeException if the specified index is greater or equal to the vector size
 	///
-	public: static CodeSpan determineCodeSpan(const std::shared_ptr<Resource::Uri> & uri,
-	                                          const std::string & text,
+	public: static CodeSpan determineCodeSpan(const std::string & text,
 	                                          const std::vector<TokenT> & tokens,
 	                                          const std::vector<unsigned int> & startOffsets,
 	                                          unsigned int index) {
@@ -235,7 +238,7 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 			startPosition = endPosition;
 
 			if (index == thisIndex) {
-				return CodeSpan(uri, startPosition, endPosition);
+				return CodeSpan(startPosition, endPosition);
 			}
 		}
 
@@ -248,7 +251,7 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 			, lineLengthCache
 		);
 
-		return CodeSpan(uri, startPosition, endPosition);
+		return CodeSpan(startPosition, endPosition);
 	}
 
 	///
@@ -291,7 +294,7 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 				, lineLengthCache
 			);
 
-			builtCodeSpans.emplace_back(CodeSpan(scannedTokens.uri, startPosition, endPosition));
+			builtCodeSpans.emplace_back(CodeSpan(startPosition, endPosition));
 
 			startPosition = endPosition;
 		}
@@ -305,7 +308,7 @@ template <typename TokenT> class RandomAccessScannedTokens final {
 			, lineLengthCache
 		);
 
-		builtCodeSpans.emplace_back(CodeSpan(scannedTokens.uri, startPosition, endPosition));
+		builtCodeSpans.emplace_back(CodeSpan(startPosition, endPosition));
 
 		return builtCodeSpans;
 	}
@@ -464,7 +467,7 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	public: explicit ScannerApiScannedTokens(ScannedTokens<TokenT> && scannedTokens_) noexcept
 		: scannedTokens(std::move(scannedTokens_))
 		, currentIndex(0)
-		, currentCodeSpan(scannedTokens.uri, 1, 1, 1, 1) {
+		, currentCodeSpan(1, 1, 1, 1) {
 		whitespaceModeStack.push(WhitespaceMode::DoNotConsume);
 		if (scannedTokens.tokens.size() > 1) {
 			RandomAccessScannedTokens<TokenT>::determineNewEnd(
@@ -488,7 +491,7 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 
 		whitespaceModeStack.push(WhitespaceMode::DoNotConsume);
 		currentIndex = 0;
-		currentCodeSpan = CodeSpan(scannedTokens.uri, 1, 1, 1, 1);
+		currentCodeSpan = CodeSpan(1, 1, 1, 1);
 		lineLengthCache.clear();
 	}
 
@@ -605,15 +608,21 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	/// Adds an error report to the supplied error report container and returns false if the
 	/// supplied token does not match the current token.
 	///
+	/// The current error count is also passed to the error report generation function in order
+	/// to allow a generic report to be generated when the container contains the maximum number
+	/// of errors.
+	///
 	/// @param token the expected token
 	/// @param container the error report container to add the error report to
+	/// @param maxErrorCount the maximum number of errors that the container is allowed to have
 	/// @param errorReport a function that generates the error report
 	/// @return true if the expected token was matched, false otherwise
 	///
 	public: template <template <typename ...> class ContainerT, typename ... ArgT, typename ReportT>
 	bool expect(const TokenT token,
 	            ContainerT<ReportT, ArgT ...> & container,
-	            const std::function<ReportT (const TokenT &, const CodeSpan &)> & errorReport) {
+	            const size_t maxErrorCount,
+	            const std::function<ReportT (const TokenT &, const CodeSpan &, size_t)> & errorReport) {
 		get();
 
 		if (scannedTokens.tokens[currentIndex] == token) {
@@ -623,7 +632,12 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 
 			return true;
 		} else {
-			container.push_back(errorReport(token, getCurrentCodeSpan()));
+			auto error = errorReport(token, getCurrentCodeSpan(), container.size());
+
+			if (container.size() < maxErrorCount) {
+				container.push_back(errorReport(token, getCurrentCodeSpan(), container.size()));
+			}
+
 			return false;
 		}
 	}
@@ -652,22 +666,31 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	/// Adds an error report to the supplied error report container and returns false if none
 	/// of the supplied tokens match the current token.
 	///
+	/// The current error count is also passed to the error report generation function in order
+	/// to allow a generic report to be generated when the container contains the maximum number
+	/// of errors.
+	///
 	/// @param token the expected token
 	/// @param container the error report container to add the error report to
+	/// @param maxErrorCount the maximum number of errors that the container is allowed to have
 	/// @param errorReport a function that generates the error report
 	/// @return true if one of the expected tokens was matched, false otherwise
 	///
 	public: template <template <typename ...> class TokenContainerT, template <typename ...> class ContainerT, typename ... TokenArgT, typename ... ArgT, typename ReportT>
 	bool expect(const TokenContainerT<TokenT, TokenArgT ...> & tokens,
 	            ContainerT<ReportT, ArgT ...> & container,
-	            const std::function<ReportT (const TokenContainerT<TokenT, TokenArgT ...> &, const CodeSpan &)> & errorReport) {
+	            const size_t maxErrorCount,
+	            const std::function<ReportT (const TokenContainerT<TokenT, TokenArgT ...> &, const CodeSpan &, size_t)> & errorReport) {
 		get();
 
 		if (std::find(tokens.begin(), tokens.end(), scannedTokens.tokens[currentIndex]) != tokens.end()) {
 			advanceCurrentIndex();
 			return true;
 		} else {
-			container.push_back(errorReport(tokens, getCurrentCodeSpan()));
+			if (container.size() < maxErrorCount) {
+				container.push_back(errorReport(tokens, getCurrentCodeSpan(), container.size()));
+			}
+
 			return false;
 		}
 	}
@@ -872,10 +895,19 @@ template <typename TokenT> class ScannerApiScannedTokens final {
 	///
 	/// The scanned tokens instance must not be used after the move is performed.
 	///
-	/// @return the input text string as an rvalue
+	/// @return the input text string as an rvalue reference
 	///
 	public: std::string && moveTextOut() {
 		return std::move(scannedTokens.moveTextOut());
+	}
+
+	///
+	/// Move the input uri to its final destination.
+	///
+	/// @return the input uri rvalue reference
+	///
+	public: std::shared_ptr<const Resource::Uri> getUri() {
+		return scannedTokens.getUri();
 	}
 
 	////////////////////////// Private implementation /////////////////////////

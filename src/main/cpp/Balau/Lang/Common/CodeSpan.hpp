@@ -73,12 +73,10 @@ inline bool operator == (const CodePosition & lhs, const CodePosition & rhs) {
 ///
 /// Information on the span of some source code text.
 ///
+/// An instance of this structure should be accompanied by a URI for full
+/// identification of the source code span.
+///
 class CodeSpan {
-	///
-	/// The location of the source file.
-	///
-	public: std::shared_ptr<const Resource::Uri> uri;
-
 	///
 	/// The start position of the code span.
 	///
@@ -99,7 +97,7 @@ class CodeSpan {
 	/// @return a code span equal to the start of the first code span and the end of the end code span
 	///
 	public: static CodeSpan totalCodeSpan(const CodeSpan & start, const CodeSpan & end) {
-		return CodeSpan(start.uri, start.start.line, start.start.column, end.end.line, end.end.column);
+		return CodeSpan(start.start.line, start.start.column, end.end.line, end.end.column);
 	}
 
 	///
@@ -109,7 +107,7 @@ class CodeSpan {
 	/// @return an empty code span equal to the start of the supplied code span
 	///
 	public: static CodeSpan emptyCodeSpanStart(const CodeSpan & next) {
-		return CodeSpan(next.uri, next.start.line, next.start.column, next.start.line, next.start.column);
+		return CodeSpan(next.start.line, next.start.column, next.start.line, next.start.column);
 	}
 
 	///
@@ -119,34 +117,30 @@ class CodeSpan {
 	/// @return an empty code span equal to the end of the supplied code span
 	///
 	public: static CodeSpan emptyCodeSpanEnd(const CodeSpan & previous) {
-		return CodeSpan(previous.uri, previous.end.line, previous.end.column, previous.end.line, previous.end.column);
+		return CodeSpan(previous.end.line, previous.end.column, previous.end.line, previous.end.column);
 	}
 
 	///
 	/// Create a null code span.
 	///
-	public: CodeSpan() : uri(), start(0, 0), end(0, 0) {}
+	public: CodeSpan() : start(0, 0), end(0, 0) {}
 
 	///
 	/// Create a code span equal to the supplied start and end positions.
 	///
-	public: CodeSpan(std::shared_ptr<const Resource::Uri> uri_,
-	                 unsigned int lineStart_,
+	public: CodeSpan(unsigned int lineStart_,
 	                 unsigned int columnStart_,
 	                 unsigned int lineEnd_,
 	                 unsigned int columnEnd_)
-		: uri(std::move(uri_))
-		, start(lineStart_, columnStart_)
+		: start(lineStart_, columnStart_)
 		, end(lineEnd_, columnEnd_) {}
 
 	///
 	/// Create a code span equal to the supplied start and end positions.
 	///
-	public: CodeSpan(std::shared_ptr<const Resource::Uri> uri_,
-	                 const CodePosition & start_,
+	public: CodeSpan(const CodePosition & start_,
 	                 const CodePosition & end_)
-		: uri(std::move(uri_))
-		, start(start_)
+		: start(start_)
 		, end(end_) {}
 
 	///
@@ -182,7 +176,7 @@ class CodeSpan {
 	/// @return true if the current code span is equal to the supplied code span
 	///
 	public: bool operator == (const CodeSpan & rhs) const {
-		return ((!uri && !rhs.uri) || (uri && rhs.uri && *uri == *rhs.uri)) && start == rhs.start && end == rhs.end;
+		return start == rhs.start && end == rhs.end;
 	}
 
 	///
