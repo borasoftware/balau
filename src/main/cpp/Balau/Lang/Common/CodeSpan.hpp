@@ -59,16 +59,28 @@ class CodePosition {
 	/// @return the current object
 	///
 	public: CodePosition & operator = (const CodePosition & copy) = default;
-};
 
-///
-/// Returns true if the two code positions are equal.
-///
-/// @return true if the two code positions are equal
-///
-inline bool operator == (const CodePosition & lhs, const CodePosition & rhs) {
-	return lhs.line == rhs.line && lhs.column == rhs.column;
-}
+	///
+	/// Is this code position equal to the supplied code position?
+	///
+	public: bool operator == (const CodePosition & rhs) const {
+		return line == rhs.line && column == rhs.column;
+	}
+
+	///
+	/// Does this code position come before the supplied code position?
+	///
+	public: bool operator < (const CodePosition & rhs) const {
+		return line < rhs.line || (line == rhs.line && column < rhs.column);
+	}
+
+	///
+	/// Does this code position come after the supplied code position?
+	///
+	public: bool operator > (const CodePosition & rhs) const {
+		return line > rhs.line || (line == rhs.line && column > rhs.column);
+	}
+};
 
 ///
 /// Information on the span of some source code text.
@@ -177,6 +189,28 @@ class CodeSpan {
 	///
 	public: bool operator == (const CodeSpan & rhs) const {
 		return start == rhs.start && end == rhs.end;
+	}
+
+	///
+	/// Is this code span less than the supplied code span?
+	///
+	/// As one code span can contain another code span, the definition of less than
+	/// that is used here is wholy with respect to the start point of the code span.
+	///
+	///
+	public: bool operator < (const CodeSpan & rhs) const {
+		return start < rhs.start;
+	}
+
+	///
+	/// Is this code span greater than the supplied code span?
+	///
+	/// As one code span can contain another code span, the definition of greater than
+	/// that is used here is wholy with respect to the start point of the code span.
+	///
+	///
+	public: bool operator > (const CodeSpan & rhs) const {
+		return start > rhs.start;
 	}
 
 	///
