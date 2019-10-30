@@ -149,22 +149,75 @@
 
 			<row>
 				<cell>expect(token)</cell>
-				<cell>Consume the current token if it is equal to the supplied token, otherwise throw an exception.</cell>
+				<cell>Consume the current token if it is equal to the supplied token, otherwise register an error report or throw an exception.</cell>
 			</row>
 
 			<row>
 				<cell>expect(tokens)</cell>
-				<cell>Consume the current token if it is equal one of the supplied tokens, otherwise throw an exception</cell>
-				</row>
+				<cell>Consume the current token if it is equal one of the supplied tokens, otherwise register an error report or throw an exception</cell>
+			</row>
 
 			<row>
 				<cell>putBack</cell>
 				<cell>Put back the current token, optionally restoring blanks, line breaks, and/or comments as determined by the current whitespace mode.</cell>
 			</row>
+
+			<row>
+				<cell>mark</cell>
+				<cell>Record a token position marker for a subsequent multiple putBack call.</cell>
+			</row>
+
+			<row>
+				<cell>putBack(marker)</cell>
+				<cell>Put back to the specified marker.</cell>
+			</row>
+
+			<row>
+				<cell>pushWhitespaceMode</cell>
+				<cell>Push the specified whitespace mode onto the whitespace mode stack.</cell>
+			</row>
+
+			<row>
+				<cell>popWhitespaceMode</cell>
+				<cell>Pop the top of the whitespace mode stack.</cell>
+			</row>
+
+			<row>
+				<cell>getCurrentCodeSpan</cell>
+				<cell>Get the code span for the current token's text.</cell>
+			</row>
+
+			<row>
+				<cell>reset</cell>
+				<cell>Reset the scanner state to the beginning of the token list and with an empty whitespace mode stack.</cell>
+			</row>
+
+			<row>
+				<cell>size</cell>
+				<cell>Get the number of tokens produced from the scanned text.</cell>
+			</row>
+
+			<row>
+				<cell>moveTextOut</cell>
+				<cell>Move the text of the scanner out (prevents further scanning calls).</cell>
+			</row>
 		</body>
 	</table>
 
+	<para>The <emph>expect</emph> methods that register an error report do so via a supplied error report function that produces an error report. The report is added to the supplied container. These <emph>expect</emph> methods should be used if an error recovery type parser is required, as opposed to a fail on first error parser.</para>
+
 	<para>Due to the compact representation of the scanned token data, obtaining the code span of a token's text must be performed by iterating from the start of the arrays. When using the <emph>ScannerApiScannedTokens</emph> adaptor class, the current code span is maintained for immediate use. Due to this, the current code span may be accessed without any performance penalty.</para>
+
+	<para>The scanner API also provides classification methods for the current token and token specified by a marker:</para>
+
+	<bullets>
+		<entry>currentIsBlank;</entry>
+		<entry>currentIsLineBreak;</entry>
+		<entry>currentIsWhitespace;</entry>
+		<entry>isBlank(marker);</entry>
+		<entry>isLineBreak(marker);</entry>
+		<entry>isWhitespace(marker);</entry>
+	</bullets>
 
 	<h2>Random access</h2>
 
