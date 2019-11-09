@@ -26,12 +26,20 @@ template <typename A, typename E>
 std::string render(const A & actual, const E & expected) {
 	auto replaceNonPrintableCharacters = [] (const std::string & input) -> std::string {
 		std::string output = input;
-		Util::Strings::replaceAll(output, "\r\n", "<CRLF>");
-		Util::Strings::replaceAll(output, "\n\r", "<LFCR>");
-		Util::Strings::replaceAll(output, "\n",   "<LF>");
-		Util::Strings::replaceAll(output, "\r",   "<CR>");
-		Util::Strings::replaceAll(output, "\t",   "<TAB>");
+		output = Util::Strings::replaceAll(output, "\t",   "  ⇢ ");
+		output = Util::Strings::replaceAll(output, " ",   "·");
 		return output;
+	};
+
+	auto stripNewLine = [] (const std::string & input) -> std::string {
+		static const std::regex lineBreakEnding("(.*)(\r\n|\r|\n)");
+		std::smatch match;
+
+		if (std::regex_match(input, match, lineBreakEnding)) {
+			return match[1];
+		}
+
+		return input;
 	};
 
 	using ::toString;
@@ -78,9 +86,9 @@ std::string render(const A & actual, const E & expected) {
 	// Single line version.
 
 	if (actualLineCount == 1 && expectedLineCount == 1) {
-		return replaceNonPrintableCharacters(actualString)
-			+ (actual == expected ? " == " : " != ")
-			+ replaceNonPrintableCharacters(expectedString);
+		return stripNewLine(replaceNonPrintableCharacters(actualString))
+			+ (actual == expected ? "  ==  " : "  !=  ")
+			+ stripNewLine(replaceNonPrintableCharacters(expectedString));
 	}
 
 	// Multiple line version.

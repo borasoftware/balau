@@ -533,6 +533,7 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Util/RandomTest.cpp
 	src/test/cpp/Balau/Util/StreamsTest.cpp
 	src/test/cpp/Balau/Util/StringsTest.cpp
+	src/test/cpp/Balau/Util/UserTest.cpp
 )
 
 if (BALAU_ENABLE_HTTP)

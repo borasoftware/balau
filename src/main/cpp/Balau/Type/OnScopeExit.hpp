@@ -28,7 +28,8 @@ namespace Balau {
 /// takes a function pointer or lambda expression. This function is run when the
 /// scope within which the instance is defined exits.
 ///
-/// This version of on-scope-exit cannot be moved.
+/// This version of on-scope-exit cannot be moved, other than via C++17 guaranteed
+/// copy ellison.
 ///
 class OnScopeExit final {
 	///
