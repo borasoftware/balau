@@ -29,6 +29,30 @@ namespace Balau::Util {
 ///
 struct User final {
 	///
+	/// Get the name of the user running the process.
+	///
+	///
+	static std::string getUserName() {
+		#if BOOST_OS_UNIX
+			const uid_t uid = geteuid();
+			const passwd * pw = getpwuid(uid);
+
+			if (pw) {
+				return std::string(pw->pw_name);
+			} else {
+				ThrowBalauException(
+					  Exception::NotFoundException
+					, "Failed to obtain the user name: user entry not found in passwd."
+				);
+			}
+		#elif BOOST_OS_WINDOWS
+			#error "The Windows platform is not yet implemented."
+		#else
+			#error "Platform not implemented."
+		#endif
+	}
+
+	///
 	/// Get the home directory of the user running the process.
 	///
 	/// @throw NotFoundException if the home directory could not be located
@@ -38,8 +62,8 @@ struct User final {
 		#if BOOST_OS_UNIX
 			const char * home = std::getenv("HOME");
 
-			if (home != nullptr && !std::string(home).empty()) {
-				return Resource::File(home);
+			if (home != nullptr && !Util::Strings::trim(home).empty()) {
+				return Resource::File(Util::Strings::trim(home));
 			}
 
 			passwd pwd {};
@@ -94,14 +118,14 @@ struct User final {
 			// TODO verify
 			const char * up = std::getenv("USERPROFILE");
 
-			if (up != nullptr && !std::string(up).empty()) {
+			if (up != nullptr && !Util::Strings::trim(up).empty()) {
 				return Resource::File(up);
 			}
 
 			const char * hd = std::getenv("HOMEDRIVE");
 			const char * hp = std::getenv("HOMEPATH");
 
-			if (hd != nullptr && hp != nullptr && !std::string(hd).empty() && !std::string(hp).empty()) {
+			if (hd != nullptr && hp != nullptr && !Util::Strings::trim(hd).empty() && !std::string(hp).empty()) {
 				// TODO
 				return Resource::File(h);
 			}

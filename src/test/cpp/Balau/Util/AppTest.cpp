@@ -17,21 +17,16 @@ using Testing::is;
 
 namespace Util {
 
-// This test is currently only implemented for Unix type OSes and relies on the XDG or HOME environment variables.
+///
+/// These tests are currently only implemented for Unix type OSes and use the XDG, HOME, and TMPDIR environment variables.
+///
 struct AppTest : public Testing::TestGroup<AppTest> {
 	AppTest() {
-		registerTest(&AppTest::globalAppDataDirectory, "globalAppDataDirectory");
-		registerTest(&AppTest::userAppDataDirectory,   "userAppDataDirectory");
-		registerTest(&AppTest::userAppConfigDirectory, "userAppConfigDirectory");
-	}
-
-	void globalAppDataDirectory() {
-		const boost::filesystem::path programLocation = boost::dll::program_location();
-
-		const auto actual = App::getGlobalDataResourcesDirectory("ACompanyName", "AnApplication");
-		const auto expected = Resource::File(programLocation.parent_path().parent_path()) / "share" / "ACompanyName" / "AnApplication";
-
-		AssertThat(actual, is(expected));
+		registerTest(&AppTest::userAppDataDirectory,            "userAppDataDirectory");
+		registerTest(&AppTest::globalAppDataDirectory,          "globalAppDataDirectory");
+		registerTest(&AppTest::userAppConfigDirectory,          "userAppConfigDirectory");
+		registerTest(&AppTest::globalAppConfigDirectory,        "globalAppConfigDirectory");
+		registerTest(&AppTest::applicationRuntimeDataDirectory, "applicationRuntimeDataDirectory");
 	}
 
 	void userAppDataDirectory() {
@@ -55,6 +50,15 @@ struct AppTest : public Testing::TestGroup<AppTest> {
 		AssertThat(actual, is(expected));
 	}
 
+	void globalAppDataDirectory() {
+		const boost::filesystem::path programLocation = boost::dll::program_location();
+
+		const auto actual = App::getGlobalApplicationDataDirectory("ACompanyName", "AnApplication");
+		const auto expected = Resource::File(programLocation.parent_path().parent_path()) / "share" / "ACompanyName" / "AnApplication" / "data";
+
+		AssertThat(actual, is(expected));
+	}
+
 	void userAppConfigDirectory() {
 		const auto actual = App::getUserApplicationConfigDirectory("ACompanyName", "AnApplication");
 
@@ -71,6 +75,34 @@ struct AppTest : public Testing::TestGroup<AppTest> {
 			}
 
 			expected = Resource::File(home) / ".config" / "ACompanyName" / "AnApplication";
+		}
+
+		AssertThat(actual, is(expected));
+	}
+
+	void globalAppConfigDirectory() {
+		const boost::filesystem::path programLocation = boost::dll::program_location();
+
+		const auto actual = App::getGlobalApplicationConfigDirectory("ACompanyName", "AnApplication");
+		const auto expected = Resource::File(programLocation.parent_path().parent_path()) / "share" / "ACompanyName" / "AnApplication" / "config";
+
+		AssertThat(actual, is(expected));
+	}
+
+	void applicationRuntimeDataDirectory() {
+		const auto actual = App::getApplicationRuntimeDataDirectory("ACompanyName", "AnApplication");
+
+		const char * xdg = std::getenv("XDG_RUNTIME_DIR");
+		const char * tmpdir = std::getenv("TMPDIR");
+		const auto username = User::getUserName();
+		Resource::File expected;
+
+		if (xdg != nullptr && !Strings::trim(xdg).empty()) {
+			expected = Resource::File(xdg) / "ACompanyName" / "AnApplication";
+		} else if (tmpdir != nullptr && !Strings::trim(tmpdir).empty()) {
+			expected = Resource::File(tmpdir) / "ACompanyName" / "AnApplication";
+		} else {
+			expected = Resource::File("/tmp") / username / "ACompanyName" / "AnApplication";
 		}
 
 		AssertThat(actual, is(expected));

@@ -323,6 +323,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Util/Strings.hpp
 	src/main/cpp/Balau/Util/User.hpp
 	src/main/cpp/Balau/Util/Vectors.hpp
+	src/main/cpp/Balau/Util/Impl/AppImpl.hpp
 	src/main/cpp/Balau/Util/Impl/MacrosImpl.hpp
 	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
 	src/main/cpp/Balau/Util/Impl/StringsImpl.hpp

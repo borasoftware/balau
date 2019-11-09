@@ -135,11 +135,13 @@ void LoggingState::printLoggingDebugMessage(std::string_view) {
 #endif
 
 std::string LoggingState::generateAbbreviatedNamespace(std::string_view loggerNamespace) {
-	if (loggerNamespace.empty()) {
-		return std::string(loggerNamespace);
+	auto trimmedLoggerNamespace = Util::Strings::trim(loggerNamespace);
+
+	if (trimmedLoggerNamespace.empty()) {
+		return std::string(trimmedLoggerNamespace);
 	}
 
-	std::vector<std::string_view> identifiers = Strings::splitAndTrim(loggerNamespace, ".");
+	std::vector<std::string_view> identifiers = Strings::splitAndTrim(trimmedLoggerNamespace, ".");
 	std::ostringstream builder;
 	std::string prefix;
 

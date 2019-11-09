@@ -10,6 +10,8 @@
 
 #include "ThreadName.hpp"
 
+#include <Balau/Util/Strings.hpp>
+
 namespace Balau::System {
 
 thread_local std::string ThreadName::threadName;
@@ -19,7 +21,7 @@ const std::string & ThreadName::getName() {
 }
 
 void ThreadName::setName(const std::string & name) {
-	threadName = name;
+	threadName = Util::Strings::trim(name);
 }
 
 } // namespace Balau::System
