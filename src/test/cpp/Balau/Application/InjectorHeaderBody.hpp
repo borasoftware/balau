@@ -59,61 +59,61 @@ struct HBBaseT2 {
 };
 
 struct HBDerived : public HBBase1 {
-	BalauInjectHeader(HBDerived)
+	BalauInjectHeader(HBDerived);
 };
 
 struct HBDerivedD : public HBBase2 {
 	std::shared_ptr<HBBase1> b;
 	explicit HBDerivedD(std::shared_ptr<HBBase1> b_);
-	BalauInjectHeader(HBDerivedD)
+	BalauInjectHeader(HBDerivedD);
 };
 
 struct HBDerivedN : public HBBase1 {
-	BalauInjectHeader(HBDerivedN)
+	BalauInjectHeader(HBDerivedN);
 };
 
 struct HBDerivedND : public HBBase2 {
 	std::shared_ptr<HBBase1> b;
 	explicit HBDerivedND(std::shared_ptr<HBBase1> b_);
-	BalauInjectHeader(HBDerivedND)
+	BalauInjectHeader(HBDerivedND);
 };
 
 struct HBDerivedC : public HBBaseC1 {
-	BalauInjectHeaderConstruct(HBDerivedC)
+	BalauInjectHeaderConstruct(HBDerivedC);
 };
 
 struct HBDerivedCD : public HBBaseC2 {
 	std::shared_ptr<HBBase1> b;
-	BalauInjectHeaderConstruct(HBDerivedCD, b)
+	BalauInjectHeaderConstruct(HBDerivedCD, b);
 };
 
 struct HBDerivedCN : public HBBaseC1 {
-	BalauInjectHeaderConstruct(HBDerivedCN)
+	BalauInjectHeaderConstruct(HBDerivedCN);
 };
 
 struct HBDerivedCND : public HBBaseC2 {
 	std::shared_ptr<HBBase1> b;
-	BalauInjectHeaderConstruct(HBDerivedCND, b)
+	BalauInjectHeaderConstruct(HBDerivedCND, b);
 };
 
 struct HBDerivedT : public HBBaseT1 {
-	BalauInjectHeader(HBDerivedT)
+	BalauInjectHeader(HBDerivedT);
 };
 
 struct HBDerivedTD : public HBBaseT2 {
 	std::shared_ptr<HBBase1> b;
 	explicit HBDerivedTD(std::shared_ptr<HBBase1> b_);
-	BalauInjectHeader(HBDerivedTD)
+	BalauInjectHeader(HBDerivedTD);
 };
 
 struct HBDerivedTN : public HBBaseT1 {
-	BalauInjectHeader(HBDerivedTN)
+	BalauInjectHeader(HBDerivedTN);
 };
 
 struct HBDerivedTND : public HBBaseT2 {
 	std::shared_ptr<HBBase1> b;
 	explicit HBDerivedTND(std::shared_ptr<HBBase1> b_);
-	BalauInjectHeader(HBDerivedTND)
+	BalauInjectHeader(HBDerivedTND);
 };
 
 } // namespace Balau
