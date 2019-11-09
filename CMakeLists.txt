@@ -308,6 +308,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Type/Impl/FromStringImpl.hpp
 	src/main/cpp/Balau/Type/Impl/ToStringImpl.hpp
 
+	src/main/cpp/Balau/Util/App.hpp
 	src/main/cpp/Balau/Util/Containers.hpp
 	src/main/cpp/Balau/Util/DateTime.hpp
 	src/main/cpp/Balau/Util/Enums.hpp
@@ -528,6 +529,7 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Testing/AssertionsTestData.hpp
 	src/test/cpp/Balau/ThirdParty/HashLibrary/HashLibraryTest.cpp
 	src/test/cpp/Balau/Type/CharacterTest.cpp
+	src/test/cpp/Balau/Util/AppTest.cpp
 	src/test/cpp/Balau/Util/DateTimeTest.cpp
 	src/test/cpp/Balau/Util/PrettyPrintTest.cpp
 	src/test/cpp/Balau/Util/RandomTest.cpp

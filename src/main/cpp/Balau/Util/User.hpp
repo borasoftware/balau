@@ -36,10 +36,10 @@ struct User final {
 	static Resource::File getHomeDirectory() {
 		// Best effort approach.
 		#if BOOST_OS_UNIX
-			std::string h = std::getenv("HOME");
+			const char * home = std::getenv("HOME");
 
-			if (!h.empty()) {
-				return Resource::File(h);
+			if (home != nullptr && !std::string(home).empty()) {
+				return Resource::File(home);
 			}
 
 			passwd pwd {};
@@ -92,42 +92,19 @@ struct User final {
 			#error "The Windows platform is not yet implemented."
 
 			// TODO verify
-			std::string h = std::getenv("USERPROFILE");
+			const char * up = std::getenv("USERPROFILE");
 
-			if (!h.empty()) {
-				return Resource::File(h);
+			if (up != nullptr && !std::string(up).empty()) {
+				return Resource::File(up);
 			}
 
-			h = std::getenv("HOMEDRIVE") + std::getenv("HOMEPATH");
+			const char * hd = std::getenv("HOMEDRIVE");
+			const char * hp = std::getenv("HOMEPATH");
 
-			if (!h.empty()) {
+			if (hd != nullptr && hp != nullptr && !std::string(hd).empty() && !std::string(hp).empty()) {
+				// TODO
 				return Resource::File(h);
 			}
-		#else
-			#error "Platform not implemented."
-		#endif
-	}
-
-	///
-	/// Get the application data directory of the user running the process for the specified application group/name.
-	///
-	/// For Unix type OSes, the directory is "${HOME}/.appGroup/appName".
-	///
-	/// For Windows type OSes, the directory is "${HOME}/AppData/Roaming/appGroup/appName".
-	///
-	/// @throw NotFoundException if the application data directory could not be located
-	///
-	static Resource::File getApplicationDataDirectory(const std::string & appGroup, const std::string & appName) {
-		// Best effort approach.
-		#if BOOST_OS_UNIX
-			auto home = getHomeDirectory();
-			return home / ("." + appGroup) / appName;
-		#elif BOOST_OS_WINDOWS
-			#error "The Windows platform is not yet implemented."
-
-			// TODO implement
-			//CHAR szPath[MAX_PATH];
-			//SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)));
 		#else
 			#error "Platform not implemented."
 		#endif

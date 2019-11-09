@@ -17,26 +17,20 @@ using Testing::is;
 
 namespace Util {
 
-// This test is currently only implemented for Unix type OSes and relies on the ${HOME} environment variable.
+// This test is currently only implemented for Unix type OSes and relies on the HOME environment variable.
 struct UserTest : public Testing::TestGroup<UserTest> {
 	UserTest() {
 		registerTest(&UserTest::homeDirectory, "homeDirectory");
-		registerTest(&UserTest::appDataDirectory, "appDataDirectory");
 	}
 
 	void homeDirectory() {
-		const std::string home = std::getenv("HOME");
+		const char * home = std::getenv("HOME");
+
+		if (home == nullptr || std::string(home).empty()) {
+			AssertFail("Cannot get home directory for test purposes.");
+		}
 
 		AssertThat(User::getHomeDirectory(), is(Resource::File(home)));
-	}
-
-	void appDataDirectory() {
-		const std::string home = std::getenv("HOME");
-
-		const auto actual = User::getApplicationDataDirectory("ACompanyName", "AnApplication");
-		const auto expected = Resource::File(home) / ".ACompanyName" / "AnApplication";
-
-		AssertThat(actual, is(expected));
 	}
 };
 

@@ -14,7 +14,6 @@
 #include "../../Application/Impl/PropertyBindingBuilderFactory.hpp"
 #include "../../System/SystemClock.hpp"
 #include "../../Util/User.hpp"
-#include "../../Util/Vectors.hpp"
 
 // Defines for logging system development logging.
 
