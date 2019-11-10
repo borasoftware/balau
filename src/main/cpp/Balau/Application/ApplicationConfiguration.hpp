@@ -51,7 +51,7 @@ class ApplicationConfiguration : public InjectorConfiguration {
 		return std::move(builders);
 	}
 
-	private: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
+	public: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
 		return extraConfiguration;
 	}
 

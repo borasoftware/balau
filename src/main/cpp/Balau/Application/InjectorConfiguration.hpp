@@ -41,12 +41,10 @@ class InjectorConfiguration {
 	// Builds the binding builders from the configuration.
 	private: virtual std::vector<std::shared_ptr<Impl::BindingBuilderBase>> build() const = 0;
 
-	private: virtual std::vector<const InjectorConfiguration*> getExtraConfiguration() const = 0;
-
-	friend class ::Balau::Injector;
+	public: virtual std::vector<const InjectorConfiguration*> getExtraConfiguration() const = 0;
 
 	// Run configure and build stages.
-	private: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> execute() const {
+	public: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> execute() const {
 		configure();
 		return build();
 	}

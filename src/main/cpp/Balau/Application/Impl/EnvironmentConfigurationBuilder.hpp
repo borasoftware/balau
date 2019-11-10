@@ -187,7 +187,7 @@ class EnvironmentConfigurationBuilder {
 			setKeyType<BindingKeyType<BindingMetaType::Shared, EnvironmentProperties>>();
 		}
 
-		private: std::unique_ptr<AbstractBinding> build() override {
+		public: std::unique_ptr<AbstractBinding> build() override {
 			return std::unique_ptr<AbstractBinding>(
 				new ProvidedSingletonBinding<EnvironmentProperties>(std::move(key), instance)
 			);

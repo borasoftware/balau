@@ -425,7 +425,7 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	// The main build method. Run after the configure() method by the base class.
 	// This method delegates the building to a separate builder class.
 	//
-	private: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> build() const override {
+	public: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> build() const override {
 		if (!testing) {
 			std::vector<Impl::PropertyBindingBuilderFactoryPtr> bindingBuilderFactoriesVector;
 
@@ -443,7 +443,7 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 		return builders;
 	}
 
-	private: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
+	public: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
 		return std::vector<const InjectorConfiguration *>();
 	}
 

@@ -674,7 +674,7 @@ class BindingBuilderBase {
 	friend class ::Balau::LoggingSystem::LoggingState;
 
 	// Called by the injector in order to convert the candidate into a binding.
-	private: virtual std::unique_ptr<AbstractBinding> build() = 0;
+	public: virtual std::unique_ptr<AbstractBinding> build() = 0;
 
 	public: const BindingKey & getKey() const {
 		return key;
