@@ -30,9 +30,9 @@
 	<chapter title="Balau core C++ library">
 		<h1>Overview</h1>
 
-		<para>Balau is a C++ application framework designed for enterprise C++ software development.</para>
+		<para>Balau is a C++ application framework designed for enterprise quality C++ software development.</para>
 
-		<para>Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.</para>
+		<para>Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise quality application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.</para>
 
 		<para>Balau builds on the foundations of the <ref type="raw" new="true" url="http://www.boost.org">Boost</ref> and <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref> projects, and focuses on using modern C++17 features and the standard unicode string classes.</para>
 
@@ -55,7 +55,7 @@
 		<para>The following questions may be useful in order to determine if the Balau library is suitable for your requirements.</para>
 
 		<bullets>
-			<entry>Do you wish to develop an enterprise software application in C++?</entry>
+			<entry>Do you wish to develop a software application in C++ using modern best practices?</entry>
 
 			<entry>Will the code be based on C++17 or a later specification?</entry>
 

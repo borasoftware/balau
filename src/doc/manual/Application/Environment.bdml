@@ -706,7 +706,7 @@
 
 		<h4>Validation</h4>
 
-		<para>Modern enterprise software development is performed in the context of test driven development. When using a dependency injection framework, development should include testing of the application configuration. Such configuration testing is described in the <ref url="Application/Injector">injector</ref> chapter for the Balau injector.</para>
+		<para>Modern enterprise quality software development is performed in the context of test driven development. When using a dependency injection framework, development should include testing of the application configuration. Such configuration testing is described in the <ref url="Application/Injector">injector</ref> chapter for the Balau injector.</para>
 
 		<para>When the injector configuration is tested, the validation mechanism provided via required/optional annotations is rendered unnecessary.</para>
 

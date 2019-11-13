@@ -33,11 +33,11 @@
 /// <p>
 /// License: https://borasoftware.com/licenses/balau-license.html
 /// <p>
-/// %Balau is a C++ application framework designed for enterprise C++ software development.
+/// %Balau is a C++ application framework designed for enterprise quality C++ software development.
 ///
 /// Following the recent revisions of the language, C++ has matured to become an attractive
-/// candidate for rapid enterprise application development. %Balau provides tools designed
-/// to support the rapid development of high performance C++ enterprise applications.
+/// candidate for rapid enterprise quality application development. %Balau provides tools designed
+/// to support the rapid development of high performance C++ enterprise quality applications.
 ///
 /// %Balau builds on the foundations of the ICU and Boost projects, and focuses on using
 /// modern C++17 features and the standard unicode string classes.

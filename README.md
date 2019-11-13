@@ -8,9 +8,9 @@ Balau
 **License:** [Boost Software License Version 1.0](https://borasoftware.com/licenses/balau-license.html)
 
 
-Balau is a C++ application framework designed for enterprise C++ software development.
+Balau is a C++ application framework designed for enterprise quality C++ software development.
 
-Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.
+Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise quality application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.
 
 Balau builds on the foundations of the [ICU](http://site.icu-project.org) and [Boost](http://www.boost.org) projects, and focuses on using modern C++17 features and the standard unicode string classes.
 

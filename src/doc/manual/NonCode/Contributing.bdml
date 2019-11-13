@@ -47,7 +47,7 @@
 
 		<h1>Planned features</h1>
 
-		<para>The general aim of the library's development is reactive rather than proactive. If a useful feature for enterprise C++ application development is missing, convoluted, or lacking in features in the C++ standard library or Boost libraries, then the feature is a good candidate for development and inclusion in Balau.</para>
+		<para>The general aim of the library's development is reactive rather than proactive. If a useful feature for enterprise quality C++ application development is missing, convoluted, or lacking in features in the C++ standard library or Boost libraries, then the feature is a good candidate for development and inclusion in Balau.</para>
 
 		<para>If an existing feature in the standard library or Boost exists and is designed as low level, fine grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library or Boost feature.</para>
 
@@ -130,7 +130,7 @@
 		<h2>Templates</h2>
 
 		<bullets>
-			<entry>Unnecessarily complex templated code should normally be avoided. Complex templated code should be used when the resulting solution is more elegant and/or the resulting public API is more simple than it would be if an alternative approach were taken AND quick start documentation for common use cases is provided. Our aim is to provide components and utilities for rapid enterprise application development. Development teams working on enterprise software applications do not normally have enough time for in-depth studies of the inner workings of a complexly templated component in order to fulfil a simple use case.</entry>
+			<entry>Unnecessarily complex templated code should normally be avoided. Complex templated code should be used when the resulting solution is more elegant and/or the resulting public API is more simple than it would be if an alternative approach were taken AND quick start documentation for common use cases is provided. Our aim is to provide components and utilities for rapid enterprise quality application development. Development teams working on enterprise software applications do not normally have enough time for in-depth studies of the inner workings of a complexly templated component in order to fulfil a simple use case.</entry>
 
 			<entry>Variadic functions and methods should always be implemented via C++11 parameter packs. Fold expressions may assist in the simplification of otherwise complex variadic tasks.</entry>
 		</bullets>
