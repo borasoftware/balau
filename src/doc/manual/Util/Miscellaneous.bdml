@@ -121,5 +121,27 @@
 		<para>The <emph>User</emph> class is a namespace class destined for functions that provide information on operating system users.</para>
 
 		<para>Currently, the <emph>User</emph> class contains a single <emph>getHomeDirectory</emph> function that makes a best effort attempt at returning the user's home directory for each supported platform.</para>
+
+		<h1>App</h1>
+
+		<para class="cpp-define-statement">#include &lt;Balau/Util/App.hpp></para>
+
+		<para>The <emph>App</emph> class is a namespace class destined for functions that provide general information for a running application.</para>
+
+		<para>The following functions are currently defined.</para>
+
+		<code lang="C++">
+			struct App {
+				static File getUserApplicationDataDirectory(const std::string &amp; appGroup, const std::string &amp; appName);
+				static File getGlobalApplicationDataDirectory(const std::string &amp; appGroup, const std::string &amp; appName);
+				static File getUserApplicationConfigDirectory(const std::string &amp; appGroup, const std::string &amp; appName);
+				static File getGlobalApplicationConfigDirectory(const std::string &amp; appGroup, const std::string &amp; appName);
+				static File getApplicationRuntimeDataDirectory(const std::string &amp; appGroup, const std::string &amp; appName);
+			};
+		</code>
+
+		<para>The <emph>appGroup</emph> and <emph>appName</emph> strings provide the application's group name and identification name. These are used in the construction of the directory paths. The paths returned from these functions depend on the platform. Depending on the platform, the returned paths depend on the program binary's location, the user's identification, ${XDG_DATA_HOME}, ${HOME}, ${XDG_CONFIG_HOME}, and/or ${XDG_RUNTIME_DIR} environment variables, %USERPROFILE%, %HOMEDRIVE%, %HOMEPATH%, and/or GetTempPath() on Windows. See the API documentation for more details.</para>
+
+		<para>Note that these functions are not yet implemented for platforms other than Unix like platforms. Pull requests for other platforms are welcome.</para>
 	</chapter>
 </document>
