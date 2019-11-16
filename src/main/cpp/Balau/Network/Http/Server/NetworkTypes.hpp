@@ -153,8 +153,12 @@ namespace beast::http {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const status & s) {
-	auto u = Balau::Util::Enums::toUnderlying(s);
-	return Balau::U8String<AllocatorT>(detail::status_to_string<>((unsigned int) u));
+	#ifdef BOOST_BEAST_NEW_API
+		return Balau::U8String<AllocatorT>(obsolete_reason(s));
+	#else
+		auto u = Balau::Util::Enums::toUnderlying(s);
+		return Balau::U8String<AllocatorT>(detail::status_to_string<>((unsigned int) u));
+	#endif
 }
 
 ///
@@ -163,8 +167,12 @@ inline Balau::U8String<AllocatorT> toString(const status & s) {
 /// @return a UTF-8 string representing the network status
 ///
 inline std::string toString(const status & s) {
-	auto u = Balau::Util::Enums::toUnderlying(s);
-	return std::string(detail::status_to_string<>((unsigned int) u));
+	#ifdef BOOST_BEAST_NEW_API
+		return std::string(obsolete_reason(s));
+	#else
+		auto u = Balau::Util::Enums::toUnderlying(s);
+		return std::string(detail::status_to_string<>((unsigned int) u));
+	#endif
 }
 
 ///
