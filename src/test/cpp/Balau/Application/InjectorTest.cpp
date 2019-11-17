@@ -424,29 +424,31 @@ namespace Balau {
 
 struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	InjectorTest() {
-		registerTest(&InjectorTest::creationAndDeletion,       "creationAndDeletion");
-		registerTest(&InjectorTest::singletonCreation,         "singletonCreation");
-		registerTest(&InjectorTest::simpleTypeInjection,       "simpleTypeInjection");
-		registerTest(&InjectorTest::multipleCustomScopes,      "multipleCustomScopes");
-		registerTest(&InjectorTest::namedDependency,           "namedDependency");
-		registerTest(&InjectorTest::eagerSingletons,           "eagerSingletons");
-		registerTest(&InjectorTest::runtimeCustomScopes,       "runtimeCustomScopes");
-		registerTest(&InjectorTest::threadLocalScopeUsage,     "threadLocalScopeUsage");
-		registerTest(&InjectorTest::allBindings,               "allBindings");
-		registerTest(&InjectorTest::docTest,                   "docTest");
-		registerTest(&InjectorTest::injectTheInjector,         "injectTheInjector");
-		registerTest(&InjectorTest::sharedCycleChecks,         "sharedCycleChecks");
-		registerTest(&InjectorTest::mixedCycleChecks,          "mixedCycleChecks");
-		registerTest(&InjectorTest::injectorCycleAvoidance,    "injectorCycleAvoidance");
-		registerTest(&InjectorTest::singletonProvider,         "singletonProvider");
-		registerTest(&InjectorTest::providedSingletonProvider, "providedSingletonProvider");
-		registerTest(&InjectorTest::headerBodyMacros,          "headerBodyMacros");
-		registerTest(&InjectorTest::printBindingsDetailed,     "printBindingsDetailed");
+		registerTest(&InjectorTest::creationAndDeletion,                "creationAndDeletion");
+		registerTest(&InjectorTest::singletonCreation,                  "singletonCreation");
+		registerTest(&InjectorTest::simpleTypeInjection,                "simpleTypeInjection");
+		registerTest(&InjectorTest::multipleCustomScopes,               "multipleCustomScopes");
+		registerTest(&InjectorTest::namedDependency,                    "namedDependency");
+		registerTest(&InjectorTest::eagerSingletons,                    "eagerSingletons");
+		registerTest(&InjectorTest::runtimeCustomScopes,                "runtimeCustomScopes");
+		registerTest(&InjectorTest::threadLocalScopeUsage,              "threadLocalScopeUsage");
+		registerTest(&InjectorTest::allBindings,                        "allBindings");
+		registerTest(&InjectorTest::docTest,                            "docTest");
+		registerTest(&InjectorTest::injectTheInjector,                  "injectTheInjector");
+		registerTest(&InjectorTest::sharedCycleChecks,                  "sharedCycleChecks");
+		registerTest(&InjectorTest::mixedCycleChecks,                   "mixedCycleChecks");
+		registerTest(&InjectorTest::injectorCycleAvoidance,             "injectorCycleAvoidance");
+		registerTest(&InjectorTest::uniqueBindingCustomDeleter,         "uniqueBindingCustomDeleter");
+		registerTest(&InjectorTest::uniqueBindingCustomDeleterInjected, "uniqueBindingCustomDeleterInjected");
+		registerTest(&InjectorTest::singletonProvider,                  "singletonProvider");
+		registerTest(&InjectorTest::providedSingletonProvider,          "providedSingletonProvider");
+		registerTest(&InjectorTest::headerBodyMacros,                   "headerBodyMacros");
+		registerTest(&InjectorTest::printBindingsDetailed,              "printBindingsDetailed");
 	}
 
 	void creationAndDeletion() {
 		capture.clear();
-	
+
 		// Create a configuration.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -454,22 +456,22 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toUnique<Derived2>();
 			}
 		};
-	
+
 		// Instantiate the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		// Create a child configuration.
 		class ChildConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom>();
 			}
 		};
-	
+
 		// Create a child injector.
 		auto childInjector = injector->createChild(ChildConfiguration());
-	
+
 		// Create a binding in the custom scope
-	
+
 		//
 		// Request three instances of Base2 from the injector.
 		//
@@ -483,23 +485,23 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		// again. Note that the dependency DerivedA is not instantiated again because
 		// it is a singleton.
 		//
-	
+
 		auto b1 = injector->getUnique<Base2>();
-	
+
 		b1->foo2();
-	
+
 		capture.printLatest("\n\n---------- start ----------\n", this);
-	
+
 		auto b2 = childInjector->getShared<Base2>();
 		b2->foo2();
-	
+
 		capture.printLatest("\n---- push custom scope ----\n", this);
-	
+
 		auto b3 = injector->getUnique<Base2>();
 		b3->foo2();
-	
+
 		capture.printLatest("\n---- pop custom scope -----\n\n", this);
-	
+
 	//	capture.assertEquals({
 	//		  "DerivedA constructor"
 	//		, "explicit Derived2 constructor"
@@ -514,10 +516,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	//		, "DerivedA.foo"
 	//	});
 	}
-	
+
 	void singletonCreation() {
 		capture.clear();
-	
+
 		// Create a configuration.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -525,30 +527,30 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toUnique<Derived2>();
 			}
 		};
-	
+
 		// Instantiate the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		auto b2 = injector->getUnique<Base2>();
 		auto b = injector->getShared<Base>();
-	
+
 		b2->foo2();
 		b->foo();
-	
+
 		// Both objects still work correctly.
 		b2->foo2();
 		b->foo();
-	
+
 		// The singleton object still works correctly.
 		b->foo();
-	
+
 		auto b3 = injector->getUnique<Base2>();
 		b3->foo2();
 	}
-	
+
 	void simpleTypeInjection() {
 		capture.clear();
-	
+
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<std::ostream>("cout").toReference(std::cout);
@@ -557,27 +559,27 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base>("namedIBase").toSingleton(std::make_shared<DerivedA>("myobj"));
 			}
 		};
-	
+
 		// Instantiate the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		auto b2 = injector->getUnique<Base2>();
 		b2->foo2();
-	
+
 		auto b = injector->getShared<Base>();
 		b->foo();
-	
+
 		auto & output = injector->getReference<std::ostream>("cout");
-	
+
 		output << "write to stdout via injector obtained reference\n";
-	
+
 		auto namedIBase = injector->getShared<Base>("namedIBase");
 		namedIBase->foo();
 	}
-	
+
 	void multipleCustomScopes() {
 		capture.clear();
-	
+
 		// Create a configuration.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -585,35 +587,35 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toUnique<Derived2>();
 			}
 		};
-	
+
 		// Instantiate the injector configuration and the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		// Create multiple child injectors in a hierarchy.
-	
+
 		class FirstConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom>();
 			}
 		};
-	
+
 		class SecondConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom2>();
 				bind<Base>().toEagerSingleton<DerivedB>();
 			}
 		};
-	
+
 		class ThirdConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom3>();
 			}
 		};
-	
+
 		auto firstChildInjector = injector->createChild(FirstConfiguration());
 		auto secondChildInjector = firstChildInjector->createChild(SecondConfiguration());
 		auto thirdChildInjector = secondChildInjector->createChild(ThirdConfiguration());
-	
+
 		//
 		// Request four instances of Base2 from the injector.
 		//
@@ -646,23 +648,23 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		// Then, Derived2 will be instantiated again for Base2 and the original DerivedA
 		// object will be supplied for Base.
 		//
-	
+
 		auto b1 = injector->getUnique<Base2>();
 		b1->foo2();
 		capture.printLatest("\n\n---------- start ----------\n", this);
-	
+
 		auto b2 = firstChildInjector->getShared<Base2>();
 		b2->foo2();
 		capture.printLatest("\n---- first child injector ----\n", this);
-	
+
 		auto b3 = secondChildInjector->getShared<Base2>();
 		b3->foo2();
 		capture.printLatest("\n---- second child injector ----\n", this);
-	
+
 		auto b4 = thirdChildInjector->getShared<Base2>();
 		b4->foo2();
 		capture.printLatest("\n---- third child injector ----\n", this);
-	
+
 	//	capture.assertEquals({
 	//		  "DerivedA constructor"
 	//		, "explicit Derived2 constructor"
@@ -679,10 +681,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	//		, "DerivedB.foo"
 	//	});
 	}
-	
+
 	void namedDependency() {
 		capture.clear();
-	
+
 		// Create a configuration.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -691,10 +693,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toSingleton<Derived2WithNamed>();
 			}
 		};
-	
+
 		// Instantiate the injector configuration and the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		//
 		// Request an instance of Base2 from the injector.
 		//
@@ -708,18 +710,18 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		// Then request a named instance of Base from the injector. The previously
 		// instantiated DerivedA singleton will be returned.
 		//
-	
+
 		auto b1 = injector->getShared<Base2>();
 		b1->foo2();
-	
+
 		auto b2 = injector->getShared<Base>();
 		b2->foo();
-	
+
 		auto b3 = injector->getShared<Base>("namedBase");
 		b3->foo();
-	
+
 		capture.printLatest("\n\n", this);
-	
+
 		capture.assertEquals(
 			{
 				  "DerivedA constructor"
@@ -732,10 +734,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 			}
 		);
 	}
-	
+
 	void eagerSingletons() {
 		capture.clear();
-	
+
 		// Create a configuration with eager singletons instead of lazy ones.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -744,14 +746,14 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toEagerSingleton<Derived2WithNamed>();
 			}
 		};
-	
+
 		// Instantiate the injector configuration and the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		// All bindings are instantiated before any call to getShared.
-	
+
 		capture.printLatest("\n\n", this);
-	
+
 	//	capture.assertEquals(
 	//		{
 	//			  "DerivedA constructor"
@@ -760,10 +762,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	//		}
 	//	);
 	}
-	
+
 	void runtimeCustomScopes() {
 		capture.clear();
-	
+
 		// Create a configuration with no custom scopes.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -771,10 +773,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toUnique<Derived2>();
 			}
 		};
-	
+
 		// Instantiate the injector configuration and the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		//
 		// Request four instances of Base2 from the injector.
 		//
@@ -804,59 +806,59 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		// Then, Derived2 will be instantiated again for Base2 and the original DerivedA
 		// object will be supplied for Base.
 		//
-	
+
 		auto b1 = injector->getUnique<Base2>();
 		b1->foo2();
 		capture.printLatest("\n\n---------- start ----------\n", this);
-	
+
 		// Create custom scope.
-	
+
 		class FirstConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom>();
 			}
 		};
-	
+
 		auto firstChildInjector = injector->createChild(FirstConfiguration());
-	
+
 		auto b2 = firstChildInjector->getShared<Base2>();
 		b2->foo2();
 		capture.printLatest("\n---- push first custom scope ----\n", this);
-	
-	
+
+
 		class SecondConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom2>();
 				bind<Base>().toEagerSingleton<DerivedB>();
 			}
 		};
-	
+
 		class ThirdConfiguration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<Base2>().toEagerSingleton<Derived2Custom3>();
 			}
 		};
-	
+
 		auto secondChildInjector = firstChildInjector->createChild(SecondConfiguration());
 		auto thirdChildInjector = secondChildInjector->createChild(ThirdConfiguration());
-	
+
 		auto b3 = secondChildInjector->getShared<Base2>();
 		b3->foo2();
 		capture.printLatest("\n---- push second custom scope ----\n", this);
-	
+
 		auto b4 = thirdChildInjector->getShared<Base2>();
 		b4->foo2();
 		capture.printLatest("\n---- push third custom scope ----\n", this);
-	
+
 	//	injector->pushScope(thirdScope);
 	//
 	//	auto b5 = injector->getShared<Base2>();
 	//	auto b6 = injector->getShared<Base>();
 	//	b3->foo2();
 	//	b6->foo();
-	
+
 		capture.printLatest("\n---- popped all and push third custom scope again -----\n\n", this);
-	
+
 	//	capture.assertEquals(
 	//		{
 	//			  "DerivedA constructor"
@@ -875,10 +877,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	//		}
 	//	);
 	}
-	
+
 	void threadLocalScopeUsage() {
 		capture.clear();
-	
+
 		// Create a configuration.
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -886,10 +888,10 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<Base2>().toThreadLocal<Derived2>();
 			}
 		};
-	
+
 		// Instantiate the injector.
 		auto injector = Injector::create(Configuration());
-	
+
 		//
 		// Request multiple instances of Base2 from the injector, each in different
 		// threads.
@@ -901,43 +903,43 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		// Then request the same instances again in the threads. The same instances
 		// will be supplied to each thread.
 		//
-	
+
 		class ThreadFunction {
 			public: std::shared_ptr<Base2> instance1;
 			public: std::shared_ptr<Base2> instance2;
-	
+
 			public: static void threadFunction(ThreadFunction & self, const std::shared_ptr<Injector> & injector) {
 				self.run(injector);
 			}
-	
+
 			public: void run(const std::shared_ptr<Injector> & injector) {
 				instance1 = injector->getShared<Base2>();
 				instance2 = injector->getShared<Base2>();
 			}
 		};
-	
+
 		const size_t threadCount = 50;
 		std::array<ThreadFunction, threadCount> threadFunctions;
 		std::array<std::thread, threadCount> threads;
-	
+
 		for (size_t m = 0; m < threadFunctions.size(); m++) {
 			threads[m] = std::thread(ThreadFunction::threadFunction, std::ref(threadFunctions[m]), std::ref(injector));
 		}
-	
+
 		for (auto & thread : threads) {
 			thread.join();
 		}
-	
+
 		// The two instances of a thread function are the same.
 		for (auto & threadFunction : threadFunctions) {
 			AssertThat(threadFunction.instance1.get(), is(threadFunction.instance2.get()));
 		}
-	
+
 		// The instances of different thread functions are different.
 		for (size_t m = 0; m < threadFunctions.size() - 1; m++) {
 			AssertThat(threadFunctions[m].instance1.get(), isNot(threadFunctions[m + 1].instance1.get()));
 		}
-	
+
 		// Nothing is created on this thread.
 		capture.assertSize(0);
 	}
@@ -947,62 +949,62 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 			public: void configure() const override {
 				// Bind a concrete type.
 				bind<CT>().toValue();
-	
+
 				// Bind a concrete type to a prototype value.
 				bind<std::string>().toValue("test string");
 				bind<int>().toValue(1234567);
 				bind<char>().toValue('g');
-	
+
 				// Bind a concrete type to a value provider function.
 				bind<double>().toValueProvider([] () { return 123.456; });
-	
+
 				// Bind a concrete type to a value provider class.
 				bind<float>().toValueProvider<FloatProvider>();
-	
+
 				// Bind a reference.
 				bind<std::ostream>("testStream").toReference(referencedStream);
-	
+
 				// Bind a const reference.
 				bind<const CC>().toReference(cc);
-	
+
 				// Bind an interface to a concrete type with thread-local singleton semantics.
 				bind<Base>().toThreadLocal<DerivedA>();
-	
+
 				// Bind an interface to an implementing class.
 				bind<Base2>().toUnique<Derived2>();
-	
+
 				// Bind an interface to a unique pointer provider function.
 				bind<I>().toUniqueProvider([]() { return std::unique_ptr<I>(new C(++cCounter)); });
-	
+
 				// Bind an concrete singleton type.
 				bind<Counter>().toEagerSingleton();
-	
+
 				// Bind an interface to a unique pointer provider class.
 				bind<J>().toUniqueProvider<UProvider>();
-	
+
 				// Bind a concrete type with thread-local singleton semantics.
 				bind<TL>().toThreadLocal();
-	
+
 				// Bind a concrete singleton type.
 				bind<S>().toSingleton();
-	
+
 				// Bind a concrete singleton type with a const binding.
 				bind<const CCS>().toSingleton();
-	
+
 				bind<CD>().toValue();
-	
+
 				////////////// Injectable test classes //////////////
-	
+
 				bind<A>().toEagerSingleton();
-	
+
 				bind<B>().toValue();
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		auto a = injector->getShared<A>();
-	
+
 		AssertThat(a->s, is("test string"));
 		AssertThat(a->i, is(1234567));
 		AssertThat(a->g, is('g'));
@@ -1010,26 +1012,26 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		AssertThat(a->f, is(432.1f));
 		AssertThat(a->ii->getValue(), is(1));
 		AssertThat(a->jj->getValue(), is(100));
-	
+
 		auto b = injector->getValue<B>();
-	
+
 		b.stream << "hello, world!";
-	
+
 		AssertThat(referencedStream.str(), is("hello, world!"));
-	
+
 		// Get the reference stream via getInstance.
 		auto & s = injector->getInstance<std::ostream &>("testStream");
-	
+
 		s << " hello again!";
-	
+
 		AssertThat(referencedStream.str(), is("hello, world! hello again!"));
-	
+
 		// Get the const reference object. This must be auto &, not auto,
 		// because the type CC has a deleted copy constructor.
 		const auto & ccc = injector->getReference<const CC>();
-	
+
 		AssertThat(ccc.value, is(3.14159));
-	
+
 		// Get non-const singleton?
 		// Only the const version of the CCS singleton has been bound.
 		AssertThat(
@@ -1040,59 +1042,59 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				)
 			)
 		);
-	
+
 		// Get the const singleton.
 		auto ccs = injector->getShared<const CCS>();
-	
+
 		AssertThat(ccs->value, is(123.456));
-	
+
 		// Promote a new value to a const value.
 		// This just queries for the value binding without the const qualifier.
 		const auto cd = injector->getValue<const CD>();
-	
+
 		AssertThat(cd.ccsObj->value, is(123.456));
-	
+
 		// Promote a new reference to a const reference.
 		// This queries for the const reference binding first, then it tries the non-const reference binding.
 		const auto & cStream = injector->getReference<const std::ostream>("testStream");
-	
+
 		const auto & cStringStream = dynamic_cast<const std::ostringstream &>(cStream);
 		AssertThat(cStringStream.str(), is(referencedStream.str()));
-	
+
 		// Promote a shared instance to a shared const instance .
 		// This queries for the shared const instance binding first, then it tries the shared non-const instance binding.
 		auto cS = injector->getShared<const S>();
-	
+
 		// Promote a shared instance to a const shared const instance.
 		// This queries for the shared const instance binding first, then it tries the shared non-const instance binding.
 		const auto ccS = injector->getInstance<const std::shared_ptr<const S>>();
 	}
-	
+
 	void docTest() {
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
 				// A double value injected into A.
 				bind<double>().toValue(123.456);
-	
+
 				// Bind a const singleton.
 				bind<const AA>().toSingleton();
-	
+
 				// Bind a const reference.
 				bind<const AA>().toReference(aa);
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		// Compile time error:
 		//auto a1 = injector->getReference<AA>();
-	
+
 		// Compile time error:
 		//auto a2 = injector->getShared<AA>();
-	
+
 		auto & a3 = injector->getReference<const AA>();
 		auto a4 = injector->getShared<const AA>();
-	
+
 		AssertThat(a3.value, is(543.2));
 		AssertThat(a4->value, is(123.456));
 	}
@@ -1102,16 +1104,16 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 			public: void configure() const override {
 				// New instances do not cause cyclic shared pointer container issues.
 				bind<HasInjector>().toValue();
-	
+
 				// New instances do not cause cyclic shared pointer container issues.
 				// If HasInjector's injector field was a shared_ptr instead of a weak_ptr,
 				// This shared binding would cause a cyclic shared pointer container issue.
 				bind<HasInjector>().toSingleton();
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		auto v = injector->getValue<HasInjector>();
 		auto s = injector->getShared<HasInjector>();
 	}
@@ -1124,7 +1126,7 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<CycleSC>().toSingleton();
 			}
 		};
-	
+
 		AssertThat(
 			[this] () {
 				try {
@@ -1146,7 +1148,7 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<CycleVC>().toSingleton();
 			}
 		};
-	
+
 		AssertThat(
 			[] () {
 				Injector::create(Conf());
@@ -1158,88 +1160,156 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	void injectorCycleAvoidance() {
 		// Create a singleton binding with a shared pointer to the injector inside it?
 		// Throws exception.
-	
+
 		class Configuration1 : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<ASingletonBaseWithInjector>().toSingleton<ASingletonWithInjector>();
 			}
 		};
-	
+
 		AssertThat([] () { Injector::create(Configuration1()); }, throws<Exception::SharedInjectorException>());
-	
+
 		// Create a new instance binding with a shared pointer to the injector inside it.
 		// Does not throw an exception.
-	
+
 		class Configuration2 : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<ASingletonBaseWithInjector>().toUnique<ASingletonWithInjector>();
 			}
 		};
-	
+
 		// No exception thrown.
 		auto injector = Injector::create(Configuration2());
-	
+
 		// Create a new instance binding with a weak pointer to the injector inside it.
 		// Does not throw an exception.
-	
+
 		class Configuration3 : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<ASingletonBaseWithWeakInjector>().toSingleton<ASingletonWithWeakInjector>();
 			}
 		};
-	
+
 		// No exception thrown.
 		auto injector2 = Injector::create(Configuration3());
 	}
-	
+
+	class U {
+		public: virtual ~U() = default;
+		public: virtual int getValue() const = 0;
+	};
+
+	class V : public U {
+		public: int getValue() const override { return 123; }
+
+		BalauInjectConstruct(V);
+	};
+
+	class CustomDeleter {
+		public: static unsigned int counter(unsigned int toIncrement = 0) {
+			static std::atomic_uint value { 0 };
+			value += toIncrement;
+			return value;
+		}
+
+		public: void operator () (U * object) {
+			counter(1U);
+			delete object;
+		}
+	};
+
+	void uniqueBindingCustomDeleter() {
+		class Configuration : public ApplicationConfiguration {
+			public: void configure() const override {
+				bind<U>().toUnique<V>();
+				bind<U, CustomDeleter>().toUnique<V>();
+			}
+		};
+
+		auto injector = Injector::create(Configuration());
+
+		{
+			auto a = injector->getUnique<U>();
+			auto b = injector->getUnique<U, CustomDeleter>();
+			auto c = injector->getUnique<U>();
+			auto d = injector->getUnique<U, CustomDeleter>();
+		}
+
+		AssertThat(CustomDeleter::counter(), is(2U));
+	}
+
+	class HasInjectedUniqueWithCustomDeleter {
+		public: std::unique_ptr<U> u1;
+		public: std::unique_ptr<U, CustomDeleter> u2;
+
+		BalauInjectConstruct(HasInjectedUniqueWithCustomDeleter, u1, u2);
+	};
+
+	void uniqueBindingCustomDeleterInjected() {
+		class Configuration : public ApplicationConfiguration {
+			public: void configure() const override {
+				bind<U>().toUnique<V>();
+				bind<U, CustomDeleter>().toUnique<V>();
+				bind<HasInjectedUniqueWithCustomDeleter>().toValue();
+			}
+		};
+
+		auto injector = Injector::create(Configuration());
+
+		auto v = injector->getValue<HasInjectedUniqueWithCustomDeleter>();
+
+		AssertThat(v.u1->getValue(), is(123));
+		AssertThat(v.u2->getValue(), is(123));
+	}
+
 	class SingletonProvider {
 		public: std::shared_ptr<int> operator () () {
 			auto r = std::make_shared<int>();
 			*r = value;
 			return r;
 		}
-	
+
 		private: int value;
-	
+
 		BalauInjectConstructNamed(SingletonProvider, value, "reference-value");
 	};
-	
+
 	void singletonProvider() {
 		// Create a singleton binding via the provider (which has its own dependency).
-	
+
 		const int expected = 123;
-	
+
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
 				bind<int>("reference-value").toValue(expected);
 				bind<int>().toSingletonProvider<SingletonProvider>();
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		auto provided = injector->getShared<int>();
-	
+
 		AssertThat(*provided, is(expected));
 	}
-	
+
 	void providedSingletonProvider() {
 		// Create a singleton binding via a provider instance.
-	
+
 		const int expected = 123;
-	
+
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
 				auto provider = std::shared_ptr<SingletonProvider>(new SingletonProvider(expected));
-	
+
 				bind<int>().toSingletonProvider(provider);
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		auto provided = injector->getShared<int>();
-	
+
 		AssertThat(*provided, is(expected));
 	}
 
@@ -1260,9 +1330,9 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<HBBaseT2>("ND").toSingleton<HBDerivedTND>();
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		auto a    = injector->getShared<HBBase1>();
 		auto aD   = injector->getShared<HBBase2>();
 		auto aN   = injector->getShared<HBBase1>("ND");
@@ -1275,7 +1345,7 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		auto aTD  = injector->getShared<HBBaseT2>();
 		auto aTN  = injector->getShared<HBBaseT1>("ND");
 		auto aTND = injector->getShared<HBBaseT2>("ND");
-	
+
 		AssertThat(*a,    isA<HBDerived>());
 		AssertThat(*aD,   isA<HBDerivedD>());
 		AssertThat(*aN,   isA<HBDerivedN>());
@@ -1289,7 +1359,7 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 		AssertThat(*aTN,  isA<HBDerivedTN>());
 		AssertThat(*aTND, isA<HBDerivedTND>());
 	}
-	
+
 	void printBindingsDetailed() {
 		class Configuration : public ApplicationConfiguration {
 			public: void configure() const override {
@@ -1307,9 +1377,9 @@ struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 				bind<HBBaseT2>("ND").toSingleton<HBDerivedTND>();
 			}
 		};
-	
+
 		auto injector = Injector::create(Configuration());
-	
+
 		logLine(injector->printBindingsDetailed());
 	}
 };

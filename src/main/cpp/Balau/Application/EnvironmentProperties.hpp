@@ -98,7 +98,7 @@ class EnvironmentProperties {
 		/// @return true if the item is a unique pointer binding matching the specified type and name
 		///
 		public: template <typename BaseT> bool isUnique() const {
-			return key == Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), key.name);
+			return key == Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), key.name);
 		}
 
 		///
@@ -161,7 +161,7 @@ class EnvironmentProperties {
 		///
 		public: template <typename BaseT> std::unique_ptr<BaseT> getUnique() const {
 			return owner.getUnique<BaseT>(
-				Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), key.name)
+				Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), key.name)
 			);
 		}
 
@@ -179,7 +179,7 @@ class EnvironmentProperties {
 		///
 		public: template <typename BaseT> std::unique_ptr<BaseT> getUnique(std::unique_ptr<BaseT> && defaultValue) const {
 			return owner.getUnique<BaseT>(
-				  Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), key.name)
+				  Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), key.name)
 				, std::move(defaultValue)
 			);
 		}
@@ -319,7 +319,7 @@ class EnvironmentProperties {
 	///
 	public: template <typename BaseT>
 	bool hasUnique(std::string_view name) const {
-		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), name);
 		return bindings->hasBinding(keyView);
 	}
 
@@ -384,7 +384,7 @@ class EnvironmentProperties {
 	///
 	public: template <typename BaseT> std::unique_ptr<BaseT> getUnique(std::string_view name) const {
 		return getUnique<BaseT>(
-			Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name)
+			Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), name)
 		);
 	}
 
@@ -402,7 +402,7 @@ class EnvironmentProperties {
 	///
 	public: template <typename BaseT> std::unique_ptr<BaseT> getUnique(std::string_view name, std::unique_ptr<BaseT> && defaultValue) const {
 		return getUnique<BaseT>(
-			Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name), defaultValue
+			Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), name), defaultValue
 		);
 	}
 
@@ -511,21 +511,21 @@ class EnvironmentProperties {
 		}
 	}
 
-	private: template <typename BaseT> std::unique_ptr<BaseT> getUnique(const Impl::BindingKeyView & keyView) const {
+	private: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>> std::unique_ptr<BaseT> getUnique(const Impl::BindingKeyView & keyView) const {
 		const auto * binding = bindings->find(keyView);
 
 		if (binding != nullptr) {
-			return static_cast<const Impl::AbstractUniquePtrBinding<BaseT> *>(binding->get())->get(nullptr);
+			return static_cast<const Impl::AbstractUniquePtrBinding<BaseT, DeleterT> *>(binding->get())->get(nullptr);
 		} else {
 			ThrowBalauException(Exception::NoBindingException, keyView.toKey());
 		}
 	}
 
-	private: template <typename BaseT> std::unique_ptr<BaseT> getUnique(const Impl::BindingKeyView & keyView, std::unique_ptr<BaseT> && defaultValue) const {
+	private: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>> std::unique_ptr<BaseT> getUnique(const Impl::BindingKeyView & keyView, std::unique_ptr<BaseT> && defaultValue) const {
 		const auto * binding = bindings->find(keyView);
 
 		if (binding != nullptr) {
-			return static_cast<const Impl::AbstractUniquePtrBinding<BaseT> *>(binding->get())->get(nullptr);
+			return static_cast<const Impl::AbstractUniquePtrBinding<BaseT, DeleterT> *>(binding->get())->get(nullptr);
 		} else {
 			return std::move(defaultValue);
 		}

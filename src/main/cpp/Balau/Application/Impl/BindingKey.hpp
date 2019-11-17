@@ -16,10 +16,9 @@
 #include <Balau/Util/Strings.hpp>
 
 #include <typeindex>
+#include <utility>
 
-namespace Balau {
-
-namespace Impl {
+namespace Balau::Impl {
 
 class BindingBuilderBase;
 
@@ -66,22 +65,28 @@ inline std::string toString(const BindingMetaType metaType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// Dummy type that is used for non-unique binding key types.
+struct NoDeleter {};
+
 //
 // Instantiations of this template class are used in the binding key in order
 // to encapsulate the const qualifier and the meta-type information inside a
 // typeid field.
 //
 
-template <BindingMetaType metaType, typename T> struct BindingKeyType {
+template <BindingMetaType metaType, typename T, typename DeleterT = NoDeleter> struct BindingKeyType {
 	static const bool isConst;
 };
 
-template <BindingMetaType metaType, typename T> struct BindingKeyType<metaType, const T> {
+template <BindingMetaType metaType, typename T, typename DeleterT> struct BindingKeyType<metaType, const T, DeleterT> {
 	static const bool isConst;
 };
 
-template <BindingMetaType metaType, typename T> const bool BindingKeyType<metaType, T>::isConst = false;
-template <BindingMetaType metaType, typename T> const bool BindingKeyType<metaType, const T>::isConst = true;
+template <BindingMetaType metaType, typename T, typename DeleterT>
+const bool BindingKeyType<metaType, T, DeleterT>::isConst = false;
+
+template <BindingMetaType metaType, typename T, typename DeleterT>
+const bool BindingKeyType<metaType, const T,  DeleterT>::isConst = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -138,8 +143,8 @@ class BindingKey final {
 		return BindingKey(typeid(BindingKeyType<BindingMetaType::Value, T>), name_);
 	}
 
-	public: template <typename T> static BindingKey createUniqueKey(const std::string & name_) {
-		return BindingKey(typeid(BindingKeyType<BindingMetaType::Unique, T>), name_);
+	public: template <typename T, typename DeleterT> static BindingKey createUniqueKey(const std::string & name_) {
+		return BindingKey(typeid(BindingKeyType<BindingMetaType::Unique, T, DeleterT>), name_);
 	}
 
 	public: template <typename T> static BindingKey createSharedKey(const std::string & name_) {
@@ -162,7 +167,7 @@ class BindingKey final {
 		#endif
 		{}
 
-	public: BindingKey(std::string && name_)
+	public: explicit BindingKey(std::string && name_)
 		: type(typeid(BindingKey)) // Not set.
 		, name(std::move(name_))
 		#ifdef BALAU_DEBUG
@@ -256,30 +261,30 @@ template <typename T> struct CreateBindingKey<const T> {
 };
 
 // Create a "Unique" binding key.
-template <typename T> struct CreateBindingKey<std::unique_ptr<T>> {
+template <typename T, typename DeleterT> struct CreateBindingKey<std::unique_ptr<T, DeleterT>> {
 	Impl::BindingKey operator () (std::string name) const {
-		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T>), std::move(name));
+		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T, DeleterT>), std::move(name));
 	}
 };
 
 // Create a "Unique" binding key.
-template <typename T> struct CreateBindingKey<const std::unique_ptr<T>> {
+template <typename T, typename DeleterT> struct CreateBindingKey<const std::unique_ptr<T, DeleterT>> {
 	Impl::BindingKey operator () (std::string name) const {
-		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T>), std::move(name));
+		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T, DeleterT>), std::move(name));
 	}
 };
 
 // Create a "Unique" binding key.
-template <typename T> struct CreateBindingKey<std::unique_ptr<const T>> {
+template <typename T, typename DeleterT> struct CreateBindingKey<std::unique_ptr<const T, DeleterT>> {
 	Impl::BindingKey operator () (std::string name) const {
-		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T>), std::move(name));
+		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T, DeleterT>), std::move(name));
 	}
 };
 
 // Create a "Unique" binding key.
-template <typename T> struct CreateBindingKey<const std::unique_ptr<const T>> {
+template <typename T, typename DeleterT> struct CreateBindingKey<const std::unique_ptr<const T, DeleterT>> {
 	Impl::BindingKey operator () (std::string name) const {
-		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T>), std::move(name));
+		return Impl::BindingKey(typeid(BindingKeyType<Impl::BindingMetaType::Unique, T, DeleterT>), std::move(name));
 	}
 };
 
@@ -363,7 +368,7 @@ struct BindingKeyView {
 		: type(type_)
 		, name(name_) {}
 
-	BindingKeyView(const BindingKey & key)
+	explicit BindingKeyView(const BindingKey & key)
 		: type(key.getType())
 		, name(key.getName()) {}
 
@@ -398,9 +403,7 @@ inline bool operator == (const BindingKeyView & lhs, const BindingKeyView & rhs)
 	return lhs.type == rhs.type && lhs.name == rhs.name;
 }
 
-} // namespace Impl
-
-} // namespace Balau
+} // namespace Balau::Impl
 
 namespace std { // NOLINT
 

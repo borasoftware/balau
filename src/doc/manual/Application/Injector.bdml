@@ -60,7 +60,7 @@
 		<bullets>
 			<entry>non-polymorphic <strong>value</strong> instances, provided directly as type <emph>ValueT</emph>;</entry>
 
-			<entry>polymorphic <strong>unique</strong> value instances, provided inside <emph>std::unique_ptr&lt;BaseT&gt;</emph> containers;</entry>
+			<entry>polymorphic <strong>unique</strong> value instances, provided inside <emph>std::unique_ptr&lt;BaseT&gt;</emph> or <emph>std::unique_ptr&lt;BaseT, DeleterT&gt;</emph> containers;</entry>
 
 			<entry>polymorphic non-const and const <strong>reference</strong> instances, provided directly as types <emph>BaseT &amp;</emph> and <emph>const BaseT &amp;</emph>;</entry>
 
@@ -1047,6 +1047,101 @@
 				</row>
 			</body>
 		</table>
+
+		<h1>Custom deleters</h1>
+
+		<para>The C++ <emph>std::unique_ptr</emph> and <emph>std::shared_ptr</emph> containers can be created with custom deletion policies. These allow deletion of pointers at the ends of their lifespans via deletion mechanisms other than the standard <emph>delete</emph> call as provided by <emph>std::default_delete</emph>.</para>
+
+		<para>The mechanism by which custom deletion polices is specified in C++ is different for each pointer container type. The Balau injector thus provides two different mechanism for deletion policy specification in binding calls, one for <emph>std::unique_ptr</emph> and another for <emph>std::shared_ptr</emph>. Accordingly, the mechanism for obtaining unique and shared instances that have custom deleters is different for each binding type.</para>
+
+		<h2>Unique custom deletion</h2>
+
+		<para>The C++ <emph>std::unique_ptr</emph> container requires a custom deletion policy to be specified as a type argument to the unique pointer class template. This is thus performed at compile time, and becomes part of the pointer container's type.</para>
+
+		<para>Due to this, the deleter type of a <emph>unique</emph> binding is part of the binding key. For <emph>unique</emph> bindings that do not have a custom deletion policy, the binding key deleter type is <emph>std::default_delete&lt;BaseT&gt;</emph>.</para>
+
+		<para>In order to specify a custom deleter for a unique binding, a custom deleter type is specified in the first part of the fluent call chain, i.e. as a type argument to the <emph>bind()</emph> call.</para>
+
+		<code lang="C++">
+			//
+			// A custom deleter.
+			//
+			template &lt;typename T&gt; struct CustomDeleter {
+				public: void operator () (U * object) {
+					log.trace("Object deleted {}", (size_t) object);
+					delete object;
+				}
+			};
+
+			//
+			// Custom deleter type specified for a binding.
+			//
+			class Configuration : public ApplicationConfiguration {
+				public: void configure() const override {
+					// A unique binding for U, with std::default_delete&lt;BaseT&gt;.
+					bind&lt;U>().toUnique&lt;V&gt;();
+
+					// A unique binding for U, with custom deleter type CustomDeleter.
+					bind&lt;U, CustomDeleter>().toUnique&lt;V&gt;();
+				}
+			};
+		</code>
+
+		<para>For other binding types, any deleter type specified in the <emph>bind()</emph> call will be ignored.</para>
+
+		<para>As the custom deleter type is part of the binding key for unique bindings, it must be specified in order to obtain a polymorphic new instance of the specified type with the custom deletion policy.</para>
+
+		<code lang="C++">
+			// Create an injector with the above configuration.
+			auto injector = Injector::create(Configuration());
+
+			// Get a polymorphic new instance specified by binding {U, std::default_delete&lt;U&gt;}.
+			auto a = injector->getUnique&lt;U&gt;();
+
+			// Get a polymorphic new instance specified by binding {U, CustomDeleter}.
+			auto b = injector->getUnique&lt;U, CustomDeleter&gt;();
+		</code>
+
+		<h2>Shared custom deletion</h2>
+
+		<para>The C++ <emph>std::shared_ptr</emph> container requires a custom deletion policy to be specified as an argument to the shared pointer's constructor. Although custom deleter types for shared bindings are specified at compile time in the Balau binding configuration fluent call chain, the deleter instance itself is supplied at runtime to the C++ <emph>std::shared_ptr</emph> container. The deleter type does not thus become part of the pointer container's type.</para>
+
+		<para>Due to this, the deleter type of a <emph>shared</emph> binding is not part of the binding key.</para>
+
+		<para>In order to specify a custom deleter for a shared binding, a custom deleter type is specified in the second part of the fluent call chain, i.e. as a type argument to the <emph>toSingleton()</emph>, <emph>toEagerSingleton()</emph>, and <emph>toThreadLocal()</emph> calls.</para>
+
+		<code lang="C++">
+			// Custom deleter type specified for a binding.
+			class Configuration : public ApplicationConfiguration {
+				public: void configure() const override {
+					//
+					// A shared binding for U, with std::default_delete&lt;BaseT&gt;.
+					//
+					bind&lt;U>().toShared&lt;V&gt;();
+
+					//
+					// A shared binding for U, with custom deleter type CustomDeleter.
+					//
+					// A name is required, otherwise the binding would be identical
+					// to the previous one.
+					//
+					bind&lt;U>("custom").toShared&lt;V, CustomDeleter&gt;();
+				}
+			};
+		</code>
+
+		<para>As the custom deleter type is not part of the binding key for shared bindings, it must not be specified in order to obtain a polymorphic shared instance of the specified type, regardless of whether or not the shared instance has a custom deletion policy.</para>
+
+		<code lang="C++">
+			// Create an injector with the above configuration.
+			auto injector = Injector::create(Configuration());
+
+			// Get a polymorphic shared instance specified by binding {U, ""}.
+			auto a = injector->getShared&lt;U&gt;();
+
+			// Get a polymorphic shared instance specified by binding {U, "custom"}.
+			auto b = injector->getShared&lt;U&gt;("custom");
+		</code>
 
 		<h1>Injector hierarchies</h1>
 

@@ -415,9 +415,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @return a unique pointer containing the new instance
 	/// @throw NoBindingException if no suitable binding was found
 	///
-	public: template <typename BaseT>
-	std::unique_ptr<BaseT> getUnique(std::string_view name = std::string_view()) const {
-		return GetInstance<std::unique_ptr<BaseT>>(this).get(name);
+	public: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	std::unique_ptr<BaseT, DeleterT> getUnique(std::string_view name = std::string_view()) const {
+		return GetInstance<std::unique_ptr<BaseT, DeleterT>>(this).get(name);
 	}
 
 	///
@@ -431,9 +431,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param defaultValue a default value to move if no suitable binding was found
 	/// @return a unique pointer containing the new instance or the supplied default
 	///
-	public: template <typename BaseT>
-	std::unique_ptr<BaseT> getUnique(std::unique_ptr<BaseT> && defaultValue) const {
-		return GetInstance<std::unique_ptr<BaseT>>(this).get("", std::move(defaultValue));
+	public: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	std::unique_ptr<BaseT, DeleterT> getUnique(std::unique_ptr<BaseT> && defaultValue) const {
+		return GetInstance<std::unique_ptr<BaseT, DeleterT>>(this).get("", std::move(defaultValue));
 	}
 
 	///
@@ -448,9 +448,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param defaultValue a default value to move if no suitable binding was found
 	/// @return a unique pointer containing the new instance or the supplied default
 	///
-	public: template <typename BaseT>
-	std::unique_ptr<BaseT> getUnique(std::string_view name, std::unique_ptr<BaseT> && defaultValue) const {
-		return GetInstance<std::unique_ptr<BaseT>>(this).get(name, std::move(defaultValue));
+	public: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	std::unique_ptr<BaseT, DeleterT> getUnique(std::string_view name, std::unique_ptr<BaseT, DeleterT> && defaultValue) const {
+		return GetInstance<std::unique_ptr<BaseT, DeleterT>>(this).get(name, std::move(defaultValue));
 	}
 
 	///
@@ -464,9 +464,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
 	/// @return a unique pointer containing the new instance or the supplied default
 	///
-	public: template <typename BaseT>
-	std::unique_ptr<BaseT> getUnique(std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-		return GetInstance<std::unique_ptr<BaseT>>(this).get("", defaultValueSupplier);
+	public: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	std::unique_ptr<BaseT, DeleterT> getUnique(std::function<std::unique_ptr<BaseT, DeleterT> ()> & defaultValueSupplier) const {
+		return GetInstance<std::unique_ptr<BaseT, DeleterT>>(this).get("", defaultValueSupplier);
 	}
 
 	///
@@ -481,9 +481,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
 	/// @return a unique pointer containing the new instance or the supplied default
 	///
-	public: template <typename BaseT>
-	std::unique_ptr<BaseT> getUnique(std::string_view name, std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-		return GetInstance<std::unique_ptr<BaseT>>(this).get(name, defaultValueSupplier);
+	public: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	std::unique_ptr<BaseT, DeleterT> getUnique(std::string_view name, std::function<std::unique_ptr<BaseT, DeleterT> ()> & defaultValueSupplier) const {
+		return GetInstance<std::unique_ptr<BaseT, DeleterT>>(this).get(name, defaultValueSupplier);
 	}
 
 	///
@@ -497,9 +497,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// @param name the name of the binding
 	/// @return a unique pointer containing the new instance or nullptr
 	///
-	public: template <typename BaseT>
-	std::unique_ptr<BaseT> getUniqueOrNull(std::string_view name = std::string_view()) const {
-		return GetInstance<std::unique_ptr<BaseT>>(this).get(name, std::unique_ptr<BaseT>());
+	public: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	std::unique_ptr<BaseT, DeleterT> getUniqueOrNull(std::string_view name = std::string_view()) const {
+		return GetInstance<std::unique_ptr<BaseT, DeleterT>>(this).get(name, std::unique_ptr<BaseT, DeleterT>());
 	}
 
 	/////////////////////////// Reference instances ///////////////////////////
@@ -744,17 +744,17 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	//
 	// GetInstance template class specialised for std::unique_ptr<T>.
 	//
-	private: template <typename BaseT> struct GetInstance<std::unique_ptr<BaseT>> {
-		std::unique_ptr<BaseT> get(std::string_view name) const {
-			return injector->getUniqueImpl<BaseT>(name);
+	private: template <typename BaseT, typename DeleterT> struct GetInstance<std::unique_ptr<BaseT, DeleterT>> {
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, std::unique_ptr<BaseT> & defaultValue) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValue);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, std::unique_ptr<BaseT, DeleterT> & defaultValue) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValue);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, const std::function<std::unique_ptr<BaseT, DeleterT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -762,11 +762,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		static Impl::BindingKey createBindingKey(std::string name) {
-			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), std::move(name));
+			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), std::move(name));
 		}
 
 		static Impl::BindingKeyView createBindingKeyView(std::string_view name) {
-			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 		}
 
 		explicit GetInstance(const Injector * injector_) : injector(injector_) {}
@@ -777,17 +777,17 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	// GetInstance template class specialised for const std::unique_ptr<T>.
 	// This immediately promotes to std::unique_ptr<T>.
 	//
-	private: template <typename BaseT> struct GetInstance<const std::unique_ptr<BaseT>> {
-		std::unique_ptr<BaseT> get(std::string_view name) const {
-			return injector->getUniqueImpl<BaseT>(name);
+	private: template <typename BaseT, typename DeleterT> struct GetInstance<const std::unique_ptr<BaseT, DeleterT>> {
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, std::unique_ptr<BaseT> & defaultValue) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValue);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, std::unique_ptr<BaseT, DeleterT> & defaultValue) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValue);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, const std::function<std::unique_ptr<BaseT, DeleterT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -795,11 +795,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		static Impl::BindingKey createBindingKey(std::string name) {
-			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), std::move(name));
+			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), std::move(name));
 		}
 
 		static Impl::BindingKeyView createBindingKeyView(std::string_view name) {
-			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 		}
 
 		explicit GetInstance(const Injector * injector_) : injector(injector_) {}
@@ -810,17 +810,17 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	// GetInstance template class specialised for std::unique_ptr<const T>.
 	// This immediately promotes to std::unique_ptr<T>.
 	//
-	private: template <typename BaseT> struct GetInstance<std::unique_ptr<const BaseT>> {
-		std::unique_ptr<BaseT> get(std::string_view name) const {
-			return injector->getUniqueImpl<BaseT>(name);
+	private: template <typename BaseT, typename DeleterT> struct GetInstance<std::unique_ptr<const BaseT, DeleterT>> {
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, std::unique_ptr<BaseT> & defaultValue) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValue);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, std::unique_ptr<BaseT, DeleterT> & defaultValue) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValue);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, const std::function<std::unique_ptr<BaseT, DeleterT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -828,11 +828,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		static Impl::BindingKey createBindingKey(std::string name) {
-			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), std::move(name));
+			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), std::move(name));
 		}
 
 		static Impl::BindingKeyView createBindingKeyView(std::string_view name) {
-			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 		}
 
 		explicit GetInstance(const Injector * injector_) : injector(injector_) {}
@@ -843,17 +843,17 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	// GetInstance template class specialised for const std::unique_ptr<const T>.
 	// This immediately promotes to std::unique_ptr<T>.
 	//
-	private: template <typename BaseT> struct GetInstance<const std::unique_ptr<const BaseT>> {
-		std::unique_ptr<BaseT> get(std::string_view name) const {
-			return injector->getUniqueImpl<BaseT>(name);
+	private: template <typename BaseT, typename DeleterT> struct GetInstance<const std::unique_ptr<const BaseT, DeleterT>> {
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, std::unique_ptr<BaseT> & defaultValue) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValue);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, std::unique_ptr<BaseT, DeleterT> & defaultValue) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValue);
 		}
 
-		std::unique_ptr<BaseT> get(std::string_view name, const std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-			return injector->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+		std::unique_ptr<BaseT, DeleterT> get(std::string_view name, const std::function<std::unique_ptr<BaseT, DeleterT> ()> & defaultValueSupplier) const {
+			return injector->getUniqueImpl<BaseT, DeleterT>(name, defaultValueSupplier);
 		}
 
 		bool hasBinding(std::string_view name) const {
@@ -861,11 +861,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 
 		static Impl::BindingKey createBindingKey(std::string name) {
-			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), std::move(name));
+			return Impl::BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), std::move(name));
 		}
 
 		static Impl::BindingKeyView createBindingKeyView(std::string_view name) {
-			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+			return Impl::BindingKeyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 		}
 
 		explicit GetInstance(const Injector * injector_) : injector(injector_) {}
@@ -1277,46 +1277,46 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 	}
 
-	private: template <typename BaseT>
-	std::unique_ptr<BaseT> getUniqueImpl(std::string_view name) const {
-		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+	private: template <typename BaseT, typename DeleterT>
+	std::unique_ptr<BaseT, DeleterT> getUniqueImpl(std::string_view name) const {
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 
 		const auto * binding = bindings->find(keyView);
 
 		if (binding != nullptr) {
-			return createUniqueInstance<BaseT>(*binding);
+			return createUniqueInstance<BaseT, DeleterT>(*binding);
 		} else if (parent) {
-			return parent->getUniqueImpl<BaseT>(name);
+			return parent->getUniqueImpl<BaseT, DeleterT>(name);
 		} else {
 			ThrowBalauException(Exception::NoBindingException, keyView.toKey());
 		}
 	}
 
-	private: template <typename BaseT>
-	std::unique_ptr<BaseT> getUniqueImpl(std::string_view name, std::unique_ptr<BaseT> && defaultValue) const {
-		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+	private: template <typename BaseT, typename DeleterT>
+	std::unique_ptr<BaseT, DeleterT> getUniqueImpl(std::string_view name, std::unique_ptr<BaseT> && defaultValue) const {
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 
 		const auto * binding = bindings->find(keyView);
 
 		if (binding != nullptr) {
-			return createUniqueInstance<BaseT>(*binding);
+			return createUniqueInstance<BaseT, DeleterT>(*binding);
 		} else if (parent) {
-			return parent->getUniqueImpl<BaseT>(name, std::move(defaultValue));
+			return parent->getUniqueImpl<BaseT, DeleterT>(name, std::move(defaultValue));
 		} else {
 			return std::move(defaultValue);
 		}
 	}
 
-	private: template <typename BaseT>
-	std::unique_ptr<BaseT> getUniqueImpl(std::string_view name, std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
-		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), name);
+	private: template <typename BaseT, typename DeleterT>
+	std::unique_ptr<BaseT, DeleterT> getUniqueImpl(std::string_view name, std::function<std::unique_ptr<BaseT> ()> & defaultValueSupplier) const {
+		const Impl::BindingKeyView keyView(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, DeleterT>), name);
 
 		const auto * binding = bindings->find(keyView);
 
 		if (binding != nullptr) {
-			return createUniqueInstance<BaseT>(*binding);
+			return createUniqueInstance<BaseT, DeleterT>(*binding);
 		} else if (parent) {
-			return parent->getUniqueImpl<BaseT>(name, defaultValueSupplier);
+			return parent->getUniqueImpl<BaseT, DeleterT>(name, defaultValueSupplier);
 		} else {
 			return defaultValueSupplier();
 		}
@@ -1447,9 +1447,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 	// Create a polymorphic unique ptr from the supplied unique ptr or unique ptr provider
 	// binding. The type T has been tunnelled through and matched to the binding.
-	private: template <typename T>
-	std::unique_ptr<T> createUniqueInstance(const std::unique_ptr<Impl::AbstractBinding> & binding) const {
-		return static_cast<const Impl::AbstractUniquePtrBinding<T> *>(binding.get())->get(this);
+	private: template <typename T, typename DeleterT = std::default_delete<T>>
+	std::unique_ptr<T, DeleterT> createUniqueInstance(const std::unique_ptr<Impl::AbstractBinding> & binding) const {
+		return static_cast<const Impl::AbstractUniquePtrBinding<T, DeleterT> *>(binding.get())->get(this);
 	}
 
 	// Get a polymorphic shared ptr from the supplied thread-local singleton or singleton binding.

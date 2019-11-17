@@ -35,9 +35,11 @@ class ApplicationConfiguration : public InjectorConfiguration {
 	///
 	/// Create a binding specification for the specified named or unnamed interface.
 	///
-	protected: template <typename BaseT>
-	BindingBuilder<BaseT> & bind(std::string_view name = std::string_view()) const {
-		return Bind<BaseT>(*this).bind(name);
+	/// The deleter type is only used for unique bindings, otherwise it is ignored.
+	///
+	protected: template <typename BaseT, typename DeleterT = std::default_delete<BaseT>>
+	BindingBuilder<BaseT, DeleterT> & bind(std::string_view name = std::string_view()) const {
+		return Bind<BaseT, DeleterT>(*this).bind(name);
 	}
 
 	protected: void addConfiguration(const ApplicationConfiguration & conf) const {
@@ -55,7 +57,7 @@ class ApplicationConfiguration : public InjectorConfiguration {
 		return extraConfiguration;
 	}
 
-	private: template <typename T> struct Bind {
+	private: template <typename T, typename DeleterT> struct Bind {
 		static_assert(
 			  std::negation<typename std::is_pointer<T>::type>::value
 			, "Raw pointers are not permitted in bindings. Use Unique or Shared bindings instead."
@@ -65,16 +67,16 @@ class ApplicationConfiguration : public InjectorConfiguration {
 
 		explicit Bind(const ApplicationConfiguration & parent_) : parent(parent_) {}
 
-		BindingBuilder<T> & bind(std::string_view name) const {
+		BindingBuilder<T, DeleterT> & bind(std::string_view name) const {
 			parent.builders.emplace_back(
-				std::shared_ptr<Impl::BindingBuilderBase>(new BindingBuilder<T>(std::string(name)))
+				std::shared_ptr<Impl::BindingBuilderBase>(new BindingBuilder<T, DeleterT>(std::string(name)))
 			);
 
-			return *reinterpret_cast<BindingBuilder<T> *>(parent.builders.back().get());
+			return *reinterpret_cast<BindingBuilder<T, DeleterT> *>(parent.builders.back().get());
 		}
 	};
 
-	private: template <typename T> struct Bind<const T> {
+	private: template <typename T, typename DeleterT> struct Bind<const T, DeleterT> {
 		static_assert(
 			  std::negation<typename std::is_pointer<T>::type>::value
 			, "Raw pointers are not permitted in bindings. Use Unique or Shared bindings instead."
@@ -84,12 +86,12 @@ class ApplicationConfiguration : public InjectorConfiguration {
 
 		explicit Bind(const ApplicationConfiguration & parent_) : parent(parent_) {}
 
-		BindingBuilder<const T> & bind(std::string_view name) const {
+		BindingBuilder<const T, DeleterT> & bind(std::string_view name) const {
 			parent.builders.emplace_back(
-				std::shared_ptr<Impl::BindingBuilderBase>(new BindingBuilder<const T>(std::string(name)))
+				std::shared_ptr<Impl::BindingBuilderBase>(new BindingBuilder<const T, DeleterT>(std::string(name)))
 			);
 
-			return *reinterpret_cast<BindingBuilder<const T> *>(parent.builders.back().get());
+			return *reinterpret_cast<BindingBuilder<const T, DeleterT> *>(parent.builders.back().get());
 		}
 	};
 

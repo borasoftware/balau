@@ -187,8 +187,8 @@ template <typename ValueT> class ValuePropertyBindingBuilderFactory : public Pro
 		// This method is also used in the getBindingBuilderFactory function.
 		// If the code here is changed, the getBindingBuilderFactory function must also be reviewed.
 
-		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<ValueT>(std::string(name)));
-		auto & bindingBuilder = static_cast<BindingBuilder<ValueT> &>(*ret);
+		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<ValueT, std::default_delete<ValueT>>(std::string(name)));
+		auto & bindingBuilder = static_cast<BindingBuilder<ValueT, std::default_delete<ValueT>> &>(*ret);
 		ValueT typedValue;
 		fromString(typedValue, value);
 		bindingBuilder.toValue(typedValue);
@@ -197,8 +197,8 @@ template <typename ValueT> class ValuePropertyBindingBuilderFactory : public Pro
 	}
 
 	public: std::unique_ptr<Impl::BindingBuilderBase> createDefault() const override {
-		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<ValueT>(std::string(name)));
-		auto & bindingBuilder = static_cast<BindingBuilder<ValueT> &>(*ret);
+		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<ValueT, std::default_delete<ValueT>>(std::string(name)));
+		auto & bindingBuilder = static_cast<BindingBuilder<ValueT, std::default_delete<ValueT>> &>(*ret);
 		bindingBuilder.toValue(defaultValue);
 		bindingCreated = true;
 		return ret;
@@ -291,8 +291,8 @@ template <typename BaseT> class UniquePropertyBindingBuilderFactory : public Pro
 		// This method is also used in the getBindingBuilderFactory function.
 		// If the code here is changed, the getBindingBuilderFactory function must also be reviewed.
 
-		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<BaseT>(std::string(name)));
-		auto & bindingBuilder = static_cast<BindingBuilder<BaseT> &>(*ret);
+		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<BaseT, std::default_delete<BaseT>>(std::string(name)));
+		auto & bindingBuilder = static_cast<BindingBuilder<BaseT, std::default_delete<BaseT>> &>(*ret);
 		std::unique_ptr<BaseT> typedValue;
 		fromString(typedValue, value);
 		auto provider = std::shared_ptr<ClonerProvider>(new ClonerProvider(clonerFunction, std::move(typedValue)));
@@ -302,8 +302,8 @@ template <typename BaseT> class UniquePropertyBindingBuilderFactory : public Pro
 	}
 
 	public: std::unique_ptr<Impl::BindingBuilderBase> createDefault() const override {
-		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<BaseT>(std::string(name)));
-		auto & bindingBuilder = static_cast<BindingBuilder<BaseT> &>(*ret);
+		auto ret = std::unique_ptr<Impl::BindingBuilderBase>(new BindingBuilder<BaseT, std::default_delete<BaseT>>(std::string(name)));
+		auto & bindingBuilder = static_cast<BindingBuilder<BaseT, std::default_delete<BaseT>> &>(*ret);
 		auto provider = std::shared_ptr<ClonerProvider>(new ClonerProvider(clonerFunction, std::move(defaultValue)));
 		bindingBuilder.toUniqueProvider(provider);
 		bindingCreated = true;
@@ -311,7 +311,7 @@ template <typename BaseT> class UniquePropertyBindingBuilderFactory : public Pro
 	}
 
 	public: virtual BindingKey createKey() const override {
-		return BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT>), std::string(name));
+		return BindingKey(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Unique, BaseT, std::default_delete<BaseT>>), std::string(name));
 	}
 
 	public: bool isComposite() const override {

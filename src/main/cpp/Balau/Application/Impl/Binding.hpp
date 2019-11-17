@@ -129,12 +129,12 @@ class AbstractValueBinding : public AbstractBinding {
 };
 
 // Abstract base class of the unique pointer bindings.
-template <typename BaseT>
+template <typename BaseT, typename DeleterT>
 class AbstractUniquePtrBinding : public AbstractBinding {
 	protected: explicit AbstractUniquePtrBinding(BindingKey && key_)
 		: AbstractBinding(std::move(key_)) {}
 
-	public: virtual std::unique_ptr<BaseT> get(const Injector * injector) const = 0;
+	public: virtual std::unique_ptr<BaseT, DeleterT> get(const Injector * injector) const = 0;
 
 	private: void checkForIllegalInjectorInjection(const BindingKey & dependencyKey,
 	                                               const BindingKey & injectorKey,
@@ -299,14 +299,14 @@ class ProvidingClassInstanceValueBinding : public AbstractValueBinding<T> {
 	}
 };
 
-template <typename BaseT, typename DerivedT>
-class InstantiatingUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
+template <typename BaseT, typename DerivedT, typename DeleterT>
+class InstantiatingUniquePtrBinding : public AbstractUniquePtrBinding<BaseT, DeleterT> {
 	public: explicit InstantiatingUniquePtrBinding(BindingKey && key_)
-		: AbstractUniquePtrBinding<BaseT>(std::move(key_)) {}
+		: AbstractUniquePtrBinding<BaseT, DeleterT>(std::move(key_)) {}
 
-	public: std::unique_ptr<BaseT> get(const Injector * injector) const override {
+	public: std::unique_ptr<BaseT, DeleterT> get(const Injector * injector) const override {
 		// Compilation error? Did you forget to add an injection macro to your class?
-		return std::unique_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(*injector));
+		return std::unique_ptr<BaseT, DeleterT>(DerivedT::_Balau_newHeapInstance(*injector));
 	}
 
 	private: std::vector<BindingKey> getDependencyKeys() const override {
@@ -319,17 +319,17 @@ class InstantiatingUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
 	}
 };
 
-template <typename BaseT>
-class ProvidingFunctionUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
+template <typename BaseT, typename DeleterT>
+class ProvidingFunctionUniquePtrBinding : public AbstractUniquePtrBinding<BaseT, DeleterT> {
 	private: using UniquePtrProviderFunction = std::function<std::unique_ptr<BaseT> ()>;
 
 	private: const UniquePtrProviderFunction provide;
 
 	public: ProvidingFunctionUniquePtrBinding(BindingKey && key_, UniquePtrProviderFunction provide_)
-		: AbstractUniquePtrBinding<BaseT>(std::move(key_))
+		: AbstractUniquePtrBinding<BaseT, DeleterT>(std::move(key_))
 		, provide(provide_) {}
 
-	public: std::unique_ptr<BaseT> get(const Injector * ) const override {
+	public: std::unique_ptr<BaseT, DeleterT> get(const Injector * ) const override {
 		return provide();
 	}
 
@@ -342,14 +342,14 @@ class ProvidingFunctionUniquePtrBinding : public AbstractUniquePtrBinding<BaseT>
 	}
 };
 
-template <typename BaseT, typename ProviderT>
-class ProvidingClassUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
+template <typename BaseT, typename ProviderT, typename DeleterT>
+class ProvidingClassUniquePtrBinding : public AbstractUniquePtrBinding<BaseT, DeleterT> {
 	private: std::unique_ptr<ProviderT> provide;
 
 	public: explicit ProvidingClassUniquePtrBinding(BindingKey && key_)
-		: AbstractUniquePtrBinding<BaseT>(std::move(key_)) {}
+		: AbstractUniquePtrBinding<BaseT, DeleterT>(std::move(key_)) {}
 
-	public: std::unique_ptr<BaseT> get(const Injector * ) const override {
+	public: std::unique_ptr<BaseT, DeleterT> get(const Injector * ) const override {
 		return (*provide)();
 	}
 
@@ -364,15 +364,15 @@ class ProvidingClassUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
 	}
 };
 
-template <typename BaseT, typename ProviderT>
-class ProvidingClassInstanceUniquePtrBinding : public AbstractUniquePtrBinding<BaseT> {
+template <typename BaseT, typename ProviderT, typename DeleterT>
+class ProvidingClassInstanceUniquePtrBinding : public AbstractUniquePtrBinding<BaseT, DeleterT> {
 	private: std::shared_ptr<ProviderT> provide;
 
 	public: ProvidingClassInstanceUniquePtrBinding(BindingKey && key_, std::shared_ptr<ProviderT> provide_)
-		: AbstractUniquePtrBinding<BaseT>(std::move(key_))
+		: AbstractUniquePtrBinding<BaseT, DeleterT>(std::move(key_))
 		, provide(std::move(provide_)) {}
 
-	public: std::unique_ptr<BaseT> get(const Injector * ) const override {
+	public: std::unique_ptr<BaseT, DeleterT> get(const Injector * ) const override {
 		return (*provide)();
 	}
 
@@ -406,7 +406,7 @@ class StandardReferenceBinding : public AbstractReferenceBinding<BaseT> {
 	}
 };
 
-template <typename BaseT, typename DerivedT>
+template <typename BaseT, typename DerivedT, typename DeleterT>
 class ThreadLocalSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 	// Mutable in order to allow lazy evaluation.
 	private: mutable Concurrent::ThreadLocalInstance<std::shared_ptr<BaseT>> storage;
@@ -418,7 +418,7 @@ class ThreadLocalSingletonBinding : public AbstractSharedPtrBinding<BaseT> {
 		return storage(
 			[&injector] () {
 				// Compilation error? Did you forget to add an injection macro to your class?
-				return new std::shared_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(*injector));
+				return new std::shared_ptr<BaseT>(DerivedT::_Balau_newHeapInstance(*injector), DeleterT());
 			}
 		);
 	}
