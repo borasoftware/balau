@@ -1066,7 +1066,7 @@
 			//
 			// A custom deleter.
 			//
-			template &lt;typename T&gt; struct CustomDeleter {
+			struct CustomDeleter {
 				public: void operator () (U * object) {
 					log.trace("Object deleted {}", (size_t) object);
 					delete object;
