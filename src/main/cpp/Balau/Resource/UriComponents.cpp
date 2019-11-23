@@ -9,11 +9,10 @@
 //
 
 #include "UriComponents.hpp"
+
 #include "../Exception/ResourceExceptions.hpp"
-#include "../Type/Character.hpp"
 
 namespace Balau::Resource {
-
 
 std::string UriComponents::normalizePath(std::string_view path) {
 	const auto pathComponents = Util::Strings::split(path, "/");
@@ -62,8 +61,8 @@ std::string UriComponents::normalizePath(std::string_view path) {
 
 UriComponents::UriComponents(const Uri & uri_) : UriComponents(uri_.toUriString()) {}
 
-UriComponents::UriComponents(const std::string & uri_)
-	: uri(uri_)
+UriComponents::UriComponents(std::string uri_)
+	: uri(std::move(uri_))
 	, schemeEndOffset(-1)
 	, userinfoOffset(-1)
 	, hostOffset(-1)

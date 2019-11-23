@@ -37,6 +37,10 @@ class ZipEntry : public Uri {
 		return std::unique_ptr<Uri>(new ZipEntry(*this));
 	}
 
+	public: std::unique_ptr<Uri> append(const std::string & pathComponent) const override {
+		ThrowBalauException(Exception::UnsupportedOperationException, "ZipEntry does not support path appending.");
+	}
+
 	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
 		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
 

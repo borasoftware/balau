@@ -149,6 +149,14 @@ class IllegalStateException : public BalauException {
 };
 
 ///
+/// Thrown when an operation is deliberately not implemented.
+///
+class UnsupportedOperationException : public BalauException {
+	public: UnsupportedOperationException(const char * file, int line, const std::string & st, const std::string & text)
+		: BalauException(file, line, st, "UnsupportedOperation", text) {}
+};
+
+///
 /// Thrown when a feature is not yet implemented.
 ///
 class NotImplementedException : public BalauException {

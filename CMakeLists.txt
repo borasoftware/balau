@@ -557,6 +557,8 @@ if (BALAU_ENABLE_HTTP)
 		src/test/cpp/Balau/Resource/HttpByteReadResourceTest.cpp
 		src/test/cpp/Balau/Resource/HttpsByteReadResourceTest.cpp
 		src/test/cpp/Balau/Resource/HttpsUtf8To32ReadResourceTest.cpp
+		src/test/cpp/Balau/Resource/HttpsTest.cpp
+		src/test/cpp/Balau/Resource/HttpTest.cpp
 		src/test/cpp/Balau/Resource/HttpUtf8To32ReadResourceTest.cpp
 	)
 else ()

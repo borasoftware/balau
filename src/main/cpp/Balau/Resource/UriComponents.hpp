@@ -89,7 +89,7 @@ struct UriComponents {
 	/// @param uri_ the URI string to parse
 	/// @throw InvalidUriException if the URI is invalid.
 	///
-	public: explicit UriComponents(const std::string & uri_);
+	public: explicit UriComponents(std::string uri_);
 
 	///
 	/// Create a URI components instance by copying the supplied instance.

@@ -99,6 +99,13 @@ class Uri {
 	}
 
 	///
+	/// Appends the path component to the supplied URI, returning a new URI.
+	///
+	/// If the URI type does not permit appending of path components, UnsupportedOperationException is thrown.
+	///
+	public: virtual std::unique_ptr<Uri> append(const std::string & pathComponent) const = 0;
+
+	///
 	/// Resolve the relative or absolute path, in reference to the current URI.
 	///
 	/// If the supplied path contains a scheme prefix, the URI fromString function will be
@@ -226,6 +233,15 @@ class Uri {
 	///
 	public: virtual void dispatch(UriDispatcher & visitor) const = 0;
 };
+
+///
+/// Appends the path component to the supplied URI, returning a new URI.
+///
+/// If the URI type does not permit appending of path components, UnsupportedOperationException is thrown.
+///
+inline std::unique_ptr<Uri> operator / (const std::unique_ptr<Uri> & uri, const std::string & pathComponent) {
+	return uri->append(pathComponent);
+}
 
 ///
 /// Print the URI as a UTF-8 string.

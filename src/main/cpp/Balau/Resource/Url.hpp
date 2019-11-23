@@ -18,6 +18,7 @@
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__URL
 
 #include <Balau/Resource/Uri.hpp>
+#include <Balau/Resource/UriComponents.hpp>
 
 namespace Balau::Resource {
 
@@ -58,6 +59,28 @@ class Url : public Uri {
 	protected: Url(const Url & copy) : uri(copy.uri) {}
 
 	protected: Url(Url && rhs) noexcept : uri(std::move(rhs.uri)) {}
+
+	protected: std::string appendPathComponent(const std::string & pathComponent) const {
+		const UriComponents components(uri);
+		// TODO normalise path.
+
+		std::string url = ::toString(
+			components.scheme(), "://", components.host(), components.path(), "/", pathComponent
+		);
+
+		if (components.hasQuery()) {
+			url += "?";
+			url += components.query();
+		}
+
+		if (components.hasFragment()) {
+			url += "#";
+			url += components.fragment();
+		}
+
+		return url;
+	}
+
 
 	protected: std::string uri;
 };

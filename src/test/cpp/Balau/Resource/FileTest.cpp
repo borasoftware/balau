@@ -24,8 +24,10 @@ namespace Resource {
 
 struct FileTest : public Testing::TestGroup<FileTest> {
 	FileTest() {
-		registerTest(&FileTest::iteration, "iteration");
-		registerTest(&FileTest::resolve,   "resolve");
+		registerTest(&FileTest::iteration,  "iteration");
+		registerTest(&FileTest::resolve,    "resolve");
+		registerTest(&FileTest::fileAppend, "fileAppend");
+		registerTest(&FileTest::uriAppend,  "uriAppend");
 	}
 
 	void iteration() {
@@ -150,6 +152,22 @@ struct FileTest : public Testing::TestGroup<FileTest> {
 
 		// No scheme prefix - relative base file, empty path
 		AssertThat(*File("a/b/c.html").resolve(""), is(File("a/b")));
+	}
+
+	void fileAppend() {
+		File file("/a/b/c");
+		auto actual = file / "d" / "e" / "f";
+		auto expected = File("/a/b/c/d/e/f");
+
+		AssertThat(actual, is(expected));
+	}
+
+	void uriAppend() {
+		auto uri = std::unique_ptr<Uri>(new File("/a/b/c"));
+		auto actual = uri / "d" / "e" / "f";
+		auto expected = File("/a/b/c/d/e/f");
+
+		AssertThat(*actual, is(expected));
 	}
 };
 

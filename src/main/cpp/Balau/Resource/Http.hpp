@@ -63,6 +63,10 @@ class Http : public Url {
 		return std::unique_ptr<Uri>(new Http(*this));
 	}
 
+	public: std::unique_ptr<Uri> append(const std::string & pathComponent) const override {
+		return std::unique_ptr<Uri>(new Http(appendPathComponent(pathComponent)));
+	}
+
 	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
 		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
 
