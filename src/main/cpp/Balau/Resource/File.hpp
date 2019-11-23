@@ -34,7 +34,7 @@ namespace Balau::Resource {
 ///
 class File : public Uri {
 	///
-	/// Recursive iterator into a directory structure.
+	/// Recursive iteration into a directory structure.
 	///
 	public: class RecursiveFileIterator {
 		///
@@ -63,7 +63,7 @@ class File : public Uri {
 	};
 
 	///
-	/// Recursive iterator into a directory structure (URI version).
+	/// Recursive iteration into a directory structure (URI version).
 	///
 	private: class RecursiveFileUriIterator : public RecursiveUriIterator {
 		///
@@ -77,9 +77,9 @@ class File : public Uri {
 		/// Get the next item in the iterator.
 		///
 		public: std::unique_ptr<Uri> next() override {
-			boost::filesystem::directory_entry entry = *iterator;
+			boost::filesystem::directory_entry e = *iterator;
 			++iterator;
-			return std::unique_ptr<Uri>(new File(entry));
+			return std::unique_ptr<Uri>(new File(e));
 		}
 
 		friend class File;
@@ -89,6 +89,64 @@ class File : public Uri {
 
 		private: boost::filesystem::recursive_directory_iterator iterator;
 		private: boost::filesystem::recursive_directory_iterator end;
+	};
+
+	///
+	/// Non-recursive iteration over a directory's contents.
+	///
+	public: class FileIterator {
+		///
+		/// Returns true if there is another item available in the iterator.
+		///
+		public: bool hasNext() const {
+			return iterator != end;
+		}
+
+		///
+		/// Get the next item in the iterator.
+		///
+		public: File next() {
+			auto file = File(*iterator);
+			++iterator;
+			return file;
+		}
+
+		friend class File;
+
+		private: explicit FileIterator(const File & file)
+			: iterator(boost::filesystem::directory_iterator(file.entry)) {}
+
+		private: boost::filesystem::directory_iterator iterator;
+		private: boost::filesystem::directory_iterator end;
+	};
+
+	///
+	/// Non-recursive iteration over a directory's contents (URI version).
+	///
+	private: class FileUriIterator : public UriIterator {
+		///
+		/// Returns true if there is another item available in the iterator.
+		///
+		public: bool hasNext() const override {
+			return iterator != end;
+		}
+
+		///
+		/// Get the next item in the iterator.
+		///
+		public: std::unique_ptr<Uri> next() override {
+			boost::filesystem::directory_entry e = *iterator;
+			++iterator;
+			return std::unique_ptr<Uri>(new File(e));
+		}
+
+		friend class File;
+
+		private: explicit FileUriIterator(const File & file)
+			: iterator(boost::filesystem::directory_iterator(file.entry)) {}
+
+		private: boost::filesystem::directory_iterator iterator;
+		private: boost::filesystem::directory_iterator end;
 	};
 
 	///
@@ -294,6 +352,10 @@ class File : public Uri {
 		return isRegularDirectory();
 	}
 
+	public: bool isIterable() const override {
+		return isRegularDirectory();
+	}
+
 	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
 		if (!isRegularDirectory()) {
 			ThrowBalauException(Exception::NotImplementedException, "Plain files do not have a recursive iterator.");
@@ -302,14 +364,32 @@ class File : public Uri {
 		return std::unique_ptr<RecursiveUriIterator>(new RecursiveFileUriIterator(*this));
 	}
 
+	public: std::unique_ptr<UriIterator> iterator() const override {
+		if (!isRegularDirectory()) {
+			ThrowBalauException(Exception::NotImplementedException, "Plain files do not have an iterator.");
+		}
+
+		return std::unique_ptr<UriIterator>(new FileUriIterator(*this));
+	}
+
 	///
-	/// Get a recursive file iterator for this file URI.
+	/// Get a recursive file iterator for this file (directory).
 	///
 	/// @return a recursive file iterator
 	/// @throw boost::filesystem::filesystem_error if the current object is not a directory
 	///
-	public: virtual RecursiveFileIterator recursiveFileIterator() {
+	public: virtual RecursiveFileIterator recursiveFileIterator() const {
 		return RecursiveFileIterator(*this);
+	}
+
+	///
+	/// Get a non-recursive file iterator for this file (directory).
+	///
+	/// @return a file iterator
+	/// @throw boost::filesystem::filesystem_error if the current object is not a directory
+	///
+	public: virtual FileIterator fileIterator() const {
+		return FileIterator(*this);
 	}
 
 	///

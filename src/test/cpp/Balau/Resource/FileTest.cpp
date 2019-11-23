@@ -24,13 +24,14 @@ namespace Resource {
 
 struct FileTest : public Testing::TestGroup<FileTest> {
 	FileTest() {
-		registerTest(&FileTest::iteration,  "iteration");
-		registerTest(&FileTest::resolve,    "resolve");
+		registerTest(&FileTest::recursiveIteration, "recursiveIteration");
+		registerTest(&FileTest::nonRecursiveIteration, "nonRecursiveIteration");
+		registerTest(&FileTest::resolve, "resolve");
 		registerTest(&FileTest::fileAppend, "fileAppend");
-		registerTest(&FileTest::uriAppend,  "uriAppend");
+		registerTest(&FileTest::uriAppend, "uriAppend");
 	}
 
-	void iteration() {
+	void recursiveIteration() {
 		File root(TestResources::SourceFolder / "doc" / "manual");
 		auto iterator = root.recursiveFileIterator();
 
@@ -57,6 +58,29 @@ struct FileTest : public Testing::TestGroup<FileTest> {
 
 		AssertThat(regularFileCumulativeSize, isGreaterThan(100000U));
 		AssertThat(regularFileCumulativeSize, isLessThan(100000000U));
+	}
+
+	void nonRecursiveIteration() {
+		File root(TestResources::SourceFolder / "doc" / "manual");
+		auto iterator = root.fileIterator();
+
+		size_t regularFileCount = 0;
+		size_t directoryFileCount = 0;
+
+		while (iterator.hasNext()) {
+			auto file = iterator.next();
+
+			if (file.isRegularFile()) {
+				++regularFileCount;
+			} else if (file.isRegularDirectory()) {
+				++directoryFileCount;
+			}
+		}
+
+		AssertThat(regularFileCount, isGreaterThan(0U));
+		AssertThat(directoryFileCount, isGreaterThan(10U));
+		AssertThat(regularFileCount, isLessThan(10U));
+		AssertThat(directoryFileCount, isLessThan(30U));
 	}
 
 	void resolve() {

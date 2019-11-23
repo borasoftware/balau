@@ -32,7 +32,7 @@ class Utf8To32ReadResource;
 class Utf32To8WriteResource;
 
 ///
-/// An abstract read iterator which iterates recursively.
+/// An abstract read iterator that iterates recursively.
 ///
 class RecursiveUriIterator {
 	///
@@ -75,6 +75,53 @@ class RecursiveUriIterator {
 	/// @return true if this iterator is equal to the supplied iterator
 	///
 //	public: virtual bool operator == (const RecursiveUriIterator & rhs) const = 0;
+
+};
+
+///
+/// An abstract read iterator.
+///
+class UriIterator {
+	///
+	/// Returns true if there is another item available in the iterator.
+	///
+	/// @return true if there is another item available in the iterator
+	/// @deprecated
+	///
+	public: virtual bool hasNext() const = 0;
+
+	///
+	/// Get the next item.
+	///
+	/// @return the next item
+	///
+	public: virtual std::unique_ptr<Uri> next() = 0;
+
+	///
+	/// Destroy the iterator instance.
+	///
+	public: virtual ~UriIterator() = default;
+
+	///
+	/// Is this iterator equal to the supplied iterator.
+	///
+	/// @return true if this iterator is equal to the supplied iterator
+	///
+//	public: virtual bool operator == (const UriIterator & rhs) const = 0;
+
+	///
+	/// Is this iterator equal to the supplied iterator.
+	///
+	/// @return true if this iterator is equal to the supplied iterator
+	///
+//	public: virtual RecursiveUriIterator operator ++(const UriIterator & rhs) const = 0;
+
+	///
+	/// Is this iterator equal to the supplied iterator.
+	///
+	/// @return true if this iterator is equal to the supplied iterator
+	///
+//	public: virtual bool operator == (const UriIterator & rhs) const = 0;
 
 };
 
@@ -208,11 +255,23 @@ class Uri {
 	public: virtual bool isRecursivelyIterable() const = 0;
 
 	///
+	/// Does the URI have a non-recursive iterator (examples: file and zip archive URIs).
+	///
+	public: virtual bool isIterable() const = 0;
+
+	///
 	/// Get a recursive iterator.
 	///
 	/// This will throw a NotImplementedException if the URI does not have a recursive iterator.
 	///
 	public: virtual std::unique_ptr<RecursiveUriIterator> recursiveIterator() const = 0;
+
+	///
+	/// Get a (non-recursive) iterator.
+	///
+	/// This will throw a NotImplementedException if the URI does not have an iterator.
+	///
+	public: virtual std::unique_ptr<UriIterator> iterator() const = 0;
 
 	///
 	/// Compare the supplied URI to the current URI.

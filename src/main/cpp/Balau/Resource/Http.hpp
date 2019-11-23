@@ -144,8 +144,16 @@ class Http : public Url {
 		return false;
 	}
 
+	public: bool isIterable() const override {
+		return false;
+	}
+
 	public: std::unique_ptr<RecursiveUriIterator> recursiveIterator() const override {
-		ThrowBalauException(Exception::NotImplementedException, "HTTP URIs do not have a recursive iterator");
+		ThrowBalauException(Exception::NotImplementedException, "HTTP URIs do not have recursive iterators.");
+	}
+
+	public: std::unique_ptr<UriIterator> iterator() const override {
+		ThrowBalauException(Exception::NotImplementedException, "HTTP URIs do not have iterators.");
 	}
 
 	public: void dispatch(UriDispatcher & dispatcher) const override {
