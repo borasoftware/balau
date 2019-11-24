@@ -1345,6 +1345,12 @@
 
 		<para>The alternative vector based <emph>validateChild</emph> method is also available if required for child injector testing.</para>
 
+		<h2>Logging</h2>
+
+		<para>At creation time, the injector logs the dependencies to the "balau.injector" logging namespace, and the dependency tree to the "balau.container" logging namespace. This logging can be useful for debugging dependency issues.</para>
+
+		<para>The logging output is set to TRACE level. In order to see one or both of these logging outputs, set the "balau.injector" and/or "balau.container" logging namespaces to log at TRACE level.</para>
+
 		<h1>Design</h1>
 
 		<para>This section provides a summary of some aspects of the philosophy and design of the Balau injection framework. It is not necessary to read this section in order to use the injector.</para>
