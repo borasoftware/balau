@@ -523,6 +523,7 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Resource/FileUtf32To8WriteResourceTest.cpp
 	src/test/cpp/Balau/Resource/FileUtf8To32ReadResourceTest.cpp
 	src/test/cpp/Balau/Resource/StringByteReadResourceTest.cpp
+	src/test/cpp/Balau/Resource/StringUriTest.cpp
 	src/test/cpp/Balau/Resource/StringUtf8To32ReadResourceTest.cpp
 	src/test/cpp/Balau/Resource/UriComponentsTest.cpp
 	src/test/cpp/Balau/System/SystemClockTest.cpp
