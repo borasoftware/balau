@@ -45,13 +45,32 @@
 namespace Balau::Container {
 
 ///
-/// A graph that models the dependencies between a set of objects of type T.
+/// A graph that models the dependencies between a set of objects of type VertexT.
+///
+/// The dependency graph provides information on:
+///  - the direct dependencies of nodes;
+///  - the dependency order of the set of nodes;
+///  - the parallel dependency order of the set of nodes;
+///  - whether the dependency tree has any cycles.
+///
+/// The type VertexT is usually defined to be an arbitrary type, but it may also be
+/// a Boost property list if vertex property lists are required.
+///
+/// In addition to vertex objects, edge data may also be attached to the edges of the
+/// graph if required. In order to do this, the additional optional type EdgeT should
+/// be defined.
+///
+/// Finally, a single graph data object may also be attached to the graph if required.
+/// This allows a bundle of data to be closely associated with the graph, without
+/// requiring the developer to define a custom class containing the bundle and the
+/// graph itself. In order attach a single object to the graph, the additional optional
+/// type GraphT should be defined.
 ///
 /// This class was initially conceived to support the injector, but may be used
-/// for any set of dependencies by creating the appropriate object type T.
+/// for any set of dependencies by creating the appropriate object type VertexT.
 ///
-/// As two copies of the objects of type T are maintained in the dependency graph
-/// class, the type T should be a compact representation of the concept being modelled.
+/// As two copies of the objects of type VertexT are maintained in the dependency graph
+/// class, the type VertexT should be a compact representation of the concept being modelled.
 /// If this is not possible, a compact proxy object should be used and a single copy
 /// of the real objects should be maintained in an external structure instead.
 ///
@@ -65,12 +84,14 @@ namespace Balau::Container {
 /// Boost Graph library dependency example (Copyright 1997, 1998, 1999, 2000 University
 /// of Notre Dame; authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek).
 ///
-template <typename T> class DependencyGraph {
-	private: using Graph = boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, T>;
+template <typename VertexT = boost::no_property, typename EdgeT = boost::no_property, typename GraphT = boost::no_property>
+class DependencyGraph {
+	private: using Graph = boost::adjacency_list<boost::setS, boost::vecS, boost::bidirectionalS, VertexT, EdgeT, GraphT>;
+	private: using Vertex = typename Graph::vertex_descriptor;
+	private: using Edge = typename Graph::edge_descriptor;
+	private: using VertexIterator = typename Graph::vertex_iterator;
 	private: using InEdgeIterator = typename Graph::in_edge_iterator;
 	private: using OutEdgeIterator = typename Graph::out_edge_iterator;
-	private: using Vertex = typename Graph::vertex_descriptor;
-	private: using VertexIterator = typename Graph::vertex_iterator;
 
 	///
 	/// The %DependencyGraph non-const iterator.
@@ -110,28 +131,28 @@ template <typename T> class DependencyGraph {
 		///
 		/// Dereference the iterator in order to obtain the object pointed to.
 		///
-		public: T & operator * () {
+		public: VertexT & operator * () {
 			return graph[*vertexIter];
 		}
 
 		///
 		/// Dereference the iterator in order to obtain the object pointed to.
 		///
-		public: const T & operator * () const {
+		public: const VertexT & operator * () const {
 			return graph[*vertexIter];
 		}
 
 		///
 		/// Dereference the iterator in order to obtain the object pointed to.
 		///
-		public: T & operator -> () {
+		public: VertexT & operator -> () {
 			return &graph[*vertexIter];
 		}
 
 		///
 		/// Dereference the iterator in order to obtain the object pointed to.
 		///
-		public: const T & operator -> () const {
+		public: const VertexT & operator -> () const {
 			return &graph[*vertexIter];
 		}
 
@@ -149,7 +170,7 @@ template <typename T> class DependencyGraph {
 			return vertexIter != rhs.vertexIter;
 		}
 
-		friend class DependencyGraph<T>;
+		friend class DependencyGraph<VertexT>;
 
 		private: explicit iterator(Graph & graph_, VertexIterator vertexIter_)
 			: graph(graph_)
@@ -197,14 +218,14 @@ template <typename T> class DependencyGraph {
 		///
 		/// Dereference the iterator in order to obtain the object pointed to.
 		///
-		public: const T & operator * () const {
+		public: const VertexT & operator * () const {
 			return graph[*vertexIter];
 		}
 
 		///
 		/// Dereference the iterator in order to obtain the object pointed to.
 		///
-		public: const T & operator -> () const {
+		public: const VertexT & operator -> () const {
 			return &graph[*vertexIter];
 		}
 
@@ -222,7 +243,7 @@ template <typename T> class DependencyGraph {
 			return vertexIter != rhs.vertexIter;
 		}
 
-		friend class DependencyGraph<T>;
+		friend class DependencyGraph<VertexT>;
 
 		private: explicit const_iterator(const Graph & graph_, VertexIterator vertexIter_)
 			: graph(graph_)
@@ -244,9 +265,13 @@ template <typename T> class DependencyGraph {
 	/// @param throwIfExists set to true to throw if the dependency already exists
 	/// @throw ItemExistsException if throwIfExists is set to true and the item already exists
 	///
-	public: void addDependency(const T & dependency, bool throwIfExists = true) {
+	public: void addDependency(const VertexT & dependency, bool throwIfExists = true) {
 		if (reverseLookup.find(dependency) != reverseLookup.end()) {
-			ThrowBalauException(Exception::ItemExistsException<T>, dependency, "");
+			if (throwIfExists) {
+				ThrowBalauException(Exception::ItemExistsException<VertexT>, dependency, "");
+			} else {
+				return;
+			}
 		}
 
 		Vertex vertex = boost::add_vertex(graph);
@@ -266,17 +291,20 @@ template <typename T> class DependencyGraph {
 	/// @param throwIfNotExists set to true to throw if the dependency does not exist
 	/// @throw ItemDoesNotExistException if throwIfNotExists is set to true and the item does not exist
 	///
-	public: void removeDependency(const T & dependency, bool throwIfNotExists = true) {
+	public: void removeDependency(const VertexT & dependency, bool throwIfNotExists = true) {
 		//logGraph("Before remove");
 
 		auto itemIter = reverseLookup.find(dependency);
 
 		if (itemIter == reverseLookup.end()) {
-			ThrowBalauException(Exception::ItemDoesNotExistException<T>, dependency, "");
+			if (throwIfNotExists) {
+				ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, dependency, "");
+			} else {
+				return;
+			}
 		}
 
 		const auto vertex = itemIter->second;
-
 		boost::clear_vertex(vertex, graph); // Removes edges to/from the vertex.
 		boost::remove_vertex(vertex, graph); // Removes the vertex.
 		rebuildReverseLookup();
@@ -285,27 +313,73 @@ template <typename T> class DependencyGraph {
 	}
 
 	///
-	/// Does the graph have the specified dependency?
+	/// Add a dependency relationship between two existing dependencies.
 	///
-	public: bool hasDependency(const T & dependency) const {
-		return reverseLookup.find(dependency) != reverseLookup.end();
+	public: void addRelationship(const VertexT & independent, const VertexT & dependent) {
+		auto independentIter = reverseLookup.find(independent);
+		auto dependentIter = reverseLookup.find(dependent);
+
+		if (independentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, independent, "");
+		}
+
+		if (dependentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, dependent, "");
+		}
+
+		boost::add_edge(independentIter->second, dependentIter->second, graph);
 	}
 
 	///
-	/// Add a dependency relationship between two existing dependencies.
+	/// Add a dependency relationship between two existing dependencies, with edge data.
 	///
-	public: void addRelationship(const T & independent, const T & dependent) {
-		// TODO check for exist edge..
-		boost::add_edge(reverseLookup.at(independent), reverseLookup.at(dependent), graph);
+	public: void addRelationship(const VertexT & independent, const VertexT & dependent, const EdgeT & edgeData) {
+		auto independentIter = reverseLookup.find(independent);
+		auto dependentIter = reverseLookup.find(dependent);
+
+		if (independentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, independent, "");
+		}
+
+		if (dependentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, dependent, "");
+		}
+
+		boost::add_edge(independentIter->second, dependentIter->second, edgeData, graph);
+	}
+
+	///
+	/// Remove a dependency relationship between two existing dependencies.
+	///
+	public: void removeRelationship(const VertexT & independent, const VertexT & dependent) {
+		auto independentIter = reverseLookup.find(independent);
+		auto dependentIter = reverseLookup.find(dependent);
+
+		if (independentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, independent, "");
+		}
+
+		if (dependentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, dependent, "");
+		}
+
+		boost::remove_edge(independentIter->second, dependentIter->second, graph);
+	}
+
+	///
+	/// Does the graph have the specified dependency?
+	///
+	public: bool hasDependency(const VertexT & dependency) const {
+		return reverseLookup.find(dependency) != reverseLookup.end();
 	}
 
 	///
 	/// What are the direct dependencies of the specified dependency.
 	///
-	public: std::vector<T> directDependenciesOf(const T & dependency) const {
+	public: std::vector<VertexT> directDependenciesOf(const VertexT & dependency) const {
 		auto vertex = boost::vertex(reverseLookup.at(dependency), graph);
 		InEdgeIterator iter, end;
-		std::vector<T> ret;
+		std::vector<VertexT> ret;
 
 		for (boost::tie(iter, end) = boost::in_edges(vertex, graph); iter != end; ++iter) {
 			auto s = source(*iter, graph);
@@ -320,7 +394,7 @@ template <typename T> class DependencyGraph {
 	///
 	/// @return a const pointer to the dependency object, or nullptr if the key is not in the graph
 	///
-	public: const T * lookupDependency(const T & key) const {
+	public: const VertexT * lookupDependency(const VertexT & key) const {
 		auto iter = reverseLookup.find(key);
 
 		if (iter != reverseLookup.end()) {
@@ -333,8 +407,8 @@ template <typename T> class DependencyGraph {
 	///
 	/// Calculate the dependency order of the dependencies.
 	///
-	public: std::vector<T> dependencyOrder() const {
-		std::vector<T> ret;
+	public: std::vector<VertexT> dependencyOrder() const {
+		std::vector<VertexT> ret;
 		std::list<Vertex> depOrder;
 		boost::topological_sort(graph, std::front_inserter(depOrder));
 
@@ -351,7 +425,7 @@ template <typename T> class DependencyGraph {
 	/// This method separates dependencies into steps, where each step contains a set
 	/// of independent dependencies.
 	///
-	public: std::vector<std::vector<T>> parallelDependencyOrder() const {
+	public: std::vector<std::vector<VertexT>> parallelDependencyOrder() const {
 		std::list<Vertex> depOrder;
 		std::vector<Vertex> order(reverseLookup.size(), 0);
 		boost::topological_sort(graph, std::front_inserter(depOrder));
@@ -378,7 +452,7 @@ template <typename T> class DependencyGraph {
 			}
 		}
 
-		std::vector<std::vector<T>> results(levelCount + 1, std::vector<T>());
+		std::vector<std::vector<VertexT>> results(levelCount + 1, std::vector<VertexT>());
 		VertexIterator vertexIter, vertexEnd;
 
 		for (boost::tie(vertexIter, vertexEnd) = vertices(graph); vertexIter != vertexEnd; ++vertexIter) {
@@ -393,7 +467,7 @@ template <typename T> class DependencyGraph {
 	/// Does the dependency graph have any cycles?
 	///
 	public: bool hasCycles() const {
-		std::vector<std::pair<T, T>> cycleEdges;
+		std::vector<std::pair<VertexT, VertexT>> cycleEdges;
 		CycleDetector cycleDetector(cycleEdges);
 		boost::depth_first_search(graph, boost::visitor(cycleDetector));
 		return !cycleEdges.empty();
@@ -404,7 +478,7 @@ template <typename T> class DependencyGraph {
 	///
 	/// @param cycleEdges any edges that are found to have cycles are added to this vector
 	///
-	public: bool hasCycles(std::vector<std::pair<T, T>> & cycleEdges) const {
+	public: bool hasCycles(std::vector<std::pair<VertexT, VertexT>> & cycleEdges) const {
 		const auto sz = cycleEdges.size();
 		CycleDetector cycleDetector(cycleEdges);
 		boost::depth_first_search(graph, boost::visitor(cycleDetector));
@@ -463,7 +537,9 @@ template <typename T> class DependencyGraph {
 		VertexIterator vertexIter, vertexEnd;
 		InEdgeIterator edgeIter, edgeEnd;
 
-		const int indexLength = (int) ::toString(reverseLookup.size()).length();
+		using ::toString;
+
+		const int indexLength = (int) toString(reverseLookup.size()).length();
 
 		for (boost::tie(vertexIter, vertexEnd) = vertices(graph); vertexIter != vertexEnd; ++vertexIter) {
 			auto vertex = *vertexIter;
@@ -483,21 +559,21 @@ template <typename T> class DependencyGraph {
 			}
 		}
 
-		Impl::ContainerLogger::log().trace(builder.str().c_str());
+		Impl::ContainerLogger::log().log(level, builder.str().c_str());
 	}
 
 	////////////////////////// Private implementation /////////////////////////
 
 	private: struct CycleDetector : public boost::dfs_visitor<> {
-		explicit CycleDetector(std::vector<std::pair<T, T>> & cycleEdges_) : cycleEdges(cycleEdges_) {}
+		explicit CycleDetector(std::vector<std::pair<VertexT, VertexT>> & cycleEdges_) : cycleEdges(cycleEdges_) {}
 
 		template <class Edge, class Graph> void back_edge(Edge e, Graph & g) {
-			T s = g[source(e, g)];
-			T t = g[target(e, g)];
-			cycleEdges.emplace_back(std::pair<T, T>(s, t));
+			VertexT s = g[source(e, g)];
+			VertexT t = g[target(e, g)];
+			cycleEdges.emplace_back(std::pair<VertexT, VertexT>(s, t));
 		}
 
-		private: std::vector<std::pair<T, T>> & cycleEdges;
+		private: std::vector<std::pair<VertexT, VertexT>> & cycleEdges;
 	};
 
 	// This would not be required if the graph library had reverse vertex
@@ -510,16 +586,16 @@ template <typename T> class DependencyGraph {
 			auto vertex = *vertexIter;
 			auto value = graph[vertex];
 
-			reverseLookup.insert(std::pair<T, Vertex>(value, vertex));
+			reverseLookup.insert(std::pair<VertexT, Vertex>(value, vertex));
 		}
 	}
 
 	private: Graph graph;
-	private: std::unordered_map<T, Vertex> reverseLookup;
+	private: std::unordered_map<VertexT, Vertex> reverseLookup;
 };
 
 } // namespace Balau::Container
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH
+#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER_32/8_DEPENDENCY_GRAPH
