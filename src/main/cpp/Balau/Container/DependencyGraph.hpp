@@ -366,6 +366,29 @@ class DependencyGraph {
 		boost::remove_edge(independentIter->second, dependentIter->second, graph);
 	}
 
+	public: EdgeT getRelation(const VertexT & independent, const VertexT & dependent) const {
+		auto independentIter = reverseLookup.find(independent);
+		auto dependentIter = reverseLookup.find(dependent);
+
+		if (independentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, independent, "");
+		}
+
+		if (dependentIter == reverseLookup.end()) {
+			ThrowBalauException(Exception::ItemDoesNotExistException<VertexT>, dependent, "");
+		}
+
+		auto independentVertex = independentIter->second;
+		auto dependentVertex = dependentIter->second;
+		auto e = boost::edge(independentVertex, dependentVertex, graph);
+
+		if (!e.second) {
+			ThrowBalauException((Exception::RelationshipDoesNotExistException<VertexT, VertexT>), independent, dependent, "");
+		}
+
+		return graph[e.first];
+	}
+
 	///
 	/// Does the graph have the specified dependency?
 	///

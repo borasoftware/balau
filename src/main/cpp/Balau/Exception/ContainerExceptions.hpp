@@ -78,6 +78,19 @@ template <typename T> class ItemDoesNotExistException : public BalauException {
 		, item(item_) {}
 };
 
+///
+/// Thrown when a non-existent relationship between two items is requested.
+///
+template <typename T, typename U> class RelationshipDoesNotExistException : public BalauException {
+	public: const T item1;
+	public: const U item2;
+
+	public: RelationshipDoesNotExistException(const char * file, int line, const std::string & st, T item1_, U item2_, const std::string & text)
+		: BalauException(file, line, st, "RelationshipDoesNotExist", text)
+		, item1(item1_)
+		, item2(item2_) {}
+};
+
 } // namespace Balau::Exception
 
 #endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS
