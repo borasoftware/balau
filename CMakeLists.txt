@@ -142,6 +142,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Application/Impl/PropertyString.hpp
 	src/main/cpp/Balau/Application/Impl/PropertyTypeSpecificationVisitor.cpp
 	src/main/cpp/Balau/Application/Impl/PropertyTypeSpecificationVisitor.hpp
+	src/main/cpp/Balau/Application/Impl/StaticSingletonBuilder.hpp
 
 	src/main/cpp/Balau/Concurrent/CyclicBarrier.cpp
 	src/main/cpp/Balau/Concurrent/CyclicBarrier.hpp

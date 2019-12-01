@@ -18,6 +18,7 @@
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR_CONFIGURATION
 
 #include <Balau/Application/Impl/Binding.hpp>
+#include <Balau/Application/Impl/StaticSingletonBuilder.hpp>
 
 namespace Balau {
 
@@ -42,6 +43,9 @@ class InjectorConfiguration {
 	private: virtual std::vector<std::shared_ptr<Impl::BindingBuilderBase>> build() const = 0;
 
 	public: virtual std::vector<const InjectorConfiguration*> getExtraConfiguration() const = 0;
+	public: virtual std::list<std::function<void (const Injector& )>> getPostConstructionCalls() const = 0;
+	public: virtual std::list<std::function<void ()>> getPreDestructionCalls() const = 0;
+	public: virtual std::list<std::unique_ptr<StaticSingletonRegistrationBase>> getStaticSingletonPostConstructionCalls() const = 0;
 
 	// Run configure and build stages.
 	public: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> execute() const {

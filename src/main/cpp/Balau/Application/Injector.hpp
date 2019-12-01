@@ -65,8 +65,11 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// Register with the injector a callback that will be called by the injector at the end of construction.
 	///
-	/// In order to use this method, inject the injector into the injectable via a
+	/// In order to use this method, inject the injector into an eager singleton injectable via a
 	/// weak pointer and call the method.
+	///
+	/// Alternatively, the same method is available to call in the ApplicationConfiguration base class.
+	/// The ApplicationConfiguration method does not require an eager singleton to register the call.
 	///
 	/// @param call the callback
 	///
@@ -82,8 +85,10 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// by std::function in C++17. Despite this, functions registered as pre-destruction
 	/// callbacks must nevertheless be noexcept(true).
 	///
-	/// In order to use this method, inject the injector into the injectable via a
+	/// In order to use this method, inject the injector into an injectable via a
 	/// weak pointer and call the method.
+	///
+	/// Alternatively, the same method is available to call in the ApplicationConfiguration base class.
 	///
 	/// @param call the callback
 	///
@@ -101,11 +106,15 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	/// and registerPreDestructionCall methods in order to set up and tear down the static
 	/// singleton pointer.
 	///
-	/// In order to use this method, inject the injector into the injectable via a
+	/// In order to use this method, inject the injector into an eager singleton injectable via a
 	/// weak pointer and call the method.
 	///
-	/// @param conf the runtime supplied InjectorConfiguration objects
-	/// @return a shared pointer to the newly created injector
+	/// Alternatively, the same method is available to call in the ApplicationConfiguration base class.
+	/// The ApplicationConfiguration method does not require an eager singleton to register the calls.
+	///
+	/// @tparam T the binding type
+	/// @param ptrPtr a raw pointer to the statically allocated shared pointer
+	/// @param name an optional binding name
 	///
 	public: template <typename T> void registerStaticSingleton(std::shared_ptr<T> * ptrPtr, std::string_view name = std::string_view()) const {
 		registerPostConstructionCallImpl([ptrPtr, name] (const Injector & injector) { *ptrPtr  = injector.getShared<T>(name); });
@@ -962,7 +971,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	};
 
 	//
-	// GetInstance template class specialised for std::shared_ptr<BaseT>.
+	// GetInstance template class specialised for const std::shared_ptr<BaseT>.
 	// This immediately promotes to std::shared_ptr<T>.
 	//
 	private: template <typename BaseT> struct GetInstance<const std::shared_ptr<BaseT>> {
@@ -997,7 +1006,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	//
 	// GetInstance template class specialised for std::shared_ptr<const T>.
 	// This will use a suitable non-const std::shared_ptr<const T> binding
-	// if no const std::shared_ptr<const T> binding is not available.
+	// if no const std::shared_ptr<const T> binding is available.
 	//
 	private: template <typename BaseT> struct GetInstance<std::shared_ptr<const BaseT>> {
 		std::shared_ptr<const BaseT> get(std::string_view name) const {
@@ -1334,9 +1343,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		} else if (typeIndex == std::type_index(typeid(Injector))) {
 			// If we are here, then BaseT == Injector and the cast disappears.
 			auto ptr = std::const_pointer_cast<Injector>(shared_from_this());
-			void * p1 = static_cast<void *>(&ptr);
-			auto * p2 = static_cast<std::shared_ptr<BaseT> *>(p1);
-			return *p2;
+			return std::reinterpret_pointer_cast<BaseT>(ptr);
 		} else if (parent) {
 			return parent->getSharedImpl<BaseT>(name);
 		} else {
@@ -1361,9 +1368,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		} else if (typeIndex == std::type_index(typeid(Injector))) {
 			// If we are here, then BaseT == Injector and the cast disappears.
 			auto ptr = std::const_pointer_cast<Injector>(shared_from_this());
-			void * p1 = static_cast<void *>(&ptr);
-			auto * p2 = static_cast<std::shared_ptr<BaseT> *>(p1);
-			return *p2;
+			return std::reinterpret_pointer_cast<BaseT>(ptr);
 		} else if (parent) {
 			return parent->getSharedImpl<BaseT>(name, defaultValue);
 		} else {
@@ -1388,9 +1393,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		} else if (typeIndex == std::type_index(typeid(Injector))) {
 			// If we are here, then BaseT == Injector and the cast disappears.
 			auto ptr = std::const_pointer_cast<Injector>(shared_from_this());
-			void * p1 = static_cast<void *>(&ptr);
-			auto * p2 = static_cast<std::shared_ptr<BaseT> *>(p1);
-			return *p2;
+			return std::reinterpret_pointer_cast<BaseT>(ptr);
 		} else if (parent) {
 			return parent->getSharedImpl<BaseT>(name, defaultValueSupplier);
 		} else {
@@ -1544,13 +1547,17 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		}
 	}
 
-	private: template <typename ... Conf>
-	static std::shared_ptr<Impl::BindingMap> createBindings(const Conf & ... conf) {
+	private: template <typename ... Conf> std::shared_ptr<Impl::BindingMap> createBindings(const Conf & ... conf) {
 		std::vector<const InjectorConfiguration *> extraConfiguration;
 
 		auto builders = Util::Memory::makeSharedV<InjectorConfiguration, Impl::BindingBuilderBase>(
-			[&extraConfiguration] (const InjectorConfiguration & conf) {
+			[&extraConfiguration, this] (const InjectorConfiguration & conf) {
 				auto b = conf.execute();
+				Util::Containers::append(postConstructionCalls, conf.getPostConstructionCalls());
+				Util::Containers::append(preDestructionCalls, conf.getPreDestructionCalls());
+
+				auto s = conf.getStaticSingletonPostConstructionCalls();
+
 				auto extra = conf.getExtraConfiguration();
 				extraConfiguration.insert(extraConfiguration.end(), extra.begin(), extra.end());
 				return b;
@@ -1559,52 +1566,58 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 		);
 
 		for (const auto & c : extraConfiguration) {
-			Util::Vectors::append(builders, c->execute());
+			Util::Containers::append(builders, c->execute());
+			Util::Containers::append(postConstructionCalls, c->getPostConstructionCalls());
+			Util::Containers::append(preDestructionCalls, c->getPreDestructionCalls());
 		}
 
-		auto bindings = std::make_shared<Impl::BindingMap>();
+		auto theBindings = std::make_shared<Impl::BindingMap>();
 
 		for (auto & builder : builders) {
 			Impl::BindingKey key(builder->key);
 
 			// Check for duplicates.
-			if (bindings->hasBinding(key)) {
+			if (theBindings->hasBinding(key)) {
 				ThrowBalauException(Exception::DuplicateBindingException, key);
 			}
 
-			bindings->put(key, builder->build());
+			theBindings->put(key, builder->build());
 		}
 
-		return bindings;
+		return theBindings;
 	}
 
-	private: static std::shared_ptr<Impl::BindingMap> createBindings(const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
+	private: std::shared_ptr<Impl::BindingMap> createBindings(const std::vector<std::shared_ptr<InjectorConfiguration>> & conf) {
 		std::vector<std::shared_ptr<Impl::BindingBuilderBase>> builders;
 
 		for (const auto & c : conf) {
-			Util::Vectors::append(builders, c->execute());
+			Util::Containers::append(builders, c->execute());
+			Util::Containers::append(postConstructionCalls, c->getPostConstructionCalls());
+			Util::Containers::append(preDestructionCalls, c->getPreDestructionCalls());
 		}
 
 		for (const auto & c : conf) {
 			for (const auto * c2 : c->getExtraConfiguration()) {
 				Util::Vectors::append(builders, c2->execute());
+				Util::Containers::append(postConstructionCalls, c2->getPostConstructionCalls());
+				Util::Containers::append(preDestructionCalls, c2->getPreDestructionCalls());
 			}
 		}
 
-		auto bindings = std::make_shared<Impl::BindingMap>();
+		auto theBindings = std::make_shared<Impl::BindingMap>();
 
 		for (auto & builder : builders) {
 			Impl::BindingKey key(builder->key);
 
 			// Check for duplicates.
-			if (bindings->hasBinding(key)) {
+			if (theBindings->hasBinding(key)) {
 				ThrowBalauException(Exception::DuplicateBindingException, key);
 			}
 
-			bindings->put(key, builder->build());
+			theBindings->put(key, builder->build());
 		}
 
-		return bindings;
+		return theBindings;
 	}
 
 	private: void registerPostConstructionCallImpl(const std::function<void (const Injector &)> & call) const {

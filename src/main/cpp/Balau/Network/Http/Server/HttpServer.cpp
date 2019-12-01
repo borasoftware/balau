@@ -34,9 +34,9 @@ struct HttpServerRegisterBuiltInWeApps {
 	HttpServerRegisterBuiltInWeApps() {
 		Impl::HttpWebAppFactory::registerHttpWebApp<HttpWebApps::FileServingHttpWebApp>("files");
 		Impl::HttpWebAppFactory::registerHttpWebApp<HttpWebApps::RedirectingHttpWebApp>("redirections");
-		#ifdef BALAU_ENABLE_LIBCURL
+		#ifdef BALAU_ENABLE_CURL
 		Impl::HttpWebAppFactory::registerHttpWebApp<HttpWebApps::EmailSendingHttpWebApp>("email.sender");
-		#endif // BALAU_ENABLE_LIBCURL
+		#endif // BALAU_ENABLE_CURL
 	}
 };
 

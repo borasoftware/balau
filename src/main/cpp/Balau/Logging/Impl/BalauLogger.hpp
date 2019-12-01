@@ -645,6 +645,134 @@ class BalauLogger {
 		}
 	}
 
+	///////////////////////// Specified level logging /////////////////////////
+
+	//
+	// Log a message.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: void log(LoggingLevel specifiedLevel, const char * message) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), specifiedLevel,  message);
+		}
+	}
+
+	//
+	// Log a message.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: void log(LoggingLevel specifiedLevel, std::string_view message) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), specifiedLevel, message);
+		}
+	}
+
+	//
+	// Log a message with parameters.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: template <typename ... ObjectT>
+	void log(LoggingLevel specifiedLevel, const char * message, const ObjectT & ... object) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), specifiedLevel, message, LoggingSystem::makeStringVector(object ... ));
+		}
+	}
+
+	//
+	// Log a message with parameters.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: template <typename ... ObjectT>
+	void log(LoggingLevel specifiedLevel, std::string_view message, const ObjectT & ... object) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(SourceCodeLocation(), specifiedLevel, message, LoggingSystem::makeStringVector(object ... ));
+		}
+	}
+
+	//
+	// Log a error message via the supplied function.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: void log(LoggingLevel specifiedLevel, const std::function<std::string ()> & function) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			const std::string message = function();
+			logMessage(SourceCodeLocation(), specifiedLevel, message);
+		}
+	}
+
+	//
+	// Log an error message and the source code location of the log message call site.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: void log(LoggingLevel specifiedLevel, const SourceCodeLocation & location, const char * message) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(location, specifiedLevel, message);
+		}
+	}
+
+	//
+	// Log an error message and the source code location of the log message call site.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: void log(LoggingLevel specifiedLevel, const SourceCodeLocation & location, std::string_view message) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(location, specifiedLevel, message);
+		}
+	}
+
+	//
+	// Log an error message with parameters and the source code location of the log message call site.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: template <typename ... ObjectT>
+	void log(LoggingLevel specifiedLevel, const SourceCodeLocation & location, const char * message, const ObjectT & ... object) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(location, specifiedLevel, message, LoggingSystem::makeStringVector(object ... ));
+		}
+	}
+
+	//
+	// Log an error message with parameters and the source code location of the log message call site.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: template <typename ... ObjectT>
+	void log(LoggingLevel specifiedLevel, const SourceCodeLocation & location, std::string_view message, const ObjectT & ... object) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			logMessage(location, specifiedLevel, message, LoggingSystem::makeStringVector(object ... ));
+		}
+	}
+
+	//
+	// Log an error message via the supplied function and the source code location of the log message call site.
+	//
+	// The error will be logged at the specified level if the level is enabled.
+	//
+	public: void log(LoggingLevel specifiedLevel, const SourceCodeLocation & location, const std::function<std::string ()> & function) const {
+		if (getLevel() >= specifiedLevel) {
+			LoggingSystem::startLogAllocation();
+			const std::string message = function();
+			logMessage(location, specifiedLevel, message);
+		}
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	// The logger to which this class forms a proxy.

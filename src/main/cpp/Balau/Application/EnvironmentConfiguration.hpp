@@ -444,7 +444,19 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 	}
 
 	public: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
-		return std::vector<const InjectorConfiguration *>();
+		return std::vector<const InjectorConfiguration *>(); // Not used.
+	}
+
+	public: std::list<std::function<void (const Injector& )>> getPostConstructionCalls() const override {
+		return std::list<std::function<void (const Injector& )>>(); // Not used.
+	}
+
+	public: std::list<std::function<void ()>> getPreDestructionCalls() const override {
+		return std::list<std::function<void ()>>(); // Not used.
+	}
+
+	public: std::list<std::unique_ptr<StaticSingletonRegistrationBase>> getStaticSingletonPostConstructionCalls() const override {
+		return std::list<std::unique_ptr<StaticSingletonRegistrationBase>>(); // Not used.
 	}
 
 	private: static std::shared_ptr<Resource::Uri> verifyPropertyFileExists(const Resource::File & propertyFile) {

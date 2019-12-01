@@ -46,6 +46,54 @@ class ApplicationConfiguration : public InjectorConfiguration {
 		extraConfiguration.push_back(&conf);
 	}
 
+	///
+	/// Register with the injector a callback that will be called by the injector at the end of construction.
+	///
+	/// In order to use this method, inject the injector into the injectable via a
+	/// weak pointer and call the method.
+	///
+	/// @param call the callback
+	///
+	protected: void registerPostConstructionCall(const std::function<void (const Injector &)> & call) const {
+		postConstructionCalls.push_back(call);
+	}
+
+	///
+	/// Register with the injector a callback that will be called in the injector's destructor, before the bindings are deleted.
+	///
+	/// Although pre-destruction callbacks must be noexcept(true), the pre-destruction
+	/// function signature does not contain noexcept(true), as this is not yet handled
+	/// by std::function in C++17. Despite this, functions registered as pre-destruction
+	/// callbacks must nevertheless be noexcept(true).
+	///
+	/// In order to use this method, inject the injector into the injectable via a
+	/// weak pointer and call the method.
+	///
+	/// @param call the callback
+	///
+	protected: void registerPreDestructionCall(const std::function<void ()> & call) const {
+		preDestructionCalls.push_back(call);
+	}
+
+	///
+	/// Register a static singleton pointer that the injector will set up post-construction and invalidate pre-destruction.
+	///
+	/// The static pointer will be valid immediately after injection construction
+	/// up to the start of injector destruction.
+	///
+	/// This call is a convenience method for calling the registerPostConstructionCall
+	/// and registerPreDestructionCall methods in order to set up and tear down the static
+	/// singleton pointer.
+	///
+	/// @tparam T the binding type
+	/// @param ptrPtr a raw pointer to the statically allocated shared pointer
+	/// @param name an optional binding name
+	///
+	protected: template <typename T> void registerStaticSingleton(std::shared_ptr<T> * ptrPtr, std::string_view name = std::string_view()) const {
+		staticSingletonPostConstructionCalls.emplace_back(new StaticSingletonRegistration(ptrPtr, name));
+		preDestructionCalls.push_back([ptrPtr] () { ptrPtr->reset(); });
+	}
+
 	////////////////////////// Private implementation /////////////////////////
 
 	private: std::vector<std::shared_ptr<Impl::BindingBuilderBase>> build() const override {
@@ -55,6 +103,18 @@ class ApplicationConfiguration : public InjectorConfiguration {
 
 	public: std::vector<const InjectorConfiguration *> getExtraConfiguration() const override {
 		return extraConfiguration;
+	}
+
+	public: std::list<std::function<void (const Injector& )>> getPostConstructionCalls() const override {
+		return postConstructionCalls;
+	}
+
+	public: std::list<std::function<void ()>> getPreDestructionCalls() const override {
+		return preDestructionCalls;
+	}
+
+	public: std::list<std::unique_ptr<StaticSingletonRegistrationBase>> getStaticSingletonPostConstructionCalls() const override {
+		return std::move(staticSingletonPostConstructionCalls);
 	}
 
 	private: template <typename T, typename DeleterT> struct Bind {
@@ -97,6 +157,9 @@ class ApplicationConfiguration : public InjectorConfiguration {
 
 	private: mutable std::vector<std::shared_ptr<Impl::BindingBuilderBase>> builders;
 	private: mutable std::vector<const InjectorConfiguration *> extraConfiguration;
+	private: mutable std::list<std::function<void (const Injector& )>> postConstructionCalls;
+	private: mutable std::list<std::function<void ()>> preDestructionCalls;
+	private: mutable std::list<std::unique_ptr<StaticSingletonRegistrationBase>> staticSingletonPostConstructionCalls;
 };
 
 } // namespace Balau
