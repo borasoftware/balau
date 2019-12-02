@@ -383,7 +383,10 @@ class DependencyGraph {
 		auto e = boost::edge(independentVertex, dependentVertex, graph);
 
 		if (!e.second) {
-			ThrowBalauException((Exception::RelationshipDoesNotExistException<VertexT, VertexT>), independent, dependent, "");
+			_ThrowBalauException_generateStackTrace
+			throw Exception::RelationshipDoesNotExistException<VertexT, VertexT>(
+				__FILE__, __LINE__, st, independent, dependent, ""
+			);
 		}
 
 		return graph[e.first];
