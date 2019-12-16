@@ -1357,7 +1357,7 @@
 
 		<h2>Overview</h2>
 
-		<para>The design of the Balau injection framework was partly influenced from experience with the Java based <emph>Guice</emph> and <emph>Spring</emph> dependency injection frameworks in enterprise software development. The Balau injector implements a philosophy that is similar to <emph>Guice</emph>, but has a technical approach that reflects the more comprehensive type system available in the C++ language and standard library, and the runtime reflection limitations in C++.</para>
+		<para>The design of the Balau injection framework was partly influenced from experience with the Java and C# based <emph>Guice</emph>, <emph>Spring</emph>, and <emph>Unity</emph> dependency injection frameworks in enterprise software development. The Balau injector has a technical approach that reflects the more comprehensive type system available in the C++ language and standard library, and the runtime reflection limitations in C++.</para>
 
 		<h2>Background</h2>
 
