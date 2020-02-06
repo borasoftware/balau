@@ -52,8 +52,8 @@ template <typename TokenT> class AbstractScanner {
 	/// Scan the input and return a ScannedTokens data structure.
 	///
 	public: ScannedTokens<TokenT> scan() {
-		int currentStartOffset = 0;
-		currentEndOffset = 0;
+		currentStartOffset = 0U;
+		currentEndOffset = 0U;
 		TokenT token = getNextToken();
 
 		while (token != TokenT::EndOfFile) {
@@ -97,6 +97,11 @@ template <typename TokenT> class AbstractScanner {
 				);
 			}
 		}
+	}
+
+	// Get a string view of the current token's string. If the token is partly parsed, this view is partial.
+	protected: std::string_view getCurrentString() {
+		return std::string_view(text.data() + currentStartOffset, currentEndOffset - currentStartOffset);
 	}
 
 	protected: template <typename ContainerT, typename ReportT>
@@ -250,6 +255,7 @@ template <typename TokenT> class AbstractScanner {
 	private: std::string text;
 	private: std::istringstream inputStream;
 	private: std::stack<char32_t> putBackBuffer;
+	private: int currentStartOffset;
 	private: int currentEndOffset;
 	private: std::vector<TokenT> tokens;
 	private: std::vector<unsigned int> startOffsets;
