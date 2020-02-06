@@ -325,6 +325,8 @@
 
 		<para>In order to provide universal to-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>toString</emph>, <emph>toString16</emph>, or <emph>toString32</emph> function overload in the same namespace as your custom type. C++ argument-dependent lookup will resolve the function overload via the parameter type in the call.</para>
 
+		<para>Note that <emph>toString</emph>, <emph>toString16</emph>, or <emph>toString32</emph> function overloads should not be defined for type aliases, as this prevents the compiler from resolving the correct overload for a particular type. Instead, use the original type within its namespace.</para>
+
 		<para>When calling the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> functions from a namespace that contains to-string function definitions in the namespace or a intermediate parent namespace, it may be necessary to import the the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
 
 		<code lang="C++">
@@ -332,13 +334,17 @@
 
 			struct G {};
 
-			std::string toString(G) { return "G"; }
+			std::string toString(G) {
+				return "G";
+			}
 
 			namespace N {
 
 			class L {};
 
-			std::string toString(L) { return "L"; }
+			std::string toString(L) {
+				return "L";
+			}
 
 			void foo() {
 				using ::toString;
@@ -366,7 +372,7 @@
 			/// This helper function can be used for custom container types if required.
 			///
 			template &lt;typename ... T, template &lt;typename ...&gt; class C>
-			inline std::string toStringHelper(const C&lt;T ...&gt; &amp; c)  {
+			inline std::string toStringHelper(const C&lt;T ...&gt; &amp; c);
 		</code>
 
 		<para>In order to use these container to-string helper functions, it is sufficient to define a new to-string function that calls the helper function. This can be done manually or via the <emph>BALAU_CONTAINER<strong>x</strong>_TO_STRING<strong>y</strong></emph> macros, where <emph><strong>x</strong></emph> is the number of template parameters that the container accepts (1-5), and <emph><strong>y</strong></emph> is the unicode encoding (none for UTF-8, "16" for UTF-16, and "32" for UTF-32). These macros are also provided in the <emph>ToString.hpp</emph> header.</para>

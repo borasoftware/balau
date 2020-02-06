@@ -32,8 +32,6 @@
 #include <stack>
 #include <queue>
 
-///////////////////// Universal UTF-8 to-string function //////////////////////
-
 namespace Balau {
 
 ///
@@ -73,6 +71,17 @@ template <typename AllocatorT>
 using U32OStringStream = std::basic_ostringstream<char32_t, std::char_traits<char32_t>, AllocatorT>;
 
 }
+
+template <typename AllocatorT, typename P1, typename P2, typename ... P>
+Balau::U8String<AllocatorT> toString(const P1 & p1, const P2 & p2, const P & ... p);
+
+template <typename AllocatorT, typename P1, typename P2, typename ... P>
+Balau::U16String<AllocatorT> toString16(const P1 & p1, const P2 & p2, const P & ... p);
+
+template <typename AllocatorT, typename P1, typename P2, typename ... P>
+Balau::U32String<AllocatorT> toString32(const P1 & p1, const P2 & p2, const P & ... p);
+
+///////////////////// Universal UTF-8 to-string function //////////////////////
 
 ///
 /// Returns the supplied value as is.
