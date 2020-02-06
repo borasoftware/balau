@@ -304,7 +304,7 @@ class BindingBuilder final : public Impl::BindingBuilderBase {
 	///
 	/// The provider will be called once when the singleton is first requested.
 	///
-	public: void toSingletonProvider(std::function<std::shared_ptr<BaseT> ()> & provider) {
+	public: void toSingletonProvider(const std::function<std::shared_ptr<BaseT> ()> & provider) {
 		setKeyType<Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>>();
 		supplier = std::unique_ptr<BindingSupplier>(new ProvidingFunctionSingletonBindingSupplier(provider));
 	}
