@@ -22,6 +22,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/locale.hpp>
 
+#include <complex>
 #include <forward_list>
 #include <list>
 #include <map>
@@ -29,6 +30,15 @@
 #include <unordered_map>
 #include <stack>
 #include <queue>
+
+template <typename P1, typename P2, typename ... P>
+std::string toString(const P1 & p1, const P2 & p2, const P & ... p);
+
+template <typename P1, typename P2, typename ... P>
+std::u16string toString16(const P1 & p1, const P2 & p2, const P & ... p);
+
+template <typename P1, typename P2, typename ... P>
+std::u32string toString32(const P1 & p1, const P2 & p2, const P & ... p);
 
 ///////////////////// Universal UTF-8 to-string function //////////////////////
 
@@ -201,6 +211,13 @@ inline std::string toString(double value) {
 ///
 inline std::string toString(long double value) {
 	return boost::lexical_cast<std::string>(value);
+}
+
+///
+/// Convert the supplied complex to a UTF-8 string.
+///
+template <typename T> inline std::string toString(const std::complex<T> & value) {
+	return toString(value.real(), " + j", value.imag());
 }
 
 ///
@@ -550,6 +567,13 @@ inline std::u16string toString16(long double value) {
 }
 
 ///
+/// Convert the supplied complex to a UTF-16 string.
+///
+template <typename T> inline std::u16string toString16(const std::complex<T> & value) {
+	return toString16(value.real(), " + j", value.imag());
+}
+
+///
 /// Convert the supplied boolean to a UTF-16 string.
 ///
 inline std::u16string toString16(bool value) {
@@ -881,6 +905,13 @@ inline std::u32string toString32(double value) {
 ///
 inline std::u32string toString32(long double value) {
 	return toString32(toString(value));
+}
+
+///
+/// Convert the supplied complex to a UTF-32 string.
+///
+template <typename T> inline std::u32string toString32(const std::complex<T> & value) {
+	return toString32(value.real(), " + j", value.imag());
 }
 
 ///

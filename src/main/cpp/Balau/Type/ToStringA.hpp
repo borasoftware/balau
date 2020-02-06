@@ -277,6 +277,14 @@ inline Balau::U8String<AllocatorT> toString(long double value) {
 }
 
 ///
+/// Convert the supplied complex to a UTF-8 string.
+///
+template <typename T, typename AllocatorT>
+inline Balau::U8String<AllocatorT> toString(const std::complex<T> & value) {
+	return toString<AllocatorT>(value.real(), " + j", value.imag());
+}
+
+///
 /// Convert the supplied boolean to a UTF-8 string.
 ///
 template <typename AllocatorT>
@@ -674,6 +682,14 @@ inline Balau::U16String<AllocatorT> toString16(long double value) {
 }
 
 ///
+/// Convert the supplied complex to a UTF-16 string.
+///
+template <typename T, typename AllocatorT>
+inline Balau::U16String<AllocatorT> toString16(const std::complex<T> & value) {
+	return toString16<AllocatorT>(value.real(), " + j", value.imag());
+}
+
+///
 /// Convert the supplied boolean to a UTF-16 string.
 ///
 template <typename AllocatorT>
@@ -1053,6 +1069,14 @@ inline Balau::U32String<AllocatorT> toString32(double value) {
 template <typename AllocatorT>
 inline Balau::U32String<AllocatorT> toString32(long double value) {
 	return toString32<AllocatorT>(toString<AllocatorT>(value));
+}
+
+///
+/// Convert the supplied complex to a UTF-32 string.
+///
+template <typename T, typename AllocatorT>
+inline Balau::U32String<AllocatorT> toString32(const std::complex<T> & value) {
+	return toString32<AllocatorT>(value.real(), " + j", value.imag());
 }
 
 ///
