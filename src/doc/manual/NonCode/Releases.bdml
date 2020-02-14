@@ -33,19 +33,28 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
-		<h1>V2019.7.1</h1>
-
-		<para>** Pending changes **</para>
+		<h1>V2020.2.1</h1>
 
 		<para>New features in this release:</para>
 
 		<bullets>
+			<entry>new injector get methods that supply a default value via a supplied function;</entry>
+			<entry>injector post-construction and pre-destruction callback registration;</entry>
+			<entry>injector static singleton registration (useful for rearchitecting non-DI based code);</entry>
+			<entry>custom deleters for unique_ptr and shared_ptr injector bindings;</entry>
+			<entry>other miscellaneous injector improvements;</entry>
+			<entry>test runner improvements;</entry>
+			<entry>error recovery support in the language parsing framework;</entry>
+			<entry>new utility functions (Containers::contains, Strings::simplify);</entry>
+			<entry>new App utility functions (getUserApplicationDataDirectory, getGlobalApplicationDataDirectory, getUserApplicationConfigDirectory, getGlobalApplicationConfigDirectory, getApplicationRuntimeDataDirectory);</entry>
+			<entry>dependency graph improvements;</entry>
 			<entry>improved Balau build options and introduced BalauConfig.hpp options switches header;</entry>
+			<entry>separate Balau CMake default build configuration for use in dependent projects;</entry>
 			<entry>changed BALAU_ENABLE_CURL option to default on;</entry>
 			<entry>relaxed required Boost version to allow all Boost versions from 1.61.0 onwards (disables HTTP components for Boost &lt; 1.68.0);</entry>
-			<entry>new injector get methods that supply a default value via a supplied function;</entry>
 			<entry>Maven based build, test, and assembly using Balau Maven plugins;</entry>
-			<entry>new "isA" test assertion.</entry>
+			<entry>new "isA" test assertion;</entry>
+			<entry>to-string functions for complex numbers.</entry>
 		</bullets>
 
 		<h1>V2019.6.1</h1>
