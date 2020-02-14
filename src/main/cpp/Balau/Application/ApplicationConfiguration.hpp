@@ -90,7 +90,7 @@ class ApplicationConfiguration : public InjectorConfiguration {
 	/// @param name an optional binding name
 	///
 	protected: template <typename T> void registerStaticSingleton(std::shared_ptr<T> * ptrPtr, std::string_view name = std::string_view()) const {
-		staticSingletonPostConstructionCalls.emplace_back(new StaticSingletonRegistration(ptrPtr, name));
+		staticSingletonPostConstructionCalls.emplace_back(new StaticSingletonRegistration<T>(ptrPtr, name));
 		preDestructionCalls.push_back([ptrPtr] () { ptrPtr->reset(); });
 	}
 
