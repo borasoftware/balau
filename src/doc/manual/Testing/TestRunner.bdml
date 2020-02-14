@@ -532,7 +532,6 @@
 			using namespace Balau::Testing;
 
 			int main(int argc, char * argv[]) {
-				// Run the tests with the execution model specified as the first element of argv.
 				return TestRunner::run(argc, argv);
 			}
 		</code>

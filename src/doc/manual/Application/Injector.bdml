@@ -693,8 +693,6 @@
 
 		<para>The automatically generated constructor will move value, unique pointer, and shared pointer <emph>rvalue</emph> type dependencies into the member variables, and will assign supplied reference <emph>lvalue</emph> type dependencies to their associated class members.</para>
 
-		<para>TODO: correct documentation to reflect that std::forward is used via the type macros.</para>
-
 		<para>The general form of the automatically generated constructors via the <emph>BalauInjectConstruct</emph> / <emph>BalauInjectConstructNamed</emph> macros is as follows (d0, d1, d2, ... are the member variables/references of the class).</para>
 
 		<code lang="C++">
