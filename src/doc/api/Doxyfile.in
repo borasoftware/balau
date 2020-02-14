@@ -15,7 +15,7 @@
 
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Balau"
-PROJECT_NUMBER         = @Balau_VERSION@
+PROJECT_NUMBER         = @BALAU_VERSION@
 PROJECT_BRIEF          = "Core C++ library"
 PROJECT_LOGO           = ../src/doc/resources/images/BalauLogoWhite.png
 CREATE_SUBDIRS         = NO

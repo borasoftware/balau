@@ -14,18 +14,30 @@
 
 cmake_minimum_required(VERSION 3.10.2)
 
-#
-# When updating the version, also update:
-#  - BalauConfig.cmake
-#  - BalauConfigVersion.cmake
-#  - title-page.bdml
-#
-project(Balau VERSION 2019.7.1)
+################################ Balau version ################################
+
+set(BALAU_VERSION_YEAR 2020)
+set(BALAU_VERSION_MONTH 2)
+set(BALAU_VERSION_PATCH 1)
+set(BALAU_VERSION "${BALAU_VERSION_YEAR}.${BALAU_VERSION_MONTH}.${BALAU_VERSION_PATCH}")
+
+project(Balau VERSION ${BALAU_VERSION})
+
+message(STATUS "PROJECT_VERSION = ${PROJECT_VERSION}")
+
+######################## Standard Balau CMake includes ########################
 
 include(${CMAKE_SOURCE_DIR}/src/main/cmake/CMakeListsDefaultPaths.cmake)
 include(${CMAKE_SOURCE_DIR}/src/main/cmake/CMakeListsDefaultConfiguration.cmake)
 
-################################## DEFINITIONS ################################
+################### Generate files with version information ###################
+
+configure_file(src/main/cmake/BalauConfigVersion.cmake.in src/main/cmake/BalauConfigVersion.cmake @ONLY)
+configure_file(src/main/cmake/BalauConfig.cmake.in src/main/cmake/BalauConfig.cmake @ONLY)
+configure_file(src/doc/single-page/pdf/title-page.bdml.in src/doc/single-page/pdf/title-page.bdml @ONLY)
+configure_file(src/doc/api/Doxyfile.in src/doc/api/Doxyfile)
+
+################################## Definitions ################################
 
 if (BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR)
 	message(STATUS "Thread local logging allocator enabled.")
@@ -37,7 +49,6 @@ endif ()
 # Balau test app variables
 #
 
-set(BALAU_VERSION ${PROJECT_VERSION})
 set(BALAU_BASE_FOLDER ${CMAKE_SOURCE_DIR})
 set(BALAU_SOURCE_FOLDER ${CMAKE_SOURCE_DIR}/src)
 set(BALAU_SOURCE_MAIN_FOLDER ${CMAKE_SOURCE_DIR}/src/main)
@@ -59,10 +70,10 @@ endif ()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/testResults)
 
-include_directories(src/main/cpp)
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/src/main/cpp)
+include_directories(${CMAKE_BINARY_DIR}/src/main/cpp)
 
-############################### STATUS PRINTOUT ###############################
+############################### Status printout ###############################
 
 message(STATUS "Include directories:")
 get_property(ALL_INCLUDE_DIRECTORIES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
@@ -79,14 +90,13 @@ endforeach ()
 
 message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")
 
-############################### GENERATED FILES ###############################
+############################### Generated files ###############################
 
-configure_file(src/main/cmake/BalauConfig.hpp.in Balau/BalauConfig.hpp @ONLY)
-configure_file(src/doc/api/Doxyfile.in Doxyfile)
-configure_file(src/test/cpp/TestResources.cpp.in TestResources.cpp @ONLY)
-configure_file(src/test/cpp/TestResources.hpp.in TestResources.hpp @ONLY)
+configure_file(src/main/cpp/Balau/BalauConfig.hpp.in src/main/cpp/Balau/BalauConfig.hpp @ONLY)
+configure_file(src/test/cpp/TestResources.cpp.in src/test/cpp/TestResources.cpp @ONLY)
+configure_file(src/test/cpp/TestResources.hpp.in src/test/cpp/TestResources.hpp @ONLY)
 
-################################# BALAU LIBRARY ###############################
+################################# balau library ###############################
 
 set(THIRD_PARTY_SOURCE_FILES
 	src/main/cpp/Balau/ThirdParty/Date/date.hpp
@@ -112,7 +122,7 @@ set(THIRD_PARTY_SOURCE_FILES
 
 set(BALAU_SOURCE_FILES
 
-	${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp
+	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp
 
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
@@ -329,13 +339,13 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
 	src/main/cpp/Balau/Util/Impl/StringsImpl.hpp
 
-	src/main/cmake/BalauConfig.cmake
-	src/main/cmake/BalauConfigVersion.cmake
+	src/main/cmake/BalauConfig.cmake.in
+	src/main/cmake/BalauConfigVersion.cmake.in
 
 	src/doc
 )
 
-set_source_files_properties(${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp PROPERTIES GENERATED TRUE)
+set_source_files_properties(${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp PROPERTIES GENERATED TRUE)
 
 if (BALAU_ENABLE_HTTP)
 	set(BALAU_HTTP_SOURCE_FILES
@@ -467,13 +477,14 @@ add_library(
 add_custom_target(
 	BalauApiDoc
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	COMMAND doxygen ${CMAKE_BINARY_DIR}/Doxyfile
+	COMMAND doxygen ${CMAKE_BINARY_DIR}/src/doc/api/Doxyfile
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/doc/bdml ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/resources
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/doc/resources ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/resources
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/api
 	COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/api ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/api
+	COMMAND ${CMAKE_COMMAND} -E copy_file ${CMAKE_BINARY_DIR}/doc/single-page/pdf/title-page.bdml ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml/single-page/pdf/title-page.bdml
 )
 
 #
@@ -485,24 +496,24 @@ add_custom_target(
 	COMMAND sh ../src/doc/scripts/makeHtml.sh ${PROJECT_VERSION}
 )
 
-############################ INSTALLABLE FILE LISTS ###########################
+############################ Installable file lists ###########################
 
 install(DIRECTORY src/main/cpp/Balau/ DESTINATION "include/Balau-${PROJECT_VERSION}/Balau" FILES_MATCHING PATTERN "*.hpp")
 install(TARGETS Balau DESTINATION "lib/Balau-${PROJECT_VERSION}")
-install(FILES src/main/cmake/BalauConfig.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
-install(FILES src/main/cmake/BalauConfigVersion.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(FILES src/main/cmake/BalauConfig.cmake.in DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(FILES src/main/cmake/BalauConfigVersion.cmake.in DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/CMakeListsDefaultPaths.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(FILES src/main/cmake/CMakeListsDefaultConfiguration.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
-install(FILES ${CMAKE_BINARY_DIR}/Balau/BalauConfig.hpp DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
+install(FILES ${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${PROJECT_VERSION}/BalauConfig" FILES_MATCHING PATTERN "*.thconf")
 
-################################# BALAU TESTS #################################
+################################# Balau tests #################################
 
 set(BALAU_TESTS_SOURCE_FILES
 	src/test/resources
 
-	${CMAKE_BINARY_DIR}/TestResources.cpp
-	${CMAKE_BINARY_DIR}/TestResources.hpp
+	${CMAKE_BINARY_DIR}/src/test/cpp/TestResources.cpp
+	${CMAKE_BINARY_DIR}/src/test/cpp/TestResources.hpp
 	src/test/cpp/TestMain.cpp
 
 	src/test/cpp/Balau/Application/CommandLineTest.cpp
@@ -595,7 +606,7 @@ add_executable(
 )
 
 target_link_libraries(BalauTests Balau ${ALL_LIBS})
-target_include_directories(BalauTests PUBLIC ${CMAKE_BINARY_DIR})
+target_include_directories(BalauTests PUBLIC ${CMAKE_BINARY_DIR}/src/test/cpp)
 target_compile_options(BalauTests PUBLIC "-Wno-string-plus-int")
 
 #
@@ -609,7 +620,7 @@ add_custom_command(
 	${CMAKE_BINARY_DIR}/bin/balau-logging.hconf
 )
 
-############################## BALAU TEST RUNNER ##############################
+############################## Balau test runner ##############################
 
 add_custom_target(
 	RunBalauTests
@@ -619,7 +630,7 @@ add_custom_target(
 
 add_dependencies(RunBalauTests BalauTests)
 
-############################## CODE QUALITY TOOLS #############################
+############################## Code quality tools #############################
 
 #
 # A targt to run Memcheck.
@@ -688,7 +699,7 @@ add_custom_target(
 
 add_dependencies(RunCppCheck BalauTests)
 
-################################# EXAMPLE APPS ################################
+################################# Example apps ################################
 
 if (BALAU_ENABLE_HTTP)
 	add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
