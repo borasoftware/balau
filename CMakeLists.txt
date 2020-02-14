@@ -123,6 +123,8 @@ set(THIRD_PARTY_SOURCE_FILES
 set(BALAU_SOURCE_FILES
 
 	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp
+	${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfig.cmake
+	${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfigVersion.cmake
 
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
@@ -339,9 +341,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
 	src/main/cpp/Balau/Util/Impl/StringsImpl.hpp
 
-	src/main/cmake/BalauConfig.cmake.in
-	src/main/cmake/BalauConfigVersion.cmake.in
-
 	src/doc
 )
 
@@ -500,8 +499,8 @@ add_custom_target(
 
 install(DIRECTORY src/main/cpp/Balau/ DESTINATION "include/Balau-${PROJECT_VERSION}/Balau" FILES_MATCHING PATTERN "*.hpp")
 install(TARGETS Balau DESTINATION "lib/Balau-${PROJECT_VERSION}")
-install(FILES src/main/cmake/BalauConfig.cmake.in DESTINATION "lib/Balau-${PROJECT_VERSION}")
-install(FILES src/main/cmake/BalauConfigVersion.cmake.in DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(FILES ${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfig.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(FILES ${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfigVersion.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/CMakeListsDefaultPaths.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(FILES src/main/cmake/CMakeListsDefaultConfiguration.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(FILES ${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")

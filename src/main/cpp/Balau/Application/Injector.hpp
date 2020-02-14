@@ -1491,7 +1491,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			injector->bindings->get(key)->instantiateIfEager(*injector);
 		}
 
-		Impl::InjectorLogger::log().trace(injector->printBindings(false).c_str());
+		if (Impl::InjectorLogger::log().enabled(LoggingLevel::TRACE)) {
+			Impl::InjectorLogger::log().trace(injector->printBindings(false).c_str());
+		}
 
 		for (const auto & f : injector->postConstructionCalls) {
 			f(*injector);
@@ -1511,7 +1513,9 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 			injector->bindings->get(key)->instantiateIfEager(*injector);
 		}
 
-		Impl::InjectorLogger::log().trace(injector->printBindings(false).c_str());
+		if (Impl::InjectorLogger::log().enabled(LoggingLevel::TRACE)) {
+			Impl::InjectorLogger::log().trace(injector->printBindings(false).c_str());
+		}
 
 		for (const auto & f : injector->postConstructionCalls) {
 			f(*injector);
