@@ -471,7 +471,7 @@ add_library(
 ############################# BALAU DOCUMENTATION #############################
 
 #
-# This target requires doxygen.
+# This target requires doxygen and graphviz.
 #
 add_custom_target(
 	BalauApiDoc
@@ -483,7 +483,6 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/doc/resources ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/resources
 	COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/api
 	COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/api ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/api
-	COMMAND ${CMAKE_COMMAND} -E copy_file ${CMAKE_BINARY_DIR}/doc/single-page/pdf/title-page.bdml ${CMAKE_BINARY_DIR}/${PROJECT_VERSION}/bdml/single-page/pdf/title-page.bdml
 )
 
 #
