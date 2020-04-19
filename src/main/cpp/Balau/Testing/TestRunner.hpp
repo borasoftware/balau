@@ -266,7 +266,7 @@ class TestRunner : public Impl::TestRunnerBase {
 	//
 	private: static CommandLine<TestRunnerOption> getCommandLineParser() {
 		return CommandLine<TestRunnerOption>(CommandLineStyle::SwitchSpaceValue)
-			.withOption(TestRunnerOption::ExecutionModel,   "e", "execution-model",  true,  "The execution model (default = SingleThreaded).")
+			.withOption(TestRunnerOption::ExecutionModel,   "e", "execution-model",  true,  "The execution model (default = SingleThreaded, others are WorkerThreads, WorkerProcesses, ProcessPerTest).")
 			.withOption(TestRunnerOption::Namespaces,       "n", "namespaces",       false, "Use namespaces in test group names (default is not to use).")
 			.withOption(TestRunnerOption::PauseAtExit,      "p", "pause",            false, "Pause at exit (default is not to pause).")
 			.withOption(TestRunnerOption::ConcurrencyLevel, "c", "concurrency",      true,  "The number of threads or processes to use to run the tests (default = detect).")

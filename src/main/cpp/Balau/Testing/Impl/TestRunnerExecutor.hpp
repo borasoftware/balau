@@ -103,7 +103,7 @@ class TestRunnerExecutor {
 		System::ThreadName::setName(testToRun.testName);
 
 		std::ostringstream output;
-		const std::string text = pidStr + " - Running test " + testToRun.testName;
+		const std::string text = pidStr + " - Test " + testToRun.testName;
 		output << std::left << std::setw((int) maxLineLength) << text;
 		const std::chrono::nanoseconds start = System::SystemClock().nanotime();
 
@@ -362,8 +362,8 @@ class TestRunnerExecutor {
 				}
 
 				auto logLine = isMultiProcess
-					? std::string(" - ----- - Running test ") + testCase.name
-					: std::string(" - Running test ") + testCase.name;
+					? std::string(" - ----- - Test ") + testCase.name
+					: std::string(" - Test ") + testCase.name;
 
 				if (maxLineLength < logLine.length()) {
 					maxLineLength = logLine.length();
@@ -430,7 +430,7 @@ class TestRunnerExecutor {
 			groupSizeByName[testGroupName] = testCasesAdded;
 
 			if (testCasesAdded) {
-				addedTests.back().postText = "\n== " + testCaseSetIterator.first + " group completed.";
+				addedTests.back().postText = "\n== " + testCaseSetIterator.first + " group completed.\n";
 			}
 		}
 
