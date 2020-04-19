@@ -8,7 +8,6 @@
 // See the LICENSE file for the full license text.
 //
 
-#include "StdTypes.hpp"
-#include "../Util/Macros.hpp"
+#include "Balau/Type/StdTypes.hpp"
 
-const std::string BalauVersion = BalauString(BALAU_VERSION_);
+const std::string BalauVersion = "@BALAU_VERSION@";

@@ -12,6 +12,8 @@ OPTION(ENABLE_BACKTRACE "Enable use of backtrace library" ON)
 OPTION(ENABLE_OLD_ABI "Enable use of old GLIBCXX ABI" OFF)
 OPTION(ENABLE_BOOST_STATIC_LIBRARIES "Force use of Boost static libraries" OFF)
 
+OPTION(ENABLE_CODE_COVERAGE "Enable code coverage compiler flags" OFF)
+
 if (ENABLE_OLD_ABI)
 	ADD_DEFINITIONS("-D_GLIBCXX_USE_CXX11_ABI=0")
 	message(STATUS "_GLIBCXX_USE_CXX11_ABI set to 0 - compiling with old ABI")
@@ -61,7 +63,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -Og")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -71,6 +73,25 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 	set(BALAU_DEBUG ON)
 endif ()
+
+################################ CODE COVERAGE ################################
+
+if (ENABLE_CODE_COVERAGE)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		message(STATUS "CLang code coverage enabled.")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+		message(FATAL_ERROR "Balau has not configured for code coverage with Intel C++.
+		Please test and provide a pull request with any required changes.")
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+		message(FATAL_ERROR "Balau has not configured for code coverage with the Windows platform.
+		Please test and provide a pull request with any required changes.")
+	endif()
+endif()
 
 ############################### BOOST LIBRARIES ###############################
 

@@ -63,6 +63,10 @@ set(BALAU_TEST_EMAIL_SENDER_USER $ENV{BALAU_TEST_EMAIL_SENDER_USER})
 set(BALAU_TEST_EMAIL_SENDER_PASSWORD $ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD})
 set(BALAU_TEST_EMAIL_TO $ENV{BALAU_TEST_EMAIL_TO})
 
+if (DEFINED BALAU_TEST_EMAIL_HOST)
+	message(STATUS "BALAU_TEST_EMAIL_HOST defined as ${BALAU_TEST_EMAIL_HOST}")
+endif ()
+
 if (DEFINED BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB)
 	add_definitions("-DBALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB=${BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB}")
 endif ()
@@ -93,6 +97,7 @@ message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")
 ############################### Generated files ###############################
 
 configure_file(src/main/cpp/Balau/BalauConfig.hpp.in src/main/cpp/Balau/BalauConfig.hpp @ONLY)
+configure_file(src/main/cpp/Balau/Type/StdTypes.cpp.in src/main/cpp/Balau/Type/StdTypes.cpp)
 configure_file(src/test/cpp/TestResources.cpp.in src/test/cpp/TestResources.cpp @ONLY)
 configure_file(src/test/cpp/TestResources.hpp.in src/test/cpp/TestResources.hpp @ONLY)
 
@@ -122,9 +127,11 @@ set(THIRD_PARTY_SOURCE_FILES
 
 set(BALAU_SOURCE_FILES
 
-	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp
 	${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfig.cmake
 	${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfigVersion.cmake
+
+	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp
+	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/Type/StdTypes.cpp
 
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
@@ -312,7 +319,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Type/FromString.hpp
 	src/main/cpp/Balau/Type/MovableOnScopeExit.hpp
 	src/main/cpp/Balau/Type/OnScopeExit.hpp
-	src/main/cpp/Balau/Type/StdTypes.cpp
 	src/main/cpp/Balau/Type/StdTypes.hpp
 	src/main/cpp/Balau/Type/ToString.hpp
 	src/main/cpp/Balau/Type/ToStringA.hpp
