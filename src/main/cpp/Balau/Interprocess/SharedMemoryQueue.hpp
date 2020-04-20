@@ -74,26 +74,42 @@ namespace Balau::Interprocess {
 /// mutex protected dequeueing in the dequeueing process when oversize objects
 /// are being enqueued.
 ///
+/// The tryEnqueue methods have additional constraints. Due to the requirement of
+/// atomicity, the tryEnqueue methods can only be used for object sizes where the
+/// maximum enqueued serialised object size + header size is smaller than the
+/// shared memory queue buffer size. If this is not the case, a SizeException will
+/// be thrown.
+///
 /// @tparam T the type of enqueued/dequeued objects
 ///
 template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<T> {
 	private: using CharVector = std::vector<char>;
 
-	public: static const unsigned int headerSize = sizeof(Impl::QueueHeader);
-	public: static const unsigned int minimumChunkSize = 2 * headerSize;
+	public: static const unsigned int HeaderSize = sizeof(Impl::QueueHeader);
+	public: static const unsigned int MinimumChunkSize = 2 * HeaderSize;
+	public: static const unsigned int DefaultPriority = 0;
 
 	///
 	/// Create a shared memory queue of type T and with the specified capacity.
 	///
+	/// The buffer size is automatically calculated from a default constructed and serialised object.
+	///
 	/// The name is automatically generated.
+	///
+	/// @param capacity the number of messages that can be queued before a dequeue is required to free space
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
 	///
 	public: explicit SharedMemoryQueue(unsigned int capacity, bool throwOnOversize_ = false)
 		: SharedMemoryQueue(capacity, calculateDefaultBufferSize(), "SMQ_" + UUID().asString(), throwOnOversize_) {}
 
 	///
-	/// Create a shared memory queue of type T, with the specified capacity, and with the specified buffer size
+	/// Create a shared memory queue of type T, with the specified capacity, and with the specified buffer size.
 	///
 	/// The name is automatically generated.
+	///
+	/// @param capacity the number of messages that can be queued before a dequeue is required to free space
+	/// @param bufferSize_ the manually specified buffer size (determines the maximum enqueued serialised object size + header size)
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
 	///
 	public: SharedMemoryQueue(unsigned int capacity, unsigned int bufferSize_, bool throwOnOversize_ = false)
 		: SharedMemoryQueue(capacity, bufferSize_, "SMO_" + UUID().asString(), throwOnOversize_) {}
@@ -103,6 +119,10 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// The specified name is used.
 	///
+	/// @param capacity the number of messages that can be queued before a dequeue is required to free space
+	/// @param name_ the name of the queue
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
+	///
 	public: SharedMemoryQueue(unsigned int capacity, std::string name_, bool throwOnOversize_ = false)
 		: SharedMemoryQueue(capacity, calculateDefaultBufferSize(), std::move(name_), throwOnOversize_) {}
 
@@ -111,6 +131,10 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// The specified name is used.
 	///
+	/// @param capacity the number of messages that can be queued before a dequeue is required to free space
+	/// @param bufferSize_ the manually specified buffer size (determines the maximum enqueued serialised object size + header size)
+	/// @param name_ the name of the queue
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
 	/// @throw SizeException if the buffer size is below the minimum required buffer size
 	///
 	public: SharedMemoryQueue(unsigned int capacity,
@@ -129,6 +153,10 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	/// The specified name is used.
 	///
 	/// In an existing queue exists, the capacity is ignored.
+	///
+	/// @param capacity the number of messages that can be queued before a dequeue is required to free space
+	/// @param name_ the name of the queue
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
 	///
 	public: SharedMemoryQueue(OpenOrCreateSelector,
 	                          unsigned int capacity,
@@ -150,6 +178,10 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// In an existing queue exists, the capacity and buffer size are ignored.
 	///
+	/// @param capacity the number of messages that can be queued before a dequeue is required to free space
+	/// @param bufferSize_ the manually specified buffer size (determines the maximum enqueued serialised object size + header size)
+	/// @param name_ the name of the queue
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
 	/// @throw SizeException if the buffer size is below the minimum required buffer size
 	///
 	public: SharedMemoryQueue(OpenOrCreateSelector,
@@ -166,6 +198,9 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// Open an existing shared memory queue with the specified name.
 	///
+	/// @param name_ the name of the queue
+	/// @param throwOnOversize if set to true, an attempt to enqueue an oversize object will result in a SizeException being thrown
+	///
 	public: explicit SharedMemoryQueue(std::string name_, bool throwOnOversize_ = false)
 		: name(std::move(name_))
 		, queue(openQueue())
@@ -178,8 +213,11 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// If the queue is full, this call will block until there is a slot available.
 	///
-	public: void enqueue(T && object) override {
-		enqueue(object, 0);
+	/// @param object the object to serialise and enqueue
+	/// @throw SizeException if enqueueing of oversize objects was set to forbidden and the object is oversize
+	///
+	public: void enqueue(T object) override {
+		enqueue(object, DefaultPriority);
 	}
 
 	///
@@ -187,6 +225,8 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// If the queue is full, this call will block until there is a slot available.
 	///
+	/// @param object the object to serialise and enqueue
+	/// @param priority the enqueuing priority
 	/// @throw SizeException if enqueueing of oversize objects was set to forbidden and the object is oversize
 	///
 	public: void enqueue(const T & object, unsigned int priority) {
@@ -196,7 +236,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 
 		marshal(marshalBuffer, object, messageHeader);
 
-		const unsigned int totalBytes = (unsigned int) marshalBuffer.size() - headerSize;
+		const unsigned int totalBytes = (unsigned int) marshalBuffer.size() - HeaderSize;
 		auto * marshalHeader = (Impl::QueueHeader *) marshalBuffer.data();
 		marshalHeader->totalBytes = totalBytes;
 
@@ -212,20 +252,17 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				ThrowBalauException(
 					  Exception::SizeException
 					, ::toString(
-						  "The serialized message is too large to fit into a single message ("
-						, marshalBuffer.size()
-						, "/"
-						, chunkSize
-						, ")."
+						  "The serialized message is too large to fit into a single message "
+						, "(", marshalBuffer.size(), "/", chunkSize, ")."
 					)
 				);
 			}
 
 			const unsigned int chunkCount = calculateChunkCount(totalBytes);
-			size_t dataStart = headerSize;
+			size_t dataStart = HeaderSize;
 
 			for (unsigned int m = 0; m < chunkCount; m++) {
-				size_t chunkStart = dataStart - headerSize;
+				size_t chunkStart = dataStart - HeaderSize;
 				auto & chunkHeader = * (Impl::QueueHeader *) (marshalBuffer.data() + chunkStart);
 				chunkHeader.sequenceNumber = messageHeader.sequenceNumber;
 				chunkHeader.chunkCount = chunkCount;
@@ -240,8 +277,97 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queue.send(marshalBuffer.data() + chunkStart, chunkBytes, priority);
 
 				// The start of the data is moved forward the size of the buffer less the header size.
-				dataStart += chunkSize - headerSize;
+				dataStart += chunkSize - HeaderSize;
 			}
+		}
+	}
+
+	///
+	/// Try to enqueue an object with a priority of zero.
+	///
+	/// If the queue is full, this call will return false.
+	///
+	/// As this try enqueuing action must be atomic, this method always throws a size
+	/// exception if the object is oversize.
+	///
+	/// @param object the object to serialise and enqueue
+	/// @return true if the enqueue occurred, false otherwise
+	/// @throw SizeException if the object is oversize
+	///
+	public: bool tryEnqueue(T object) override {
+		return tryEnqueue(std::move(object), std::chrono::milliseconds(0), DefaultPriority);
+	}
+
+	///
+	/// Try to enqueue an object with a priority of zero.
+	///
+	/// If the queue is full, this call will wait a limited amount of time for space to be available.
+	///
+	/// As this try enqueuing action must be atomic, this method always throws a size
+	/// exception if the object is oversize.
+	///
+	/// @param object the object to serialise and enqueue
+	/// @param waitTime the number of milliseconds to wait if the queue is full
+	/// @return true if the enqueue occurred, false otherwise
+	/// @throw SizeException if the object is oversize
+	///
+	public: bool tryEnqueue(T object, std::chrono::milliseconds waitTime) override {
+		return tryEnqueue(std::move(object), waitTime, DefaultPriority);
+	}
+
+	///
+	/// Try to enqueue an object with the specified priority.
+	///
+	/// If the queue is full, this call will return false.
+	///
+	/// As this try enqueuing action must be atomic, this method always throws a size
+	/// exception if the object is oversize.
+	///
+	/// @param object the object to serialise and enqueue
+	/// @return true if the enqueue occurred, false otherwise
+	/// @throw SizeException if the object is oversize
+	///
+	public: bool tryEnqueue(T object, unsigned int priority) {
+		return tryEnqueue(std::move(object), std::chrono::milliseconds(0), priority);
+	}
+
+	///
+	/// Enqueue an object with the specified priority.
+	///
+	/// If the queue is full, this call will wait a limited amount of time for space to be available.
+	///
+	/// As this try enqueuing action must be atomic, this method always throws a size
+	/// exception if the object is oversize.
+	///
+	/// @param object the object to serialise and enqueue
+	/// @param waitTime the number of milliseconds to wait if the queue is full
+	/// @return true if the enqueue occurred, false otherwise
+	/// @throw SizeException if the object is oversize
+	///
+	public: bool tryEnqueue(T object, std::chrono::milliseconds waitTime, unsigned int priority) {
+		const Impl::QueueHeader messageHeader { queueState->sequenceNumber++, 1, 0, 0 };
+		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage.marshalBuffer;
+		marshalBuffer.clear();
+
+		marshal(marshalBuffer, object, messageHeader);
+
+		const unsigned int totalBytes = (unsigned int) marshalBuffer.size() - HeaderSize;
+		auto * marshalHeader = (Impl::QueueHeader *) marshalBuffer.data();
+		marshalHeader->totalBytes = totalBytes;
+
+		if (marshalBuffer.size() <= chunkSize) {
+			// The message fits in a single buffer.
+			auto timeout = boost::posix_time::microsec_clock::local_time() + boost::posix_time::millisec(waitTime.count());
+			return queue.timed_send(marshalBuffer.data(), marshalBuffer.size(), priority, timeout);
+		} else {
+			// Oversize objects cannot be try enqueued, thus an exception is thrown.
+			ThrowBalauException(
+				  Exception::SizeException
+				, ::toString(
+					"The serialized message is too large to fit into a single message "
+					, "(", marshalBuffer.size(), "/", chunkSize, ")."
+				)
+			);
 		}
 	}
 
@@ -250,6 +376,8 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// When the queue is being used with oversize objects (which require multiple
 	/// queue receives, this method may only be used via synchronised calls.
+	///
+	/// @return the dequeued object
 	///
 	public: T dequeue() override {
 		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage.queueBuffer;
@@ -295,20 +423,60 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	/// Try to dequeue an object.
 	///
+	/// if no dequeue was made, a default constructed object is returned.
+	///
 	/// When the queue is being used with oversize objects (which require multiple
 	/// queue receives, this method may only be used via synchronised calls.
 	///
+	/// @return the dequeued object or a default constructed object otherwise
+	///
 	public: T tryDequeue() override {
-		return tryDequeue(std::chrono::milliseconds(0));
+		bool success;
+		return tryDequeue(std::chrono::milliseconds(0), success);
 	}
 
 	///
-	/// Try to dequeue an object, waiting the specified time before giving up.
+	/// Try to dequeue an object.
 	///
 	/// When the queue is being used with oversize objects (which require multiple
 	/// queue receives, this method may only be used via synchronised calls.
 	///
+	/// @param success set to true on a successful dequeue, false otherwise
+	/// @return the dequeued object or a default constructed object otherwise
+	///
+	public: T tryDequeue(bool & success) override {
+		return tryDequeue(std::chrono::milliseconds(0), success);
+	}
+
+	///
+	/// Try to dequeue an object, waiting for the specified time if the queue is empty.
+	///
+	/// if no dequeue was made, a default constructed object is returned.
+	///
+	/// When the queue is being used with oversize objects (which require multiple
+	/// queue receives, this method may only be used via synchronised calls.
+	///
+	/// @param waitTime the time in milliseconds to wait for an object to become available
+	/// @return the dequeued object or a default constructed object if no object was dequeued
+	///
 	public: T tryDequeue(std::chrono::milliseconds waitTime) override {
+		bool success;
+		return tryDequeue(waitTime, success);
+	}
+
+	///
+	/// Try to dequeue an object, waiting for the specified time if the queue is empty.
+	///
+	/// if no dequeue was made, a default constructed object is returned.
+	///
+	/// When the queue is being used with oversize objects (which require multiple
+	/// queue receives, this method may only be used via synchronised calls.
+	///
+	/// @param waitTime the time in milliseconds to wait for an object to become available
+	/// @param success a reference to a boolean that is set to true on success and false otherwise
+	/// @return the dequeued object or a default constructed object if no object was dequeued
+	///
+	public: T tryDequeue(std::chrono::milliseconds waitTime, bool & success) override {
 		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage.queueBuffer;
 
 		unsigned long receivedSize;
@@ -401,10 +569,10 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 
 		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage.marshalBuffer;
 		marshalBuffer.clear();
-		marshalBuffer.resize(headerSize + totalBytes);
+		marshalBuffer.resize(HeaderSize + totalBytes);
 
 		// Set up the header in case the marshal buffer ends up on the pending queue (tryDequeue only).
-		memcpy(marshalBuffer.data(), queueBuffer.data(), headerSize);
+		memcpy(marshalBuffer.data(), queueBuffer.data(), HeaderSize);
 		auto * marshalHeader = (Impl::QueueHeader *) marshalBuffer.data();
 		marshalHeader->chunkNumber = marshalHeader->chunkCount;
 
@@ -419,9 +587,9 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queueBuffer = CharVector(chunkSize);
 			} else {
 				// This can occur out of order (if the chunks arrive out of order).
-				const size_t copyStart = headerSize + queueHeader->chunkNumber * (chunkSize - headerSize);
-				const size_t byteCount = queueBuffer.size() - headerSize;
-				memcpy(marshalBuffer.data() + copyStart, queueBuffer.data() + headerSize, byteCount);
+				const size_t copyStart = HeaderSize + queueHeader->chunkNumber * (chunkSize - HeaderSize);
+				const size_t byteCount = queueBuffer.size() - HeaderSize;
+				memcpy(marshalBuffer.data() + copyStart, queueBuffer.data() + HeaderSize, byteCount);
 				++marshalHeader->chunkNumber;
 				--partsLeft;
 			}
@@ -455,7 +623,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		const unsigned int totalBytes = marshalHeader->totalBytes;
 
 		Assert::assertion(
-			  receivedSize == totalBytes + headerSize
+			  receivedSize == totalBytes + HeaderSize
 			, "Received size of partially dequeued buffer is not the same as the size of the buffer."
 		);
 
@@ -478,9 +646,9 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queueBuffer = CharVector(chunkSize);
 			} else {
 				// This can occur out of order (if the chunks arrive out of order).
-				const size_t copyStart = headerSize + (chunkSize - headerSize) * queueHeader->chunkNumber;
-				const size_t byteCount = queueBuffer.size() - headerSize;
-				memcpy(marshalBuffer.data() + copyStart, queueBuffer.data() + headerSize, byteCount);
+				const size_t copyStart = HeaderSize + (chunkSize - HeaderSize) * queueHeader->chunkNumber;
+				const size_t byteCount = queueBuffer.size() - HeaderSize;
+				memcpy(marshalBuffer.data() + copyStart, queueBuffer.data() + HeaderSize, byteCount);
 				++marshalHeader->chunkNumber;
 				--partsLeft;
 			}
@@ -552,9 +720,9 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	// Marshal the object to bytes.
 	// Assume single queue buffer (add the header in order to avoid later copying).
 	private: void marshal(CharVector & buffer, const T & object, const Impl::QueueHeader & header) const {
-		buffer.resize(headerSize);
+		buffer.resize(HeaderSize);
 		const char * headerBytes = (const char *) &header;
-		memcpy(buffer.data(), headerBytes, headerSize);
+		memcpy(buffer.data(), headerBytes, HeaderSize);
 		SinkBuffer oStreamBuffer { SinkDevice(buffer) };
 		boost::archive::binary_oarchive archive(oStreamBuffer);
 		archive << BoostSerialization(object);
@@ -565,7 +733,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	private: T unmarshal(const CharVector & buffer) {
 		// Uncomment the following line for debug output.
 		//std::cerr << toString(getpid(), " -\n", Util::PrettyPrint::printHexBytes(buffer.data(), buffer.size(), 90, 2), "\n");
-		SourceBuffer iStreamBuffer(SourceDevice(buffer.data() + headerSize, buffer.size()));
+		SourceBuffer iStreamBuffer(SourceDevice(buffer.data() + HeaderSize, buffer.size()));
 		boost::archive::binary_iarchive archive(iStreamBuffer);
 		T object;
 		archive >> BoostSerialization(object);
@@ -574,7 +742,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 
 	// The number of buffers required for a message of length totalBytes.
 	private: unsigned int calculateChunkCount(unsigned int totalBytes) const {
-		const unsigned int netBufferSize = chunkSize - headerSize;
+		const unsigned int netBufferSize = chunkSize - HeaderSize;
 		return totalBytes / netBufferSize + (totalBytes % netBufferSize != 0);
 	}
 
@@ -586,16 +754,16 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		T object {};
 		CharVector buffer;
 		marshal(buffer, object, header);
-		return (unsigned int) buffer.size() + minimumChunkSize;
+		return (unsigned int) buffer.size() + MinimumChunkSize;
 	}
 
 	// Allows queue prepping for compilers without guaranteed copy elision.
 	private: std::string & prepQueue(std::string & n, unsigned int bufferSize) {
-		if (bufferSize < minimumChunkSize) {
+		if (bufferSize < MinimumChunkSize) {
 			ThrowBalauException(
-				Exception::SizeException
-			, "The supplied shared memory queue buffer is less than the minimum legal size of "
-			  + ::toString(minimumChunkSize) + "."
+				  Exception::SizeException
+				, "The supplied shared memory queue buffer is less than the minimum legal size of "
+				+ ::toString(MinimumChunkSize) + "."
 			);
 		}
 
@@ -605,11 +773,11 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	}
 
 	private: boost::interprocess::message_queue openOrCreateQueue(unsigned int queueSize, unsigned int bufferSize) {
-		if (bufferSize < minimumChunkSize) {
+		if (bufferSize < MinimumChunkSize) {
 			ThrowBalauException(
 				  Exception::SizeException
 				,  "The supplied shared memory queue buffer is less than the minimum legal size of "
-				  + ::toString(minimumChunkSize) + "."
+				+ ::toString(MinimumChunkSize) + "."
 			);
 		}
 

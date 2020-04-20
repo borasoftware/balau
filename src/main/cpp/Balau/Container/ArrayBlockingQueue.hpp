@@ -33,6 +33,8 @@ namespace Balau::Container {
 ///            addition being move constructable and assignable)
 ///
 template <typename T> class ArrayBlockingQueue : public BlockingQueue<T> {
+	public: using Callback = std::function<void (const T &)>;
+
 	///
 	/// Create an array blocking queue with the specified capacity.
 	///
@@ -40,22 +42,110 @@ template <typename T> class ArrayBlockingQueue : public BlockingQueue<T> {
 		: elements(capacity)
 		, count(0)
 		, head(0)
-		, tail(0) {}
+		, tail(0)
+		, defaultQueueIsFull([] (const T &) {})
+		, defaultSpaceNowAvailable([] (const T &) {}) {}
 
-	public: void enqueue(T && element) override {
+	///
+	/// Create an array blocking queue with the specified capacity and default callbacks.
+	///
+	public: explicit ArrayBlockingQueue(unsigned int capacity, Callback defaultQueueIsFull_, Callback defaultSpaceNowAvailable_)
+		: elements(capacity)
+		, count(0)
+		, head(0)
+		, tail(0)
+		, defaultQueueIsFull(defaultQueueIsFull_)
+		, defaultSpaceNowAvailable(defaultSpaceNowAvailable_) {}
+
+	public: void enqueue(T object) override {
+		enqueue(std::move(object), defaultQueueIsFull, defaultSpaceNowAvailable);
+	}
+
+	///
+	/// Enqueue an object, waiting for space to be available if the queue is full.
+	///
+	/// The supplied full queue callbacks will be used instead of the default ones.
+	///
+	/// @param object the object to move into the queue
+	/// @param queueIsFull the callback that is called if the queue is full
+	/// @param spaceNowAvailable the callback that is called if the queue was full and subsequently became no longer full
+	///
+	public: void enqueue(T object, const Callback & queueIsFull, const Callback & spaceNowAvailable) {
 		std::unique_lock<std::mutex> lock(mutex);
 
-		while (full()) {
-			enqueueCondition.wait(lock);
+		if (full()) {
+			queueIsFull(object);
+
+			while (full()) {
+				enqueueCondition.wait(lock);
+			}
+
+			spaceNowAvailable(object);
 		}
 
-		elements[head] = std::move(element);
+		elements[head] = std::move(object);
 		increment(head);
 		++count;
 
 		// When two threads are dequeueing, the second thread could
 		// miss the notify call if it is outside of the lock.
 		dequeueCondition.notify_one();
+	}
+
+	public: bool tryEnqueue(T object) override {
+		return tryEnqueue(
+			std::move(object), std::chrono::milliseconds(0), defaultQueueIsFull, defaultSpaceNowAvailable
+		);
+	}
+
+	public: bool tryEnqueue(T object, std::chrono::milliseconds waitTime) override {
+		return tryEnqueue(std::move(object), waitTime, defaultQueueIsFull, defaultSpaceNowAvailable);
+	}
+
+	///
+	/// Enqueue an object, waiting a limited amount of time for space to be available if the queue is full.
+	///
+	/// The supplied full queue callbacks will be used instead of the default ones.
+	///
+	/// @param object the object to move into the queue
+	/// @param waitTime the number of milliseconds to wait if the queue is full
+	/// @param queueIsFull the callback that is called if the queue is full
+	/// @param spaceNowAvailable the callback that is called if the queue was full and subsequently became no longer full
+	/// @return true if the object was enqueued, false otherwise
+	///
+	public: bool tryEnqueue(T object,
+	                        std::chrono::milliseconds waitTime,
+	                        const Callback & queueIsFull,
+	                        const Callback & spaceNowAvailable) {
+		std::unique_lock<std::mutex> lock(mutex);
+
+		if (full()) {
+			queueIsFull(object);
+
+			auto startTime = std::chrono::system_clock::now();
+			auto waitTimeRemaining = std::chrono::duration_cast<std::chrono::nanoseconds>(waitTime);
+
+			while (full() && waitTimeRemaining > std::chrono::nanoseconds(0)) {
+				enqueueCondition.wait_for(lock, waitTimeRemaining);
+				waitTimeRemaining = waitTime - (std::chrono::system_clock::now() - startTime);
+			}
+
+			if (full()) {
+				return false;
+			}
+
+			spaceNowAvailable(object);
+		}
+
+		elements[head] = std::move(object);
+		increment(head);
+		++count;
+
+		// When two threads are dequeueing, the second thread could
+		// miss the notify call if it is outside of the lock.
+		dequeueCondition.notify_one();
+
+		return true;
 	}
 
 	public: T dequeue() override {
@@ -79,14 +169,30 @@ template <typename T> class ArrayBlockingQueue : public BlockingQueue<T> {
 		return tryDequeue(std::chrono::milliseconds(0));
 	}
 
+	public: T tryDequeue(bool & success) override {
+		return tryDequeue(std::chrono::milliseconds(0), success);
+	}
+
 	public: T tryDequeue(std::chrono::milliseconds waitTime) override {
+		bool success;
+		return tryDequeue(waitTime, success);
+	}
+
+	public: T tryDequeue(std::chrono::milliseconds waitTime, bool & success) override {
 		std::unique_lock<std::mutex> lock(mutex);
 
-		while (empty()) {
-			dequeueCondition.wait_for(lock, waitTime);
+		if (empty()) {
+			auto startTime = std::chrono::system_clock::now();
+			auto waitTimeRemaining = std::chrono::duration_cast<std::chrono::nanoseconds>(waitTime);
+
+			while (empty() && waitTimeRemaining > std::chrono::nanoseconds(0)) {
+				dequeueCondition.wait_for(lock, waitTimeRemaining);
+				waitTimeRemaining = waitTime - (std::chrono::system_clock::now() - startTime);
+			}
 		}
 
 		if (empty()) {
+			success = false;
 			return T();
 		}
 
@@ -97,6 +203,8 @@ template <typename T> class ArrayBlockingQueue : public BlockingQueue<T> {
 		// When two threads are enqueueing, the second thread could
 		// miss the notify call if it is outside of the lock.
 		enqueueCondition.notify_one();
+
+		success = true;
 		return element;
 	}
 
@@ -122,6 +230,8 @@ template <typename T> class ArrayBlockingQueue : public BlockingQueue<T> {
 	private: std::mutex mutex;
 	private: std::condition_variable enqueueCondition;
 	private: std::condition_variable dequeueCondition;
+	private: const Callback defaultQueueIsFull;
+	private: const Callback defaultSpaceNowAvailable;
 };
 
 } // namespace Balau::Container

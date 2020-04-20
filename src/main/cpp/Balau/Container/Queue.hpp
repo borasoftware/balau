@@ -22,13 +22,13 @@ namespace Balau::Container {
 ///
 /// Base interface for queues.
 ///
-/// @tparam T the element type (must be move constructable and assignable)
+/// @tparam T the object type
 ///
 template <typename T> class Queue {
 	///
-	/// Enqueue an object, moving the supplied element.
+	/// Enqueue an object.
 	///
-	public: virtual void enqueue(T && element) = 0;
+	public: virtual void enqueue(T object) = 0;
 
 	///
 	/// Dequeue an object.

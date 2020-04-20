@@ -35,7 +35,7 @@ namespace Balau::Container {
 ///            addition being move constructable and assignable)
 ///
 template <typename T> class SynchronizedQueue : public Queue<T> {
-	public: void enqueue(T && element) override {
+	public: void enqueue(T element) override {
 		std::lock_guard<std::mutex> lock(mutex);
 		elements.push_back(std::move(element));
 	}
