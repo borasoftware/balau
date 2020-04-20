@@ -14,35 +14,35 @@
 
 namespace Balau {
 
-BalauInjectBody(HBDerived);
+BalauInjectBody(HBDerived)
 
-BalauInjectBody(HBDerivedD, b);
+BalauInjectBody(HBDerivedD, b)
 
 HBDerivedD::HBDerivedD(std::shared_ptr<HBBase1> b_) : b(std::move(b_)) {}
 
-BalauInjectBodyNamed(HBDerivedN);
+BalauInjectBodyNamed(HBDerivedN)
 
-BalauInjectBodyNamed(HBDerivedND, b, "ND");
+BalauInjectBodyNamed(HBDerivedND, b, "ND")
 
 HBDerivedND::HBDerivedND(std::shared_ptr<HBBase1> b_) : b(std::move(b_)) {}
 
-BalauInjectBody(HBDerivedC);
+BalauInjectBody(HBDerivedC)
 
-BalauInjectBody(HBDerivedCD, b);
+BalauInjectBody(HBDerivedCD, b)
 
-BalauInjectBodyNamed(HBDerivedCN);
+BalauInjectBodyNamed(HBDerivedCN)
 
-BalauInjectBodyNamed(HBDerivedCND, b, "ND");
+BalauInjectBodyNamed(HBDerivedCND, b, "ND")
 
-BalauInjectBodyTypes(HBDerivedT);
+BalauInjectBodyTypes(HBDerivedT)
 
-BalauInjectBodyTypes(HBDerivedTD, std::shared_ptr<HBBase1>);
+BalauInjectBodyTypes(HBDerivedTD, std::shared_ptr<HBBase1>)
 
 HBDerivedTD::HBDerivedTD(std::shared_ptr<HBBase1> b_) : b(std::move(b_)) {}
 
-BalauInjectBodyNamedTypes(HBDerivedTN);
+BalauInjectBodyNamedTypes(HBDerivedTN)
 
-BalauInjectBodyNamedTypes(HBDerivedTND, std::shared_ptr<HBBase1>, "ND");
+BalauInjectBodyNamedTypes(HBDerivedTND, std::shared_ptr<HBBase1>, "ND")
 
 HBDerivedTND::HBDerivedTND(std::shared_ptr<HBBase1> b_) : b(std::move(b_)) {}
 

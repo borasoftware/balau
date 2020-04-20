@@ -41,6 +41,9 @@ std::unique_ptr<HttpClient> HttpClient::newClient(const std::string & url,
 		return std::unique_ptr<HttpClient>(new HttpsClient(std::string(host), port, userAgent, version));
 	} else {
 		ThrowBalauException(Exception::NetworkException, "The scheme must be HTTP or HTTPS.");
+
+		// Prevent compiler warning.
+		return std::unique_ptr<HttpClient>();
 	}
 }
 

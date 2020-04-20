@@ -795,6 +795,9 @@ template <typename KeyT> class CommandLine {
 					+ parsedValuesByKey.at(key)
 				)
 			);
+
+			// Prevent compiler warning.
+			return defaultValue;
 		} catch (...) {
 			using ::toString;
 
@@ -805,6 +808,9 @@ template <typename KeyT> class CommandLine {
 					+ parsedValuesByKey.at(key)
 				)
 			);
+
+			// Prevent compiler warning.
+			return defaultValue;
 		}
 	}
 

@@ -1397,10 +1397,10 @@ namespace {
 		}
 
 		count = capturedText.size();
-	};
+	}
 #else
 	void TestCapture::printLatest(const std::string & , Balau::InjectorTest * ) {
-	};
+	}
 #endif
 
 } // namespace

@@ -80,6 +80,9 @@ unsigned short NetworkTesting::getFreeTcpPort(unsigned short start, unsigned sho
 	}
 
 	ThrowBalauException(Exception::NetworkException, "Could not find a free port.");
+
+	// Prevent compiler warning.
+	return 0;
 }
 
 } // namespace Balau::Testing

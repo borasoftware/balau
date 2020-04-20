@@ -156,6 +156,9 @@ class StringUri : public Uri {
 			  Exception::IllegalArgumentException
 			, "StringUri does not support calls to the resolve method without specifying a schema in the path."
 		);
+
+		// Prevent compiler warning.
+		return std::unique_ptr<Uri>();
 	}
 
 	public: bool operator == (const Uri & rhs) const override {
