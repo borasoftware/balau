@@ -33,6 +33,23 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2020.4.1</h1>
+
+		<para>New features in this release:</para>
+
+		<bullets>
+			<entry>blocking queue improvements;</entry>
+			<entry>added code coverage compiler flags CMake option.</entry>
+		</bullets>
+
+		<h1>V2020.2.2</h1>
+
+		<para>Fixes in this release:</para>
+
+		<bullets>
+			<entry>Fix template deduction compilation error for older GCC compilers (v6, v7).</entry>
+		</bullets>
+
 		<h1>V2020.2.1</h1>
 
 		<para>New features in this release:</para>
