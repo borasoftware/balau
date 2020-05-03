@@ -17,8 +17,8 @@ cmake_minimum_required(VERSION 3.10.2)
 ################################ Balau version ################################
 
 set(BALAU_VERSION_YEAR 2020)
-set(BALAU_VERSION_MONTH 2)
-set(BALAU_VERSION_PATCH 2)
+set(BALAU_VERSION_MONTH 5)
+set(BALAU_VERSION_PATCH 1)
 set(BALAU_VERSION "${BALAU_VERSION_YEAR}.${BALAU_VERSION_MONTH}.${BALAU_VERSION_PATCH}")
 
 project(Balau VERSION ${BALAU_VERSION})
