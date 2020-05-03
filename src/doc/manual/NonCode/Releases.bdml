@@ -33,13 +33,15 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
-		<h1>V2020.4.1</h1>
+		<h1>V2020.5.1</h1>
 
 		<para>New features in this release:</para>
 
 		<bullets>
 			<entry>blocking queue improvements;</entry>
-			<entry>added code coverage compiler flags CMake option.</entry>
+			<entry>added code coverage compiler flags CMake option;</entry>
+			<entry>fixed injector iterate function issue;</entry>
+			<entry>Added backports for GCC6.</entry>
 		</bullets>
 
 		<h1>V2020.2.2</h1>
