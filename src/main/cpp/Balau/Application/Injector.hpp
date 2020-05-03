@@ -1407,8 +1407,8 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	}
 
 	private: template <typename BaseT>
-	void iterateOverShared(const std::function<void (std::shared_ptr<BaseT>)> & func, bool includeThreadLocal = false) {
-		const auto typeIndex = std::type_index(typeid(BaseT));
+	void iterateOverShared(const std::function<void (std::shared_ptr<BaseT>)> & func, bool includeThreadLocal = false) const {
+		const auto typeIndex = std::type_index(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>));
 
 		for (const auto & binding : (*bindings)) {
 			if (binding.key.getType() == typeIndex) {
@@ -1420,8 +1420,8 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	}
 
 	private: template <typename BaseT>
-	void iterateOverShared(const std::function<void (std::shared_ptr<const BaseT>)> & func, bool includeThreadLocal = false) {
-		const auto typeIndex = std::type_index(typeid(BaseT));
+	void iterateOverShared(const std::function<void (std::shared_ptr<const BaseT>)> & func, bool includeThreadLocal = false) const {
+		const auto typeIndex = std::type_index(typeid(Impl::BindingKeyType<Impl::BindingMetaType::Shared, BaseT>));
 
 		for (const auto & binding : (*bindings)) {
 			if (binding.key.getType() == typeIndex) {
