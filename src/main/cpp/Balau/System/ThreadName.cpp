@@ -21,7 +21,7 @@ const std::string & ThreadName::getName() {
 }
 
 void ThreadName::setName(const std::string & name) {
-	threadName = Util::Strings::trim(name);
+	threadName = toString(Util::Strings::trim(name));
 }
 
 } // namespace Balau::System

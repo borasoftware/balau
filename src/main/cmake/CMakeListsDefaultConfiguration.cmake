@@ -141,14 +141,16 @@ if(Boost_VERSION VERSION_GREATER_EQUAL 1.70.0)
 	set(BOOST_BEAST_NEW_API ON)
 endif ()
 
-# Enable HTTP components only if Boost is 1.68.0 or greater.
-if(Boost_VERSION VERSION_GREATER_EQUAL 1.68.0)
-	message(STATUS "Boost version ${Boost_VERSION} HTTP support available: Balau HTTP components are enabled.")
-	set(BOOST_BEAST_NEW_API ON)
-else ()
-	message(STATUS "Boost version ${Boost_VERSION} HTTP support not available: Balau HTTP components are not enabled.")
-	set(BALAU_ENABLE_HTTP OFF)
-	set(BALAU_ENABLE_CURL OFF)
+if (BALAU_ENABLE_HTTP)
+	# Enable HTTP components only if Boost is 1.68.0 or greater.
+	if (Boost_VERSION VERSION_GREATER_EQUAL 1.68.0)
+		message(STATUS "Boost version ${Boost_VERSION} HTTP support available: Balau HTTP components are enabled.")
+		set(BOOST_BEAST_NEW_API ON)
+	else ()
+		message(STATUS "Boost version ${Boost_VERSION} HTTP support not available: Balau HTTP components are not enabled.")
+		set(BALAU_ENABLE_HTTP OFF)
+		set(BALAU_ENABLE_CURL OFF)
+	endif ()
 endif ()
 
 ##################################### ICU #####################################
@@ -236,16 +238,20 @@ endif ()
 
 ############################### OTHER LIBRARIES ###############################
 
-find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
-set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})
-message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
+if (BALAU_ENABLE_HTTP OR BALAU_ENABLE_CURL)
+	find_package(OpenSSL REQUIRED)
+	include_directories(${OPENSSL_INCLUDE_DIR})
+	set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})
+	message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
+	message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
+endif ()
+
 set(ALL_LIBS ${ALL_LIBS} rt bz2)
 set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
-link_directories(/usr/lib64)
 
 ################################## BACKPORTS ##################################
+
+########### STRING_VIEW ############
 
 include(CheckIncludeFileCXX)
 
@@ -255,5 +261,20 @@ if (STRING_VIEW_AVAILABLE)
 	message(STATUS "std::string_view is available.")
 else ()
 	message(STATUS "std::string_view is not available. Using boost::string_view")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_USE_BOOST_STRING_VIEW")
+	set(BALAU_USE_BOOST_STRING_VIEW 1)
+endif ()
+
+##### REINTERPRET_POINTER_CAST #####
+
+try_compile(
+	REINTERPRET_POINTER_CAST_AVAILABLE
+	${CMAKE_BINARY_DIR}
+	${CMAKE_SOURCE_DIR}/src/main/cmake/Tests/HasStdReinterpretPointerCast.cpp
+)
+
+if (REINTERPRET_POINTER_CAST_AVAILABLE)
+	message(STATUS "std::reinterpret_pointer_cast is available.")
+else ()
+	message(STATUS "std::reinterpret_pointer_cast is not available. Using custom reinterpret_pointer_cast")
+	set(BALAU_USE_CUSTOM_REINTERPRET_POINTER_CAST 1)
 endif ()

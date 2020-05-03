@@ -164,6 +164,10 @@ static_assert(sizeof(uint64_t)           == 8, "uint64_t is not 64 bits");
 	#include <string_view>
 #endif
 
+#ifdef BALAU_USE_CUSTOM_REINTERPRET_POINTER_CAST
+	#include <Balau/Type/Impl/ReinterpretPointerCast.hpp>
+#endif
+
 //////////////////////////////// Balau version ////////////////////////////////
 
 ///
