@@ -25,9 +25,6 @@
 
 #include <stack>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau::Lang {
 
 ///
@@ -1225,7 +1222,5 @@ template <typename TokenT> class IterativeScannedTokens final {
 };
 
 } // namespace Balau::Lang
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_LANG__SCANNED_TOKENS

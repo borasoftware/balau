@@ -17,10 +17,6 @@
 #include <memory>
 #include <thread>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
 namespace Balau {
 
 struct InjectorTest;
@@ -1404,5 +1400,3 @@ namespace {
 #endif
 
 } // namespace
-
-#pragma clang diagnostic pop

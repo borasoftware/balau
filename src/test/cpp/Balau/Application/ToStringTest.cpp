@@ -10,9 +10,6 @@
 
 #include <TestResources.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
 struct ToStringTest : public Balau::Testing::TestGroup<ToStringTest> {
 	ToStringTest() {
 		registerTest(&ToStringTest::toString_string,                      "toString_string");
@@ -529,5 +526,3 @@ struct ToStringTest : public Balau::Testing::TestGroup<ToStringTest> {
 		AssertThat(utf32Test.getDoubleAsString(), is(std::u32string(U"123.456")));
 	}
 };
-
-#pragma clang diagnostic pop

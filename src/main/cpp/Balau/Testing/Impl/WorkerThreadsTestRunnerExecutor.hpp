@@ -14,7 +14,7 @@
 #include <Balau/Container/ArrayBlockingQueue.hpp>
 #include <Balau/Testing/Impl/TestRunnerExecutor.hpp>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Test runner executor which implements the WorkerThreads execution model.
 class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
@@ -36,7 +36,7 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 	private: std::atomic_uint nextTestIndex;
 
 	public: WorkerThreadsTestRunnerExecutor(CompositeWriter & writer_,
-	                                        std::shared_ptr<Impl::TestReportGenerator> & reportGenerator_,
+	                                        std::shared_ptr<TestReportGenerator> & reportGenerator_,
 	                                        bool useNamespaces_,
 	                                        GroupedTestCaseMap & testCasesByGroup,
 	                                        const std::string & testList,
@@ -82,8 +82,8 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 		}
 	}
 
-	public: ExecutionModel getExecutionModel() const override {
-		return ExecutionModel::WorkerThreads;
+	public: Testing::ExecutionModel getExecutionModel() const override {
+		return Testing::ExecutionModel::WorkerThreads;
 	}
 
 	private: static void childThreadLogic(WorkerThreadsTestRunnerExecutor * self) {
@@ -99,6 +99,6 @@ class WorkerThreadsTestRunnerExecutor : public TestRunnerExecutor {
 	}
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__WORKER_THREADS_TEST_RUNNER_EXECUTOR

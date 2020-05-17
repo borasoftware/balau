@@ -19,10 +19,6 @@
 
 #include <Balau/Util/Vectors.hpp>
 
-// Avoid false positives.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau::Container {
 
 template <typename T> class ObjectTrie;
@@ -2354,7 +2350,5 @@ std::ostream & operator << (std::ostream & stream, const ObjectTrie<T> & trie) {
 }
 
 } // namespace Balau::Container
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__BALAU_TRIE

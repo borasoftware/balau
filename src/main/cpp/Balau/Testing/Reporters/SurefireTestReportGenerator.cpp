@@ -40,9 +40,9 @@ static size_t getResultCount(const std::vector<const Impl::TestResult *> & group
 	return std::accumulate(
 		  groupTestResults.begin()
 		, groupTestResults.end()
-		, 0U
+		, (size_t) 0U
 		, [resultType] (size_t count, const Impl::TestResult * testResult) {
-			return count + (testResult->result == resultType ? 1 : 0);
+			return count + (testResult->result == resultType ? 1U : 0U);
 		}
 	);
 }

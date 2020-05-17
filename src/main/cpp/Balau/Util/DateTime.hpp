@@ -41,7 +41,7 @@ struct DateTime final {
 	template <typename AllocatorT, typename Clock, typename Dur>
 	static U8String<AllocatorT> toString(const char * format, const std::chrono::time_point<Clock, Dur> & tp) {
 		U8OStringStream<AllocatorT> str;
-		Date::to_stream(str, format, tp);
+		date::to_stream(str, format, tp);
 		return str.str();
 	}
 
@@ -56,7 +56,7 @@ struct DateTime final {
 	template <typename Clock, typename Dur>
 	static std::string toString(const char * format, const std::chrono::time_point<Clock, Dur> & tp) {
 		std::ostringstream str;
-		Date::to_stream(str, format, tp);
+		date::to_stream(str, format, tp);
 		return str.str();
 	}
 
@@ -70,7 +70,7 @@ struct DateTime final {
 	///
 	template <typename Clock, typename Dur>
 	static void toString(std::ostream & stream, const char * format, const std::chrono::time_point<Clock, Dur> & tp) {
-		Date::to_stream(stream, format, tp);
+		date::to_stream(stream, format, tp);
 	}
 
 	///
@@ -87,7 +87,7 @@ struct DateTime final {
 
 		// TODO??
 		// The HH date library appears to do an abs(d), so
-		Date::to_stream(str, format, d);
+		date::to_stream(str, format, d);
 		return str.str();
 	}
 
@@ -105,7 +105,7 @@ struct DateTime final {
 
 		// TODO??
 		// The HH date library appears to do an abs(d), so
-		Date::to_stream(str, format, d);
+		date::to_stream(str, format, d);
 		return str.str();
 	}
 
@@ -119,7 +119,7 @@ struct DateTime final {
 	///
 	template <typename Rep, typename Period>
 	static void toString(std::ostream & stream, const char * format, const std::chrono::duration<Rep, Period> & d) {
-		Date::to_stream(stream, format, d);
+		date::to_stream(stream, format, d);
 	}
 
 	///
@@ -134,7 +134,7 @@ struct DateTime final {
 	static std::chrono::duration<Rep, Period> toDuration(const char * format, const std::string & s) {
 		std::istringstream str(s);
 		std::chrono::duration<Rep, Period> ret {};
-		Date::from_stream(str, format, ret);
+		date::from_stream(str, format, ret);
 		return ret;
 	}
 
@@ -154,7 +154,7 @@ struct DateTime final {
 ///
 template<typename Rep, typename Period>
 inline std::string toString(const std::chrono::duration<Rep, Period> & d) {
-	using namespace Balau::Date;
+	using namespace Balau::date;
 	std::ostringstream s;
 	s << d;
 	return s.str();
@@ -165,7 +165,7 @@ inline std::string toString(const std::chrono::duration<Rep, Period> & d) {
 ///
 template<typename Clock, typename Dur>
 inline std::string toString(const std::chrono::time_point<Clock, Dur> & tp) {
-	using namespace Balau::Date;
+	using namespace Balau::date;
 	std::ostringstream s;
 	s << tp;
 	return s.str();

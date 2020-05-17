@@ -37,7 +37,7 @@ inline void fromString(std::string & destination, std::string_view value) {
 /// @param destination the destination value that is set via assignment
 /// @param value the string view input
 ///
-inline void fromString(std::u16string & destination, std::string_view value) {
+inline void fromString(std::u16string& destination, std::string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char16_t, char>(std::string(value));
 }
 
@@ -49,6 +49,16 @@ inline void fromString(std::u16string & destination, std::string_view value) {
 ///
 inline void fromString(std::u32string & destination, std::string_view value) {
 	destination = boost::locale::conv::utf_to_utf<char32_t, char>(std::string(value));
+}
+
+///
+/// Compatibility function for Windows platform. Sets the destination value to a wstring version of the supplied UTF-8 string.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+///
+inline void fromString(std::wstring & destination, std::string_view value) {
+	destination = boost::locale::conv::utf_to_utf<wchar_t, char>(std::string(value));
 }
 
 ///
@@ -545,6 +555,16 @@ inline void fromString16(std::u32string & destination, std::u16string_view value
 }
 
 ///
+/// Compatibility function for Windows platform. Sets the destination value to a wstring version of the supplied UTF-16 string.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+///
+inline void fromString16(std::wstring & destination, std::u16string_view value) {
+	destination = boost::locale::conv::utf_to_utf<wchar_t, char16_t>(std::u16string(value));
+}
+
+///
 /// Sets the destination value to the first character in the supplied UTF-16 string.
 ///
 /// A ConversionException will be thrown under the following circumstances:
@@ -842,6 +862,16 @@ inline void fromString32(std::u16string & destination, std::u32string_view value
 ///
 inline void fromString32(std::u32string & destination, std::u32string_view value) {
 	destination = std::u32string(value.data(), value.length());
+}
+
+///
+/// Compatibility function for Windows platform. Sets the destination value to a wstring version of the supplied UTF-32 string.
+///
+/// @param destination the destination value that is set via assignment
+/// @param value the string view input
+///
+inline void fromString32(std::wstring & destination, std::u32string_view value) {
+	destination = boost::locale::conv::utf_to_utf<wchar_t, char32_t>(std::u32string(value));
 }
 
 ///

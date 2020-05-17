@@ -12,10 +12,10 @@
 #include "../Https.hpp"
 #include "../../Exception/ResourceExceptions.hpp"
 
-namespace Balau::Resource::Impl {
+namespace Balau::Impl {
 
-HttpsSource::HttpsSource(const Https & url_)
-	: https(std::make_unique<Https>(url_))
+HttpsSource::HttpsSource(const Resource::Https & url_)
+	: https(std::make_unique<Resource::Https>(url_))
 	, url(url_)
 	, client(createClient())
 	, responseBody(getBody())
@@ -36,7 +36,7 @@ std::streamsize HttpsSource::read(char * s, std::streamsize n) {
 	return bytesToProvide;
 }
 
-const Https & HttpsSource::getUrl() const {
+const Resource::Https & HttpsSource::getUrl() const {
 	return *https;
 }
 
@@ -60,4 +60,4 @@ std::vector<char> HttpsSource::getBody() {
 	return response.body();
 }
 
-} // namespace Balau::Resource::Impl
+} // namespace Balau::Impl

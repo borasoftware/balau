@@ -36,18 +36,18 @@
 // more than we need and do it early so windows.h doesn't get included
 // without these macros having been defined.
 // min/max macros interfere with the C++ versions.
-	#ifndef NOMINMAX
-		#define NOMINMAX
-	#endif
+#  ifndef NOMINMAX
+#    define NOMINMAX
+#  endif
 // We don't need all that Windows has to offer.
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN
+#  endif
 
 // for wcstombs
-	#ifndef _CRT_SECURE_NO_WARNINGS
-		#define _CRT_SECURE_NO_WARNINGS
-	#endif
+#  ifndef _CRT_SECURE_NO_WARNINGS
+#    define _CRT_SECURE_NO_WARNINGS
+#  endif
 
 // None of this happens with the MS SDK (at least VS14 which I tested), but:
 // Compiling with mingw, we get "error: 'KF_FLAG_DEFAULT' was not declared in this scope."
@@ -59,46 +59,48 @@
 // https://msdn.microsoft.com/en-nz/library/windows/desktop/aa383745(v=vs.85).aspx
 // that "If you define NTDDI_VERSION, you must also define _WIN32_WINNT."
 // So we declare we require Vista or greater.
-	#ifdef __MINGW32__
+#  ifdef __MINGW32__
 
-		#ifndef NTDDI_VERSION
-			#define NTDDI_VERSION 0x06000000
-			#define _WIN32_WINNT _WIN32_WINNT_VISTA
-		#elif NTDDI_VERSION < 0x06000000
-			#warning "If this fails to compile NTDDI_VERSION may be to low. See comments above."
-		#endif
-  // But once we define the values above we then get this linker error:
-  // "tz.cpp:(.rdata$.refptr.FOLDERID_Downloads[.refptr.FOLDERID_Downloads]+0x0): "
-  //     "undefined reference to `FOLDERID_Downloads'"
-  // which #include <initguid.h> cures see:
-  // https://support.microsoft.com/en-us/kb/130869
-		  #include <initguid.h>
-  // But with <initguid.h> included, the error moves on to:
-  // error: 'FOLDERID_Downloads' was not declared in this scope
-  // Which #include <knownfolders.h> cures.
-		  #include <knownfolders.h>
+#    ifndef NTDDI_VERSION
+#      define NTDDI_VERSION 0x06000000
+#      define _WIN32_WINNT _WIN32_WINNT_VISTA
+#    elif NTDDI_VERSION < 0x06000000
+#      warning "If this fails to compile NTDDI_VERSION may be to low. See comments above."
+#    endif
+// But once we define the values above we then get this linker error:
+// "tz.cpp:(.rdata$.refptr.FOLDERID_Downloads[.refptr.FOLDERID_Downloads]+0x0): "
+//     "undefined reference to `FOLDERID_Downloads'"
+// which #include <initguid.h> cures see:
+// https://support.microsoft.com/en-us/kb/130869
+#    include <initguid.h>
+// But with <initguid.h> included, the error moves on to:
+// error: 'FOLDERID_Downloads' was not declared in this scope
+// Which #include <knownfolders.h> cures.
+#    include <knownfolders.h>
 
-	  #endif  // __MINGW32__
+#  endif  // __MINGW32__
 
-	  #include <windows.h>
+#  include <windows.h>
+
 #endif  // _WIN32
 
 #include "tz_private.hpp"
 
 #ifdef __APPLE__
-	#include "date/ios.h"
+#  include "ios.hpp"
 #else
-	#define TARGET_OS_IPHONE 0
+#  define TARGET_OS_IPHONE 0
 #endif
 
 #if USE_OS_TZDB
-	#include <dirent.h>
+#  include <dirent.h>
 #endif
 
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include <cwchar>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -106,7 +108,7 @@
 #include <memory>
 
 #if USE_OS_TZDB
-	#include <queue>
+#  include <queue>
 #endif
 
 #include <sstream>
@@ -120,52 +122,55 @@
 // gcc/mingw supports unistd.h on Win32 but MSVC does not.
 
 #ifdef _WIN32
-	#include <io.h> // _unlink etc.
+#  ifdef WINAPI_FAMILY
 
-	#if defined(__clang__)
+#    include <winapifamily.h>
+
+#    if WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP
+#      define WINRT
+#      define INSTALL .
+#    endif
+#  endif
+
+#  include <io.h> // _unlink etc.
+
+#  if defined(__clang__)
 struct IUnknown;    // fix for issue with static_cast<> in objbase.h
-					//   (see https://github.com/philsquared/Catch/issues/690)
-						#endif
+						//   (see https://github.com/philsquared/Catch/issues/690)
+#  endif
 
-						#include <shlobj.h> // CoTaskFree, ShGetKnownFolderPath etc.
-						#if HAS_REMOTE_API
-							#include <direct.h> // _mkdir
-							#include <shellapi.h> // ShFileOperation etc.
-						#endif  // HAS_REMOTE_API
+#  include <shlobj.h> // CoTaskFree, ShGetKnownFolderPath etc.
+
+#  if HAS_REMOTE_API
+#    include <direct.h> // _mkdir
+#    include <shellapi.h> // ShFileOperation etc.
+#  endif  // HAS_REMOTE_API
 #else   // !_WIN32
-
-	#include <unistd.h>
-
-	#if !USE_OS_TZDB
-
-		#include <wordexp.h>
-
-	#endif
-
-	#include <limits.h>
-	#include <string.h>
-
-	#if !USE_SHELL_API
-
-		#include <sys/stat.h>
-		#include <sys/fcntl.h>
-		#include <dirent.h>
-		#include <cstring>
-		#include <sys/wait.h>
-		#include <sys/types.h>
-
-	#endif //!USE_SHELL_API
+#  include <unistd.h>
+#  if !USE_OS_TZDB
+#    include <wordexp.h>
+#  endif
+#  include <limits.h>
+#  include <string.h>
+#  if !USE_SHELL_API
+#    include <sys/stat.h>
+#    include <sys/fcntl.h>
+#    include <dirent.h>
+#    include <cstring>
+#    include <sys/wait.h>
+#    include <sys/types.h>
+#  endif //!USE_SHELL_API
 #endif  // !_WIN32
 
 #if HAS_REMOTE_API
 // Note curl includes windows.h so we must include curl AFTER definitions of things
-// that effect windows.h such as NOMINMAX.
-	#if defined(_MSC_VER) && defined(SHORTENED_CURL_INCLUDE)
-// For rmt_curl nuget package
-		#include <curl.h>
-	#else
-		#include <curl/curl.h>
-	#endif
+   // that affect windows.h such as NOMINMAX.
+   #if defined(_MSC_VER) && defined(SHORTENED_CURL_INCLUDE)
+   // For rmt_curl nuget package
+   #  include <curl.h>
+   #else
+   #  include <curl/curl.h>
+   #endif
 #endif
 
 #ifdef _WIN32
@@ -176,84 +181,93 @@ static CONSTDATA char folder_delimiter = '/';
 
 #if defined(__GNUC__) && __GNUC__ < 5
 // GCC 4.9 Bug 61489 Wrong warning with -Wmissing-field-initializers
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif  // defined(__GNUC__) && __GNUC__ < 5
 
 #if !USE_OS_TZDB
 
-	#ifdef _WIN32
+#  ifdef _WIN32
+#    ifndef WINRT
 
-namespace
-{
-	struct task_mem_deleter
-	{
-		void operator()(wchar_t buf[])
-		{
-			if (buf != nullptr)
-				CoTaskMemFree(buf);
+namespace {
+struct task_mem_deleter {
+	void operator()(wchar_t buf[]) {
+		if (buf != nullptr) {
+			CoTaskMemFree(buf);
 		}
-	};
-	using co_task_mem_ptr = std::unique_ptr<wchar_t[], task_mem_deleter>;
+	}
+};
+
+using co_task_mem_ptr = std::unique_ptr<wchar_t[], task_mem_deleter>;
 }
 
 // We might need to know certain locations even if not using the remote API,
 // so keep these routines out of that block for now.
-static
-std::string
-get_known_folder(const GUID& folderid)
-{
+static std::string get_known_folder(const GUID &folderid) {
 	std::string folder;
 	PWSTR pfolder = nullptr;
 	HRESULT hr = SHGetKnownFolderPath(folderid, KF_FLAG_DEFAULT, nullptr, &pfolder);
-	if (SUCCEEDED(hr))
-	{
+	if (SUCCEEDED(hr)) {
 		co_task_mem_ptr folder_ptr(pfolder);
-		folder = std::string(folder_ptr.get(), folder_ptr.get() + wcslen(folder_ptr.get()));
+		const wchar_t *fptr = folder_ptr.get();
+		auto state = std::mbstate_t();
+		const auto required = std::wcsrtombs(nullptr, &fptr, 0, &state);
+		if (required != 0 && required != std::size_t(-1)) {
+			folder.resize(required);
+			std::wcsrtombs(&folder[0], &fptr, folder.size(), &state);
+		}
 	}
 	return folder;
 }
 
+#      ifndef INSTALL
+
 // Usually something like "c:\Users\username\Downloads".
+static std::string get_download_folder() {
+	return get_known_folder(FOLDERID_Downloads);
+}
+
+#      endif  // !INSTALL
+
+#    endif // WINRT
+#  else // !_WIN32
+
+#    if !defined(INSTALL)
+
+static
+std::string
+expand_path(std::string path)
+{
+#      if TARGET_OS_IPHONE
+	return date::iOSUtils::get_tzdata_path();
+	#      else  // !TARGET_OS_IPHONE
+	::wordexp_t w{};
+	std::unique_ptr<::wordexp_t, void(*)(::wordexp_t*)> hold{&w, ::wordfree};
+	::wordexp(path.c_str(), &w, 0);
+	if (w.we_wordc != 1)
+		throw std::runtime_error("Cannot expand path: " + path);
+	path = w.we_wordv[0];
+	return path;
+	#      endif  // !TARGET_OS_IPHONE
+}
+
 static
 std::string
 get_download_folder()
 {
-	return get_known_folder(FOLDERID_Downloads);
-}
-
-	#else // !_WIN32
-
-		#if !defined(INSTALL) || HAS_REMOTE_API
-
-static std::string expand_path(std::string path) {
-	#if TARGET_OS_IPHONE
-	return Balau::Date::iOSUtils::get_tzdata_path();
-	#else  // !TARGET_OS_IPHONE
-	::wordexp_t w {};
-	std::unique_ptr<::wordexp_t, void (*)(::wordexp_t *)> hold { &w, ::wordfree };
-	::wordexp(path.c_str(), &w, 0);
-	if (w.we_wordc != 1) {
-		throw std::runtime_error("Cannot expand path: " + path);
-	}
-	path = w.we_wordv[0];
-	return path;
-	#endif  // !TARGET_OS_IPHONE
-}
-
-static std::string get_download_folder() {
 	return expand_path("~/Downloads");
 }
 
-		#endif // !defined(INSTALL) || HAS_REMOTE_API
+#    endif // !defined(INSTALL)
 
-	#endif  // !_WIN32
+#  endif  // !_WIN32
 
 #endif  // !USE_OS_TZDB
 
 namespace Balau {
 
-namespace Date {
+namespace date {
 // +---------------------+
 // | Begin Configuration |
 // +---------------------+
@@ -262,7 +276,7 @@ using namespace detail;
 
 #if !USE_OS_TZDB
 
-static std::string & access_install() {
+static std::string &access_install() {
 	static std::string install
 	#ifndef INSTALL
 
@@ -270,28 +284,28 @@ static std::string & access_install() {
 
 	#else   // !INSTALL
 
-		#define STRINGIZEIMP(x) #x
-		#define STRINGIZE(x) STRINGIZEIMP(x)
+	#  define STRINGIZEIMP(x) #x
+	#  define STRINGIZE(x) STRINGIZEIMP(x)
 
 	= STRINGIZE(INSTALL) + std::string(1, folder_delimiter) + "tzdata";
 
-		#undef STRINGIZEIMP
-		#undef STRINGIZE
+	#undef STRINGIZEIMP
+	#undef STRINGIZE
 	#endif  // !INSTALL
 
 	return install;
 }
 
-void set_install(const std::string & s) {
+void set_install(const std::string &s) {
 	access_install() = s;
 }
 
-static const std::string & get_install() {
-	static const std::string & ref = access_install();
+static const std::string &get_install() {
+	static const std::string &ref = access_install();
 	return ref;
 }
 
-	#if HAS_REMOTE_API
+#if HAS_REMOTE_API
 static
 std::string
 get_download_gz_file(const std::string& version)
@@ -299,16 +313,16 @@ get_download_gz_file(const std::string& version)
 	auto file = get_install() + version + ".tar.gz";
 	return file;
 }
-	#endif  // HAS_REMOTE_API
+#endif  // HAS_REMOTE_API
 
 #endif  // !USE_OS_TZDB
 
 // These can be used to reduce the range of the database to save memory
-CONSTDATA auto min_year = Balau::Date::year::min();
-CONSTDATA auto max_year = Balau::Date::year::max();
+CONSTDATA auto min_year = date::year::min();
+CONSTDATA auto max_year = date::year::max();
 
-CONSTDATA auto min_day = Balau::Date::jan / 1;
-CONSTDATA auto max_day = Balau::Date::dec / 31;
+CONSTDATA auto min_day = date::January / 1;
+CONSTDATA auto max_day = date::December / 31;
 
 #if USE_OS_TZDB
 
@@ -318,25 +332,27 @@ CONSTCD14 const sys_seconds min_seconds = sys_days(min_year/min_day);
 
 #ifndef _WIN32
 
-static std::string discover_tz_dir() {
+static
+std::string
+discover_tz_dir()
+{
 	struct stat sb;
 	using namespace std;
-		#ifndef __APPLE__
+	#  ifndef __APPLE__
 	CONSTDATA auto tz_dir_default = "/usr/share/zoneinfo";
 	CONSTDATA auto tz_dir_buildroot = "/usr/share/zoneinfo/uclibc";
 
 	// Check special path which is valid for buildroot with uclibc builds
-	if (stat(tz_dir_buildroot, &sb) == 0 && S_ISDIR(sb.st_mode)) {
+	if(stat(tz_dir_buildroot, &sb) == 0 && S_ISDIR(sb.st_mode))
 		return tz_dir_buildroot;
-	} else if (stat(tz_dir_default, &sb) == 0 && S_ISDIR(sb.st_mode)) {
+	else if(stat(tz_dir_default, &sb) == 0 && S_ISDIR(sb.st_mode))
 		return tz_dir_default;
-	} else {
+	else
 		throw runtime_error("discover_tz_dir failed to find zoneinfo\n");
-	}
-		#else  // __APPLE__
-			#if TARGET_OS_IPHONE
+		#  else  // __APPLE__
+		#      if TARGET_OS_IPHONE
 	return "/var/db/timezone/zoneinfo";
-			#else
+	#      else
 	CONSTDATA auto timezone = "/etc/localtime";
 	if (!(lstat(timezone, &sb) == 0 && S_ISLNK(sb.st_mode) && sb.st_size > 0))
 		throw runtime_error("discover_tz_dir failed\n");
@@ -353,11 +369,14 @@ static std::string discover_tz_dir() {
 	if (i == string::npos)
 		throw runtime_error("discover_tz_dir failed to find '/'\n");
 	return result.substr(0, i);
-			#endif
-		#endif  // __APPLE__
+	#      endif
+	#  endif  // __APPLE__
 }
 
-static const std::string & get_tz_dir() {
+static
+const std::string&
+get_tz_dir()
+{
 	static const std::string tz_dir = discover_tz_dir();
 	return tz_dir;
 }
@@ -368,12 +387,6 @@ static const std::string & get_tz_dir() {
 // | End Configuration |
 // +-------------------+
 
-namespace detail {
-struct undocumented {
-	explicit undocumented() = default;
-};
-}
-
 #ifndef _MSC_VER
 static_assert(min_year <= max_year, "Configuration error");
 #endif
@@ -381,7 +394,7 @@ static_assert(min_year <= max_year, "Configuration error");
 static std::unique_ptr<tzdb> init_tzdb();
 
 tzdb_list::~tzdb_list() {
-	const tzdb * ptr = head_;
+	const tzdb *ptr = head_;
 	head_ = nullptr;
 	while (ptr != nullptr) {
 		auto next = ptr->next;
@@ -390,11 +403,11 @@ tzdb_list::~tzdb_list() {
 	}
 }
 
-tzdb_list::tzdb_list(tzdb_list && x) noexcept
-	: head_ { x.head_.exchange(nullptr) } {
+tzdb_list::tzdb_list(tzdb_list &&x) noexcept
+	: head_{x.head_.exchange(nullptr)} {
 }
 
-void tzdb_list::push_front(tzdb * tzdb) noexcept {
+void tzdb_list::push_front(tzdb *tzdb) noexcept {
 	tzdb->next = head_;
 	head_ = tzdb;
 }
@@ -407,7 +420,7 @@ tzdb_list::const_iterator tzdb_list::erase_after(const_iterator p) noexcept {
 }
 
 struct tzdb_list::undocumented_helper {
-	static void push_front(tzdb_list & db_list, tzdb * tzdb) noexcept {
+	static void push_front(tzdb_list &db_list, tzdb *tzdb) noexcept {
 		db_list.push_front(tzdb);
 	}
 };
@@ -418,59 +431,46 @@ static tzdb_list create_tzdb() {
 	return tz_db;
 }
 
-tzdb_list & get_tzdb_list() {
+tzdb_list &get_tzdb_list() {
 	static tzdb_list tz_db = create_tzdb();
 	return tz_db;
 }
 
 #if !USE_OS_TZDB
 
-	#ifdef _WIN32
+#ifdef _WIN32
 
-static
-void
-sort_zone_mappings(std::vector<Balau::Date::detail::timezone_mapping>& mappings)
-{
+static void sort_zone_mappings(std::vector<date::detail::timezone_mapping> &mappings) {
 	std::sort(mappings.begin(), mappings.end(),
-		[](const Balau::Date::detail::timezone_mapping& lhs,
-		   const Balau::Date::detail::timezone_mapping& rhs)->bool
-	{
-		auto other_result = lhs.other.compare(rhs.other);
-		if (other_result < 0)
-			return true;
-		else if (other_result == 0)
-		{
-			auto territory_result = lhs.territory.compare(rhs.territory);
-			if (territory_result < 0)
-				return true;
-			else if (territory_result == 0)
-			{
-				if (lhs.type < rhs.type)
-					return true;
-			}
-		}
-		return false;
-	});
+	          [](const date::detail::timezone_mapping &lhs, const date::detail::timezone_mapping &rhs) -> bool {
+		          auto other_result = lhs.other.compare(rhs.other);
+		          if (other_result < 0) {
+			          return true;
+		          } else if (other_result == 0) {
+			          auto territory_result = lhs.territory.compare(rhs.territory);
+			          if (territory_result < 0) {
+				          return true;
+			          } else if (territory_result == 0) {
+				          if (lhs.type < rhs.type) {
+					          return true;
+				          }
+			          }
+		          }
+		          return false;
+	          });
 }
 
-static
-bool
-native_to_standard_timezone_name(const std::string& native_tz_name,
-								 std::string& standard_tz_name)
-{
+static bool native_to_standard_timezone_name(const std::string &native_tz_name, std::string &standard_tz_name) {
 	// TOOD! Need be a case insensitive compare?
-	if (native_tz_name == "UTC")
-	{
+	if (native_tz_name == "UTC") {
 		standard_tz_name = "Etc/UTC";
 		return true;
 	}
 	standard_tz_name.clear();
 	// TODO! we can improve on linear search.
-	const auto& mappings = Balau::Date::get_tzdb().mappings;
-	for (const auto& tzm : mappings)
-	{
-		if (tzm.other == native_tz_name)
-		{
+	const auto &mappings = date::get_tzdb().mappings;
+	for (const auto &tzm : mappings) {
+		if (tzm.other == native_tz_name) {
 			standard_tz_name = tzm.type;
 			return true;
 		}
@@ -479,21 +479,17 @@ native_to_standard_timezone_name(const std::string& native_tz_name,
 }
 
 // Parse this XML file:
-// http://unicode.org/repos/cldr/trunk/common/supplemental/windowsZones.xml
+// https://raw.githubusercontent.com/unicode-org/cldr/master/common/supplemental/windowsZones.xml
 // The parsing method is designed to be simple and quick. It is not overly
 // forgiving of change but it should diagnose basic format issues.
 // See timezone_mapping structure for more info.
-static
-std::vector<detail::timezone_mapping>
-load_timezone_mappings_from_xml_file(const std::string& input_path)
-{
+static std::vector<detail::timezone_mapping> load_timezone_mappings_from_xml_file(const std::string &input_path) {
 	std::size_t line_num = 0;
 	std::vector<detail::timezone_mapping> mappings;
 	std::string line;
 
 	std::ifstream is(input_path);
-	if (!is.is_open())
-	{
+	if (!is.is_open()) {
 		// We don't emit file exceptions because that's an implementation detail.
 		std::string msg = "Error opening time zone mapping file \"";
 		msg += input_path;
@@ -501,8 +497,7 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 		throw std::runtime_error(msg);
 	}
 
-	auto error = [&input_path, &line_num](const char* info)
-	{
+	auto error = [&input_path, &line_num](const char *info) {
 		std::string msg = "Error loading time zone mapping file \"";
 		msg += input_path;
 		msg += "\" at line ";
@@ -512,24 +507,22 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 		throw std::runtime_error(msg);
 	};
 	// [optional space]a="b"
-	auto read_attribute = [&line, &error]
-						  (const char* name, std::string& value, std::size_t startPos)
-						  ->std::size_t
-	{
+	auto read_attribute = [&line, &error](const char *name, std::string &value, std::size_t startPos) -> std::size_t {
 		value.clear();
 		// Skip leading space before attribute name.
 		std::size_t spos = line.find_first_not_of(' ', startPos);
-		if (spos == std::string::npos)
+		if (spos == std::string::npos) {
 			spos = startPos;
+		}
 		// Assume everything up to next = is the attribute name
 		// and that an = will always delimit that.
 		std::size_t epos = line.find('=', spos);
-		if (epos == std::string::npos)
+		if (epos == std::string::npos) {
 			error("Expected \'=\' right after attribute name.");
+		}
 		std::size_t name_len = epos - spos;
 		// Expect the name we find matches the name we expect.
-		if (line.compare(spos, name_len, name) != 0)
-		{
+		if (line.compare(spos, name_len, name) != 0) {
 			std::string msg;
 			msg = "Expected attribute name \'";
 			msg += name;
@@ -540,18 +533,16 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 		}
 		++epos; // Skip the '=' that is after the attribute name.
 		spos = epos;
-		if (spos < line.length() && line[spos] == '\"')
+		if (spos < line.length() && line[spos] == '\"') {
 			++spos; // Skip the quote that is before the attribute value.
-		else
-		{
+		} else {
 			std::string msg = "Expected '\"' to begin value of attribute \'";
 			msg += name;
 			msg += "\'.";
 			error(msg.c_str());
 		}
 		epos = line.find('\"', spos);
-		if (epos == std::string::npos)
-		{
+		if (epos == std::string::npos) {
 			std::string msg = "Expected '\"' to end value of attribute \'";
 			msg += name;
 			msg += "\'.";
@@ -569,16 +560,14 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 	bool mapTimezonesCloseTagFound = false;
 	std::size_t mapZonePos = std::string::npos;
 	std::size_t mapTimezonesPos = std::string::npos;
-	CONSTDATA char mapTimeZonesOpeningTag[] = { "<mapTimezones " };
-	CONSTDATA char mapZoneOpeningTag[] = { "<mapZone " };
-	CONSTDATA std::size_t mapZoneOpeningTagLen = sizeof(mapZoneOpeningTag) /
-												 sizeof(mapZoneOpeningTag[0]) - 1;
-	while (!mapTimezonesOpenTagFound)
-	{
+	CONSTDATA char mapTimeZonesOpeningTag[] = {"<mapTimezones "};
+	CONSTDATA char mapZoneOpeningTag[] = {"<mapZone "};
+	CONSTDATA
+	std::size_t mapZoneOpeningTagLen = sizeof(mapZoneOpeningTag) / sizeof(mapZoneOpeningTag[0]) - 1;
+	while (!mapTimezonesOpenTagFound) {
 		std::getline(is, line);
 		++line_num;
-		if (is.eof())
-		{
+		if (is.eof()) {
 			// If there is no mapTimezones tag is it an error?
 			// Perhaps if there are no mapZone mappings it might be ok for
 			// its parent mapTimezones element to be missing?
@@ -596,19 +585,19 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 	// NOTE: We could extract the version info that follows the opening
 	// mapTimezones tag and compare that to the version of other data we have.
 	// I would have expected them to be kept in synch but testing has shown
-	// it is typically does not match anyway. So what's the point?
-	while (!mapTimezonesCloseTagFound)
-	{
+	// it typically does not match anyway. So what's the point?
+	while (!mapTimezonesCloseTagFound) {
 		std::ws(is);
 		std::getline(is, line);
 		++line_num;
-		if (is.eof())
+		if (is.eof()) {
 			error("Expected a mapTimezones closing tag.");
-		if (line.empty())
+		}
+		if (line.empty()) {
 			continue;
+		}
 		mapZonePos = line.find(mapZoneOpeningTag);
-		if (mapZonePos != std::string::npos)
-		{
+		if (mapZonePos != std::string::npos) {
 			mapZonePos += mapZoneOpeningTagLen;
 			detail::timezone_mapping zm{};
 			std::size_t pos = read_attribute("other", zm.other, mapZonePos);
@@ -620,12 +609,12 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 		}
 		mapTimezonesPos = line.find("</mapTimezones>");
 		mapTimezonesCloseTagFound = (mapTimezonesPos != std::string::npos);
-		if (!mapTimezonesCloseTagFound)
-		{
+		if (!mapTimezonesCloseTagFound) {
 			std::size_t commentPos = line.find("<!--");
-			if (commentPos == std::string::npos)
+			if (commentPos == std::string::npos) {
 				error("Unexpected mapping record found. A xml mapZone or comment "
-					  "attribute or mapTimezones closing tag was expected.");
+				      "attribute or mapTimezones closing tag was expected.");
+			}
 		}
 	}
 
@@ -633,11 +622,11 @@ load_timezone_mappings_from_xml_file(const std::string& input_path)
 	return mappings;
 }
 
-	#endif  // _WIN32
+#endif  // _WIN32
 
 // Parsing helpers
 
-static std::string parse3(std::istream & in) {
+static std::string parse3(std::istream &in) {
 	std::string r(3, ' ');
 	ws(in);
 	r[0] = static_cast<char>(in.get());
@@ -646,8 +635,8 @@ static std::string parse3(std::istream & in) {
 	return r;
 }
 
-static unsigned parse_dow(std::istream & in) {
-	CONSTDATA char * const dow_names[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+static unsigned parse_dow(std::istream &in) {
+	CONSTDATA char *const dow_names[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 	auto s = parse3(in);
 	auto dow = std::find(std::begin(dow_names), std::end(dow_names), s) - dow_names;
 	if (dow >= std::end(dow_names) - std::begin(dow_names)) {
@@ -656,9 +645,9 @@ static unsigned parse_dow(std::istream & in) {
 	return static_cast<unsigned>(dow);
 }
 
-static unsigned parse_month(std::istream & in) {
-	CONSTDATA char * const month_names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
-	                                         "Nov", "Dec" };
+static unsigned parse_month(std::istream &in) {
+	CONSTDATA char *const month_names[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
+	                                       "Dec"};
 	auto s = parse3(in);
 	auto m = std::find(std::begin(month_names), std::end(month_names), s) - month_names;
 	if (m >= std::end(month_names) - std::begin(month_names)) {
@@ -667,25 +656,25 @@ static unsigned parse_month(std::istream & in) {
 	return static_cast<unsigned>(++m);
 }
 
-static std::chrono::seconds parse_unsigned_time(std::istream & in) {
+static std::chrono::seconds parse_unsigned_time(std::istream &in) {
 	using namespace std::chrono;
 	int x;
 	in >> x;
-	auto r = seconds{ hours{ x }};
+	auto r = seconds{hours{x}};
 	if (!in.eof() && in.peek() == ':') {
 		in.get();
 		in >> x;
-		r += minutes{ x };
+		r += minutes{x};
 		if (!in.eof() && in.peek() == ':') {
 			in.get();
 			in >> x;
-			r += seconds{ x };
+			r += seconds{x};
 		}
 	}
 	return r;
 }
 
-static std::chrono::seconds parse_signed_time(std::istream & in) {
+static std::chrono::seconds parse_signed_time(std::istream &in) {
 	ws(in);
 	auto sign = 1;
 	if (in.peek() == '-') {
@@ -700,8 +689,8 @@ static std::chrono::seconds parse_signed_time(std::istream & in) {
 // MonthDayTime
 
 detail::MonthDayTime::MonthDayTime(local_seconds tp, tz timezone) : zone_(timezone) {
-	using namespace Balau::Date;
-	const auto dp = Balau::Date::floor<days>(tp);
+	using namespace date;
+	const auto dp = date::floor<days>(tp);
 	const auto hms = make_time(tp - dp);
 	const auto ymd = year_month_day(dp);
 	u = ymd.month() / ymd.day();
@@ -710,34 +699,37 @@ detail::MonthDayTime::MonthDayTime(local_seconds tp, tz timezone) : zone_(timezo
 	s_ = hms.seconds();
 }
 
-detail::MonthDayTime::MonthDayTime(const Balau::Date::month_day & md, tz timezone) : zone_(timezone) {
+detail::MonthDayTime::MonthDayTime(const date::month_day &md, tz timezone) : zone_(timezone) {
 	u = md;
 }
 
-Balau::Date::day detail::MonthDayTime::day() const {
+date::day detail::MonthDayTime::day() const {
 	switch (type_) {
-		case month_day:return u.month_day_.day();
-		case month_last_dow:return Balau::Date::day{ 31 };
+		case month_day:
+			return u.month_day_.day();
+		case month_last_dow:
+			return date::day{31};
 		case lteq:
-		case gteq:break;
+		case gteq:
+			break;
 	}
 	return u.month_day_weekday_.month_day_.day();
 }
 
-Balau::Date::month detail::MonthDayTime::month() const {
+date::month detail::MonthDayTime::month() const {
 	switch (type_) {
-		case month_day:return u.month_day_.month();
-		case month_last_dow:return u.month_weekday_last_.month();
+		case month_day:
+			return u.month_day_.month();
+		case month_last_dow:
+			return u.month_weekday_last_.month();
 		case lteq:
-		case gteq:break;
+		case gteq:
+			break;
 	}
 	return u.month_day_weekday_.month_day_.month();
 }
 
-int detail::MonthDayTime::compare(Balau::Date::year y,
-                                  const MonthDayTime & x,
-                                  Balau::Date::year yx,
-                                  std::chrono::seconds offset,
+int detail::MonthDayTime::compare(date::year y, const MonthDayTime &x, date::year yx, std::chrono::seconds offset,
                                   std::chrono::minutes prev_save) const {
 	if (zone_ != x.zone_) {
 		auto dp0 = to_sys_days(y);
@@ -777,8 +769,8 @@ int detail::MonthDayTime::compare(Balau::Date::year y,
 	return t0 < t1 ? -1 : t0 == t1 ? 0 : 1;
 }
 
-sys_seconds detail::MonthDayTime::to_sys(Balau::Date::year y, std::chrono::seconds offset, std::chrono::seconds save) const {
-	using namespace Balau::Date;
+sys_seconds detail::MonthDayTime::to_sys(date::year y, std::chrono::seconds offset, std::chrono::seconds save) const {
+	using namespace date;
 	using namespace std::chrono;
 	auto until_utc = to_time_point(y);
 	if (zone_ == tz::standard) {
@@ -789,34 +781,37 @@ sys_seconds detail::MonthDayTime::to_sys(Balau::Date::year y, std::chrono::secon
 	return until_utc;
 }
 
-detail::MonthDayTime::U & detail::MonthDayTime::U::operator =(const Balau::Date::month_day & x) {
+detail::MonthDayTime::U &detail::MonthDayTime::U::operator=(const date::month_day &x) {
 	month_day_ = x;
 	return *this;
 }
 
-detail::MonthDayTime::U & detail::MonthDayTime::U::operator =(const Balau::Date::month_weekday_last & x) {
+detail::MonthDayTime::U &detail::MonthDayTime::U::operator=(const date::month_weekday_last &x) {
 	month_weekday_last_ = x;
 	return *this;
 }
 
-detail::MonthDayTime::U & detail::MonthDayTime::U::operator =(const pair & x) {
+detail::MonthDayTime::U &detail::MonthDayTime::U::operator=(const pair &x) {
 	month_day_weekday_ = x;
 	return *this;
 }
 
-Balau::Date::sys_days detail::MonthDayTime::to_sys_days(Balau::Date::year y) const {
+date::sys_days detail::MonthDayTime::to_sys_days(date::year y) const {
 	using namespace std::chrono;
-	using namespace Balau::Date;
+	using namespace date;
 	switch (type_) {
-		case month_day:return sys_days(y / u.month_day_);
-		case month_last_dow:return sys_days(y / u.month_weekday_last_);
+		case month_day:
+			return sys_days(y / u.month_day_);
+		case month_last_dow:
+			return sys_days(y / u.month_weekday_last_);
 		case lteq: {
 			auto const x = y / u.month_day_weekday_.month_day_;
 			auto const wd1 = weekday(static_cast<sys_days>(x));
 			auto const wd0 = u.month_day_weekday_.weekday_;
 			return sys_days(x) - (wd1 - wd0);
 		}
-		case gteq:break;
+		case gteq:
+			break;
 	}
 	auto const x = y / u.month_day_weekday_.month_day_;
 	auto const wd1 = u.month_day_weekday_.weekday_;
@@ -824,16 +819,17 @@ Balau::Date::sys_days detail::MonthDayTime::to_sys_days(Balau::Date::year y) con
 	return sys_days(x) + (wd1 - wd0);
 }
 
-sys_seconds detail::MonthDayTime::to_time_point(Balau::Date::year y) const {
+sys_seconds detail::MonthDayTime::to_time_point(date::year y) const {
 	// Add seconds first to promote to largest rep early to prevent overflow
 	return to_sys_days(y) + s_ + h_ + m_;
 }
 
-void detail::MonthDayTime::canonicalize(Balau::Date::year y) {
+void detail::MonthDayTime::canonicalize(date::year y) {
 	using namespace std::chrono;
-	using namespace Balau::Date;
+	using namespace date;
 	switch (type_) {
-		case month_day:return;
+		case month_day:
+			return;
 		case month_last_dow: {
 			auto const ymd = year_month_day(sys_days(y / u.month_weekday_last_));
 			u.month_day_ = ymd.month() / ymd.day();
@@ -861,8 +857,8 @@ void detail::MonthDayTime::canonicalize(Balau::Date::year y) {
 	}
 }
 
-std::istream & detail::operator >>(std::istream & is, MonthDayTime & x) {
-	using namespace Balau::Date;
+std::istream &detail::operator>>(std::istream &is, MonthDayTime &x) {
+	using namespace date;
 	using namespace std::chrono;
 	assert(((std::ios::failbit | std::ios::badbit) & is.exceptions()) == (std::ios::failbit | std::ios::badbit));
 	x = MonthDayTime{};
@@ -875,13 +871,13 @@ std::istream & detail::operator >>(std::istream & is, MonthDayTime & x) {
 				}
 				auto dow = parse_dow(is);
 				x.type_ = MonthDayTime::month_last_dow;
-				x.u = Balau::Date::month(m) / weekday(dow)[last];
+				x.u = date::month(m) / weekday(dow)[last];
 			} else if (std::isalpha(is.peek())) {
 				auto dow = parse_dow(is);
-				char c {};
+				char c{};
 				is >> c;
 				if (c == '<' || c == '>') {
-					char c2 {};
+					char c2{};
 					is >> c2;
 					if (c2 != '=') {
 						throw std::runtime_error(std::string("bad operator: ") + c + c2);
@@ -892,7 +888,7 @@ std::istream & detail::operator >>(std::istream & is, MonthDayTime & x) {
 						throw std::runtime_error(std::string("bad operator: ") + c + c2 + std::to_string(d));
 					}
 					x.type_ = c == '<' ? MonthDayTime::lteq : MonthDayTime::gteq;
-					x.u = MonthDayTime::pair{ Balau::Date::month(m) / d, Balau::Date::weekday(dow) };
+					x.u = MonthDayTime::pair{date::month(m) / d, date::weekday(dow)};
 				} else {
 					throw std::runtime_error(std::string("bad operator: ") + c);
 				}
@@ -904,48 +900,52 @@ std::istream & detail::operator >>(std::istream & is, MonthDayTime & x) {
 					throw std::runtime_error(std::string("day of month: ") + std::to_string(d));
 				}
 				x.type_ = MonthDayTime::month_day;
-				x.u = Balau::Date::month(m) / d;
+				x.u = date::month(m) / d;
 			}
 			if (!is.eof() && ws(is) && !is.eof() && is.peek() != '#') {
 				int t;
 				is >> t;
-				x.h_ = hours{ t };
+				x.h_ = hours{t};
 				if (!is.eof() && is.peek() == ':') {
 					is.get();
 					is >> t;
-					x.m_ = minutes{ t };
+					x.m_ = minutes{t};
 					if (!is.eof() && is.peek() == ':') {
 						is.get();
 						is >> t;
-						x.s_ = seconds{ t };
+						x.s_ = seconds{t};
 					}
 				}
 				if (!is.eof() && std::isalpha(is.peek())) {
 					char c;
 					is >> c;
 					switch (c) {
-						case 's':x.zone_ = tz::standard;
+						case 's':
+							x.zone_ = tz::standard;
 							break;
-						case 'u':x.zone_ = tz::utc;
+						case 'u':
+							x.zone_ = tz::utc;
 							break;
 					}
 				}
 			}
 		} else {
-			x.u = month{ m } / 1;
+			x.u = month{m} / 1;
 		}
 	}
 	return is;
 }
 
-std::ostream & detail::operator <<(std::ostream & os, const MonthDayTime & x) {
+std::ostream &detail::operator<<(std::ostream &os, const MonthDayTime &x) {
 	switch (x.type_) {
-		case MonthDayTime::month_day:os << x.u.month_day_ << "                  ";
+		case MonthDayTime::month_day:
+			os << x.u.month_day_ << "                  ";
 			break;
-		case MonthDayTime::month_last_dow:os << x.u.month_weekday_last_ << "           ";
+		case MonthDayTime::month_last_dow:
+			os << x.u.month_weekday_last_ << "           ";
 			break;
-		case MonthDayTime::lteq: os << x.u.month_day_weekday_.weekday_ << " on or before "
-		                            << x.u.month_day_weekday_.month_day_ << "  ";
+		case MonthDayTime::lteq:
+			os << x.u.month_day_weekday_.weekday_ << " on or before " << x.u.month_day_weekday_.month_day_ << "  ";
 			break;
 		case MonthDayTime::gteq:
 			if ((static_cast<unsigned>(x.day()) - 1) % 7 == 0) {
@@ -957,7 +957,7 @@ std::ostream & detail::operator <<(std::ostream & os, const MonthDayTime & x) {
 			}
 			break;
 	}
-	os << Balau::Date::make_time(x.s_ + x.h_ + x.m_);
+	os << date::make_time(x.s_ + x.h_ + x.m_);
 	if (x.zone_ == tz::utc) {
 		os << "UTC   ";
 	} else if (x.zone_ == tz::standard) {
@@ -970,9 +970,9 @@ std::ostream & detail::operator <<(std::ostream & os, const MonthDayTime & x) {
 
 // Rule
 
-detail::Rule::Rule(const std::string & s) {
+detail::Rule::Rule(const std::string &s) {
 	try {
-		using namespace Balau::Date;
+		using namespace date;
 		using namespace std::chrono;
 		std::istringstream in(s);
 		in.exceptions(std::ios::failbit | std::ios::badbit);
@@ -989,7 +989,7 @@ detail::Rule::Rule(const std::string & s) {
 			}
 		} else {
 			in >> x;
-			starting_year_ = year{ x };
+			starting_year_ = year{x};
 		}
 		std::ws(in);
 		if (std::isalpha(in.peek())) {
@@ -1003,7 +1003,7 @@ detail::Rule::Rule(const std::string & s) {
 			}
 		} else {
 			in >> x;
-			ending_year_ = year{ x };
+			ending_year_ = year{x};
 		}
 		in >> word;  // TYPE (always "-")
 		assert(word == "-");
@@ -1013,7 +1013,7 @@ detail::Rule::Rule(const std::string & s) {
 		if (abbrev_ == "-") {
 			abbrev_.clear();
 		}
-		assert(hours{ -1 } <= save_ && save_ <= hours{ 2 });
+		assert(hours{-1} <= save_ && save_ <= hours{2});
 	} catch (...) {
 		std::cerr << s << '\n';
 		std::cerr << *this << '\n';
@@ -1021,103 +1021,106 @@ detail::Rule::Rule(const std::string & s) {
 	}
 }
 
-detail::Rule::Rule(const Rule & r, Balau::Date::year starting_year, Balau::Date::year ending_year) : name_(r.name_), starting_year_(
-	starting_year
-), ending_year_(ending_year), starting_at_(r.starting_at_), save_(r.save_), abbrev_(r.abbrev_) {
+detail::Rule::Rule(const Rule &r, date::year starting_year, date::year ending_year) : name_(r.name_),
+                                                                                      starting_year_(starting_year),
+                                                                                      ending_year_(ending_year),
+                                                                                      starting_at_(r.starting_at_),
+                                                                                      save_(r.save_),
+                                                                                      abbrev_(r.abbrev_) {
 }
 
-bool detail::operator ==(const Rule & x, const Rule & y) {
+bool detail::operator==(const Rule &x, const Rule &y) {
 	if (std::tie(x.name_, x.save_, x.starting_year_, x.ending_year_) ==
 	    std::tie(y.name_, y.save_, y.starting_year_, y.ending_year_)) {
-		    return x.month() == y.month() && x.day() == y.day();
+		return x.month() == y.month() && x.day() == y.day();
 	}
 	return false;
 }
 
-bool detail::operator <(const Rule & x, const Rule & y) {
+bool detail::operator<(const Rule &x, const Rule &y) {
 	using namespace std::chrono;
 	auto const xm = x.month();
 	auto const ym = y.month();
 	if (std::tie(x.name_, x.starting_year_, xm, x.ending_year_) <
 	    std::tie(y.name_, y.starting_year_, ym, y.ending_year_)) {
-		    return true;
+		return true;
 	}
 	if (std::tie(x.name_, x.starting_year_, xm, x.ending_year_) >
 	    std::tie(y.name_, y.starting_year_, ym, y.ending_year_)) {
-		    return false;
+		return false;
 	}
 	return x.day() < y.day();
 }
 
-bool detail::operator ==(const Rule & x, const Balau::Date::year & y) {
+bool detail::operator==(const Rule &x, const date::year &y) {
 	return x.starting_year_ <= y && y <= x.ending_year_;
 }
 
-bool detail::operator <(const Rule & x, const Balau::Date::year & y) {
+bool detail::operator<(const Rule &x, const date::year &y) {
 	return x.ending_year_ < y;
 }
 
-bool detail::operator ==(const Balau::Date::year & x, const Rule & y) {
+bool detail::operator==(const date::year &x, const Rule &y) {
 	return y.starting_year_ <= x && x <= y.ending_year_;
 }
 
-bool detail::operator <(const Balau::Date::year & x, const Rule & y) {
+bool detail::operator<(const date::year &x, const Rule &y) {
 	return x < y.starting_year_;
 }
 
-bool detail::operator ==(const Rule & x, const std::string & y) {
+bool detail::operator==(const Rule &x, const std::string &y) {
 	return x.name() == y;
 }
 
-bool detail::operator <(const Rule & x, const std::string & y) {
+bool detail::operator<(const Rule &x, const std::string &y) {
 	return x.name() < y;
 }
 
-bool detail::operator ==(const std::string & x, const Rule & y) {
+bool detail::operator==(const std::string &x, const Rule &y) {
 	return y.name() == x;
 }
 
-bool detail::operator <(const std::string & x, const Rule & y) {
+bool detail::operator<(const std::string &x, const Rule &y) {
 	return x < y.name();
 }
 
-std::ostream & detail::operator <<(std::ostream & os, const Rule & r) {
-	using namespace Balau::Date;
+std::ostream &detail::operator<<(std::ostream &os, const Rule &r) {
+	using namespace date;
 	using namespace std::chrono;
-	detail::save_stream<char> _(os);
+	detail::save_ostream<char> _(os);
 	os.fill(' ');
 	os.flags(std::ios::dec | std::ios::left);
 	os.width(15);
 	os << r.name_;
 	os << r.starting_year_ << "    " << r.ending_year_ << "    ";
 	os << r.starting_at_;
-	if (r.save_ >= minutes{ 0 }) {
+	if (r.save_ >= minutes{0}) {
 		os << ' ';
 	}
-	os << Balau::Date::make_time(r.save_) << "   ";
+	os << date::make_time(r.save_) << "   ";
 	os << r.abbrev_;
 	return os;
 }
 
-Balau::Date::day detail::Rule::day() const {
+date::day detail::Rule::day() const {
 	return starting_at_.day();
 }
 
-Balau::Date::month detail::Rule::month() const {
+date::month detail::Rule::month() const {
 	return starting_at_.month();
 }
 
 struct find_rule_by_name {
-	bool operator ()(const Rule & x, const std::string & nm) const {
+	bool operator()(const Rule &x, const std::string &nm) const {
 		return x.name() < nm;
 	}
 
-	bool operator ()(const std::string & nm, const Rule & x) const {
+	bool operator()(const std::string &nm, const Rule &x) const {
 		return nm < x.name();
 	}
 };
 
-bool detail::Rule::overlaps(const Rule & x, const Rule & y) {
+bool detail::Rule::overlaps(const Rule &x, const Rule &y) {
 	// assume x.starting_year_ <= y.starting_year_;
 	if (!(x.starting_year_ <= y.starting_year_)) {
 		std::cerr << x << '\n';
@@ -1130,75 +1133,67 @@ bool detail::Rule::overlaps(const Rule & x, const Rule & y) {
 	return !(x.starting_year_ == y.starting_year_ && x.ending_year_ == y.ending_year_);
 }
 
-void detail::Rule::split(std::vector<Rule> & rules, std::size_t i, std::size_t k, std::size_t & e) {
-	using namespace Balau::Date;
+void detail::Rule::split(std::vector<Rule> &rules, std::size_t i, std::size_t k, std::size_t &e) {
+	using namespace date;
 	using difference_type = std::vector<Rule>::iterator::difference_type;
 	// rules[i].starting_year_ <= rules[k].starting_year_ &&
 	//     rules[i].ending_year_ >= rules[k].starting_year_ &&
 	//     (rules[i].starting_year_ != rules[k].starting_year_ ||
 	//      rules[i].ending_year_ != rules[k].ending_year_)
-	assert(
-		rules[i].starting_year_ <= rules[k].starting_year_ && rules[i].ending_year_ >= rules[k].starting_year_ &&
-		(rules[i].starting_year_ != rules[k].starting_year_ || rules[i].ending_year_ != rules[k].ending_year_));
+	assert(rules[i].starting_year_ <= rules[k].starting_year_ && rules[i].ending_year_ >= rules[k].starting_year_ &&
+	       (rules[i].starting_year_ != rules[k].starting_year_ || rules[i].ending_year_ != rules[k].ending_year_));
 	if (rules[i].starting_year_ == rules[k].starting_year_) {
 		if (rules[k].ending_year_ < rules[i].ending_year_) {
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k + 1),
-				Rule(rules[i], rules[k].ending_year_ + years{ 1 }, std::move(rules[i].ending_year_)));
+			rules.insert(rules.begin() + static_cast<difference_type>(k + 1),
+			             Rule(rules[i], rules[k].ending_year_ + years{1}, std::move(rules[i].ending_year_)));
 			++e;
 			rules[i].ending_year_ = rules[k].ending_year_;
 		} else  // rules[k].ending_year_ > rules[i].ending_year_
 		{
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k + 1),
-				Rule(rules[k], rules[i].ending_year_ + years{ 1 }, std::move(rules[k].ending_year_)));
+			rules.insert(rules.begin() + static_cast<difference_type>(k + 1),
+			             Rule(rules[k], rules[i].ending_year_ + years{1}, std::move(rules[k].ending_year_)));
 			++e;
 			rules[k].ending_year_ = rules[i].ending_year_;
 		}
 	} else  // rules[i].starting_year_ < rules[k].starting_year_
 	{
 		if (rules[k].ending_year_ < rules[i].ending_year_) {
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k),
-				Rule(rules[i], rules[k].starting_year_, rules[k].ending_year_));
+			rules.insert(rules.begin() + static_cast<difference_type>(k),
+			             Rule(rules[i], rules[k].starting_year_, rules[k].ending_year_));
 			++k;
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k + 1),
-				Rule(rules[i], rules[k].ending_year_ + years{ 1 }, std::move(rules[i].ending_year_)));
-			rules[i].ending_year_ = rules[k].starting_year_ - years{ 1 };
+			rules.insert(rules.begin() + static_cast<difference_type>(k + 1),
+			             Rule(rules[i], rules[k].ending_year_ + years{1}, std::move(rules[i].ending_year_)));
+			rules[i].ending_year_ = rules[k].starting_year_ - years{1};
 			e += 2;
 		} else if (rules[k].ending_year_ > rules[i].ending_year_) {
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k),
-				Rule(rules[i], rules[k].starting_year_, rules[i].ending_year_));
+			rules.insert(rules.begin() + static_cast<difference_type>(k),
+			             Rule(rules[i], rules[k].starting_year_, rules[i].ending_year_));
 			++k;
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k + 1),
-				Rule(rules[k], rules[i].ending_year_ + years{ 1 }, std::move(rules[k].ending_year_)));
+			rules.insert(rules.begin() + static_cast<difference_type>(k + 1),
+			             Rule(rules[k], rules[i].ending_year_ + years{1}, std::move(rules[k].ending_year_)));
 			e += 2;
 			rules[k].ending_year_ = std::move(rules[i].ending_year_);
-			rules[i].ending_year_ = rules[k].starting_year_ - years{ 1 };
+			rules[i].ending_year_ = rules[k].starting_year_ - years{1};
 		} else  // rules[k].ending_year_ == rules[i].ending_year_
 		{
-			rules.insert(
-				rules.begin() + static_cast<difference_type>(k),
-				Rule(rules[i], rules[k].starting_year_, std::move(rules[i].ending_year_)));
+			rules.insert(rules.begin() + static_cast<difference_type>(k),
+			             Rule(rules[i], rules[k].starting_year_, std::move(rules[i].ending_year_)));
 			++k;
 			++e;
-			rules[i].ending_year_ = rules[k].starting_year_ - years{ 1 };
+			rules[i].ending_year_ = rules[k].starting_year_ - years{1};
 		}
 	}
 }
 
-void detail::Rule::split_overlaps(std::vector<Rule> & rules, std::size_t i, std::size_t & e) {
+void detail::Rule::split_overlaps(std::vector<Rule> &rules, std::size_t i, std::size_t &e) {
 	using difference_type = std::vector<Rule>::iterator::difference_type;
 	auto j = i;
 	for (; i + 1 < e; ++i) {
 		for (auto k = i + 1; k < e; ++k) {
 			if (overlaps(rules[i], rules[k])) {
 				split(rules, i, k, e);
-				std::sort(
-					rules.begin() + static_cast<difference_type>(i), rules.begin() + static_cast<difference_type>(e));
+				std::sort(rules.begin() + static_cast<difference_type>(i),
+				          rules.begin() + static_cast<difference_type>(e));
 			}
 		}
 	}
@@ -1209,17 +1204,14 @@ void detail::Rule::split_overlaps(std::vector<Rule> & rules, std::size_t i, std:
 	}
 }
 
-void detail::Rule::split_overlaps(std::vector<Rule> & rules) {
+void detail::Rule::split_overlaps(std::vector<Rule> &rules) {
 	using difference_type = std::vector<Rule>::iterator::difference_type;
 	for (std::size_t i = 0; i < rules.size();) {
-		auto e = static_cast<std::size_t>(std::upper_bound(
-			rules.cbegin() + static_cast<difference_type>(i),
-			rules.cend(),
-			rules[i].name(),
-			[](const std::string & nm, const Rule & x) {
-				return nm < x.name();
-			}
-		) - rules.cbegin());
+		auto e = static_cast<std::size_t>(
+			std::upper_bound(rules.cbegin() + static_cast<difference_type>(i), rules.cend(), rules[i].name(),
+			                 [](const std::string &nm, const Rule &x) {
+				                 return nm < x.name();
+			                 }) - rules.cbegin());
 		split_overlaps(rules, i, e);
 		auto first_rule = rules.begin() + static_cast<difference_type>(i);
 		auto last_rule = rules.begin() + static_cast<difference_type>(e);
@@ -1252,26 +1244,26 @@ void detail::Rule::split_overlaps(std::vector<Rule> & rules) {
 // that rule.  If there is no previous rule, returns nullptr and year::min().
 // Preconditions:
 //     r->starting_year() <= y && y <= r->ending_year()
-static std::pair<const Rule *, Balau::Date::year> find_previous_rule(const Rule * r, Balau::Date::year y) {
-	using namespace Balau::Date;
-	auto const & rules = get_tzdb().rules;
+static std::pair<const Rule *, date::year> find_previous_rule(const Rule *r, date::year y) {
+	using namespace date;
+	auto const &rules = get_tzdb().rules;
 	if (y == r->starting_year()) {
 		if (r == &rules.front() || r->name() != r[-1].name()) {
 			std::terminate();
 		}  // never called with first rule
 		--r;
 		if (y == r->starting_year())
-			return { r, y };
-		return { r, r->ending_year() };
+			return {r, y};
+		return {r, r->ending_year()};
 	}
 	if (r == &rules.front() || r->name() != r[-1].name() || r[-1].starting_year() < r->starting_year()) {
 		while (r < &rules.back() && r->name() == r[1].name() && r->starting_year() == r[1].starting_year()) {
 			++r;
 		}
-		return { r, --y };
+		return {r, --y};
 	}
 	--r;
-	return { r, y };
+	return {r, y};
 }
 
 // Find the rule that comes chronologically after Rule r.  For multi-year rules,
@@ -1283,27 +1275,27 @@ static std::pair<const Rule *, Balau::Date::year> find_previous_rule(const Rule 
 // Preconditions:
 //     first <= r && r < last && r->starting_year() <= y && y <= r->ending_year()
 //     [first, last) all have the same name
-static std::pair<const Rule *, Balau::Date::year>
-find_next_rule(const Rule * first_rule, const Rule * last_rule, const Rule * r, Balau::Date::year y) {
-	using namespace Balau::Date;
+static std::pair<const Rule *, date::year>
+find_next_rule(const Rule *first_rule, const Rule *last_rule, const Rule *r, date::year y) {
+	using namespace date;
 	if (y == r->ending_year()) {
 		if (r == last_rule - 1) {
-			return { nullptr, year::max() };
+			return {nullptr, year::max()};
 		}
 		++r;
 		if (y == r->ending_year()) {
-			return { r, y };
+			return {r, y};
 		}
-		return { r, r->starting_year() };
+		return {r, r->starting_year()};
 	}
 	if (r == last_rule - 1 || r->ending_year() < r[1].ending_year()) {
 		while (r > first_rule && r->starting_year() == r[-1].starting_year()) {
 			--r;
 		}
-		return { r, ++y };
+		return {r, ++y};
 	}
 	++r;
-	return { r, y };
+	return {r, y};
 }
 
 // Find the rule that comes chronologically after Rule r.  For multi-year rules,
@@ -1313,33 +1305,33 @@ find_next_rule(const Rule * first_rule, const Rule * last_rule, const Rule * r, 
 // that rule.  If there is no next rule, return nullptr and year::max().
 // Preconditions:
 //     r->starting_year() <= y && y <= r->ending_year()
-static std::pair<const Rule *, Balau::Date::year> find_next_rule(const Rule * r, Balau::Date::year y) {
-	using namespace Balau::Date;
-	auto const & rules = get_tzdb().rules;
+static std::pair<const Rule *, date::year> find_next_rule(const Rule *r, date::year y) {
+	using namespace date;
+	auto const &rules = get_tzdb().rules;
 	if (y == r->ending_year()) {
 		if (r == &rules.back() || r->name() != r[1].name()) {
-			return { nullptr, year::max() };
+			return {nullptr, year::max()};
 		}
 		++r;
 		if (y == r->ending_year()) {
-			return { r, y };
+			return {r, y};
 		}
-		return { r, r->starting_year() };
+		return {r, r->starting_year()};
 	}
 	if (r == &rules.back() || r->name() != r[1].name() || r->ending_year() < r[1].ending_year()) {
 		while (r > &rules.front() && r->name() == r[-1].name() && r->starting_year() == r[-1].starting_year()) {
 			--r;
 		}
-		return { r, ++y };
+		return {r, ++y};
 	}
 	++r;
-	return { r, y };
+	return {r, y};
 }
 
-static const Rule * find_first_std_rule(const std::pair<const Rule *, const Rule *> & eqr) {
+static const Rule *find_first_std_rule(const std::pair<const Rule *, const Rule *> &eqr) {
 	auto r = eqr.first;
 	auto ry = r->starting_year();
-	while (r->save() != std::chrono::minutes{ 0 }) {
+	while (r->save() != std::chrono::minutes{0}) {
 		std::tie(r, ry) = find_next_rule(eqr.first, eqr.second, r, ry);
 		if (r == nullptr) {
 			throw std::runtime_error("Could not find standard offset in rule " + eqr.first->name());
@@ -1348,20 +1340,19 @@ static const Rule * find_first_std_rule(const std::pair<const Rule *, const Rule
 	return r;
 }
 
-static std::pair<const Rule *, Balau::Date::year> find_rule_for_zone(const std::pair<const Rule *, const Rule *> & eqr,
-                                                              const Balau::Date::year & y,
-                                                              const std::chrono::seconds & offset,
-                                                              const MonthDayTime & mdt) {
+static std::pair<const Rule *, date::year>
+find_rule_for_zone(const std::pair<const Rule *, const Rule *> &eqr, const date::year &y,
+                   const std::chrono::seconds &offset, const MonthDayTime &mdt) {
 	assert(eqr.first != nullptr);
 	assert(eqr.second != nullptr);
 
 	using namespace std::chrono;
-	using namespace Balau::Date;
+	using namespace date;
 	auto r = eqr.first;
 	auto ry = r->starting_year();
-	auto prev_save = minutes{ 0 };
+	auto prev_save = minutes{0};
 	auto prev_year = year::min();
-	const Rule * prev_rule = nullptr;
+	const Rule *prev_rule = nullptr;
 	while (r != nullptr) {
 		if (mdt.compare(y, r->mdt(), ry, offset, prev_save) <= 0) {
 			break;
@@ -1371,28 +1362,30 @@ static std::pair<const Rule *, Balau::Date::year> find_rule_for_zone(const std::
 		prev_save = prev_rule->save();
 		std::tie(r, ry) = find_next_rule(eqr.first, eqr.second, r, ry);
 	}
-	return { prev_rule, prev_year };
+	return {prev_rule, prev_year};
 }
 
-static std::pair<const Rule *, Balau::Date::year> find_rule_for_zone(const std::pair<const Rule *, const Rule *> & eqr,
-                                                              const sys_seconds & tp_utc,
-                                                              const local_seconds & tp_std,
-                                                              const local_seconds & tp_loc) {
+static std::pair<const Rule *, date::year>
+find_rule_for_zone(const std::pair<const Rule *, const Rule *> &eqr, const sys_seconds &tp_utc,
+                   const local_seconds &tp_std, const local_seconds &tp_loc) {
 	using namespace std::chrono;
-	using namespace Balau::Date;
+	using namespace date;
 	auto r = eqr.first;
 	auto ry = r->starting_year();
-	auto prev_save = minutes{ 0 };
+	auto prev_save = minutes{0};
 	auto prev_year = year::min();
-	const Rule * prev_rule = nullptr;
+	const Rule *prev_rule = nullptr;
 	while (r != nullptr) {
 		bool found = false;
 		switch (r->mdt().zone()) {
-			case tz::utc:found = tp_utc < r->mdt().to_time_point(ry);
+			case tz::utc:
+				found = tp_utc < r->mdt().to_time_point(ry);
 				break;
-			case tz::standard:found = sys_seconds{ tp_std.time_since_epoch() } < r->mdt().to_time_point(ry);
+			case tz::standard:
+				found = sys_seconds{tp_std.time_since_epoch()} < r->mdt().to_time_point(ry);
 				break;
-			case tz::local:found = sys_seconds{ tp_loc.time_since_epoch() } < r->mdt().to_time_point(ry);
+			case tz::local:
+				found = sys_seconds{tp_loc.time_since_epoch()} < r->mdt().to_time_point(ry);
 				break;
 		}
 		if (found) {
@@ -1403,22 +1396,19 @@ static std::pair<const Rule *, Balau::Date::year> find_rule_for_zone(const std::
 		prev_save = prev_rule->save();
 		std::tie(r, ry) = find_next_rule(eqr.first, eqr.second, r, ry);
 	}
-	return { prev_rule, prev_year };
+	return {prev_rule, prev_year};
 }
 
-static sys_info find_rule(const std::pair<const Rule *, Balau::Date::year> & first_rule,
-                          const std::pair<const Rule *, Balau::Date::year> & last_rule,
-                          const Balau::Date::year & y,
-                          const std::chrono::seconds & offset,
-                          const MonthDayTime & mdt,
-                          const std::chrono::minutes & initial_save,
-                          const std::string & initial_abbrev) {
+static sys_info
+find_rule(const std::pair<const Rule *, date::year> &first_rule, const std::pair<const Rule *, date::year> &last_rule,
+          const date::year &y, const std::chrono::seconds &offset, const MonthDayTime &mdt,
+          const std::chrono::minutes &initial_save, const std::string &initial_abbrev) {
 	using namespace std::chrono;
-	using namespace Balau::Date;
+	using namespace date;
 	auto r = first_rule.first;
 	auto ry = first_rule.second;
-	sys_info x { sys_days(year::min() / min_day), sys_days(year::max() / max_day), seconds{ 0 }, initial_save,
-	             initial_abbrev };
+	sys_info x{sys_days(year::min() / min_day), sys_days(year::max() / max_day), seconds{0}, initial_save,
+	           initial_abbrev};
 	while (r != nullptr) {
 		auto tr = r->mdt().to_sys(ry, offset, x.save);
 		auto tx = mdt.to_sys(y, offset, x.save);
@@ -1459,7 +1449,7 @@ static sys_info find_rule(const std::pair<const Rule *, Balau::Date::year> & fir
 // zonelet
 
 detail::zonelet::~zonelet() {
-		#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+	#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
 	using minutes = std::chrono::minutes;
 	using string = std::string;
 	if (tag_ == has_save) {
@@ -1467,31 +1457,33 @@ detail::zonelet::~zonelet() {
 	} else {
 		u.rule_.~string();
 	}
-		#endif
+	#endif
 }
 
 detail::zonelet::zonelet() {
-		#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+	#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
 	::new(&u.rule_) std::string();
-		#endif
+	#endif
 }
 
-detail::zonelet::zonelet(const zonelet & i)
-	: gmtoff_(i.gmtoff_), tag_(i.tag_), format_(i.format_), until_year_(i.until_year_), until_date_(i.until_date_)
-	, until_utc_(i.until_utc_), until_std_(i.until_std_), until_loc_(i.until_loc_), initial_save_(i.initial_save_)
-	, initial_abbrev_(i.initial_abbrev_), first_rule_(i.first_rule_), last_rule_(i.last_rule_) {
-		#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+detail::zonelet::zonelet(const zonelet &i) : gmtoff_(i.gmtoff_), tag_(i.tag_), format_(i.format_),
+                                             until_year_(i.until_year_), until_date_(i.until_date_),
+                                             until_utc_(i.until_utc_), until_std_(i.until_std_),
+                                             until_loc_(i.until_loc_), initial_save_(i.initial_save_),
+                                             initial_abbrev_(i.initial_abbrev_), first_rule_(i.first_rule_),
+                                             last_rule_(i.last_rule_) {
+	#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
 	if (tag_ == has_save) {
 		::new(&u.save_) std::chrono::minutes(i.u.save_);
 	} else {
 		::new(&u.rule_) std::string(i.u.rule_);
 	}
-		#else
+	#else
 	if (tag_ == has_save)
 		u.save_ = i.u.save_;
 	else
 		u.rule_ = i.u.rule_;
-		#endif
+	#endif
 }
 
 #endif  // !USE_OS_TZDB
@@ -1584,17 +1576,17 @@ load_header(std::istream& inf)
 	auto z = inf.get();
 	auto i = inf.get();
 	auto f = inf.get();
-		#ifndef NDEBUG
+	#ifndef NDEBUG
 	assert(t == 'T');
 	assert(z == 'Z');
 	assert(i == 'i');
 	assert(f == 'f');
-		#else
+	#else
 	(void)t;
 	(void)z;
 	(void)i;
 	(void)f;
-		#endif
+	#endif
 }
 
 static
@@ -1701,17 +1693,17 @@ load_abbreviations(std::istream& inf, std::int32_t tzh_charcnt)
 	return abbrev;
 }
 
-	#if !MISSING_LEAP_SECONDS
+#if !MISSING_LEAP_SECONDS
 
 template <class TimeType>
 static
-std::vector<leap>
+std::vector<leap_second>
 load_leaps(std::istream& inf, std::int32_t tzh_leapcnt)
 {
 	// Read tzh_leapcnt pairs
 	using namespace std::chrono;
-	std::vector<leap> leap_seconds;
-	leap_seconds.reserve(tzh_leapcnt);
+	std::vector<leap_second> leap_seconds;
+	leap_seconds.reserve(static_cast<std::size_t>(tzh_leapcnt));
 	for (std::int32_t i = 0; i < tzh_leapcnt; ++i)
 	{
 		TimeType     t0;
@@ -1728,17 +1720,18 @@ load_leaps(std::istream& inf, std::int32_t tzh_leapcnt)
 
 template <class TimeType>
 static
-std::vector<leap>
+std::vector<leap_second>
 load_leap_data(std::istream& inf,
 			   std::int32_t tzh_leapcnt, std::int32_t tzh_timecnt,
 			   std::int32_t tzh_typecnt, std::int32_t tzh_charcnt)
 {
-	inf.ignore(tzh_timecnt*sizeof(TimeType) + tzh_timecnt + tzh_typecnt*6 + tzh_charcnt);
+	inf.ignore(tzh_timecnt*static_cast<std::int32_t>(sizeof(TimeType)) + tzh_timecnt +
+			   tzh_typecnt*6 + tzh_charcnt);
 	return load_leaps<TimeType>(inf, tzh_leapcnt);
 }
 
 static
-std::vector<leap>
+std::vector<leap_second>
 load_just_leaps(std::istream& inf)
 {
 	// Read tzh_leapcnt pairs
@@ -1753,24 +1746,24 @@ load_just_leaps(std::istream& inf)
 	if (v == 0)
 		return load_leap_data<int32_t>(inf, tzh_leapcnt, tzh_timecnt, tzh_typecnt,
 									   tzh_charcnt);
-											   #if !defined(NDEBUG)
+									   #if !defined(NDEBUG)
 	inf.ignore((4+1)*tzh_timecnt + 6*tzh_typecnt + tzh_charcnt + 8*tzh_leapcnt +
 			   tzh_ttisstdcnt + tzh_ttisgmtcnt);
 	load_header(inf);
 	auto v2 = load_version(inf);
 	assert(v == v2);
 	skip_reserve(inf);
-			#else  // defined(NDEBUG)
+	#else  // defined(NDEBUG)
 	inf.ignore((4+1)*tzh_timecnt + 6*tzh_typecnt + tzh_charcnt + 8*tzh_leapcnt +
 			   tzh_ttisstdcnt + tzh_ttisgmtcnt + (4+1+15));
-					   #endif  // defined(NDEBUG)
+			   #endif  // defined(NDEBUG)
 	load_counts(inf, tzh_ttisgmtcnt, tzh_ttisstdcnt, tzh_leapcnt,
 					 tzh_timecnt,    tzh_typecnt,    tzh_charcnt);
 	return load_leap_data<int64_t>(inf, tzh_leapcnt, tzh_timecnt, tzh_typecnt,
 								   tzh_charcnt);
 }
 
-	#endif  // !MISSING_LEAP_SECONDS
+#endif  // !MISSING_LEAP_SECONDS
 
 template <class TimeType>
 void
@@ -1783,11 +1776,11 @@ time_zone::load_data(std::istream& inf,
 	auto indices = load_indices(inf, tzh_timecnt);
 	auto infos = load_ttinfo(inf, tzh_typecnt);
 	auto abbrev = load_abbreviations(inf, tzh_charcnt);
-		#if !MISSING_LEAP_SECONDS
-	auto& leap_seconds = get_tzdb_list().front().leaps;
+	#if !MISSING_LEAP_SECONDS
+	auto& leap_seconds = get_tzdb_list().front().leap_seconds;
 	if (leap_seconds.empty() && tzh_leapcnt > 0)
 		leap_seconds = load_leaps<TimeType>(inf, tzh_leapcnt);
-			#endif
+		#endif
 	ttinfos_.reserve(infos.size());
 	for (auto& info : infos)
 	{
@@ -1834,25 +1827,25 @@ time_zone::init_impl()
 	}
 	else
 	{
-		#if !defined(NDEBUG)
+	#if !defined(NDEBUG)
 		inf.ignore((4+1)*tzh_timecnt + 6*tzh_typecnt + tzh_charcnt + 8*tzh_leapcnt +
 				   tzh_ttisstdcnt + tzh_ttisgmtcnt);
 		load_header(inf);
 		auto v2 = load_version(inf);
 		assert(v == v2);
 		skip_reserve(inf);
-			#else  // defined(NDEBUG)
+		#else  // defined(NDEBUG)
 		inf.ignore((4+1)*tzh_timecnt + 6*tzh_typecnt + tzh_charcnt + 8*tzh_leapcnt +
 				   tzh_ttisstdcnt + tzh_ttisgmtcnt + (4+1+15));
-					   #endif  // defined(NDEBUG)
+				   #endif  // defined(NDEBUG)
 		load_counts(inf, tzh_ttisgmtcnt, tzh_ttisstdcnt, tzh_leapcnt,
 						 tzh_timecnt,    tzh_typecnt,    tzh_charcnt);
 		load_data<int64_t>(inf, tzh_leapcnt, tzh_timecnt, tzh_typecnt, tzh_charcnt);
 	}
-		#if !MISSING_LEAP_SECONDS
+	#if !MISSING_LEAP_SECONDS
 	if (tzh_leapcnt > 0)
 	{
-		auto& leap_seconds = get_tzdb_list().front().leaps;
+		auto& leap_seconds = get_tzdb_list().front().leap_seconds;
 		auto itr = leap_seconds.begin();
 		auto l = itr->date();
 		seconds leap_count{0};
@@ -1874,7 +1867,7 @@ time_zone::init_impl()
 			t->timepoint -= leap_count;
 		}
 	}
-		#endif  // !MISSING_LEAP_SECONDS
+	#endif  // !MISSING_LEAP_SECONDS
 	auto b = transitions_.begin();
 	auto i = transitions_.end();
 	if (i != b)
@@ -1985,20 +1978,20 @@ operator<<(std::ostream& os, const time_zone& z)
 	return os;
 }
 
-	#if !MISSING_LEAP_SECONDS
+#if !MISSING_LEAP_SECONDS
 
-leap::leap(const sys_seconds& s, detail::undocumented)
+leap_second::leap_second(const sys_seconds& s, detail::undocumented)
 	: date_(s)
 {
 }
 
-	#endif  // !MISSING_LEAP_SECONDS
+#endif  // !MISSING_LEAP_SECONDS
 
 #else  // !USE_OS_TZDB
 
-time_zone::time_zone(const std::string & s, detail::undocumented) : adjusted_(new std::once_flag {}) {
+time_zone::time_zone(const std::string &s, detail::undocumented) : adjusted_(new std::once_flag{}) {
 	try {
-		using namespace Balau::Date;
+		using namespace date;
 		std::istringstream in(s);
 		in.exceptions(std::ios::failbit | std::ios::badbit);
 		std::string word;
@@ -2018,16 +2011,16 @@ sys_info time_zone::get_info_impl(sys_seconds tp) const {
 
 local_info time_zone::get_info_impl(local_seconds tp) const {
 	using namespace std::chrono;
-	local_info i {};
-	i.first = get_info_impl(sys_seconds{ tp.time_since_epoch() }, static_cast<int>(tz::local));
-	auto tps = sys_seconds{ (tp - i.first.offset).time_since_epoch() };
+	local_info i{};
+	i.first = get_info_impl(sys_seconds{tp.time_since_epoch()}, static_cast<int>(tz::local));
+	auto tps = sys_seconds{(tp - i.first.offset).time_since_epoch()};
 	if (tps < i.first.begin) {
 		i.second = std::move(i.first);
-		i.first = get_info_impl(i.second.begin - seconds{ 1 }, static_cast<int>(tz::utc));
+		i.first = get_info_impl(i.second.begin - seconds{1}, static_cast<int>(tz::utc));
 		i.result = local_info::nonexistent;
-	} else if (i.first.end - tps <= days{ 1 }) {
+	} else if (i.first.end - tps <= days{1}) {
 		i.second = get_info_impl(i.first.end, static_cast<int>(tz::utc));
-		tps = sys_seconds{ (tp - i.second.offset).time_since_epoch() };
+		tps = sys_seconds{(tp - i.second.offset).time_since_epoch()};
 		if (tps >= i.second.begin) {
 			i.result = local_info::ambiguous;
 		} else {
@@ -2037,7 +2030,7 @@ local_info time_zone::get_info_impl(local_seconds tp) const {
 	return i;
 }
 
-void time_zone::add(const std::string & s) {
+void time_zone::add(const std::string &s) {
 	try {
 		std::istringstream in(s);
 		in.exceptions(std::ios::failbit | std::ios::badbit);
@@ -2053,11 +2046,11 @@ void time_zone::add(const std::string & s) {
 	}
 }
 
-void time_zone::parse_info(std::istream & in) {
-	using namespace Balau::Date;
+void time_zone::parse_info(std::istream &in) {
+	using namespace date;
 	using namespace std::chrono;
 	zonelets_.emplace_back();
-	auto & zonelet = zonelets_.back();
+	auto &zonelet = zonelets_.back();
 	zonelet.gmtoff_ = parse_signed_time(in);
 	in >> zonelet.u.rule_;
 	if (zonelet.u.rule_ == "-") {
@@ -2073,7 +2066,7 @@ void time_zone::parse_info(std::istream & in) {
 	} else {
 		int y;
 		in >> y;
-		zonelet.until_year_ = year{ y };
+		zonelet.until_year_ = year{y};
 		in >> zonelet.until_date_;
 		zonelet.until_date_.canonicalize(zonelet.until_year_);
 	}
@@ -2082,12 +2075,12 @@ void time_zone::parse_info(std::istream & in) {
 	}
 }
 
-void time_zone::adjust_infos(const std::vector<Rule> & rules) {
+void time_zone::adjust_infos(const std::vector<Rule> &rules) {
 	using namespace std::chrono;
-	using namespace Balau::Date;
-	const zonelet * prev_zonelet = nullptr;
-	for (auto & z : zonelets_) {
-		std::pair<const Rule *, const Rule *> eqr {};
+	using namespace date;
+	const zonelet *prev_zonelet = nullptr;
+	for (auto &z : zonelets_) {
+		std::pair<const Rule *, const Rule *> eqr{};
 		std::istringstream in;
 		in.exceptions(std::ios::failbit | std::ios::badbit);
 		// Classify info as rule-based, has save, or neither
@@ -2101,15 +2094,15 @@ void time_zone::adjust_infos(const std::vector<Rule> & rules) {
 					using string = std::string;
 					in.str(z.u.rule_);
 					auto tmp = duration_cast<minutes>(parse_signed_time(in));
-						#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+					#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
 					z.u.rule_.~string();
 					z.tag_ = zonelet::has_save;
 					::new(&z.u.save_) minutes(tmp);
-						#else
+					#else
 					z.u.rule_.clear();
 					z.tag_ = zonelet::has_save;
 					z.u.save_ = tmp;
-						#endif
+					#endif
 				} catch (...) {
 					std::cerr << name_ << " : " << z.u.rule_ << '\n';
 					throw;
@@ -2120,33 +2113,29 @@ void time_zone::adjust_infos(const std::vector<Rule> & rules) {
 			z.tag_ = zonelet::is_empty;
 		}
 
-		minutes final_save { 0 };
+		minutes final_save{0};
 		if (z.tag_ == zonelet::has_save) {
 			final_save = z.u.save_;
 		} else if (z.tag_ == zonelet::has_rule) {
-			z.last_rule_ = find_rule_for_zone(
-				eqr, z.until_year_, z.gmtoff_, z.until_date_
-			);
+			z.last_rule_ = find_rule_for_zone(eqr, z.until_year_, z.gmtoff_, z.until_date_);
 			if (z.last_rule_.first != nullptr) {
 				final_save = z.last_rule_.first->save();
 			}
 		}
 		z.until_utc_ = z.until_date_.to_sys(z.until_year_, z.gmtoff_, final_save);
-		z.until_std_ = local_seconds{ z.until_utc_.time_since_epoch() } + z.gmtoff_;
+		z.until_std_ = local_seconds{z.until_utc_.time_since_epoch()} + z.gmtoff_;
 		z.until_loc_ = z.until_std_ + final_save;
 
 		if (z.tag_ == zonelet::has_rule) {
 			if (prev_zonelet != nullptr) {
-				z.first_rule_ = find_rule_for_zone(
-					eqr, prev_zonelet->until_utc_, prev_zonelet->until_std_, prev_zonelet->until_loc_
-				);
+				z.first_rule_ = find_rule_for_zone(eqr, prev_zonelet->until_utc_, prev_zonelet->until_std_,
+				                                   prev_zonelet->until_loc_);
 				if (z.first_rule_.first != nullptr) {
 					z.initial_save_ = z.first_rule_.first->save();
 					z.initial_abbrev_ = z.first_rule_.first->abbrev();
 					if (z.first_rule_ != z.last_rule_) {
-						z.first_rule_ = find_next_rule(
-							eqr.first, eqr.second, z.first_rule_.first, z.first_rule_.second
-						);
+						z.first_rule_ = find_next_rule(eqr.first, eqr.second, z.first_rule_.first,
+						                               z.first_rule_.second);
 					} else {
 						z.first_rule_ = std::make_pair(nullptr, year::min());
 						z.last_rule_ = std::make_pair(nullptr, year::max());
@@ -2159,7 +2148,7 @@ void time_zone::adjust_infos(const std::vector<Rule> & rules) {
 			}
 		}
 
-			#ifndef NDEBUG
+		#ifndef NDEBUG
 		if (z.first_rule_.first == nullptr) {
 			assert(z.first_rule_.second == year::min());
 			assert(z.last_rule_.first == nullptr);
@@ -2167,13 +2156,13 @@ void time_zone::adjust_infos(const std::vector<Rule> & rules) {
 		} else {
 			assert(z.last_rule_.first != nullptr);
 		}
-			#endif
+		#endif
 		prev_zonelet = &z;
 	}
 }
 
 static std::string
-format_abbrev(std::string format, const std::string & variable, std::chrono::seconds off, std::chrono::minutes save) {
+format_abbrev(std::string format, const std::string &variable, std::chrono::seconds off, std::chrono::minutes save) {
 	using namespace std::chrono;
 	auto k = format.find("%s");
 	if (k != std::string::npos) {
@@ -2181,7 +2170,7 @@ format_abbrev(std::string format, const std::string & variable, std::chrono::sec
 	} else {
 		k = format.find('/');
 		if (k != std::string::npos) {
-			if (save == minutes{ 0 }) {
+			if (save == minutes{0}) {
 				format.erase(k);
 			} else {
 				format.erase(0, k + 1);
@@ -2190,27 +2179,27 @@ format_abbrev(std::string format, const std::string & variable, std::chrono::sec
 			k = format.find("%z");
 			if (k != std::string::npos) {
 				std::string temp;
-				if (off < seconds{ 0 }) {
+				if (off < seconds{0}) {
 					temp = '-';
 					off = -off;
 				} else {
 					temp = '+';
 				}
-				auto h = Balau::Date::floor<hours>(off);
+				auto h = date::floor<hours>(off);
 				off -= h;
-				if (h < hours{ 10 }) {
+				if (h < hours{10}) {
 					temp += '0';
 				}
 				temp += std::to_string(h.count());
-				if (off > seconds{ 0 }) {
-					auto m = Balau::Date::floor<minutes>(off);
+				if (off > seconds{0}) {
+					auto m = date::floor<minutes>(off);
 					off -= m;
-					if (m < minutes{ 10 }) {
+					if (m < minutes{10}) {
 						temp += '0';
 					}
 					temp += std::to_string(m.count());
-					if (off > seconds{ 0 }) {
-						if (off < seconds{ 10 }) {
+					if (off > seconds{0}) {
+						if (off < seconds{10}) {
 							temp += '0';
 						}
 						temp += std::to_string(off.count());
@@ -2225,28 +2214,23 @@ format_abbrev(std::string format, const std::string & variable, std::chrono::sec
 
 sys_info time_zone::get_info_impl(sys_seconds tp, int tz_int) const {
 	using namespace std::chrono;
-	using namespace Balau::Date;
+	using namespace date;
 	tz timezone = static_cast<tz>(tz_int);
 	assert(timezone != tz::standard);
 	auto y = year_month_day(floor<days>(tp)).year();
 	if (y < min_year || y > max_year) {
-		throw std::runtime_error(
-			"The year " + std::to_string(static_cast<int>(y)) + " is out of range:[" +
-			std::to_string(static_cast<int>(min_year)) + ", " + std::to_string(static_cast<int>(max_year)) + "]"
-		);
+		throw std::runtime_error("The year " + std::to_string(static_cast<int>(y)) + " is out of range:[" +
+		                         std::to_string(static_cast<int>(min_year)) + ", " +
+		                         std::to_string(static_cast<int>(max_year)) + "]");
 	}
-	std::call_once(
-		*adjusted_, [this]() {
-			const_cast<time_zone *>(this)->adjust_infos(get_tzdb().rules);
-		}
-	);
-	auto i = std::upper_bound(
-		zonelets_.begin(), zonelets_.end(), tp, [timezone](sys_seconds t, const zonelet & zl) {
-			return timezone == tz::utc ? t < zl.until_utc_ : t < sys_seconds{ zl.until_loc_.time_since_epoch() };
-		}
-	);
+	std::call_once(*adjusted_, [this]() {
+		const_cast<time_zone *>(this)->adjust_infos(get_tzdb().rules);
+	});
+	auto i = std::upper_bound(zonelets_.begin(), zonelets_.end(), tp, [timezone](sys_seconds t, const zonelet &zl) {
+		return timezone == tz::utc ? t < zl.until_utc_ : t < sys_seconds{zl.until_loc_.time_since_epoch()};
+	});
 
-	sys_info r {};
+	sys_info r{};
 	if (i != zonelets_.end()) {
 		if (i->tag_ == zonelet::has_save) {
 			if (i != zonelets_.begin()) {
@@ -2266,15 +2250,9 @@ sys_info time_zone::get_info_impl(sys_seconds tp, int tz_int) const {
 			r.end = i->until_utc_;
 			r.offset = i->gmtoff_;
 		} else {
-			r = find_rule(
-				i->first_rule_,
-				i->last_rule_,
-				y,
-				i->gmtoff_,
-				MonthDayTime(local_seconds{ tp.time_since_epoch() }, timezone),
-				i->initial_save_,
-				i->initial_abbrev_
-			);
+			r = find_rule(i->first_rule_, i->last_rule_, y, i->gmtoff_,
+			              MonthDayTime(local_seconds{tp.time_since_epoch()}, timezone), i->initial_save_,
+			              i->initial_abbrev_);
 			r.offset = i->gmtoff_ + r.save;
 			if (i != zonelets_.begin() && r.begin < i[-1].until_utc_) {
 				r.begin = i[-1].until_utc_;
@@ -2289,23 +2267,21 @@ sys_info time_zone::get_info_impl(sys_seconds tp, int tz_int) const {
 	return r;
 }
 
-std::ostream & operator <<(std::ostream & os, const time_zone & z) {
-	using namespace Balau::Date;
+std::ostream &operator<<(std::ostream &os, const time_zone &z) {
+	using namespace date;
 	using namespace std::chrono;
-	detail::save_stream<char> _(os);
+	detail::save_ostream<char> _(os);
 	os.fill(' ');
 	os.flags(std::ios::dec | std::ios::left);
-	std::call_once(
-		*z.adjusted_, [&z]() {
-			const_cast<time_zone &>(z).adjust_infos(get_tzdb().rules);
-		}
-	);
+	std::call_once(*z.adjusted_, [&z]() {
+		const_cast<time_zone &>(z).adjust_infos(get_tzdb().rules);
+	});
 	os.width(35);
 	os << z.name_;
 	std::string indent;
-	for (auto const & s : z.zonelets_) {
+	for (auto const &s : z.zonelets_) {
 		os << indent;
-		if (s.gmtoff_ >= seconds{ 0 }) {
+		if (s.gmtoff_ >= seconds{0}) {
 			os << ' ';
 		}
 		os << make_time(s.gmtoff_) << "   ";
@@ -2347,8 +2323,8 @@ std::ostream & operator <<(std::ostream & os, const time_zone & z) {
 
 #if !MISSING_LEAP_SECONDS
 
-std::ostream & operator <<(std::ostream & os, const leap & x) {
-	using namespace Balau::Date;
+std::ostream &operator<<(std::ostream &os, const leap_second &x) {
+	using namespace date;
 	return os << x.date_ << "  +";
 }
 
@@ -2356,7 +2332,7 @@ std::ostream & operator <<(std::ostream & os, const leap & x) {
 
 #if USE_OS_TZDB
 
-	#ifdef __APPLE__
+# ifdef __APPLE__
 static
 std::string
 get_version()
@@ -2370,7 +2346,7 @@ get_version()
 		throw std::runtime_error("Unable to get Timezone database version from " + path);
 	return version;
 }
-	#endif
+# endif
 
 static
 std::unique_ptr<tzdb>
@@ -2401,6 +2377,8 @@ init_tzdb()
 				strcmp(d->d_name, "+VERSION")     == 0      ||
 				strcmp(d->d_name, "zone.tab")     == 0      ||
 				strcmp(d->d_name, "zone1970.tab") == 0      ||
+				strcmp(d->d_name, "tzdata.zi")    == 0      ||
+				strcmp(d->d_name, "leapseconds")  == 0      ||
 				strcmp(d->d_name, "leap-seconds.list") == 0   )
 				continue;
 			auto subname = dirname + folder_delimiter + d->d_name;
@@ -2424,13 +2402,13 @@ init_tzdb()
 	}
 	db->zones.shrink_to_fit();
 	std::sort(db->zones.begin(), db->zones.end());
-		#if !MISSING_LEAP_SECONDS
+	#  if !MISSING_LEAP_SECONDS
 	std::ifstream in(get_tz_dir() + std::string(1, folder_delimiter) + "right/UTC",
 					 std::ios_base::binary);
 	if (in)
 	{
 		in.exceptions(std::ios::failbit | std::ios::badbit);
-		db->leaps = load_just_leaps(in);
+		db->leap_seconds = load_just_leaps(in);
 	}
 	else
 	{
@@ -2440,40 +2418,40 @@ init_tzdb()
 		if (!in)
 			throw std::runtime_error("Unable to extract leap second information");
 		in.exceptions(std::ios::failbit | std::ios::badbit);
-		db->leaps = load_just_leaps(in);
+		db->leap_seconds = load_just_leaps(in);
 	}
-		#endif  // !MISSING_LEAP_SECONDS
-		#ifdef __APPLE__
+	#  endif  // !MISSING_LEAP_SECONDS
+	#  ifdef __APPLE__
 	db->version = get_version();
-		#endif
+	#  endif
 	return db;
 }
 
 #else  // !USE_OS_TZDB
 
-// link
+// time_zone_link
 
-link::link(const std::string & s) {
-	using namespace Balau::Date;
+time_zone_link::time_zone_link(const std::string &s) {
+	using namespace date;
 	std::istringstream in(s);
 	in.exceptions(std::ios::failbit | std::ios::badbit);
 	std::string word;
 	in >> word >> target_ >> name_;
 }
 
-std::ostream & operator <<(std::ostream & os, const link & x) {
-	using namespace Balau::Date;
-	detail::save_stream<char> _(os);
+std::ostream &operator<<(std::ostream &os, const time_zone_link &x) {
+	using namespace date;
+	detail::save_ostream<char> _(os);
 	os.fill(' ');
 	os.flags(std::ios::dec | std::ios::left);
 	os.width(35);
 	return os << x.name_ << " --> " << x.target_;
 }
 
-// leap
+// leap_second
 
-leap::leap(const std::string & s, detail::undocumented) {
-	using namespace Balau::Date;
+leap_second::leap_second(const std::string &s, detail::undocumented) {
+	using namespace date;
 	std::istringstream in(s);
 	in.exceptions(std::ios::failbit | std::ios::badbit);
 	std::string word;
@@ -2483,15 +2461,15 @@ leap::leap(const std::string & s, detail::undocumented) {
 	date_ = date.to_time_point(year(y));
 }
 
-static bool file_exists(const std::string & filename) {
-		#ifdef _WIN32
+static bool file_exists(const std::string &filename) {
+	#ifdef _WIN32
 	return ::_access(filename.c_str(), 0) == 0;
-		#else
+	#else
 	return ::access(filename.c_str(), F_OK) == 0;
-		#endif
+	#endif
 }
 
-	#if HAS_REMOTE_API
+#if HAS_REMOTE_API
 
 // CURL tools
 
@@ -2535,6 +2513,7 @@ download_to_string(const std::string& url, std::string& str)
 	if (!curl)
 		return false;
 	std::string version;
+	curl_easy_setopt(curl.get(), CURLOPT_USERAGENT, "curl");
 	curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
 	curl_write_callback write_cb = [](char* contents, std::size_t size, std::size_t nmemb,
 									  void* userp) -> std::size_t
@@ -2559,13 +2538,15 @@ namespace
 static
 bool
 download_to_file(const std::string& url, const std::string& local_filename,
-				 download_file_options opts)
+				 download_file_options opts, char* error_buffer)
 {
 	auto curl = curl_init();
 	if (!curl)
 		return false;
 	curl_easy_setopt(curl.get(), CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl.get(), CURLOPT_SSL_VERIFYPEER, false);
+	if (error_buffer)
+	   curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, error_buffer);
 	curl_write_callback write_cb = [](char* contents, std::size_t size, std::size_t nmemb,
 									  void* userp) -> std::size_t
 	{
@@ -2617,14 +2598,14 @@ static
 bool
 remove_folder_and_subfolders(const std::string& folder)
 {
-		#ifdef _WIN32
-			#if USE_SHELL_API
+#  ifdef _WIN32
+#    if USE_SHELL_API
 	// Delete the folder contents by deleting the folder.
 	std::string cmd = "rd /s /q \"";
 	cmd += folder;
 	cmd += '\"';
 	return std::system(cmd.c_str()) == EXIT_SUCCESS;
-				#else  // !USE_SHELL_API
+	#    else  // !USE_SHELL_API
 	// Create a buffer containing the path to delete. It must be terminated
 	// by two nuls. Who designs these API's...
 	std::vector<char> from;
@@ -2639,11 +2620,11 @@ remove_folder_and_subfolders(const std::string& folder)
 	if (ret == 0 && !fo.fAnyOperationsAborted)
 		return true;
 	return false;
-				#endif  // !USE_SHELL_API
-			#else   // !_WIN32
-				#if USE_SHELL_API
+	#    endif  // !USE_SHELL_API
+	#  else   // !_WIN32
+	#    if USE_SHELL_API
 	return std::system(("rm -R " + folder).c_str()) == EXIT_SUCCESS;
-				#else // !USE_SHELL_API
+	#    else // !USE_SHELL_API
 	struct dir_deleter {
 		dir_deleter() {}
 		void operator()(DIR* d) const
@@ -2688,71 +2669,71 @@ remove_folder_and_subfolders(const std::string& folder)
 		r = rmdir(folder.c_str()) == 0;
 
 	return r;
-				#endif // !USE_SHELL_API
-			#endif  // !_WIN32
+	#    endif // !USE_SHELL_API
+	#  endif  // !_WIN32
 }
 
 static
 bool
 make_directory(const std::string& folder)
 {
-		#ifdef _WIN32
-			#if USE_SHELL_API
+#  ifdef _WIN32
+#    if USE_SHELL_API
 	// Re-create the folder.
 	std::string cmd = "mkdir \"";
 	cmd += folder;
 	cmd += '\"';
 	return std::system(cmd.c_str()) == EXIT_SUCCESS;
-				#else  // !USE_SHELL_API
+	#    else  // !USE_SHELL_API
 	return _mkdir(folder.c_str()) == 0;
-				#endif // !USE_SHELL_API
-			#else  // !_WIN32
-				#if USE_SHELL_API
-	return std::system(("mkdir " + folder).c_str()) == EXIT_SUCCESS;
-				#else  // !USE_SHELL_API
+	#    endif // !USE_SHELL_API
+	#  else  // !_WIN32
+	#    if USE_SHELL_API
+	return std::system(("mkdir -p " + folder).c_str()) == EXIT_SUCCESS;
+	#    else  // !USE_SHELL_API
 	return mkdir(folder.c_str(), 0777) == 0;
-				#endif  // !USE_SHELL_API
-			#endif  // !_WIN32
+	#    endif  // !USE_SHELL_API
+	#  endif  // !_WIN32
 }
 
 static
 bool
 delete_file(const std::string& file)
 {
-		#ifdef _WIN32
-			#if USE_SHELL_API
+#  ifdef _WIN32
+#    if USE_SHELL_API
 	std::string cmd = "del \"";
 	cmd += file;
 	cmd += '\"';
 	return std::system(cmd.c_str()) == 0;
-				#else  // !USE_SHELL_API
+	#    else  // !USE_SHELL_API
 	return _unlink(file.c_str()) == 0;
-				#endif // !USE_SHELL_API
-			#else  // !_WIN32
-				#if USE_SHELL_API
+	#    endif // !USE_SHELL_API
+	#  else  // !_WIN32
+	#    if USE_SHELL_API
 	return std::system(("rm " + file).c_str()) == EXIT_SUCCESS;
-				#else // !USE_SHELL_API
+	#    else // !USE_SHELL_API
 	return unlink(file.c_str()) == 0;
-				#endif // !USE_SHELL_API
-			#endif  // !_WIN32
+	#    endif // !USE_SHELL_API
+	#  endif  // !_WIN32
 }
 
-		#ifdef _WIN32
+#  ifdef _WIN32
 
 static
 bool
 move_file(const std::string& from, const std::string& to)
 {
-			#if USE_SHELL_API
+#    if USE_SHELL_API
 	std::string cmd = "move \"";
 	cmd += from;
 	cmd += "\" \"";
 	cmd += to;
 	cmd += '\"';
 	return std::system(cmd.c_str()) == EXIT_SUCCESS;
-				#else  // !USE_SHELL_API
+	#    else  // !USE_SHELL_API
 	return !!::MoveFile(from.c_str(), to.c_str());
-				#endif // !USE_SHELL_API
+	#    endif // !USE_SHELL_API
 }
 
 // Usually something like "c:\Program Files".
@@ -2801,7 +2782,7 @@ get_unzip_program()
 	return path;
 }
 
-			#if !USE_SHELL_API
+#    if !USE_SHELL_API
 static
 int
 run_program(const std::string& command)
@@ -2829,7 +2810,7 @@ run_program(const std::string& command)
 	}
 	return EXIT_FAILURE;
 }
-			#endif // !USE_SHELL_API
+#    endif // !USE_SHELL_API
 
 static
 std::string
@@ -2864,7 +2845,7 @@ extract_gz_file(const std::string& version, const std::string& gz_file,
 	cmd += dest_folder;
 	cmd += '\"';
 
-				#if USE_SHELL_API
+	#    if USE_SHELL_API
 	// When using shelling out with std::system() extra quotes are required around the
 	// whole command. It's weird but necessary it seems, see:
 	// http://stackoverflow.com/q/27975969/576911
@@ -2872,10 +2853,10 @@ extract_gz_file(const std::string& version, const std::string& gz_file,
 	cmd = "\"" + cmd + "\"";
 	if (std::system(cmd.c_str()) == EXIT_SUCCESS)
 		unzip_result = true;
-					#else  // !USE_SHELL_API
+		#    else  // !USE_SHELL_API
 	if (run_program(cmd) == EXIT_SUCCESS)
 		unzip_result = true;
-					#endif // !USE_SHELL_API
+		#    endif // !USE_SHELL_API
 	if (unzip_result)
 		delete_file(gz_file);
 
@@ -2889,14 +2870,14 @@ extract_gz_file(const std::string& version, const std::string& gz_file,
 	cmd += "\" -o\"";
 	cmd += get_install();
 	cmd += '\"';
-				#if USE_SHELL_API
+	#    if USE_SHELL_API
 	cmd = "\"" + cmd + "\"";
 	if (std::system(cmd.c_str()) == EXIT_SUCCESS)
 		unzip_result = true;
-					#else  // !USE_SHELL_API
+		#    else  // !USE_SHELL_API
 	if (run_program(cmd) == EXIT_SUCCESS)
 		unzip_result = true;
-					#endif // !USE_SHELL_API
+		#    endif // !USE_SHELL_API
 
 	if (unzip_result)
 		delete_file(tar_file);
@@ -2912,9 +2893,9 @@ get_download_mapping_file(const std::string& version)
 	return file;
 }
 
-		#else  // !_WIN32
+#  else  // !_WIN32
 
-			#if !USE_SHELL_API
+#    if !USE_SHELL_API
 static
 int
 run_program(const char* prog, const char*const args[])
@@ -2958,22 +2939,22 @@ run_program(const char* prog, const char*const args[])
 	exit(EXIT_FAILURE);
 	return EXIT_FAILURE;
 }
-			#endif // !USE_SHELL_API
+#    endif // !USE_SHELL_API
 
 static
 bool
 extract_gz_file(const std::string&, const std::string& gz_file, const std::string&)
 {
-			#if USE_SHELL_API
+#    if USE_SHELL_API
 	bool unzipped = std::system(("tar -xzf " + gz_file + " -C " + get_install()).c_str()) == EXIT_SUCCESS;
-				#else  // !USE_SHELL_API
+	#    else  // !USE_SHELL_API
 	const char prog[] = {"/usr/bin/tar"};
 	const char*const args[] =
 	{
 		prog, "-xzf", gz_file.c_str(), "-C", get_install().c_str(), nullptr
 	};
 	bool unzipped = (run_program(prog, args) == EXIT_SUCCESS);
-				#endif // !USE_SHELL_API
+	#    endif // !USE_SHELL_API
 	if (unzipped)
 	{
 		delete_file(gz_file);
@@ -2982,37 +2963,39 @@ extract_gz_file(const std::string&, const std::string& gz_file, const std::strin
 	return false;
 }
 
-		#endif // !_WIN32
+#  endif // !_WIN32
 
 bool
-remote_download(const std::string& version)
+remote_download(const std::string& version, char* error_buffer)
 {
 	assert(!version.empty());
 
-			#ifdef _WIN32
+	#  ifdef _WIN32
 	// Download folder should be always available for Windows
-			#else  // !_WIN32
+	#  else  // !_WIN32
 	// Create download folder if it does not exist on UNIX system
-	auto download_folder = get_download_folder();
+	auto download_folder = get_install();
 	if (!file_exists(download_folder))
 	{
-		make_directory(download_folder);
+		if (!make_directory(download_folder))
+			return false;
 	}
-			#endif  // _WIN32
+	#  endif  // _WIN32
 
 	auto url = "https://data.iana.org/time-zones/releases/tzdata" + version +
 			   ".tar.gz";
 	bool result = download_to_file(url, get_download_gz_file(version),
-								   download_file_options::binary);
-										   #ifdef _WIN32
+								   download_file_options::binary, error_buffer);
+								   #  ifdef _WIN32
 	if (result)
 	{
 		auto mapping_file = get_download_mapping_file(version);
-		result = download_to_file("http://unicode.org/repos/cldr/trunk/common/"
-								  "supplemental/windowsZones.xml",
-			mapping_file, download_file_options::text);
+		result = download_to_file(
+			"https://raw.githubusercontent.com/unicode-org/cldr/master/"
+			"common/supplemental/windowsZones.xml",
+			mapping_file, download_file_options::text, error_buffer);
 	}
-			#endif  // _WIN32
+	#  endif  // _WIN32
 	return result;
 }
 
@@ -3032,22 +3015,22 @@ remote_install(const std::string& version)
 		{
 			if (extract_gz_file(version, gz_file, install))
 				success = true;
-						#ifdef _WIN32
+				#  ifdef _WIN32
 			auto mapping_file_source = get_download_mapping_file(version);
 			auto mapping_file_dest = get_install();
 			mapping_file_dest += folder_delimiter;
 			mapping_file_dest += "windowsZones.xml";
 			if (!move_file(mapping_file_source, mapping_file_dest))
 				success = false;
-						#endif  // _WIN32
+				#  endif  // _WIN32
 		}
 	}
 	return success;
 }
 
-	#endif  // HAS_REMOTE_API
+#endif  // HAS_REMOTE_API
 
-static std::string get_version(const std::string & path) {
+static std::string get_version(const std::string &path) {
 	std::string version;
 	std::ifstream infile(path + "version");
 	if (infile.is_open()) {
@@ -3069,14 +3052,14 @@ static std::string get_version(const std::string & path) {
 }
 
 static std::unique_ptr<tzdb> init_tzdb() {
-	using namespace Balau::Date;
+	using namespace date;
 	const std::string install = get_install();
 	const std::string path = install + folder_delimiter;
 	std::string line;
 	bool continue_zone = false;
 	std::unique_ptr<tzdb> db(new tzdb);
 
-		#if AUTO_DOWNLOAD
+	#if AUTO_DOWNLOAD
 	if (!file_exists(install))
 	{
 		auto rv = remote_version();
@@ -3114,7 +3097,7 @@ static std::unique_ptr<tzdb> init_tzdb() {
 			}
 		}
 	}
-		#else  // !AUTO_DOWNLOAD
+	#else  // !AUTO_DOWNLOAD
 	if (!file_exists(install)) {
 		std::string msg = "Timezone database not found at \"";
 		msg += install;
@@ -3122,12 +3105,12 @@ static std::unique_ptr<tzdb> init_tzdb() {
 		throw std::runtime_error(msg);
 	}
 	db->version = get_version(path);
-		#endif  // !AUTO_DOWNLOAD
+	#endif  // !AUTO_DOWNLOAD
 
-	CONSTDATA char * const files[] = { "africa", "antarctica", "asia", "australasia", "backward", "etcetera", "europe",
-	                                   "pacificnew", "northamerica", "southamerica", "systemv", "leapseconds" };
+	CONSTDATA char *const files[] = {"africa", "antarctica", "asia", "australasia", "backward", "etcetera", "europe",
+	                                 "pacificnew", "northamerica", "southamerica", "systemv", "leapseconds"};
 
-	for (const auto & filename : files) {
+	for (const auto &filename : files) {
 		std::ifstream infile(path + filename);
 		while (infile) {
 			std::getline(infile, line);
@@ -3139,10 +3122,10 @@ static std::unique_ptr<tzdb> init_tzdb() {
 					db->rules.push_back(Rule(line));
 					continue_zone = false;
 				} else if (word == "Link") {
-					db->links.push_back(link(line));
+					db->links.push_back(time_zone_link(line));
 					continue_zone = false;
 				} else if (word == "Leap") {
-					db->leaps.push_back(leap(line, detail::undocumented{}));
+					db->leap_seconds.push_back(leap_second(line, detail::undocumented{}));
 					continue_zone = false;
 				} else if (word == "Zone") {
 					db->zones.push_back(time_zone(line, detail::undocumented{}));
@@ -3161,31 +3144,31 @@ static std::unique_ptr<tzdb> init_tzdb() {
 	db->zones.shrink_to_fit();
 	std::sort(db->links.begin(), db->links.end());
 	db->links.shrink_to_fit();
-	std::sort(db->leaps.begin(), db->leaps.end());
-	db->leaps.shrink_to_fit();
+	std::sort(db->leap_seconds.begin(), db->leap_seconds.end());
+	db->leap_seconds.shrink_to_fit();
 
-		#ifdef _WIN32
+	#ifdef _WIN32
 	std::string mapping_file = get_install() + folder_delimiter + "windowsZones.xml";
 	db->mappings = load_timezone_mappings_from_xml_file(mapping_file);
 	sort_zone_mappings(db->mappings);
-		#endif // _WIN32
+	#endif // _WIN32
 
 	return db;
 }
 
-const tzdb & reload_tzdb() {
-		#if AUTO_DOWNLOAD
+const tzdb &reload_tzdb() {
+	#if AUTO_DOWNLOAD
 	auto const& v = get_tzdb_list().front().version;
 	if (!v.empty() && v == remote_version())
 		return get_tzdb_list().front();
-		#endif  // AUTO_DOWNLOAD
+	#endif  // AUTO_DOWNLOAD
 	tzdb_list::undocumented_helper::push_front(get_tzdb_list(), init_tzdb().release());
 	return get_tzdb_list().front();
 }
 
 #endif  // !USE_OS_TZDB
 
-const tzdb & get_tzdb() {
+const tzdb &get_tzdb() {
 	return get_tzdb_list().front();
 }
 
@@ -3193,44 +3176,39 @@ const time_zone *
 #if HAS_STRING_VIEW
 tzdb::locate_zone(std::string_view tz_name) const
 #else
-tzdb::locate_zone(const std::string & tz_name) const
+tzdb::locate_zone(const std::string &tz_name) const
 #endif
 {
-	auto zi = std::lower_bound(
-		zones.begin(), zones.end(), tz_name,
-		#if HAS_STRING_VIEW
+	auto zi = std::lower_bound(zones.begin(), zones.end(), tz_name,
+	#if HAS_STRING_VIEW
 		[](const time_zone& z, const std::string_view& nm)
-		#else
-		[](const time_zone & z, const std::string & nm)
-			#endif
-		{
-			return z.name() < nm;
-		}
-	);
+	#else
+	                           [](const time_zone &z, const std::string &nm)
+	                           #endif
+	                           {
+		                           return z.name() < nm;
+	                           });
 	if (zi == zones.end() || zi->name() != tz_name) {
-			#if !USE_OS_TZDB
-		auto li = std::lower_bound(
-			links.begin(), links.end(), tz_name,
-			#if HAS_STRING_VIEW
-			[](const link& z, const std::string_view& nm)
-			#else
-			[](const link & z, const std::string & nm)
-				#endif
-			{
-				return z.name() < nm;
-			}
-		);
+		#if !USE_OS_TZDB
+		auto li = std::lower_bound(links.begin(), links.end(), tz_name,
+		#if HAS_STRING_VIEW
+			[](const time_zone_link& z, const std::string_view& nm)
+		#else
+		                           [](const time_zone_link &z, const std::string &nm)
+		                           #endif
+		                           {
+			                           return z.name() < nm;
+		                           });
 		if (li != links.end() && li->name() == tz_name) {
-			zi = std::lower_bound(
-				zones.begin(), zones.end(), li->target(), [](const time_zone & z, const std::string & nm) {
-					return z.name() < nm;
-				}
-			);
+			zi = std::lower_bound(zones.begin(), zones.end(), li->target(),
+			                      [](const time_zone &z, const std::string &nm) {
+				                      return z.name() < nm;
+			                      });
 			if (zi != zones.end() && zi->name() == li->target()) {
 				return &*zi;
 			}
 		}
-			#endif  // !USE_OS_TZDB
+		#endif  // !USE_OS_TZDB
 		throw std::runtime_error(std::string(tz_name) + " not found in timezone database");
 	}
 	return &*zi;
@@ -3240,7 +3218,7 @@ const time_zone *
 #if HAS_STRING_VIEW
 locate_zone(std::string_view tz_name)
 #else
-locate_zone(const std::string & tz_name)
+locate_zone(const std::string &tz_name)
 #endif
 {
 	return get_tzdb().locate_zone(tz_name);
@@ -3254,75 +3232,67 @@ operator<<(std::ostream& os, const tzdb& db)
 	os << "Version: " << db.version << "\n\n";
 	for (const auto& x : db.zones)
 		os << x << '\n';
-			#if !MISSING_LEAP_SECONDS
+		#if !MISSING_LEAP_SECONDS
 	os << '\n';
-	for (const auto& x : db.leaps)
+	for (const auto& x : db.leap_seconds)
 		os << x << '\n';
-			#endif  // !MISSING_LEAP_SECONDS
+		#endif  // !MISSING_LEAP_SECONDS
 	return os;
 }
 
 #else  // !USE_OS_TZDB
 
-std::ostream & operator <<(std::ostream & os, const tzdb & db) {
+std::ostream &operator<<(std::ostream &os, const tzdb &db) {
 	os << "Version: " << db.version << '\n';
-	std::string title(
-		"--------------------------------------------"
-			"--------------------------------------------\n"
-			"Name           ""Start Y ""End Y   "
-			"Beginning                              ""Offset  "
-			"Designator\n"
-			"--------------------------------------------"
-			"--------------------------------------------\n"
-	);
+	std::string title("--------------------------------------------"
+	                  "--------------------------------------------\n"
+	                  "Name           ""Start Y ""End Y   "
+	                  "Beginning                              ""Offset  "
+	                  "Designator\n"
+	                  "--------------------------------------------"
+	                  "--------------------------------------------\n");
 	int count = 0;
-	for (const auto & x : db.rules) {
+	for (const auto &x : db.rules) {
 		if (count++ % 50 == 0) {
 			os << title;
 		}
 		os << x << '\n';
 	}
 	os << '\n';
-	title = std::string(
-		"---------------------------------------------------------"
-			"--------------------------------------------------------\n"
-			"Name                               ""Offset      "
-			"Rule           ""Abrev      ""Until\n"
-			"---------------------------------------------------------"
-			"--------------------------------------------------------\n"
-	);
+	title = std::string("---------------------------------------------------------"
+	                    "--------------------------------------------------------\n"
+	                    "Name                               ""Offset      "
+	                    "Rule           ""Abrev      ""Until\n"
+	                    "---------------------------------------------------------"
+	                    "--------------------------------------------------------\n");
 	count = 0;
-	for (const auto & x : db.zones) {
+	for (const auto &x : db.zones) {
 		if (count++ % 10 == 0) {
 			os << title;
 		}
 		os << x << '\n';
 	}
 	os << '\n';
-	title = std::string(
-		"---------------------------------------------------------"
-			"--------------------------------------------------------\n"
-			"Alias                                   ""To\n"
-			"---------------------------------------------------------"
-			"--------------------------------------------------------\n"
-	);
+	title = std::string("---------------------------------------------------------"
+	                    "--------------------------------------------------------\n"
+	                    "Alias                                   ""To\n"
+	                    "---------------------------------------------------------"
+	                    "--------------------------------------------------------\n");
 	count = 0;
-	for (const auto & x : db.links) {
+	for (const auto &x : db.links) {
 		if (count++ % 45 == 0) {
 			os << title;
 		}
 		os << x << '\n';
 	}
 	os << '\n';
-	title = std::string(
-		"---------------------------------------------------------"
-			"--------------------------------------------------------\n"
-			"Leap second on\n"
-			"---------------------------------------------------------"
-			"--------------------------------------------------------\n"
-	);
+	title = std::string("---------------------------------------------------------"
+	                    "--------------------------------------------------------\n"
+	                    "Leap second on\n"
+	                    "---------------------------------------------------------"
+	                    "--------------------------------------------------------\n");
 	os << title;
-	for (const auto & x : db.leaps) {
+	for (const auto &x : db.leap_seconds) {
 		os << x << '\n';
 	}
 	return os;
@@ -3334,31 +3304,27 @@ std::ostream & operator <<(std::ostream & os, const tzdb & db) {
 
 #ifdef _WIN32
 
-static
-std::string
-getTimeZoneKeyName()
-{
+static std::string getTimeZoneKeyName() {
 	DYNAMIC_TIME_ZONE_INFORMATION dtzi{};
 	auto result = GetDynamicTimeZoneInformation(&dtzi);
-	if (result == TIME_ZONE_ID_INVALID)
+	if (result == TIME_ZONE_ID_INVALID) {
 		throw std::runtime_error("current_zone(): GetDynamicTimeZoneInformation()"
-								 " reported TIME_ZONE_ID_INVALID.");
+		                         " reported TIME_ZONE_ID_INVALID.");
+	}
 	auto wlen = wcslen(dtzi.TimeZoneKeyName);
 	char buf[128] = {};
-	assert(sizeof(buf) >= wlen+1);
+	assert(sizeof(buf) >= wlen + 1);
 	wcstombs(buf, dtzi.TimeZoneKeyName, wlen);
-	if (strcmp(buf, "Coordinated Universal Time") == 0)
+	if (strcmp(buf, "Coordinated Universal Time") == 0) {
 		return "UTC";
+	}
 	return buf;
 }
 
-const time_zone*
-tzdb::current_zone() const
-{
+const time_zone *tzdb::current_zone() const {
 	std::string win_tzid = getTimeZoneKeyName();
 	std::string standard_tzid;
-	if (!native_to_standard_timezone_name(win_tzid, standard_tzid))
-	{
+	if (!native_to_standard_timezone_name(win_tzid, standard_tzid)) {
 		std::string msg;
 		msg = "current_zone() failed: A mapping from the Windows Time Zone id \"";
 		msg += win_tzid;
@@ -3370,7 +3336,59 @@ tzdb::current_zone() const
 
 #else  // !_WIN32
 
-const time_zone * tzdb::current_zone() const {
+#if HAS_STRING_VIEW
+
+static
+std::string_view
+extract_tz_name(char const* rp)
+{
+	using namespace std;
+	string_view result = rp;
+	CONSTDATA string_view zoneinfo = "zoneinfo";
+	size_t pos = result.rfind(zoneinfo);
+	if (pos == result.npos)
+		throw runtime_error(
+			"current_zone() failed to find \"zoneinfo\" in " + string(result));
+	pos = result.find('/', pos);
+	result.remove_prefix(pos + 1);
+	return result;
+}
+
+#else  // !HAS_STRING_VIEW
+
+static
+std::string
+extract_tz_name(char const* rp)
+{
+	using namespace std;
+	string result = rp;
+	CONSTDATA char zoneinfo[] = "zoneinfo";
+	size_t pos = result.rfind(zoneinfo);
+	if (pos == result.npos)
+		throw runtime_error(
+			"current_zone() failed to find \"zoneinfo\" in " + result);
+	pos = result.find('/', pos);
+	result.erase(0, pos + 1);
+	return result;
+}
+
+#endif  // HAS_STRING_VIEW
+
+static
+bool
+sniff_realpath(const char* timezone)
+{
+	using namespace std;
+	char rp[PATH_MAX+1] = {};
+	if (realpath(timezone, rp) == nullptr)
+		throw system_error(errno, system_category(), "realpath() failed");
+	auto result = extract_tz_name(rp);
+	return result != "posixrules";
+}
+
+const time_zone*
+tzdb::current_zone() const
+{
 	// On some OS's a file called /etc/localtime may
 	// exist and it may be either a real file
 	// containing time zone details or a symlink to such a file.
@@ -3379,7 +3397,7 @@ const time_zone * tzdb::current_zone() const {
 	// "/usr/share/zoneinfo/America/Los_Angeles"
 	// If it does, we try to determine the current
 	// timezone from the remainder of the path by removing the prefix
-	// and hoping the rest resolves to valid timezone.
+	// and hoping the rest resolves to a valid timezone.
 	// It may not always work though. If it doesn't then an
 	// exception will be thrown by local_timezone.
 	// The path may also take a relative form:
@@ -3387,21 +3405,22 @@ const time_zone * tzdb::current_zone() const {
 	{
 		struct stat sb;
 		CONSTDATA auto timezone = "/etc/localtime";
-		if (lstat(timezone, &sb) == 0 && S_ISLNK(sb.st_mode) && sb.st_size > 0) {
+		if (lstat(timezone, &sb) == 0 && S_ISLNK(sb.st_mode) && sb.st_size > 0)
+		{
 			using namespace std;
-			string result;
-			char rp[PATH_MAX + 1] = {};
-			if (readlink(timezone, rp, sizeof(rp) - 1) > 0) {
-				result = string(rp);
-			} else {
-				throw system_error(errno, system_category(), "readlink() failed");
+			static const bool use_realpath = sniff_realpath(timezone);
+			char rp[PATH_MAX+1] = {};
+			if (use_realpath)
+			{
+				if (realpath(timezone, rp) == nullptr)
+					throw system_error(errno, system_category(), "realpath() failed");
 			}
-
-			const size_t pos = result.find(get_tz_dir());
-			if (pos != result.npos) {
-				result.erase(0, get_tz_dir().size() + 1 + pos);
+			else
+			{
+				if (readlink(timezone, rp, sizeof(rp)-1) <= 0)
+					throw system_error(errno, system_category(), "readlink() failed");
 			}
-			return locate_zone(result);
+			return locate_zone(extract_tz_name(rp));
 		}
 	}
 	// On embedded systems e.g. buildroot with uclibc the timezone is linked
@@ -3420,72 +3439,72 @@ const time_zone * tzdb::current_zone() const {
 		if (lstat(timezone, &sb) == 0 && S_ISLNK(sb.st_mode) && sb.st_size > 0) {
 			using namespace std;
 			string result;
-			char rp[PATH_MAX + 1] = {};
-			if (readlink(timezone, rp, sizeof(rp) - 1) > 0) {
+			char rp[PATH_MAX+1] = {};
+			if (readlink(timezone, rp, sizeof(rp)-1) > 0)
 				result = string(rp);
-			} else {
+			else
 				throw system_error(errno, system_category(), "readlink() failed");
-			}
 
 			const size_t pos = result.find(get_tz_dir());
-			if (pos != result.npos) {
+			if (pos != result.npos)
 				result.erase(0, get_tz_dir().size() + 1 + pos);
-			}
 			return locate_zone(result);
 		}
 	}
 	{
-		// On some versions of some linux distro's (e.g. Ubuntu),
-		// the current timezone might be in the first line of
-		// the /etc/timezone file.
+	// On some versions of some linux distro's (e.g. Ubuntu),
+	// the current timezone might be in the first line of
+	// the /etc/timezone file.
 		std::ifstream timezone_file("/etc/timezone");
-		if (timezone_file.is_open()) {
+		if (timezone_file.is_open())
+		{
 			std::string result;
 			std::getline(timezone_file, result);
-			if (!result.empty()) {
+			if (!result.empty())
 				return locate_zone(result);
-			}
 		}
 		// Fall through to try other means.
 	}
 	{
-		// On some versions of some bsd distro's (e.g. FreeBSD),
-		// the current timezone might be in the first line of
-		// the /var/db/zoneinfo file.
+	// On some versions of some bsd distro's (e.g. FreeBSD),
+	// the current timezone might be in the first line of
+	// the /var/db/zoneinfo file.
 		std::ifstream timezone_file("/var/db/zoneinfo");
-		if (timezone_file.is_open()) {
+		if (timezone_file.is_open())
+		{
 			std::string result;
 			std::getline(timezone_file, result);
-			if (!result.empty()) {
+			if (!result.empty())
 				return locate_zone(result);
-			}
 		}
 		// Fall through to try other means.
 	}
 	{
-		// On some versions of some bsd distro's (e.g. iOS),
-		// it is not possible to use file based approach,
-		// we switch to system API, calling functions in
-		// CoreFoundation framework.
-			#if TARGET_OS_IPHONE
-		std::string result = Balau::Date::iOSUtils::get_current_timezone();
+	// On some versions of some bsd distro's (e.g. iOS),
+	// it is not possible to use file based approach,
+	// we switch to system API, calling functions in
+	// CoreFoundation framework.
+	#if TARGET_OS_IPHONE
+		std::string result = date::iOSUtils::get_current_timezone();
 		if (!result.empty())
 			return locate_zone(result);
 			#endif
-		// Fall through to try other means.
+	// Fall through to try other means.
 	}
 	{
-		// On some versions of some linux distro's (e.g. Red Hat),
-		// the current timezone might be in the first line of
-		// the /etc/sysconfig/clock file as:
-		// ZONE="US/Eastern"
+	// On some versions of some linux distro's (e.g. Red Hat),
+	// the current timezone might be in the first line of
+	// the /etc/sysconfig/clock file as:
+	// ZONE="US/Eastern"
 		std::ifstream timezone_file("/etc/sysconfig/clock");
 		std::string result;
-		while (timezone_file) {
+		while (timezone_file)
+		{
 			std::getline(timezone_file, result);
 			auto p = result.find("ZONE=\"");
-			if (p != std::string::npos) {
-				result.erase(p, p + 6);
+			if (p != std::string::npos)
+			{
+				result.erase(p, p+6);
 				result.erase(result.rfind('"'));
 				return locate_zone(result);
 			}
@@ -3497,14 +3516,14 @@ const time_zone * tzdb::current_zone() const {
 
 #endif  // !_WIN32
 
-const time_zone * current_zone() {
+const time_zone *current_zone() {
 	return get_tzdb().current_zone();
 }
 
-}  // namespace Date
+}  // namespace date
 
-} // namespace Balau
+}  // namespace Balau
 
 #if defined(__GNUC__) && __GNUC__ < 5
-	#pragma GCC diagnostic pop
+# pragma GCC diagnostic pop
 #endif

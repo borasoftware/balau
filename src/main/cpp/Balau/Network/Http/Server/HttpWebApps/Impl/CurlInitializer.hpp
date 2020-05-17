@@ -13,7 +13,7 @@
 
 #include <Balau/Type/StdTypes.hpp>
 
-namespace Balau::Network::Http::HttpWebApps::Impl {
+namespace Balau::Impl {
 
 //
 // All uses of Curl functionality in the library must call ensureCurlInitialization()
@@ -21,7 +21,7 @@ namespace Balau::Network::Http::HttpWebApps::Impl {
 //
 void ensureCurlInitialization();
 
-} // namespace Balau::Network::Http::HttpWebApps::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WEBAPP_IMPL__CURL_INITIALIZER
 

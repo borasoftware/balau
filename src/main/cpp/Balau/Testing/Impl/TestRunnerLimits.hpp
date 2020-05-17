@@ -11,7 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RUNNER_LIMITS
 #define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RUNNER_LIMITS
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Defines the implementation limits of the test runner.
 class TestRunnerLimits final {
@@ -24,6 +24,6 @@ class TestRunnerLimits final {
 	public: TestRunnerLimits & operator = (const TestRunnerLimits &) = delete;
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RUNNER_LIMITS

@@ -13,9 +13,6 @@
 #include <Balau/Resource/ZipFile.hpp>
 #include <Balau/Util/Streams.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
 namespace Balau {
 
 using Testing::is;
@@ -78,5 +75,3 @@ struct ZipEntryUtf8To32ReadResourceTest : public Testing::TestGroup<ZipEntryUtf8
 } // namespace Resource
 
 } // namespace Balau
-
-#pragma clang diagnostic pop

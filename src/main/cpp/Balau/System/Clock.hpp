@@ -55,7 +55,7 @@ class Clock {
 	///
 	/// Get the current date.
 	///
-	public: virtual Date::year_month_day today() const = 0;
+	public: virtual date::year_month_day today() const = 0;
 
 	///
 	/// Get the current time in nanoseconds since the unix epoch.

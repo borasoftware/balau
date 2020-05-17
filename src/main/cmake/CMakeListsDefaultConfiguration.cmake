@@ -7,22 +7,21 @@ OPTION(BALAU_ENABLE_HTTP "Enable HTTP components (requires Boost version 1.68.0 
 OPTION(BALAU_ENABLE_CURL "Enable use of Curl library" ON)
 OPTION(BALAU_ENABLE_THREAD_LOCAL_LOGGING_ALLOCATOR "Enable thread local logging allocator" OFF)
 OPTION(BALAU_ENABLE_TRACE_LOGGING "Enable trace logging in ASIO" OFF)
-
 OPTION(ENABLE_BACKTRACE "Enable use of backtrace library" ON)
 OPTION(ENABLE_OLD_ABI "Enable use of old GLIBCXX ABI" OFF)
 OPTION(ENABLE_BOOST_STATIC_LIBRARIES "Force use of Boost static libraries" OFF)
 
-if (ENABLE_OLD_ABI)
-	ADD_DEFINITIONS("-D_GLIBCXX_USE_CXX11_ABI=0")
-	message(STATUS "_GLIBCXX_USE_CXX11_ABI set to 0 - compiling with old ABI")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	if (ENABLE_OLD_ABI)
+		ADD_DEFINITIONS("-D_GLIBCXX_USE_CXX11_ABI=0")
+		message(STATUS "_GLIBCXX_USE_CXX11_ABI set to 0 - compiling with old ABI")
+	endif ()
 endif ()
 
 ################################### COMPILER ##################################
 
-# Common compiler switches used in targets.
-set(BALAU_CXX_FLAGS "-fPIC -Wall -pedantic -Wextra")
-
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(BALAU_CXX_FLAGS "-fPIC -Wall -pedantic -Wextra")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-missing-braces")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-deprecated-declarations")
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -fno-omit-frame-pointer")
@@ -32,37 +31,41 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-parameter") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-ignored-qualifiers") # Required for Boost Beast headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-variable")
-endif()
+endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	# using Clang
+	# Using Clang
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-lambda-capture") # Required for Boost Process headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-private-field")
 	set(BALAU_CXX_FLAGS_DEBUG "${BALAU_CXX_FLAGS_DEBUG} -fstandalone-debug")
 
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0.0)
 		set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-return-std-move") # Required for Boost ASIO headers.
-	endif()
+	endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	# using GCC
+	# Using GCC
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-but-set-parameter")
 
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0.0)
-	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-implicit-fallthrough") # Required for Boost Locale library.
-	endif()
+		set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-implicit-fallthrough") # Required for Boost Locale library.
+	endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-	# using Intel C++
-	message(FATAL_ERROR "Balau has not been tested with Intel C++.
-		Please test and provide a pull request with any required changes.")
+	# Using Intel C++
+	message(FATAL_ERROR "Balau has not been tested with Intel C++. Please test and provide a pull request with any required changes.")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	# using Visual Studio C++
-	message(FATAL_ERROR "Balau has not been ported to the Windows platform.
-		Please provide a pull request with any required changes if a Windows port is required.")
-endif()
+	# MS VC++
+	include_directories(${CMAKE_PREFIX_PATH}/include)
+
+	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} /utf-8")
+endif ()
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_STACK_TRACES -Og")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BALAU_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG -DBALAU_STACK_TRACES -Og")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${BALAU_CXX_FLAGS_DEBUG} -DBALAU_DEBUG")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -86,27 +89,26 @@ endif ()
 
 set(Boost_DETAILED_FAILURE_MSG ON)
 
-find_package(Boost ${MINIMUM_BOOST_VERSION} COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+find_package(Boost ${MINIMUM_BOOST_VERSION} COMPONENTS thread chrono date_time filesystem system serialization iostreams locale stacktrace_backtrace)
 
 if (Boost_STACKTRACE_BACKTRACE_FOUND)
 	find_package(Backtrace)
 
 	if (Backtrace_FOUND)
 		message(STATUS "Stack traces will be available (Boost support present) and libbacktrace found.")
-		find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams stacktrace_backtrace)
+		find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams locale stacktrace_backtrace)
 		set(BALAU_ENABLE_STACKTRACES ON)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_STACKTRACE_LINK -DBOOST_STACKTRACE_USE_BACKTRACE")
 		set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES} ${Backtrace_LIBRARIES})
 		include_directories(${Backtrace_INCLUDE_DIRS})
 	else ()
 		message(STATUS "Stack traces could be available (Boost support present) but libbacktrace not found.")
-		find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+		find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams locale)
 		set(BALAU_ENABLE_STACKTRACES OFF)
 		set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
 	endif ()
-
 else ()
-	find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
+	find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams locale)
 	message(STATUS "No stack traces will be available (no Boost support).")
 	set(BALAU_ENABLE_STACKTRACES OFF)
 	set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
@@ -128,6 +130,15 @@ else ()
 	message(STATUS "Boost version ${Boost_VERSION} HTTP support not available: Balau HTTP components are not enabled.")
 	set(BALAU_ENABLE_HTTP OFF)
 	set(BALAU_ENABLE_CURL OFF)
+endif ()
+
+if (WIN32)
+	# Disable boost autolinking.
+	add_definitions(-DBOOST_ALL_NO_LIB)
+
+	if (NOT USE_BOOST_STATIC_LIBRARIES)
+		add_definitions(-DBOOST_ALL_DYN_LINK)
+	endif ()
 endif ()
 
 ##################################### ICU #####################################
@@ -220,19 +231,24 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 set(ALL_LIBS ${ALL_LIBS} ${OPENSSL_LIBRARIES})
 message(STATUS "OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
 message(STATUS "OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-set(ALL_LIBS ${ALL_LIBS} rt bz2)
-set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
-link_directories(/usr/lib64)
+
+if (NOT DEFINED WIN32)
+	link_directories(/usr/lib64)
+	set(ALL_LIBS ${ALL_LIBS} rt bz2)
+	set(ALL_LIBS ${ALL_LIBS} ${CMAKE_DL_LIBS})
+endif ()
 
 ################################## BACKPORTS ##################################
 
-include(CheckIncludeFileCXX)
+if (NOT DEFINED WIN32)
+	include(CheckIncludeFileCXX)
 
-check_include_file_cxx(string_view STRING_VIEW_AVAILABLE)
+	check_include_file_cxx(string_view STRING_VIEW_AVAILABLE)
 
-if (STRING_VIEW_AVAILABLE)
-	message(STATUS "std::string_view is available.")
-else ()
-	message(STATUS "std::string_view is not available. Using boost::string_view")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_USE_BOOST_STRING_VIEW")
+	if (STRING_VIEW_AVAILABLE)
+		message(STATUS "std::string_view is available.")
+	else ()
+		message(STATUS "std::string_view is not available. Using boost::string_view")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBALAU_USE_BOOST_STRING_VIEW")
+	endif ()
 endif ()

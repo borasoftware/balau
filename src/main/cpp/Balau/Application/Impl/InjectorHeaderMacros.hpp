@@ -14,9 +14,6 @@
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Util/Macros.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedMacroInspection"
-
 #define _BalauHIPF(F)    decltype(F) F ## _
 #define _BalauHIMF(F)    F(std::forward<decltype(F)>(F ## _))
 
@@ -31,7 +28,7 @@ class Injector;
 #define _BalauInjectHeader(TYPE)                                                                    \
 	public: static TYPE * _Balau_newHeapInstance(const ::Balau::Injector & );                       \
 	public: static TYPE _Balau_newStackInstance(const ::Balau::Injector & );                        \
-	public: static std::vector<::Balau::Impl::BindingKey> _Balau_getDependencyKeys()
+	public: static std::vector<Impl::BindingKey> _Balau_getDependencyKeys()
 
 /////////////////////////////  _BalauInjectHeaderConstructNamed macros //////////////////////////////
 
@@ -187,8 +184,6 @@ class Injector;
 #define _BalauInjectHeaderConstruct__(N)          _BalauInjectHeaderConstruct__##N
 #define _BalauInjectHeaderConstruct__Eval(N)      _BalauInjectHeaderConstruct__(N)
 
-#define _BalauInjectHeaderConstruct(...)          _BalauInjectHeaderConstruct__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-
-#pragma clang diagnostic pop
+#define _BalauInjectHeaderConstruct(...)          BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectHeaderConstruct__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__INJECTOR_HEADER_MACROS

@@ -1,6 +1,5 @@
-build
+build*
 cmake-build-*
-build
 target
 **/.idea
 **/.iml

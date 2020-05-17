@@ -21,7 +21,9 @@ namespace Balau::Resource {
 
 class Http;
 
-namespace Impl {
+} // namespace Balau::Resource
+
+namespace Balau::Impl {
 
 ///
 /// Boost IO streams HTTP source, used in the HTTP input stream.
@@ -29,13 +31,13 @@ namespace Impl {
 /// @todo implement chunked reception of data
 ///
 class HttpSource : public boost::iostreams::source {
-	private: std::shared_ptr<Http> http;
-	private: UriComponents url;
+	private: std::shared_ptr<Resource::Http> http;
+	private: Resource::UriComponents url;
 	private: Network::Http::HttpClient client;
 	private: std::vector<char> responseBody;
 	private: std::streamsize currentPosition;
 
-	public: HttpSource(const Http & url_);
+	public: HttpSource(const Resource::Http & url_);
 
 	public: HttpSource(const HttpSource &) = default;
 
@@ -43,7 +45,7 @@ class HttpSource : public boost::iostreams::source {
 
 	public: std::streamsize read(char * s, std::streamsize n);
 
-	public: const Http & getUrl() const;
+	public: const Resource::Http & getUrl() const;
 
 	///////////////////////// Private implementation //////////////////////////
 
@@ -51,8 +53,6 @@ class HttpSource : public boost::iostreams::source {
 	private: std::vector<char> getBody();
 };
 
-} // namespace Impl
-
-} // namespace Balau::Resource
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE_IMPL__HTTP_SOURCE

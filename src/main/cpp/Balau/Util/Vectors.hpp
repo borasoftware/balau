@@ -74,6 +74,13 @@ struct Vectors final {
 
 	///////////////////// Push back or replace functions //////////////////////
 
+	// The default copy/move replace function used in pushBackOrReplace.
+	template <typename T, typename T2> struct DefaultReplace {
+		void operator () (T& lhs, T2&& rhs) {
+			lhs = std::forward<T2>(rhs);
+		}
+	};
+
 	///
 	/// Appends the supplied element to the vector or replaces an existing element if a matching one is found.
 	///
@@ -201,13 +208,6 @@ struct Vectors final {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
-
-	// The default copy/move replace function used in pushBackOrReplace.
-	private: template <typename T, typename T2> struct DefaultReplace {
-		void operator () (T & lhs, T2 && rhs) {
-			lhs = std::forward<T2>(rhs);
-		}
-	};
 
 	Vectors() = delete;
 	Vectors(const Vectors &) = delete;

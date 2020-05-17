@@ -15,7 +15,7 @@
 
 #include <iomanip>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Implementation of numeric container renders which render their numeric values as hex.
 template <typename A, typename E, template <typename> class ContainerA, template <typename> class ContainerE>
@@ -66,6 +66,6 @@ std::string renderAsHex(const ContainerA<A> & actual, const ContainerE<E> & expe
 	return builder.str();
 }
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__HEX_CONTAINER_RENDERER

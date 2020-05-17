@@ -26,13 +26,13 @@
 #include <Balau/Util/Files.hpp>
 #include <Balau/Util/Streams.hpp>
 
-namespace Balau {
-
-namespace Impl {
+namespace Balau::Impl {
 
 class EnvironmentConfigurationBuilder;
 
-} // namespace Impl
+} // namespace Balau::Impl
+
+namespace Balau {
 
 ///
 /// A hierarchical environment properties holder created from a composite property.

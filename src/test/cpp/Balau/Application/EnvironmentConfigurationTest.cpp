@@ -21,10 +21,6 @@
 #include <Balau/Type/OnScopeExit.hpp>
 #include <Balau/Util/Files.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
 using namespace Balau::Network;
 using namespace Balau::Network::Http;
 
@@ -638,5 +634,3 @@ struct EnvironmentConfigurationTest : public Testing::TestGroup<EnvironmentConfi
 };
 
 } // namespace Balau
-
-#pragma clang diagnostic pop

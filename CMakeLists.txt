@@ -12,7 +12,7 @@
 ## on building the Balau library and its dependencies.
 ##
 
-cmake_minimum_required(VERSION 3.10.2)
+cmake_minimum_required(VERSION 3.15.1)
 
 ################################ Balau version ################################
 
@@ -99,7 +99,14 @@ configure_file(src/test/cpp/TestResources.hpp.in src/test/cpp/TestResources.hpp 
 ################################# balau library ###############################
 
 set(THIRD_PARTY_SOURCE_FILES
+	src/main/cpp/Balau/ThirdParty/Date/chrono_io.hpp
 	src/main/cpp/Balau/ThirdParty/Date/date.hpp
+	src/main/cpp/Balau/ThirdParty/Date/ios.hpp
+	src/main/cpp/Balau/ThirdParty/Date/islamic.hpp
+	src/main/cpp/Balau/ThirdParty/Date/iso_week.hpp
+	src/main/cpp/Balau/ThirdParty/Date/julian.hpp
+	src/main/cpp/Balau/ThirdParty/Date/ptz.hpp
+	src/main/cpp/Balau/ThirdParty/Date/solar_hijri.hpp
 	src/main/cpp/Balau/ThirdParty/Date/tz.cpp
 	src/main/cpp/Balau/ThirdParty/Date/tz.hpp
 	src/main/cpp/Balau/ThirdParty/Date/tz_private.hpp
@@ -275,8 +282,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Impl/FlattenedTestCase.hpp
 	src/main/cpp/Balau/Testing/Impl/HexContainerRendererImpl.hpp
 	src/main/cpp/Balau/Testing/Impl/MatcherClasses.hpp
-	src/main/cpp/Balau/Testing/Impl/MultiProcessTestRunnerExecutor.hpp
-	src/main/cpp/Balau/Testing/Impl/ProcessPerTestTestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/SingleThreadedTestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/StandardRenderers.hpp
 	src/main/cpp/Balau/Testing/Impl/TestCase.hpp
@@ -287,7 +292,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Impl/TestReportGenerator.hpp
 	src/main/cpp/Balau/Testing/Impl/TestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/TestRunnerLimits.hpp
-	src/main/cpp/Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Impl/WorkerThreadsTestRunnerExecutor.hpp
 	src/main/cpp/Balau/Testing/Renderers/HexCharRenderer.hpp
 	src/main/cpp/Balau/Testing/Renderers/HexContainerRenderer.hpp
@@ -343,6 +347,15 @@ set(BALAU_SOURCE_FILES
 
 	src/doc
 )
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(BALAU_SOURCE_FILES
+		${BALAU_SOURCE_FILES}
+		src/main/cpp/Balau/Testing/Impl/MultiProcessTestRunnerExecutor.hpp
+		src/main/cpp/Balau/Testing/Impl/ProcessPerTestTestRunnerExecutor.hpp
+		src/main/cpp/Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp
+	)
+endif ()
 
 set_source_files_properties(${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp PROPERTIES GENERATED TRUE)
 
@@ -605,7 +618,17 @@ add_executable(
 
 target_link_libraries(BalauTests Balau ${ALL_LIBS})
 target_include_directories(BalauTests PUBLIC ${CMAKE_BINARY_DIR}/src/test/cpp)
-target_compile_options(BalauTests PUBLIC "-Wno-string-plus-int")
+
+
+add_executable(
+	LinkTestApp main.cpp
+)
+
+target_link_libraries(LinkTestApp ${Boost_LIBRARIES})
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	target_compile_options(BalauTests PUBLIC "-Wno-string-plus-int")
+endif ()
 
 #
 # Copy logging test resource to build/bin directory.
@@ -699,10 +722,15 @@ add_dependencies(RunCppCheck BalauTests)
 
 ################################# Example apps ################################
 
-if (BALAU_ENABLE_HTTP)
-	add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
-	target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
+# TODO windows
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	if (BALAU_ENABLE_HTTP)
+		add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
+		target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
+	endif ()
+
+	add_executable(ExampleSkeletonApp src/examples/SkeletonApp/SkeletonApp.cpp)
+	target_link_libraries(ExampleSkeletonApp Balau ${ALL_LIBS})
 endif ()
 
-add_executable(ExampleSkeletonApp src/examples/SkeletonApp/SkeletonApp.cpp)
-target_link_libraries(ExampleSkeletonApp Balau ${ALL_LIBS})

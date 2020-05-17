@@ -20,7 +20,9 @@ namespace Balau::Network::Http {
 
 class HttpSession;
 
-namespace Impl {
+} // namespace Balau::Network::Http
+
+namespace Balau::Impl {
 
 class Listener;
 
@@ -41,23 +43,23 @@ class ClientSessions final {
 	// TODO The result of this would be multiple client sessions being created
 	// TODO for a single user agent.
 	//
-	private: std::shared_ptr<ClientSession> create(const Balau::System::Clock & clock) {
+	private: std::shared_ptr<Network::Http::ClientSession> create(const Balau::System::Clock & clock) {
 		{
 			std::lock_guard<std::mutex> lock(mutex);
-			auto session = std::make_shared<ClientSession>(clock);
+			auto session = std::make_shared<Network::Http::ClientSession>(clock);
 			sessions[session->sessionId] = session;
 			return session;
 		}
 	}
 
-	private: std::shared_ptr<ClientSession> get(const std::string & sessionId) {
+	private: std::shared_ptr<Network::Http::ClientSession> get(const std::string & sessionId) {
 		std::lock_guard<std::mutex> lock(mutex);
 		auto iter = sessions.find(sessionId);
 
 		if (iter != sessions.end()) {
 			return iter->second;
 		} else {
-			return std::shared_ptr<ClientSession>();
+			return std::shared_ptr<Network::Http::ClientSession>();
 		}
 	}
 
@@ -72,12 +74,10 @@ class ClientSessions final {
 		sessions.clear();
 	}
 
-	private: std::map<std::string, std::shared_ptr<ClientSession>> sessions;
+	private: std::map<std::string, std::shared_ptr<Network::Http::ClientSession>> sessions;
 	private: std::mutex mutex;
 };
 
-} // Impl
-
-} // namespace Balau::Network::Http
+} // Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__CLIENT_SESSIONS

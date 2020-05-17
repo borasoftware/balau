@@ -17,7 +17,7 @@ namespace Balau::Network::Http {
 HttpSession::HttpSession(Impl::HttpSessions & httpSessions_,
                          Impl::ClientSessions & clientSessions_,
                          std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-                         TCP::socket && socket_)
+                         AsioTCP::socket && socket_)
 	: httpSessions(httpSessions_)
 	, clientSessions(clientSessions_)
 	, serverConfiguration(std::move(serverConfiguration_))
@@ -118,7 +118,7 @@ void HttpSession::doClose() {
 
 	boost::system::error_code errorCode;
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose shutting down");
-	socket.shutdown(TCP::socket::shutdown_send, errorCode);
+	socket.shutdown(AsioTCP::socket::shutdown_send, errorCode);
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose completed shut down");
 	socket.close(errorCode);
 	BalauBalauLogTrace(serverConfiguration->logger, "HttpSession::doClose closed");

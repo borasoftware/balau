@@ -14,9 +14,6 @@
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Util/Macros.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedMacroInspection"
-
 #define _BalauBIGF(F, N) _BalauInjector.getInstance<decltype(F)>(N)
 #define _BalauBIGT(T, N) _BalauInjector.getInstance<T>(N)
 #define _BalauBIKF(F, N) ::Balau::Impl::CreateBindingKey<decltype(F)>()(N)
@@ -33,7 +30,7 @@
 		return TYPE();                                                                                  \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {};                                                                                      \
 	}
 
@@ -46,7 +43,7 @@
 		return TYPE(_BalauBIGF(F0, N0));                                                                \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return { _BalauBIKF(F0, N0) };                                                                  \
 	}
 
@@ -59,7 +56,7 @@
 		return TYPE(_BalauBIGF(F0, N0), _BalauBIGF(F1, N1));                                            \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return { _BalauBIKF(F0, N0), _BalauBIKF(F1, N1) };                                              \
 	}
 
@@ -72,7 +69,7 @@
 		return TYPE(_BalauBIGF(F0, N0), _BalauBIGF(F1, N1), _BalauBIGF(F2, N2));                        \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return { _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2) };                          \
 	}
 
@@ -89,7 +86,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			_BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)              \
 		};                                                                                              \
@@ -110,7 +107,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4)                                                                        \
@@ -132,7 +129,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5)                                                    \
@@ -154,7 +151,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6)                                \
@@ -176,7 +173,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6), _BalauBIKF(F7, N7)            \
@@ -200,7 +197,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6), _BalauBIKF(F7, N7)            \
@@ -225,7 +222,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6), _BalauBIKF(F7, N7)            \
@@ -250,7 +247,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2), _BalauBIKF(F3, N3)            \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6), _BalauBIKF(F7, N7)            \
@@ -275,7 +272,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2),   _BalauBIKF(F3, N3)          \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6),   _BalauBIKF(F7, N7)          \
@@ -302,7 +299,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0), _BalauBIKF(F1, N1), _BalauBIKF(F2, N2),   _BalauBIKF(F3, N3)          \
 			, _BalauBIKF(F4, N4), _BalauBIKF(F5, N5), _BalauBIKF(F6, N6),   _BalauBIKF(F7, N7)          \
@@ -330,7 +327,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0),   _BalauBIKF(F1, N1), _BalauBIKF(F2, N2),   _BalauBIKF(F3, N3)        \
 			, _BalauBIKF(F4, N4),   _BalauBIKF(F5, N5), _BalauBIKF(F6, N6),   _BalauBIKF(F7, N7)        \
@@ -358,7 +355,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0),   _BalauBIKF(F1, N1),   _BalauBIKF(F2, N2),   _BalauBIKF(F3, N3)      \
 			, _BalauBIKF(F4, N4),   _BalauBIKF(F5, N5),   _BalauBIKF(F6, N6),   _BalauBIKF(F7, N7)      \
@@ -386,7 +383,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKF(F0, N0),   _BalauBIKF(F1, N1),   _BalauBIKF(F2, N2),   _BalauBIKF(F3, N3)      \
 			, _BalauBIKF(F4, N4),   _BalauBIKF(F5, N5),   _BalauBIKF(F6, N6),   _BalauBIKF(F7, N7)      \
@@ -406,7 +403,7 @@
 		return TYPE();                                                                                  \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {};                                                                                      \
 	}
 
@@ -419,7 +416,7 @@
 		return TYPE(_BalauBIGT(T0, N0));                                                                \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return { _BalauBIKT(T0, N0) };                                                                  \
 	}
 
@@ -432,7 +429,7 @@
 		return TYPE(_BalauBIGT(T0, N0), _BalauBIGT(T1, N1));                                            \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return { _BalauBIKT(T0, N0), _BalauBIKT(T1, N1) };                                              \
 	}
 
@@ -445,7 +442,7 @@
 		return TYPE(_BalauBIGT(T0, N0), _BalauBIGT(T1, N1), _BalauBIGT(T2, N2));                        \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return { _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2) };                          \
 	}
 
@@ -462,7 +459,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			_BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)              \
 		};                                                                                              \
@@ -483,7 +480,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4)                                                                        \
@@ -505,7 +502,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5)                                                    \
@@ -527,7 +524,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5), _BalauBIKT(T6, N6)                                \
@@ -549,7 +546,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5), _BalauBIKT(T6, N6), _BalauBIKT(T7, N7)            \
@@ -573,7 +570,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5), _BalauBIKT(T6, N6), _BalauBIKT(T7, N7)            \
@@ -598,7 +595,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5), _BalauBIKT(T6, N6), _BalauBIKT(T7, N7)            \
@@ -623,7 +620,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2), _BalauBIKT(T3, N3)            \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5), _BalauBIKT(T6, N6), _BalauBIKT(T7, N7)            \
@@ -648,7 +645,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0), _BalauBIKT(T1, N1), _BalauBIKT(T2, N2),   _BalauBIKT(T3, N3)          \
 			, _BalauBIKT(T4, N4), _BalauBIKT(T5, N5), _BalauBIKT(T6, N6),   _BalauBIKT(T7, N7)          \
@@ -675,7 +672,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0),   _BalauBIKT(T1, N1), _BalauBIKT(T2, N2),   _BalauBIKT(T3, N3)        \
 			, _BalauBIKT(T4, N4),   _BalauBIKT(T5, N5), _BalauBIKT(T6, N6),   _BalauBIKT(T7, N7)        \
@@ -703,7 +700,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0),   _BalauBIKT(T1, N1), _BalauBIKT(T2, N2),   _BalauBIKT(T3, N3)        \
 			, _BalauBIKT(T4, N4),   _BalauBIKT(T5, N5), _BalauBIKT(T6, N6),   _BalauBIKT(T7, N7)        \
@@ -731,7 +728,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0),   _BalauBIKT(T1, N1),   _BalauBIKT(T2, N2),   _BalauBIKT(T3, N3)      \
 			, _BalauBIKT(T4, N4),   _BalauBIKT(T5, N5),   _BalauBIKT(T6, N6),   _BalauBIKT(T7, N7)      \
@@ -759,7 +756,7 @@
 		);                                                                                              \
 	}                                                                                                   \
 	                                                                                                    \
-	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                           \
+	std::vector<::Balau::Impl::BindingKey> TYPE::_Balau_getDependencyKeys() {                   \
 		return {                                                                                        \
 			  _BalauBIKT(T0, N0),   _BalauBIKT(T1, N1),   _BalauBIKT(T2, N2),   _BalauBIKT(T3, N3)      \
 			, _BalauBIKT(T4, N4),   _BalauBIKT(T5, N5),   _BalauBIKT(T6, N6),   _BalauBIKT(T7, N7)      \
@@ -890,11 +887,9 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define _BalauInjectBody(...)                   _BalauInjectBody__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectBodyNamed(...)              _BalauInjectBodyNamed__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectBodyTypes(...)              _BalauInjectBodyTypes__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectBodyNamedTypes(...)         _BalauInjectBodyNamedTypes__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-
-#pragma clang diagnostic pop
+#define _BalauInjectBody(...)                   BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectBody__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectBodyNamed(...)              BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectBodyNamed__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectBodyTypes(...)              BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectBodyTypes__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectBodyNamedTypes(...)         BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectBodyNamedTypes__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__INJECTOR_BODY_MACROS

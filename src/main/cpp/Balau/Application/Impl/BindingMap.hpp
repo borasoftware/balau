@@ -29,10 +29,10 @@ class BindingMap {
 	private: static const size_t BucketCountDelta = 1024;
 
 	private: struct Entry {
-		Impl::BindingKey key;
-		std::unique_ptr<Impl::AbstractBinding> value;
+		BindingKey key;
+		std::unique_ptr<AbstractBinding> value;
 
-		Entry(Impl::BindingKey key_, std::unique_ptr<Impl::AbstractBinding> && value_)
+		Entry(BindingKey key_, std::unique_ptr<AbstractBinding> && value_)
 			: key(std::move(key_))
 			, value(std::move(value_)) {}
 
@@ -98,7 +98,7 @@ class BindingMap {
 		: buckets(InitialBucketCount)
 		, entryCount(0) {}
 
-	public: const std::unique_ptr<Impl::AbstractBinding> & get(const BindingKeyView & key) const {
+	public: const std::unique_ptr<AbstractBinding> & get(const BindingKeyView & key) const {
 		auto bucketIndex = key.hashcode() % buckets.size();
 		auto & bucket = buckets[bucketIndex];
 
@@ -111,7 +111,7 @@ class BindingMap {
 		ThrowBalauException(Exception::NoBindingException, key.toKey());
 	}
 
-	public: const std::unique_ptr<Impl::AbstractBinding> & get(const BindingKey & key) const {
+	public: const std::unique_ptr<AbstractBinding> & get(const BindingKey & key) const {
 		auto bucketIndex = key.hashcode() % buckets.size();
 		auto & bucket = buckets[bucketIndex];
 
@@ -124,7 +124,7 @@ class BindingMap {
 		ThrowBalauException(Exception::NoBindingException, key);
 	}
 
-	public: const std::unique_ptr<Impl::AbstractBinding> * find(const BindingKey & key) const {
+	public: const std::unique_ptr<AbstractBinding> * find(const BindingKey & key) const {
 		auto bucketIndex = key.hashcode() % buckets.size();
 		auto & bucket = buckets[bucketIndex];
 
@@ -137,7 +137,7 @@ class BindingMap {
 		return nullptr;
 	}
 
-	public: const std::unique_ptr<Impl::AbstractBinding> * find(const BindingKeyView & key) const {
+	public: const std::unique_ptr<AbstractBinding> * find(const BindingKeyView & key) const {
 		auto bucketIndex = key.hashcode() % buckets.size();
 		auto & bucket = buckets[bucketIndex];
 
@@ -166,7 +166,7 @@ class BindingMap {
 		return ConstIterator(this, buckets.size(), 0);
 	}
 
-	public: void put(const BindingKey & key, std::unique_ptr<Impl::AbstractBinding> && value) {
+	public: void put(const BindingKey & key, std::unique_ptr<AbstractBinding> && value) {
 		if ((double) entryCount >= (double) buckets.size() * 0.7) { // 70% occupancy
 			increaseBucketCount();
 		}

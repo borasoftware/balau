@@ -34,9 +34,9 @@ class SystemClock : public Clock {
 		return std::chrono::system_clock::now();
 	}
 
-	public: Date::year_month_day today() const override {
-		return Date::year_month_day {
-			Date::floor<Date::days>(std::chrono::system_clock::now())
+	public: date::year_month_day today() const override {
+		return date::year_month_day {
+			date::floor<date::days>(std::chrono::system_clock::now())
 		};
 	}
 

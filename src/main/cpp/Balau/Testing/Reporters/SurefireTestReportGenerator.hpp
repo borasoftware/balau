@@ -18,15 +18,15 @@ namespace Balau::Testing::Reporters {
 ///
 /// Test group report generator that generates XML reports with the Maven Surefire plugin schema.
 ///
-class SurefireTestReportGenerator : public Impl::TestReportGenerator {
+class SurefireTestReportGenerator : public ::Balau::Impl::TestReportGenerator {
 	public: SurefireTestReportGenerator() = default;
 
 	public: explicit SurefireTestReportGenerator(Resource::File outputFolder_)
-		: Impl::TestReportGenerator(std::move(outputFolder_)) {}
+		: ::Balau::Impl::TestReportGenerator(std::move(outputFolder_)) {}
 
-	public: void generate(const Impl::TestGroupBase & group,
+	public: void generate(const ::Balau::Impl::TestGroupBase & group,
 	                      const std::chrono::nanoseconds & groupDuration,
-	                      const std::vector<const Impl::TestResult *> & groupTestResults) override;
+	                      const std::vector<const ::Balau::Impl::TestResult *> & groupTestResults) override;
 };
 
 } // namespace Balau::Testing::Reporters

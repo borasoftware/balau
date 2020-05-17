@@ -172,7 +172,7 @@ template <typename KeyT> class CommandLine {
 	/// used will be switch-equals-value
 	///
 	public: void parse(int argc, char * argv[], bool ignoreFirst) {
-		std::vector<std::string> args(static_cast<unsigned long>(argc));
+		std::vector<std::string> args(static_cast<unsigned long long>(argc));
 
 		for (int m = 0; m < argc; m++) {
 			args[m] = std::string(argv[m]);
@@ -193,7 +193,7 @@ template <typename KeyT> class CommandLine {
 	/// used will be switch-equals-value
 	///
 	public: void parse(int argc, const char * argv[], bool ignoreFirst) {
-		std::vector<std::string> args(static_cast<unsigned long>(argc));
+		std::vector<std::string> args(static_cast<unsigned long long>(argc));
 
 		for (int m = 0; m < argc; m++) {
 			args[m] = std::string(argv[m]);

@@ -12,9 +12,7 @@
 #include <Balau/Application/Impl/EnvironmentConfigurationBuilder.hpp>
 #include <Balau/Resource/Https.hpp>
 
-namespace Balau {
-
-namespace Impl {
+namespace Balau::Impl {
 
 using BuilderVector                          = EnvironmentConfigurationBuilder::BuilderVector;
 using PropertyBindingBuilderFactoryPtrVector = EnvironmentConfigurationBuilder::PropertyBindingBuilderFactoryPtrVector;
@@ -128,6 +126,4 @@ struct EnvironmentConfigurationBuilderTest : public Testing::TestGroup<Environme
 	}
 };
 
-} // namespace Impl
-
-} // namespace Balau
+} // namespace Balau::Impl

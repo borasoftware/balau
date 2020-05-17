@@ -13,7 +13,7 @@
 
 #include <Balau/Testing/Impl/MultiProcessTestRunnerExecutor.hpp>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Test runner executor which implements the ProcessPerTest execution model.
 class ProcessPerTestTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
@@ -104,6 +104,6 @@ class ProcessPerTestTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
 	}
 }; // class ProcessPerTestTestRunnerExecutor
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__PROCESS_PER_TEST_TEST_RUNNER_EXECUTOR

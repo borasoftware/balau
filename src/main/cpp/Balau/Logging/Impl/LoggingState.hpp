@@ -114,11 +114,11 @@ class LoggingState final {
 
 	// Expands the ${user.home} and ${executable} placeholders.
 	std::unique_ptr<Impl::AbstractBinding> expandConfigurationValueTextMacros(Impl::BindingKey key,
-	                                                                          const std::shared_ptr<EnvironmentProperties> & configuration,
-	                                                                          const boost::filesystem::path & exeLocation,
-	                                                                          const std::string & homeDir,
-	                                                                          const std::string & executableName,
-	                                                                          const std::map<std::string, std::string> & encasedPlaceholders);
+	                                                                                  const std::shared_ptr<EnvironmentProperties> & configuration,
+	                                                                                  const boost::filesystem::path & exeLocation,
+	                                                                                  const std::string & homeDir,
+	                                                                                  const std::string & executableName,
+	                                                                                  const std::map<std::string, std::string> & encasedPlaceholders);
 
 	// Creates a tree containing the default properties.
 	LoggerTree createDefaultConfiguration();

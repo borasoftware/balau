@@ -15,7 +15,7 @@
 
 #include <Balau/Resource/File.hpp>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 class TestGroupBase;
 class TestResult;
@@ -39,6 +39,6 @@ class TestReportGenerator {
 	protected: Resource::File outputFolder;
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_REPORT_GENERATOR

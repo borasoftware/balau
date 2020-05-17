@@ -14,12 +14,12 @@
 #include <Balau/Testing/Writers/TestWriter.hpp>
 #include <Balau/Util/Memory.hpp>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Contains all the writers specified during test runner construction.
 class CompositeWriter {
 	public: template <typename ... WriterItemT> explicit CompositeWriter(const WriterItemT & ... items_)
-		: items(Util::Memory::makeShared<TestWriter>([] (const TestWriter & item) { return item.clone(); }, items_ ...)) {}
+		: items(Util::Memory::makeShared<Testing::TestWriter>([] (const Testing::TestWriter & item) { return item.clone(); }, items_ ...)) {}
 
 	public: CompositeWriter & operator = (const CompositeWriter & copy) = default;
 
@@ -31,9 +31,9 @@ class CompositeWriter {
 		return *this;
 	}
 
-	private: std::vector<std::shared_ptr<TestWriter>> items;
+	private: std::vector<std::shared_ptr<Testing::TestWriter>> items;
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__COMPOSITE_WRITER

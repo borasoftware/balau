@@ -13,7 +13,7 @@
 
 #include <string>
 
-namespace Balau::Util::Impl {
+namespace Balau::Impl {
 
 template <typename StringT> inline size_t length(const StringT & str) {
 	return str.length();
@@ -52,6 +52,6 @@ void replaceAllImpl(StringT<CharT, T ...> & input, const MatchT & match, const R
 	}
 }
 
-} // namespace Balau::Util::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__STRINGS_IMPL

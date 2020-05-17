@@ -19,11 +19,6 @@
 
 #include <functional>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-#pragma ide diagnostic ignored "OCUnusedStructInspection"
-#pragma ide diagnostic ignored "OCUnusedMacroInspection"
-
 namespace Balau {
 
 class Logger;
@@ -818,7 +813,5 @@ class BalauLogger {
 // Log an error message with the source code location of the logging statement.
 //
 #define BalauBalauLogError(LOGGER, ...) LOGGER.error(SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__BALAU_LOGGER

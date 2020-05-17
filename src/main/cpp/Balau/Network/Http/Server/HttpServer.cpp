@@ -23,10 +23,6 @@
 
 #include <boost/bind.hpp>
 
-// For built in web app initialiser.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau::Network::Http {
 
 // The built-in web applications are registered here.
@@ -55,13 +51,15 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	, mutex(new std::mutex)
 	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
-		doRegisterSignalHandler();
+		#if BOOST_OS_UNIX
+			doRegisterSignalHandler();
+		#endif
 	}
 }
 
 HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
                        const std::string & serverId,
-                       const TCP::endpoint & endpoint,
+                       const AsioTCP::endpoint & endpoint,
                        std::string threadNamePrefix_,
                        size_t workerCount_,
                        std::shared_ptr<HttpWebApp> httpHandler,
@@ -89,13 +87,15 @@ HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
 	, mutex(new std::mutex)
 	, signalSet(new boost::asio::signal_set(*ioContext)) {
 	if (registerSignalHandler) {
-		doRegisterSignalHandler();
+		#if BOOST_OS_UNIX
+			doRegisterSignalHandler();
+		#endif
 	}
 }
 
 HttpServer::HttpServer(std::shared_ptr<System::Clock> clock,
                        const std::string & serverId,
-                       const TCP::endpoint & endpoint,
+                       const AsioTCP::endpoint & endpoint,
                        std::string threadNamePrefix_,
                        size_t workerCount_,
                        const Resource::File & documentRoot,
@@ -472,6 +472,8 @@ void HttpServer::workerThreadFunction(size_t workerIndex) {
 	);
 }
 
+#if BOOST_OS_UNIX
+
 void HttpServer::doRegisterSignalHandler() {
 	signalSet->add(SIGINT);
 	signalSet->add(SIGTERM);
@@ -511,6 +513,6 @@ void HttpServer::handleSignal(const boost::system::error_code & error, int sig) 
 	listener->close();
 }
 
-} // namespace Balau::Network::Http
+#endif
 
-#pragma clang diagnostic pop
+} // namespace Balau::Network::Http

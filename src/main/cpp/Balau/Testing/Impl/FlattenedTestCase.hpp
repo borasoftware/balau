@@ -13,7 +13,7 @@
 
 #include <memory>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 class TestGroupBase;
 class TestMethodBase;
@@ -44,6 +44,6 @@ class FlattenedTestCase {
 		, method(std::move(method_)) {}
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__FLATTENED_TEST_CASE

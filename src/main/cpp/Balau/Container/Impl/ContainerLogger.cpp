@@ -10,11 +10,11 @@
 
 #include "ContainerLogger.hpp"
 
-namespace Balau::Container::Impl {
+namespace Balau::Impl {
 
 BalauLogger & ContainerLogger::log() {
 	static BalauLogger instance("balau.container");
 	return instance;
 }
 
-} // namespace Balau::Container::Impl
+} // namespace Balau::Impl

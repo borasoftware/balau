@@ -20,7 +20,7 @@
 
 #include <curl/curl.h>
 
-namespace Balau::Network::Http::HttpWebApps::Impl {
+namespace Balau::Impl {
 
 Logger & CurlEmailSender::log = Logger::getLogger("balau.network.curl");
 
@@ -187,7 +187,7 @@ void CurlEmailSender::sendEmail(const std::string & from,
 	 * will continue anyway - see the security discussion in the libcurl
 	 * tutorial for more details. */
 	// TODO
-	curl_easy_setopt(curl, CURLOPT_USE_SSL, (long) CURLUSESSL_ALL);
+	curl_easy_setopt(curl, CURLOPT_USE_SSL, (long long) CURLUSESSL_ALL);
 
 	if (!verifyCertificate) {
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -227,4 +227,4 @@ void CurlEmailSender::sendEmail(const std::string & from,
 	}
 }
 
-} // namespace Balau::Network::Http::HttpWebApps::Impl
+} // namespace Balau::Impl

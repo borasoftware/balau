@@ -25,10 +25,6 @@
 #include <Balau/Util/Streams.hpp>
 #include <Balau/Util/Vectors.hpp>
 
-// Avoid false positives.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau {
 
 ///
@@ -538,7 +534,5 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 };
 
 } // namespace Balau
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_CONFIGURATION

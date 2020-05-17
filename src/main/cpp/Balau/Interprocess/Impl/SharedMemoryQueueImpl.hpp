@@ -17,7 +17,9 @@ namespace Balau::Interprocess {
 
 template <typename T> class SharedMemoryQueue;
 
-namespace Impl {
+} // namespace Balau::Interprocess
+
+namespace Balau::Impl {
 
 //
 // Header of all shared memory queue buffers.
@@ -66,8 +68,6 @@ class SharedMemoryQueueTLS {
 	static thread_local SharedMemoryQueueTLS storage;
 };
 
-} // namespace Impl
-
-} // namespace Balau::Interprocess
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_INTERPROCESS_IMPL__SHARED_MEMORY_QUEUE_IMPL

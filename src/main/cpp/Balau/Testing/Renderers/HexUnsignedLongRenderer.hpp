@@ -25,7 +25,7 @@ namespace Balau::Testing::TestRenderers {
 /// Overload for rendering unsigned long containers as hex values.
 ///
 template <template <typename> class ContainerA, template <typename> class ContainerE>
-std::string render(const ContainerA<unsigned long> & actual, const ContainerE<unsigned long> & expected) {
+std::string render(const ContainerA<unsigned long long> & actual, const ContainerE<unsigned long long> & expected) {
 	return Impl::renderAsHex(actual, expected);
 }
 

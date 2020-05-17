@@ -33,25 +33,29 @@
 	<chapter title="Building Balau">
 		<para>This chapter discusses the preparatory steps, configuring, and building Balau.</para>
 
-		<h1>Defaults</h1>
+		<para>Balau uses the CMake meta-build system.</para>
 
-		<h2>CMAKE_PREFIX_PATH</h2>
+		<h1>Key CMake variables</h1>
 
-		<para>If the <emph>CMAKE_PREFIX_PATH</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. This setup allows the ICU, Boost, and optionally libzip dependencies to be installed in <emph>${HOME}/usr</emph>, to be picked up during CMake configuration automatically.</para>
+		<para>CMake uses two key variables to configure where to locate dependent libraries and where to install the build artifacts.</para>
 
-		<para>If the dependencies are located elsewhere, the <emph>CMAKE_PREFIX_PATH</emph> should be set, as discussed in the <emph>CMake variables</emph> section below.</para>
+		<h3>CMAKE_PREFIX_PATH</h3>
 
-		<h2>CMAKE_INSTALL_PREFIX</h2>
+		<para>The <ref type="raw" new="true" url="https://cmake.org/cmake/help/latest/variable/CMAKE_PREFIX_PATH.html">CMAKE_PREFIX_PATH</ref> CMake variable is a semicolon-separated list of directories specifying paths to be searched for dependencies. If this variable is not set via the cmake command line, the Balau CMakeLists.txt file defaults it to the <strong><emph>BALAU_USER_CMAKE_PREFIX_PATH</emph></strong> environment variable if this variable is set. This allows the ICU, Boost, and other dependencies to be found by setting the <emph>BALAU_USER_CMAKE_PREFIX_PATH</emph> environment variable, to be picked up during CMake configuration automatically.</para>
 
-		<para>If the <emph>CMAKE_INSTALL_PREFIX</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. If the library should be installed elsewhere (such as to <emph>/usr</emph>), the <emph>CMAKE_INSTALL_PREFIX</emph> should be set, as discussed in the <emph>CMake variables</emph> section below.</para>
+		<para>If the dependencies have been installed elsewhere than the default locations for the platform, the <emph>BALAU_USER_CMAKE_PREFIX_PATH</emph> environment variable must be set, or the <emph>CMAKE_PREFIX_PATH</emph> CMake variable set on the command line.</para>
 
-		<h1>Options</h1>
+		<h3>CMAKE_INSTALL_PREFIX</h3>
+
+		<para>The <ref type="raw" new="true" url="https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html">CMAKE_INSTALL_PREFIX</ref> CMake variable specifies the prefix path into which artifacts will be installed when make install is invoked. If this variable is not set via the cmake command line or is set to the default value for the platform, the Balau CMakeLists.txt file defaults it to the <strong><emph>BALAU_USER_CMAKE_INSTALL_PREFIX</emph></strong> environment variable if this variable is set. This allows the building user to automatically set the install prefix by setting the <emph>BALAU_USER_CMAKE_INSTALL_PREFIX</emph> environment variable, to be picked up during CMake configuration automatically.</para>
+
+		<h1>Balau build options</h1>
 
 		<para>Balau contains a number of optional components that can be enabled/disabled during CMake configuration.</para>
 
 		<para>The currently available options are detailed in the table below.</para>
 
-		<table class="bdml-table2020c60">
+		<table class="bdml-table4015L45">
 			<head>
 				<cell>Option</cell>
 				<cell>Default</cell>
@@ -82,28 +86,52 @@
 					<cell>ON</cell>
 					<cell>Enable use of HTTP components (disabled for Boost &lt; 1.68.0).</cell>
 				</row>
+
+				<row>
+					<cell>ENABLE_BACKTRACE</cell>
+					<cell>ON</cell>
+					<cell>Enable use of backtrace library if available.</cell>
+				</row>
+
+				<row>
+					<cell>ENABLE_BOOST_STATIC_LIBRARIES</cell>
+					<cell>OFF</cell>
+					<cell>Force use of Boost static libraries.</cell>
+				</row>
+
+				<row>
+					<cell>BALAU_ENABLE_TRACE_LOGGING</cell>
+					<cell>OFF</cell>
+					<cell>Enable trace logging in ASIO.</cell>
+				</row>
+
+				<row>
+					<cell>ENABLE_OLD_ABI</cell>
+					<cell>OFF</cell>
+					<cell>Use old GLIBCXX ABI (GNU/Linux platform only).</cell>
+				</row>
 			</body>
 		</table>
 
-		<para>By default, ZLib and LibZip compression components are enabled, and the Curl components are not. Enabled components will require the corresponding library development files to be present during the build, as described in the dependencies section below.</para>
+		<para>Options that enable components will require the corresponding library development files to be present during the build, as described in the dependencies section below.</para>
 
 		<h1>Dependencies</h1>
 
-		<para>In addition to the C++ standard library, Balau relies on two third party libraries and three utility libraries.</para>
+		<para>In addition to the C++ standard library, Balau relies on two third party libraries and four utility libraries.</para>
 
-		<para>The first dependency is <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref>, which provides Unicode support. ICU version <strong>60.2</strong> is the currently specified version in the CMakeLists.txt file.</para>
+		<para>The first dependency is <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref>, which provides Unicode support. ICU version <strong>60.2</strong> is the current minimum specified version in the CMakeLists.txt file.</para>
 
-		<para>The second dependency is the <ref type="raw" new="true" url="http://www.boost.org">Boost library</ref>. Boost version <strong>1.68.0</strong> is the currently specified version in the CMakeLists.txt file.</para>
+		<para>The second dependency is the <ref type="raw" new="true" url="http://www.boost.org">Boost library</ref>. Boost version <strong>1.68.0</strong> is the current minimum specified version in the CMakeLists.txt file for all features to be build. Boost version <strong>1.61.0</strong> may also be used, with the exclusion of the HTTP components (which rely on the Boost Beast library introduced in version 1.68.0).</para>
 
-		<para>The three utility library dependencies are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. These libraries should be installed via your distribution's standard packaging system.</para>
+		<para>The four utility library dependencies are <emph>zlib</emph>, <emph>libzip</emph>, <emph>curl</emph> and <emph>openssl</emph>. These libraries should be installed via your distribution's standard packaging system if possible, or built/installed before building Balau (e.g. for the Windows platform).</para>
 
-		<para>The only other dependencies used are standard dependencies on each supported platform.</para>
+		<para>The only other dependencies used by Balau are standard dependencies on each supported platform.</para>
 
 		<h2>Utility libraries</h2>
 
 		<h3>Debian/Ubuntu</h3>
 
-		<para>The following command is for Ubuntu 18.04 and OpenSSL.</para>
+		<para>The following command is for Ubuntu 18.04.</para>
 
 		<code>
 			sudo apt install zlib1g-dev libzip-dev libcurl4-openssl-dev libssl-dev
@@ -148,6 +176,101 @@
 
 		<para>RHEL / CentOS also ship with old versions of CMake (<emph>2.8</emph>). As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build of CMake must be available. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
 
+		<h3>Windows platform</h3>
+
+		<para>Balau has been tested with Visual Studio 2019 only. Previous versions may also work, but have not been tested.</para>
+
+		<para>The utility library dependencies for Balau on the Windows platform may be built from source or installed from available pre-built binaries. For critical applications, is it suggested that building from source is a safer approach, unless the origin of the pre-built binaries can be verified.</para>
+
+		<para>As there are a variety of approaches for building each dependency on the Windows platform, only a single approach for each dependency is given here. The following sub-sections thus provide one example of building each utility library from source for the Windows platform.</para>
+
+		<h4>OpenSSL</h4>
+
+		<para><emph>See the documents at <ref type="raw" new="true" url="https://github.com/openssl/openssl/blob/master/INSTALL.md" /> and <ref type="raw" new="true" url="https://github.com/openssl/openssl/blob/master/NOTES.WIN" /> for detailed OpenSSL build instructions.</emph></para>
+
+		<para>The build instruction summary below builds OpenSSL with the Visual C++ compiler.</para>
+
+		<h5>Tools</h5>
+
+		<para>OpenSSL requires two build tool dependencies to build on Windows:</para>
+
+		<bullets>
+			<entry>NASM;</entry>
+			<entry>Perl</entry>
+		</bullets>
+
+		<para>NASM is a cross-platform assembler (<ref type="raw" new="true" url="https://www.nasm.us" />). Download and install the Windows version, e.g. <ref type="raw" new="true" url="https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/win64/nasm-2.14.02-installer-x64.exe">nasm-2.14.02-installer-x64.exe</ref>. Make sure that the NASM executable location is added to your Windows <emph>%PATH%</emph>.</para>
+
+		<para>Strawberry Perl is an open-source Windows implementation of Perl (<ref type="raw" new="true" url="http://strawberryperl.com" />), and can be used to build OpenSSL on the Windows platform. Download and install the Windows version, e.g. <ref type="raw" new="true" url="http://strawberryperl.com/download/5.30.2.1/strawberry-perl-5.30.2.1-64bit.msi">strawberry-perl-5.30.2.1-64bit.msi</ref>. Ensure that the Perl executable is on your Windows <emph>%PATH%</emph>. </para>
+
+		<h5>Build</h5>
+
+		<para>Download the OpenSSL sources from <ref type="raw" new="true" url="https://www.openssl.org" />, e.g. <ref type="raw" url="https://www.openssl.org/source/openssl-1.1.1e.tar.gz">openssl-1.1.1e.tar.gz</ref>, and unzip them.</para>
+
+		<para>Create the following environment variables:</para>
+
+		<bullets>
+			<entry><emph>PREFIX</emph> - same as your %BALAU_USER_CMAKE_PREFIX_PATH%</entry>
+			<entry><emph>OPENSSLDIR</emph> - same as your %BALAU_USER_CMAKE_PREFIX_PATH%</entry>
+		</bullets>
+
+		<para>Open a Visual Studio x64 command prompt, and execute the following.</para>
+
+		<code>
+			perl Configure VC-WIN64A
+			nmake
+			nmake install
+		</code>
+
+		<para>If your <emph>%BALAU_USER_CMAKE_PREFIX_PATH%</emph> folder is in a privileged location, the <emph>nmake install</emph> command will require administrator privileges.</para>
+
+		<h4>ZLib</h4>
+
+		<para>Download the zlib sources from <ref type="raw" new="true" url="http://zlib.net" />, e.g. <ref type="raw" url="http://zlib.net/zlib1211.zip" />, and unzip them.</para>
+
+		<para>Open a Visual Studio x64 command prompt, and execute the following.</para>
+
+		<code>
+			cd zlib-1.2.11
+			nmake -f win32/Makefile.msc
+		</code>
+
+		<para>Then copy the following files to your library folder (denoted as %PREFIX%).</para>
+
+		<code>
+			zconf.h   -> %PREFIX%/include/zconf.h
+			zlib.h    -> %PREFIX%/include/zlib.h
+			zlib.lib  -> %PREFIX%/lib/zlib.lib
+			zdll.lib  -> %PREFIX%/lib/zdll.lib
+			zlib1.dll -> %PREFIX%/lib/zlib1.dll
+			zlib1.pdb -> %PREFIX%/lib/zlib1.pdb
+		</code>
+
+		<h4>LibZip</h4>
+		
+		<para>Download the zlib sources from <ref type="raw" new="true" url="http://zlib.net" />, e.g. <ref type="raw" url="https://libzip.org/download/libzip-1.6.1.tar.gz" />, and unzip them.</para>
+
+		<para>Open a Visual Studio x64 command prompt, and execute the following.</para>
+
+		<code>
+			cd zlib-1.2.11
+			nmake -f win32/Makefile.msc
+		</code>
+
+		<para>Then copy the following files to your library folder (denoted as %PREFIX%).</para>
+
+		<code>
+			zconf.h   -> %PREFIX%/include/zconf.h
+			zlib.h    -> %PREFIX%/include/zlib.h
+			zlib.lib  -> %PREFIX%/lib/zlib.lib
+			zdll.lib  -> %PREFIX%/lib/zdll.lib
+			zlib1.dll -> %PREFIX%/lib/zlib1.dll
+			zlib1.pdb -> %PREFIX%/lib/zlib1.pdb
+		</code>
+
+
+		<h4>Curl</h4>
+		
 		<h2>ICU</h2>
 
 		<h3>Linux</h3>
@@ -287,7 +410,51 @@
 
 		<h2>Windows</h2>
 
-		<para>This section will be filled in when the Windows port has been completed.</para>
+		<para></para>
+
+		<table>
+			<head> <cell>Environment variable</cell> <cell>Value</cell> </head>
+
+			<body>
+				<row> <cell>BOOST_ROOT</cell>       <cell>C:\usr</cell> </row>
+				<row> <cell>BOOST_INCLUDEDIR</cell> <cell>C:\usr\include</cell> </row>
+				<row> <cell>BOOST_LIBRARYDIR</cell> <cell>C:\usr\lib</cell> </row>
+			</body>
+		</table>
+
+		<para>Open an x64 Native Tools Command Prompt for VS and prepare the build with the following commands.</para>
+
+		<code>
+			cd path\to\projects
+			git clone https://github.com/borasoftware/balau.git
+			cd path\to\balau\code
+			mkdir build
+			cd build
+		</code>
+
+		<para>Run the following commands, replacing <emph>${VS_VERSION}</emph> with the correct CMake Visual Studio build tool (e.g. "Visual Studio 16 2019" for the 2019 version),. <emph>${DEPS}</emph> with the installation locations of the dependencies you previously configured, and <emph>${BALAU_PREFIX}</emph> with the installation prefix where you wish to install the Balau library.</para>
+
+cmake -G "Visual Studio 16 2019" -DCMAKE_PREFIX_PATH=H:\usr -DCMAKE_INSTALL_PREFIX=H:\usr -A x64 ..
+		<code>
+			cmake -G "${VS_VERSION}"
+			      -DCMAKE_PREFIX_PATH=${DEPS}
+			      -DCMAKE_INSTALL_PREFIX=${BALAU_PREFIX}
+			      -A x64 ..
+
+			make -j 4
+			make install
+		</code>
+
+		<para>The above set of commands:</para>
+
+		<bullets>
+			<entry>creates an out of source build directory <emph>build-debug</emph>;</entry>
+			<entry>configures CMake;</entry>
+			<entry>builds the library;</entry>
+			<entry>installs the library to ${BALAU_PREFIX}.</entry>
+		</bullets>
+
+		<para>If you wish to have a release build, set <emph>CMAKE_BUILD_TYPE</emph> to <emph>Release</emph> instead.</para>
 
 		<h1>Linking</h1>
 

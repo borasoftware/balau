@@ -43,6 +43,4 @@ class FailingHttpWebApp : public HttpWebApp {
 
 } // namespace Balau
 
-#pragma clang diagnostic pop
-
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__FAILING_HTTP_WEB_APP

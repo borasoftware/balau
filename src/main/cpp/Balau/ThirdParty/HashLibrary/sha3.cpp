@@ -26,7 +26,7 @@ SHA3::SHA3(Bits bits)
 
 /// restart
 void SHA3::reset() {
-	for (unsigned long & i : m_hash) {
+	for (unsigned long long & i : m_hash) {
 		i = 0;
 	}
 
@@ -100,7 +100,7 @@ void SHA3::processBlock(const void * data) {
 	}
 
 	// re-compute state
-	for (unsigned long XorMask : XorMasks) {
+	for (unsigned long long XorMask : XorMasks) {
 		// Theta
 		uint64_t coefficients[5];
 

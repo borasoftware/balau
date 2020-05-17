@@ -20,6 +20,11 @@
 #include <Balau/Util/Impl/MacrosImpl.hpp>
 
 ///
+/// Required for Visual C++ compilers in order to avoid expanding VA arg lists into a single token.
+///
+#define BalauVaArgsExpand(...) __VA_ARGS__
+
+///
 /// Expand the string within another macro.
 ///
 #define BalauString(TOKEN) _BalauStringExpand(TOKEN)
@@ -27,6 +32,6 @@
 ///
 /// Compute the number of variadic macro arguments.
 ///
-#define BalauVariadicNArg(...)  _BalauExpand(_BalauVariadicNArg_(__VA_ARGS__, _BalauVariadicRSeqN()))
+#define BalauVariadicNArg(...)  _BalauExpand(BalauVaArgsExpand(BalauVaArgsExpand(_BalauVariadicNArg_)(__VA_ARGS__, _BalauVariadicRSeqN())))
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__MACROS

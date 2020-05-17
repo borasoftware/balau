@@ -17,22 +17,34 @@ namespace Balau::Testing {
 
 class TestRunner;
 
-namespace Impl {
+} // Balau::Testing
+
+namespace Balau::Impl {
 
 class TestRunnerExecutor;
 class WorkerThreadsTestRunnerExecutor;
+
+#if BOOST_OS_UNIX
+
 class MultiProcessTestRunnerExecutor;
 class WorkerProcessesTestRunnerExecutor;
 class ProcessPerTestTestRunnerExecutor;
+
+#endif
 
 // Non-parameterised base class of test classes.
 class TestGroupBase {
 	friend class ::Balau::Testing::TestRunner;
 	friend class TestRunnerExecutor;
 	friend class WorkerThreadsTestRunnerExecutor;
+
+	#if BOOST_OS_UNIX
+
 	friend class MultiProcessTestRunnerExecutor;
 	friend class WorkerProcessesTestRunnerExecutor;
 	friend class ProcessPerTestTestRunnerExecutor;
+
+	#endif
 
 	protected: TestGroupBase(TestRunnerBase & runner) : groupIndex(runner.getGroupIndex()) {}
 
@@ -70,8 +82,6 @@ class TestGroupBase {
 	private: static thread_local bool currentIgnored;
 };
 
-} // namespace Impl
-
-} // namespace Balau::Testing
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_GROUP_BASE

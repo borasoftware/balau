@@ -18,6 +18,7 @@
 #define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
 
 #include <Balau/Application/CommandLine.hpp>
+#include <Balau/Concurrent/Fork.hpp>
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Exception/SystemExceptions.hpp>
@@ -26,20 +27,24 @@
 #include <Balau/System/ThreadName.hpp>
 #include <Balau/Testing/ExecutionModel.hpp>
 #include <Balau/Testing/Impl/SingleThreadedTestRunnerExecutor.hpp>
-#include <Balau/Testing/Impl/ProcessPerTestTestRunnerExecutor.hpp>
 #include <Balau/Testing/Impl/TestGroup.hpp>
 #include <Balau/Testing/Impl/TestMethodBase.hpp>
-#include <Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp>
+#include <Balau/Testing/Impl/TestRunnerLimits.hpp>
 #include <Balau/Testing/Impl/WorkerThreadsTestRunnerExecutor.hpp>
 #include <Balau/Testing/Reporters/SurefireTestReportGenerator.hpp>
 #include <Balau/Testing/Writers/StdWriters.hpp>
 #include <Balau/Util/DateTime.hpp>
 
-#include <termios.h>
+#include <boost/predef.h>
 #include <thread>
 
-#include <unistd.h>
-#include <boost/predef.h>
+#if BOOST_OS_UNIX
+	#include <Balau/Testing/Impl/ProcessPerTestTestRunnerExecutor.hpp>
+	#include <Balau/Testing/Impl/WorkerProcessesTestRunnerExecutor.hpp>
+
+	#include <termios.h>
+	#include <unistd.h>
+#endif
 
 namespace Balau::Testing {
 
@@ -377,6 +382,8 @@ class TestRunner : public Impl::TestRunnerBase {
 				break;
 			}
 
+			#if BOOST_OS_UNIX
+
 			case WorkerProcesses: {
 				writer << "Run type = worker processes "
 				       << "(" << concurrencyLevel << " worker process" << (concurrencyLevel > 1 ? "es" : "") << ")\n";
@@ -403,6 +410,8 @@ class TestRunner : public Impl::TestRunnerBase {
 				break;
 			}
 
+			#endif
+
 			default: ThrowBalauException(Exception::BugException, "Unhandled ExecutionModel in switch statement.");
 		}
 
@@ -419,13 +428,19 @@ class TestRunner : public Impl::TestRunnerBase {
 
 		if (pauseAtExit) {
 			writer << "Press a key to exit..\n";
-			struct termios oldattr = {};
-			tcgetattr(STDIN_FILENO, &oldattr);
-			struct termios newattr = oldattr;
-			newattr.c_lflag &= ~(ICANON | ECHO); // NOLINT
-			tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
-			getchar();
-			tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+
+			#if BOOST_OS_WINDOWS
+				// TODO
+				getchar();
+			#else
+				struct termios oldattr = {};
+				tcgetattr(STDIN_FILENO, &oldattr);
+				struct termios newattr = oldattr;
+				newattr.c_lflag &= ~(ICANON | ECHO); // NOLINT
+				tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+				getchar();
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+			#endif
 		}
 
 		return success ? 0 : 1;

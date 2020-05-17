@@ -21,6 +21,14 @@
 #include <Balau/Type/FromString.hpp>
 #include <Balau/Util/Enums.hpp>
 
+#include <boost/predef.h>
+
+#if BOOST_OS_WINDOWS
+	#include <WinSDKVer.h>
+	#define _WIN32_WINNT	0x0601
+	#include <SDKDDKVer.h>
+#endif
+
 #include <Balau/ThirdParty/Boost/Beast/Http/BasicFileBody.hpp>
 
 #include <boost/asio/bind_executor.hpp>
@@ -335,12 +343,12 @@ using Status = boost::beast::http::status;
 ///
 /// The Boost SSL namespace.
 ///
-namespace SSL = boost::asio::ssl;
+namespace AsioSSL = boost::asio::ssl;
 
 ///
 /// The Boost TCP namespace.
 ///
-using TCP = boost::asio::ip::tcp;
+using AsioTCP = boost::asio::ip::tcp;
 
 ///
 /// The Boost HTTP namespace.

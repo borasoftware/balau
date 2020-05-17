@@ -74,13 +74,13 @@ class WsClient {
 		/////////////// Connect ///////////////
 
 		boost::asio::io_context ioc;
-		TCP::resolver resolver { ioc };
-		TCP::socket socket { ioc };
+		AsioTCP::resolver resolver {ioc };
+		AsioTCP::socket socket {ioc };
 
 		auto resolverResults = resolver.resolve(host.c_str(), ::toString(port).c_str());
 		boost::asio::connect(socket, resolverResults.begin(), resolverResults.end());
 
-		WS::stream<TCP::socket> ws { ioc };
+		WS::stream<AsioTCP::socket> ws {ioc };
 
 		ws.handshake(host, path.empty() ? "/" : std::string(path));
 		ws.write(requestData);
@@ -93,7 +93,7 @@ class WsClient {
 		////////////// Disconnect /////////////
 
 		boost::system::error_code errorCode {};
-		socket.shutdown(TCP::socket::shutdown_both, errorCode);
+		socket.shutdown(AsioTCP::socket::shutdown_both, errorCode);
 
 		// TODO clarify the following.
 		if (errorCode && errorCode != boost::system::errc::not_connected) {

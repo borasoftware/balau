@@ -21,9 +21,6 @@
 #include <Balau/Application/EnvironmentConfiguration.hpp>
 #include <Balau/Util/Memory.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau {
 
 ///
@@ -1747,7 +1744,5 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 };
 
 } // namespace Balau
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR

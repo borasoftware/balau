@@ -20,7 +20,9 @@ namespace Balau::Network::Http {
 class HttpServer;
 class HttpWebApp;
 
-namespace Impl {
+} // namespace Balau::Network::Http
+
+namespace Balau::Impl {
 
 //
 // HTTP web applications are instantiated by this class for the HTTP server.
@@ -41,7 +43,7 @@ class HttpWebAppFactory final {
 
 		std::lock_guard<std::mutex> lock(mutex);
 		map[name] = [] (const EnvironmentProperties & configuration, const BalauLogger & logger) {
-			return std::shared_ptr<HttpWebApp>(new WebAppT(configuration, logger));
+			return std::shared_ptr<Network::Http::HttpWebApp>(new WebAppT(configuration, logger));
 		};
 	}
 
@@ -52,9 +54,9 @@ class HttpWebAppFactory final {
 	//
 	// The web application created with the supplied configuration.
 	//
-	private: static std::shared_ptr<HttpWebApp> getInstance(const std::string & name,
-	                                                        const EnvironmentProperties & configuration,
-	                                                        const BalauLogger & logger) {
+	private: static std::shared_ptr<Network::Http::HttpWebApp> getInstance(const std::string & name,
+	                                                                       const EnvironmentProperties & configuration,
+	                                                                       const BalauLogger & logger) {
 		auto & map = getFactoryMap();
 		auto & mutex = getFactoryMutex();
 
@@ -70,11 +72,11 @@ class HttpWebAppFactory final {
 		return iter->second(configuration, logger);
 	}
 
-	private: HttpWebAppFactory() = delete;
-	private: HttpWebAppFactory(const HttpWebAppFactory &) = delete;
-	private: HttpWebAppFactory & operator = (const HttpWebAppFactory &) = delete;
+	public: HttpWebAppFactory() = delete;
+	public: HttpWebAppFactory(const HttpWebAppFactory &) = delete;
+	public: HttpWebAppFactory & operator = (const HttpWebAppFactory &) = delete;
 
-	private: using Function = std::function<std::shared_ptr<HttpWebApp> (const EnvironmentProperties &, const BalauLogger & logger)>;
+	private: using Function = std::function<std::shared_ptr<Network::Http::HttpWebApp> (const EnvironmentProperties &, const BalauLogger & logger)>;
 
 	private: static std::map<std::string, Function> & getFactoryMap() {
 		static std::map<std::string, Function> factories;
@@ -87,8 +89,6 @@ class HttpWebAppFactory final {
 	}
 };
 
-} // namespace Impl
-
-} // namespace Balau::Network::Http
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__HTTP_WEB_APP_FACTORY

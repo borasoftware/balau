@@ -16,7 +16,7 @@
 #include <mutex>
 #include <set>
 
-namespace Balau::Network::Http::Impl {
+namespace Balau::Impl {
 
 //
 // Maintains a thread-safe set of all HTTP sessions in order to allow forced
@@ -27,12 +27,12 @@ namespace Balau::Network::Http::Impl {
 // TODO replace mutex with concurrent data structure.
 //
 class HttpSessions final {
-	public: void registerSession(const std::shared_ptr<HttpSession> & session) {
+	public: void registerSession(const std::shared_ptr<Network::Http::HttpSession> & session) {
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		sessions.insert(session);
 	}
 
-	public: void unregisterSession(const std::shared_ptr<HttpSession> & session) {
+	public: void unregisterSession(const std::shared_ptr<Network::Http::HttpSession> & session) {
 		std::lock_guard<std::recursive_mutex> lock(mutex);
 		sessions.erase(session);
 	}
@@ -49,10 +49,11 @@ class HttpSessions final {
 
 		sessions.clear();
 	}
-	private: std::set<std::shared_ptr<HttpSession>> sessions;
+
+	private: std::set<std::shared_ptr<Network::Http::HttpSession>> sessions;
 	private: std::recursive_mutex mutex;
 };
 
-} // namespace Balau::Network::Http::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__HTTP_SESSIONS

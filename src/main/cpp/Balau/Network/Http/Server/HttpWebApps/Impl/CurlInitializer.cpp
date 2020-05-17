@@ -15,10 +15,7 @@
 
 #include <curl/curl.h>
 
-#include <atomic>
-#include <mutex>
-
-namespace Balau::Network::Http::HttpWebApps::Impl {
+namespace Balau::Impl {
 
 Logger & log = Logger::getLogger("balau.network.curl"); // NOLINT
 
@@ -52,4 +49,4 @@ void ensureCurlInitialization() {
 	curlInitializerImplInstance.ensureCurlInitialization();
 }
 
-} // namespace Balau::Network::Http::HttpWebApps::Impl
+} // namespace Balau::Impl

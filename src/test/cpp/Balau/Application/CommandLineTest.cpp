@@ -10,11 +10,6 @@
 
 #include <TestResources.hpp>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wstring-plus-int"
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-#pragma ide diagnostic ignored "cert-err58-cpp"
-
 namespace {
 
 enum Key {
@@ -451,5 +446,3 @@ struct CommandLineTest : public Testing::TestGroup<CommandLineTest> {
 };
 
 } // namespace Balau
-
-#pragma clang diagnostic pop

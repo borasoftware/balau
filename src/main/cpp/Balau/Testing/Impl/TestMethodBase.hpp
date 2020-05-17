@@ -11,7 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_METHOD_BASE
 #define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_METHOD_BASE
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Base interface for the test method container.
 class TestMethodBase {
@@ -20,6 +20,6 @@ class TestMethodBase {
 	public: virtual void run() = 0;
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_METHOD_BASE

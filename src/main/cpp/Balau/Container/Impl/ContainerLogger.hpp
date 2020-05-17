@@ -13,12 +13,12 @@
 
 #include <Balau/Logging/Impl/BalauLogger.hpp>
 
-namespace Balau::Container::Impl {
+namespace Balau::Impl {
 
 class ContainerLogger {
 	public: static BalauLogger & log();
 };
 
-} // namespace Balau::Container::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_CONTAINER_IMPL__CONTAINER_LOGGER

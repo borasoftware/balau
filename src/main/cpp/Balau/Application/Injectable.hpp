@@ -23,35 +23,35 @@
 ///
 /// Annotate an injectable class by specifying the class name and its direct or indirect dependency fields.
 ///
-#define BalauInject(...) _BalauInject(__VA_ARGS__)
+#define BalauInject(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInject)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class by specifying the class name and its named direct or indirect dependency fields.
 ///
-#define BalauInjectNamed(...) _BalauInjectNamed(__VA_ARGS__)
+#define BalauInjectNamed(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectNamed)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class by specifying the class name and its direct or indirect dependency fields.
 ///
 /// This version includes the definition of an injectable constructor.
 ///
-#define BalauInjectConstruct(...) _BalauInjectConstruct(__VA_ARGS__)
+#define BalauInjectConstruct(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectConstruct)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class by specifying the class name and its named direct or indirect dependency fields.
 ///
 /// This version includes the definition of an injectable constructor.
 ///
-#define BalauInjectConstructNamed(...) _BalauInjectConstructNamed(__VA_ARGS__)
+#define BalauInjectConstructNamed(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectConstructNamed)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class by specifying the class name and the types of its dependencies.
 ///
-#define BalauInjectTypes(...) _BalauInjectTypes(__VA_ARGS__)
+#define BalauInjectTypes(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectTypes)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class by specifying the class name and the named types of its dependencies.
 ///
-#define BalauInjectNamedTypes(...) _BalauInjectNamedTypes(__VA_ARGS__)
+#define BalauInjectNamedTypes(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectNamedTypes)(__VA_ARGS__))
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE

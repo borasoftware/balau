@@ -33,14 +33,14 @@ template <typename T, typename D> class RandomNumberGenerator final {
 	///
 	public: RandomNumberGenerator(T lower, T upper)
 		: generator(std::random_device()())
-		, distribution(D(lower, Impl::inclusivise(upper))) {}
+		, distribution(D(lower, RandomImpl::inclusivise(upper))) {}
 
 	///
 	/// Create an explicitly seeded random number generator with a range of [lower, upper].
 	///
 	public: RandomNumberGenerator(T lower, T upper, unsigned int seed)
 		: generator(seed)
-		, distribution(D(lower, Impl::inclusivise(upper))) {}
+		, distribution(D(lower, RandomImpl::inclusivise(upper))) {}
 
 	///
 	/// Get the next random number.

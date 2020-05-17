@@ -17,10 +17,6 @@
 #include <Balau/Util/Files.hpp>
 #include <memory>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedStructInspection"
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
 namespace Balau {
 
 using Testing::is;
@@ -64,13 +60,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	}
 	
 	void getFile() {
-		const unsigned short testPortStart = 43240;
+		constexpr unsigned short testPortStart = 43240;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
 				);
@@ -110,13 +106,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	
 	
 	void getNotFoundFile() {
-		const unsigned short testPortStart = 47241;
+		constexpr unsigned short testPortStart = 47241;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1"
 					, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
@@ -147,13 +143,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	}
 	
 	void headFile() {
-		const unsigned short testPortStart = 43242;
+		constexpr unsigned short testPortStart = 43242;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1"
 					, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
@@ -184,13 +180,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	}
 	
 	void headNotFoundFile() {
-		const unsigned short testPortStart = 43243;
+		constexpr unsigned short testPortStart = 43243;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1"
 					, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
@@ -221,13 +217,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	}
 	
 	void getFile1000Serial() {
-		const unsigned short testPortStart = 43244;
+		constexpr unsigned short testPortStart = 43244;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1"
 					, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
@@ -293,13 +289,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	}
 	
 	void getFile1000Parallel() {
-		const unsigned short testPortStart = 23245;
+		constexpr unsigned short testPortStart = 23245;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1"
 					, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 1000)
@@ -346,13 +342,13 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 	}
 	
 	void getFiles() {
-		const unsigned short testPortStart = 43546;
+		constexpr unsigned short testPortStart = 43546;
 		auto documentRoot = TestResources::SourceFolder / "doc" / "manual";
 	
 		std::shared_ptr<HttpServer> server;
 	
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, documentRoot] () {
+			[&server, documentRoot, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1"
 					, Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
@@ -409,5 +405,3 @@ struct FileServingHttpWebAppTest : public Testing::TestGroup<FileServingHttpWebA
 } // namespace Network::Http::HttpWebApps
 
 } // namespace Balau
-
-#pragma clang diagnostic pop

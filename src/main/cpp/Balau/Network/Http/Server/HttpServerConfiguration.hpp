@@ -68,7 +68,7 @@ struct HttpServerConfiguration {
 	///
 	/// The IP address and port on which the server is listening.
 	///
-	const TCP::endpoint endpoint;
+	const AsioTCP::endpoint endpoint;
 
 	///
 	/// The name of the cookie where the client session id is stored.
@@ -95,7 +95,7 @@ struct HttpServerConfiguration {
 	HttpServerConfiguration(std::shared_ptr<const System::Clock> clock_,
 	                        const BalauLogger & logger_,
 	                        std::string serverIdentification_,
-	                        TCP::endpoint endpoint_,
+	                        AsioTCP::endpoint endpoint_,
 	                        std::string sessionCookieName_,
 	                        std::shared_ptr<HttpWebApp> httpHandler_,
 	                        std::shared_ptr<WsWebApp> wsHandler_,

@@ -23,7 +23,7 @@
 #ifdef BALAU_ENABLE_STACKTRACES
 	#include <boost/stacktrace.hpp>
 	#include <exception>
-	#include <Balau/Util/Impl/StringsImpl.hpp>
+	#include <Balau/Util/Impl/Impl.hpp>
 
 	#define _ThrowBalauException_generateStackTrace                              \
 		std::ostringstream stStream;                                             \
@@ -31,7 +31,7 @@
 		std::string st = stStream.str();                                         \
 		std::string match = std::string(BalauString(BALAU_BASE_FOLDER_)) + "/";  \
 		std::string replacement;                                                 \
-		::Balau::Util::Impl::replaceAllImpl(st, match, replacement, nullptr);
+		::Balau::Impl::replaceAllImpl(st, match, replacement, nullptr);
 #else
 	#define _ThrowBalauException_generateStackTrace std::string st;
 #endif

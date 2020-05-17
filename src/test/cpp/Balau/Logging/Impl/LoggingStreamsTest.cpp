@@ -24,16 +24,16 @@ struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
 	}
 
 	class TestClock : public System::Clock {
-		public: Date::year_month_day todayValue;
+		public: date::year_month_day todayValue;
 
-		public: explicit TestClock(Date::year_month_day todayValue_) : todayValue(todayValue_) {}
+		public: explicit TestClock(date::year_month_day todayValue_) : todayValue(todayValue_) {}
 
 		public: std::chrono::system_clock::time_point now() const override {
 			AssertFail("now() called");
 			return std::chrono::system_clock::now(); // avoid compiler complaint
 		}
 
-		public: Date::year_month_day today() const override {
+		public: date::year_month_day today() const override {
 			return todayValue;
 		}
 
@@ -61,8 +61,8 @@ struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
 	void fileRotation() {
 		const Resource::File uriBase = TestResources::TestResultsFolder / "LoggingStreamsTest";
 
-		const Date::year_month_day today = Date::year{2017}/02/20;
-		const Date::year_month_day tomorrow = Date::year{2017}/02/21;
+		const date::year_month_day today = date::year{2017}/02/20;
+		const date::year_month_day tomorrow = date::year{2017}/02/21;
 
 		std::shared_ptr<System::Clock> clock = std::shared_ptr<System::Clock>(new TestClock(today));
 		TestClock & testClock = * (TestClock *) clock.get();

@@ -13,7 +13,7 @@
 
 #include <Balau/Testing/Impl/TestRunnerExecutor.hpp>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Test runner executor which implements the SingleThreaded execution model.
 class SingleThreadedTestRunnerExecutor : public TestRunnerExecutor {
@@ -66,11 +66,11 @@ class SingleThreadedTestRunnerExecutor : public TestRunnerExecutor {
 		}
 	}
 
-	public: ExecutionModel getExecutionModel() const override {
-		return ExecutionModel::SingleThreaded;
+	public: Testing::ExecutionModel getExecutionModel() const override {
+		return Testing::ExecutionModel::SingleThreaded;
 	}
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__SINGLE_THREADED_TEST_RUNNER_EXECUTOR

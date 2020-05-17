@@ -17,10 +17,6 @@
 #include <Balau/Concurrent/ThreadLocalInstance.hpp>
 #include <Balau/Exception/InjectorExceptions.hpp>
 
-// Avoid false positives.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau {
 
 class Injector;
@@ -691,7 +687,5 @@ class BindingBuilderBase {
 } // namespace Impl
 
 } // namespace Balau
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING

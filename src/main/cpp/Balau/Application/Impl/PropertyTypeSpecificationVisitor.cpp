@@ -73,7 +73,10 @@ void PropertyTypeSpecificationVisitor::visit(Lang::Property::Payload & payload, 
 			typeSpecification = std::string(splitValue[0]);
 
 			const size_t length = std::accumulate(
-				splitValue.begin(), splitValue.end(), 0U, [] (size_t l, auto & s) { return l + s.length(); }
+				  splitValue.begin()
+				, splitValue.end()
+				, (size_t) 0U
+				, [] (size_t l, auto & s) { return l + s.length(); }
 			) - splitValue[0].length();
 
 			defaultValue = std::string(splitValue[1].data(), length);

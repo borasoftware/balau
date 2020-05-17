@@ -31,7 +31,7 @@ struct EchoingWsWebAppTest : public Testing::TestGroup<EchoingWsWebAppTest> {
 	}
 
 	void test() {
-		const unsigned short testPortStart = 47291;
+		constexpr unsigned short testPortStart = 47291;
 		auto documentRoot = TestResources::SourceFolder / "doc";
 
 		HttpWebApps::RoutingHttpWebApp::Routing httpRouting(HttpWebApps::routingNode<HttpWebApps::FailingHttpWebApp>(""));
@@ -43,7 +43,7 @@ struct EchoingWsWebAppTest : public Testing::TestGroup<EchoingWsWebAppTest> {
 		auto wsHandler = std::shared_ptr<WsWebApp>(new WsWebApps::RoutingWsWebApp(std::move(wsRouting)));
 
 		const unsigned short port = Testing::NetworkTesting::initialiseWithFreeTcpPort(
-			[&server, &httpHandler, &wsHandler] () {
+			[&server, &httpHandler, &wsHandler, testPortStart] () {
 				auto endpoint = makeEndpoint(
 					"127.0.0.1", Testing::NetworkTesting::getFreeTcpPort(testPortStart, 50)
 				);

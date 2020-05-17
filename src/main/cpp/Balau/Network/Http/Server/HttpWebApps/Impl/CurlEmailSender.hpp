@@ -20,7 +20,7 @@ namespace Balau {
 
 class Logger;
 
-namespace Network::Http::HttpWebApps::Impl {
+namespace Impl {
 
 //
 // An email sender based on libcurl.
@@ -52,7 +52,7 @@ class CurlEmailSender {
 	private: bool verifyCertificate;
 };
 
-} // namespace Network::Http::HttpWebApps::Impl
+} // namespace Impl
 
 } // namespace Balau
 

@@ -9,7 +9,3 @@
 //
 
 #include "InjectorLogger.hpp"
-
-namespace Balau::Impl {
-
-} // namespace Balau::Impl

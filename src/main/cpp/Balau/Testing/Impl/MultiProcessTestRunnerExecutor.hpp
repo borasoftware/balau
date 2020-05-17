@@ -24,9 +24,10 @@
 
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+
 #include <sys/wait.h>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Abstract base class for test runner executors that run child processes.
 class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
@@ -204,6 +205,6 @@ class MultiProcessTestRunnerExecutor : public TestRunnerExecutor {
 	}
 };
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__MULTI_PROCESS_TEST_RUNNER_EXECUTOR

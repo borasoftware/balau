@@ -20,14 +20,14 @@
 #include <Balau/Application/Impl/Binding.hpp>
 #include <Balau/Application/Impl/InjectorLogger.hpp>
 
-namespace Balau {
-
-namespace Impl {
+namespace Balau::Impl {
 
 template <typename ValueT> class ValuePropertyBindingBuilderFactory;
 template <typename ValueT> class UniquePropertyBindingBuilderFactory;
 
-} // namespace Impl
+} // namespace Balau::Impl
+
+namespace Balau {
 
 ///
 /// The clone function type for unique pointer prototypes.

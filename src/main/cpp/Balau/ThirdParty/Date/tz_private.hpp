@@ -1,3 +1,6 @@
+#ifndef BALAU_THIRD_PARTY_DATE__TZ_PRIVATE_H
+#define BALAU_THIRD_PARTY_DATE__TZ_PRIVATE_H
+
 // The MIT License (MIT)
 //
 // Copyright (c) 2015, 2016 Howard Hinnant
@@ -24,19 +27,18 @@
 // been invented (that would involve another several millennia of evolution).
 // We did not mean to shout.
 
-#ifndef BALAU_TP__DATE__TZ_PRIVATE
-#define BALAU_TP__DATE__TZ_PRIVATE
-
 #if !defined(_MSC_VER) || (_MSC_VER >= 1900)
-	#include<Balau/ThirdParty/Date/tz.hpp>
+
+#include <Balau/ThirdParty/Date/tz.hpp>
+
 #else
-	#include<Balau/ThirdParty/Date/date.hpp>
-	#include <vector>
+#include <Balau/ThirdParty/Date/date.hpp>
+#include <vector>
 #endif
 
 namespace Balau {
 
-namespace Date {
+namespace date {
 
 namespace detail {
 
@@ -49,30 +51,29 @@ enum class tz {
 //forward declare to avoid warnings in gcc 6.2
 class MonthDayTime;
 
-std::istream & operator >>(std::istream & is, MonthDayTime & x);
+std::istream &operator>>(std::istream &is, MonthDayTime &x);
 
-std::ostream & operator <<(std::ostream & os, const MonthDayTime & x);
-
+std::ostream &operator<<(std::ostream &os, const MonthDayTime &x);
 
 class MonthDayTime {
 	private:
 	struct pair {
 		#if defined(_MSC_VER) && (_MSC_VER < 1900)
-		pair() : month_day_(Balau::Date::jan / 1), weekday_(0U) {}
+		pair() : month_day_(date::jan / 1), weekday_(0U) {}
 
-		pair(const Balau::Date::month_day& month_day, const Balau::Date::weekday& weekday)
+		pair(const date::month_day& month_day, const date::weekday& weekday)
 			: month_day_(month_day), weekday_(weekday) {}
 		#endif
 
-		Balau::Date::month_day month_day_;
-		Balau::Date::weekday weekday_;
+		date::month_day month_day_;
+		date::weekday weekday_;
 	};
 
 	enum Type {
 		month_day, month_last_dow, lteq, gteq
 	};
 
-	Type type_ { month_day };
+	Type type_{month_day};
 
 	#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
 
@@ -81,61 +82,61 @@ class MonthDayTime {
 		struct U
 		#endif
 	{
-		Balau::Date::month_day month_day_;
-		Balau::Date::month_weekday_last month_weekday_last_;
+		date::month_day month_day_;
+		date::month_weekday_last month_weekday_last_;
 		pair month_day_weekday_;
 
 		#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
 
-		U() : month_day_ { Balau::Date::jan / 1 } {}
+		U() : month_day_{date::jan / 1} {}
 
 		#else
 		U() :
-			month_day_(Balau::Date::jan/1),
-			month_weekday_last_(Balau::Date::month(0U), Balau::Date::weekday_last(Balau::Date::weekday(0U)))
+			month_day_(date::jan/1),
+			month_weekday_last_(date::month(0U), date::weekday_last(date::weekday(0U)))
 		{}
 
 		#endif // !defined(_MSC_VER) || (_MSC_VER >= 1900)
 
-		U & operator =(const Balau::Date::month_day & x);
+		U &operator=(const date::month_day &x);
 
-		U & operator =(const Balau::Date::month_weekday_last & x);
+		U &operator=(const date::month_weekday_last &x);
 
-		U & operator =(const pair & x);
+		U &operator=(const pair &x);
 	} u;
 
-	std::chrono::hours h_ { 0 };
-	std::chrono::minutes m_ { 0 };
-	std::chrono::seconds s_ { 0 };
-	tz zone_ { tz::local };
+	std::chrono::hours h_{};
+	std::chrono::minutes m_{};
+	std::chrono::seconds s_{};
+	tz zone_{tz::local};
 
 	public:
 	MonthDayTime() = default;
 
 	MonthDayTime(local_seconds tp, tz timezone);
 
-	MonthDayTime(const Balau::Date::month_day & md, tz timezone);
+	MonthDayTime(const date::month_day &md, tz timezone);
 
-	Balau::Date::day day() const;
+	date::day day() const;
 
-	Balau::Date::month month() const;
+	date::month month() const;
 
 	tz zone() const { return zone_; }
 
-	void canonicalize(Balau::Date::year y);
+	void canonicalize(date::year y);
 
-	sys_seconds to_sys(Balau::Date::year y, std::chrono::seconds offset, std::chrono::seconds save) const;
+	sys_seconds to_sys(date::year y, std::chrono::seconds offset, std::chrono::seconds save) const;
 
-	sys_days to_sys_days(Balau::Date::year y) const;
+	sys_days to_sys_days(date::year y) const;
 
-	sys_seconds to_time_point(Balau::Date::year y) const;
+	sys_seconds to_time_point(date::year y) const;
 
-	int compare(Balau::Date::year y, const MonthDayTime & x, Balau::Date::year yx, std::chrono::seconds offset,
+	int compare(date::year y, const MonthDayTime &x, date::year yx, std::chrono::seconds offset,
 	            std::chrono::minutes prev_save) const;
 
-	friend std::istream & operator >>(std::istream & is, MonthDayTime & x);
+	friend std::istream &operator>>(std::istream &is, MonthDayTime &x);
 
-	friend std::ostream & operator <<(std::ostream & os, const MonthDayTime & x);
+	friend std::ostream &operator<<(std::ostream &os, const MonthDayTime &x);
 };
 
 // A Rule specifies one or more set of datetimes without using an offset.
@@ -149,131 +150,131 @@ class MonthDayTime {
 //forward declare to avoid warnings in gcc 6.2
 class Rule;
 
-bool operator ==(const Rule & x, const Rule & y);
+bool operator==(const Rule &x, const Rule &y);
 
-bool operator <(const Rule & x, const Rule & y);
+bool operator<(const Rule &x, const Rule &y);
 
-bool operator ==(const Rule & x, const Balau::Date::year & y);
+bool operator==(const Rule &x, const date::year &y);
 
-bool operator <(const Rule & x, const Balau::Date::year & y);
+bool operator<(const Rule &x, const date::year &y);
 
-bool operator ==(const Balau::Date::year & x, const Rule & y);
+bool operator==(const date::year &x, const Rule &y);
 
-bool operator <(const Balau::Date::year & x, const Rule & y);
+bool operator<(const date::year &x, const Rule &y);
 
-bool operator ==(const Rule & x, const std::string & y);
+bool operator==(const Rule &x, const std::string &y);
 
-bool operator <(const Rule & x, const std::string & y);
+bool operator<(const Rule &x, const std::string &y);
 
-bool operator ==(const std::string & x, const Rule & y);
+bool operator==(const std::string &x, const Rule &y);
 
-bool operator <(const std::string & x, const Rule & y);
+bool operator<(const std::string &x, const Rule &y);
 
-std::ostream & operator <<(std::ostream & os, const Rule & r);
+std::ostream &operator<<(std::ostream &os, const Rule &r);
 
 class Rule {
 	private:
 	std::string name_;
-	Balau::Date::year starting_year_ { 0 };
-	Balau::Date::year ending_year_ { 0 };
+	date::year starting_year_{0};
+	date::year ending_year_{0};
 	MonthDayTime starting_at_;
-	std::chrono::minutes save_ { 0 };
+	std::chrono::minutes save_{0};
 	std::string abbrev_;
 
 	public:
 	Rule() = default;
 
-	explicit Rule(const std::string & s);
+	explicit Rule(const std::string &s);
 
-	Rule(const Rule & r, Balau::Date::year starting_year, Balau::Date::year ending_year);
+	Rule(const Rule &r, date::year starting_year, date::year ending_year);
 
-	const std::string & name() const { return name_; }
+	const std::string &name() const { return name_; }
 
-	const std::string & abbrev() const { return abbrev_; }
+	const std::string &abbrev() const { return abbrev_; }
 
-	const MonthDayTime & mdt() const { return starting_at_; }
+	const MonthDayTime &mdt() const { return starting_at_; }
 
-	const Balau::Date::year & starting_year() const { return starting_year_; }
+	const date::year &starting_year() const { return starting_year_; }
 
-	const Balau::Date::year & ending_year() const { return ending_year_; }
+	const date::year &ending_year() const { return ending_year_; }
 
-	const std::chrono::minutes & save() const { return save_; }
+	const std::chrono::minutes &save() const { return save_; }
 
-	static void split_overlaps(std::vector <Rule> & rules);
+	static void split_overlaps(std::vector<Rule> &rules);
 
-	friend bool operator ==(const Rule & x, const Rule & y);
+	friend bool operator==(const Rule &x, const Rule &y);
 
-	friend bool operator <(const Rule & x, const Rule & y);
+	friend bool operator<(const Rule &x, const Rule &y);
 
-	friend bool operator ==(const Rule & x, const Balau::Date::year & y);
+	friend bool operator==(const Rule &x, const date::year &y);
 
-	friend bool operator <(const Rule & x, const Balau::Date::year & y);
+	friend bool operator<(const Rule &x, const date::year &y);
 
-	friend bool operator ==(const Balau::Date::year & x, const Rule & y);
+	friend bool operator==(const date::year &x, const Rule &y);
 
-	friend bool operator <(const Balau::Date::year & x, const Rule & y);
+	friend bool operator<(const date::year &x, const Rule &y);
 
-	friend bool operator ==(const Rule & x, const std::string & y);
+	friend bool operator==(const Rule &x, const std::string &y);
 
-	friend bool operator <(const Rule & x, const std::string & y);
+	friend bool operator<(const Rule &x, const std::string &y);
 
-	friend bool operator ==(const std::string & x, const Rule & y);
+	friend bool operator==(const std::string &x, const Rule &y);
 
-	friend bool operator <(const std::string & x, const Rule & y);
+	friend bool operator<(const std::string &x, const Rule &y);
 
-	friend std::ostream & operator <<(std::ostream & os, const Rule & r);
+	friend std::ostream &operator<<(std::ostream &os, const Rule &r);
 
 	private:
-	Balau::Date::day day() const;
+	date::day day() const;
 
-	Balau::Date::month month() const;
+	date::month month() const;
 
-	static void split_overlaps(std::vector <Rule> & rules, std::size_t i, std::size_t & e);
+	static void split_overlaps(std::vector<Rule> &rules, std::size_t i, std::size_t &e);
 
-	static bool overlaps(const Rule & x, const Rule & y);
+	static bool overlaps(const Rule &x, const Rule &y);
 
-	static void split(std::vector <Rule> & rules, std::size_t i, std::size_t k, std::size_t & e);
+	static void split(std::vector<Rule> &rules, std::size_t i, std::size_t k, std::size_t &e);
 };
 
-inline bool operator !=(const Rule & x, const Rule & y) { return !(x == y); }
+inline bool operator!=(const Rule &x, const Rule &y) { return !(x == y); }
 
-inline bool operator >(const Rule & x, const Rule & y) { return y < x; }
+inline bool operator>(const Rule &x, const Rule &y) { return y < x; }
 
-inline bool operator <=(const Rule & x, const Rule & y) { return !(y < x); }
+inline bool operator<=(const Rule &x, const Rule &y) { return !(y < x); }
 
-inline bool operator >=(const Rule & x, const Rule & y) { return !(x < y); }
+inline bool operator>=(const Rule &x, const Rule &y) { return !(x < y); }
 
-inline bool operator !=(const Rule & x, const Balau::Date::year & y) { return !(x == y); }
+inline bool operator!=(const Rule &x, const date::year &y) { return !(x == y); }
 
-inline bool operator >(const Rule & x, const Balau::Date::year & y) { return y < x; }
+inline bool operator>(const Rule &x, const date::year &y) { return y < x; }
 
-inline bool operator <=(const Rule & x, const Balau::Date::year & y) { return !(y < x); }
+inline bool operator<=(const Rule &x, const date::year &y) { return !(y < x); }
 
-inline bool operator >=(const Rule & x, const Balau::Date::year & y) { return !(x < y); }
+inline bool operator>=(const Rule &x, const date::year &y) { return !(x < y); }
 
-inline bool operator !=(const Balau::Date::year & x, const Rule & y) { return !(x == y); }
+inline bool operator!=(const date::year &x, const Rule &y) { return !(x == y); }
 
-inline bool operator >(const Balau::Date::year & x, const Rule & y) { return y < x; }
+inline bool operator>(const date::year &x, const Rule &y) { return y < x; }
 
-inline bool operator <=(const Balau::Date::year & x, const Rule & y) { return !(y < x); }
+inline bool operator<=(const date::year &x, const Rule &y) { return !(y < x); }
 
-inline bool operator >=(const Balau::Date::year & x, const Rule & y) { return !(x < y); }
+inline bool operator>=(const date::year &x, const Rule &y) { return !(x < y); }
 
-inline bool operator !=(const Rule & x, const std::string & y) { return !(x == y); }
+inline bool operator!=(const Rule &x, const std::string &y) { return !(x == y); }
 
-inline bool operator >(const Rule & x, const std::string & y) { return y < x; }
+inline bool operator>(const Rule &x, const std::string &y) { return y < x; }
 
-inline bool operator <=(const Rule & x, const std::string & y) { return !(y < x); }
+inline bool operator<=(const Rule &x, const std::string &y) { return !(y < x); }
 
-inline bool operator >=(const Rule & x, const std::string & y) { return !(x < y); }
+inline bool operator>=(const Rule &x, const std::string &y) { return !(x < y); }
 
-inline bool operator !=(const std::string & x, const Rule & y) { return !(x == y); }
+inline bool operator!=(const std::string &x, const Rule &y) { return !(x == y); }
 
-inline bool operator >(const std::string & x, const Rule & y) { return y < x; }
+inline bool operator>(const std::string &x, const Rule &y) { return y < x; }
 
-inline bool operator <=(const std::string & x, const Rule & y) { return !(y < x); }
+inline bool operator<=(const std::string &x, const Rule &y) { return !(y < x); }
 
-inline bool operator >=(const std::string & x, const Rule & y) { return !(x < y); }
+inline bool operator>=(const std::string &x, const Rule &y) { return !(x < y); }
 
 struct zonelet {
 	enum tag {
@@ -299,27 +300,27 @@ struct zonelet {
 
 		U(const U &) {}
 
-		U & operator =(const U &) = delete;
+		U &operator=(const U &) = delete;
 	} u;
 
 	std::string format_;
-	Balau::Date::year until_year_ { 0 };
+	date::year until_year_{0};
 	MonthDayTime until_date_;
 	sys_seconds until_utc_;
 	local_seconds until_std_;
 	local_seconds until_loc_;
-	std::chrono::minutes initial_save_ {};
+	std::chrono::minutes initial_save_{};
 	std::string initial_abbrev_;
-	std::pair<const Rule *, Balau::Date::year> first_rule_ { nullptr, Balau::Date::year::min() };
-	std::pair<const Rule *, Balau::Date::year> last_rule_ { nullptr, Balau::Date::year::max() };
+	std::pair<const Rule *, date::year> first_rule_{nullptr, date::year::min()};
+	std::pair<const Rule *, date::year> last_rule_{nullptr, date::year::max()};
 
 	~zonelet();
 
 	zonelet();
 
-	zonelet(const zonelet & i);
+	zonelet(const zonelet &i);
 
-	zonelet & operator =(const zonelet &) = delete;
+	zonelet &operator=(const zonelet &) = delete;
 };
 
 #else  // USE_OS_TZDB
@@ -355,11 +356,9 @@ struct transition
 	std::ostream&
 	operator<<(std::ostream& os, const transition& t)
 	{
-		using namespace Balau::Date;
-		using namespace std::chrono;
-		using Balau::Date::operator<<;
+		using date::operator<<;
 		os << t.timepoint << "Z ";
-		if (t.info->offset >= seconds{0})
+		if (t.info->offset >= std::chrono::seconds{0})
 			os << '+';
 		os << make_time(t.info->offset);
 		if (t.info->is_dst > 0)
@@ -372,14 +371,15 @@ struct transition
 };
 
 #endif  // USE_OS_TZDB
+
 }  // namespace detail
 
-}  // namespace Date
+}  // namespace date
 
 } // namespace Balau
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
-#include<Balau/ThirdParty/Date/tz.hpp>
+#include <Balau/ThirdParty/Date/tz.hpp>
 #endif
 
-#endif // BALAU_TP__DATE__TZ_PRIVATE
+#endif  // BALAU_THIRD_PARTY_DATE__TZ_PRIVATE_H

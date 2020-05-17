@@ -22,21 +22,21 @@
 ///
 /// Annotate an injectable class body by specifying the class name and its direct or indirect dependency fields.
 ///
-#define InjectBody(...) BalauInjectBody(__VA_ARGS__)
+#define InjectBody(...) BalauVaArgsExpand(BalauVaArgsExpand(BalauInjectBody)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class body by specifying the class name and its named direct or indirect dependency fields.
 ///
-#define InjectBodyNamed(...) BalauInjectBodyNamed(__VA_ARGS__)
+#define InjectBodyNamed(...) BalauVaArgsExpand(BalauVaArgsExpand(BalauInjectBodyNamed)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class body by specifying the class name and the types of its dependencies.
 ///
-#define InjectBodyTypes(...) BalauInjectBodyTypes(__VA_ARGS__)
+#define InjectBodyTypes(...) BalauVaArgsExpand(BalauVaArgsExpand(BalauInjectBodyTypes)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class body by specifying the class name and the named types of its dependencies.
 ///
-#define InjectBodyNamedTypes(...) BalauInjectBodyNamedTypes(__VA_ARGS__)
+#define InjectBodyNamedTypes(...) BalauVaArgsExpand(BalauVaArgsExpand(BalauInjectBodyNamedTypes)(__VA_ARGS__))
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_BODY

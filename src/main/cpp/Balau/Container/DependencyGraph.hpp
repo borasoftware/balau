@@ -38,10 +38,6 @@
 
 #include <iomanip>
 
-// Avoid false positive.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau::Container {
 
 ///
@@ -585,7 +581,7 @@ class DependencyGraph {
 			}
 		}
 
-		Impl::ContainerLogger::log().log(level, builder.str().c_str());
+        Impl::ContainerLogger::log().log(level, builder.str().c_str());
 	}
 
 	////////////////////////// Private implementation /////////////////////////
@@ -621,7 +617,5 @@ class DependencyGraph {
 };
 
 } // namespace Balau::Container
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_CONTAINER_DEPENDENCY_GRAPH

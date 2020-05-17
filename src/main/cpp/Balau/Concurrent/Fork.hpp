@@ -21,23 +21,24 @@
 #include <Balau/Dev/Assert.hpp>
 
 #include <boost/predef.h>
-#include <sys/wait.h>
+
+#if BOOST_OS_UNIX
+	#include <sys/wait.h>
+#endif
 
 namespace Balau::Concurrent {
 
 ///
 /// Convenience wrapper for forking processes.
 ///
+/// TODO determine how to simulate this on the Windows platform.
+///
 class Fork {
 	///
 	/// Determine whether forking is support on this platform.
 	///
 	public: static bool forkSupported() {
-		#pragma clang diagnostic push
-		#pragma ide diagnostic ignored "OCSimplifyInspection"
-		#pragma ide diagnostic ignored "OCDFAInspection"
 		return BOOST_OS_UNIX;
-		#pragma clang diagnostic pop
 	}
 
 	///
@@ -52,24 +53,28 @@ class Fork {
 	/// @return the child pid for the parent process, the exit state of the function for the child process if it returns
 	/// @throw ForkException if the fork call failed
 	///
-	public: static int performFork(const std::function<int ()> & function, bool exitChild) {
+	public: static int performFork(const std::function<long long ()> & function, bool exitChild) {
 		Assert::assertion(forkSupported(), "fork() called for platform that does not support it.");
 
-		const int pid = ::fork();
+		#if BOOST_OS_UNIX
+			const int pid = ::fork();
 
-		if (pid == 0) {
-			const int status = function();
+			if (pid == 0) {
+				const int status = (int) function();
 
-			if (exitChild) {
-				_Exit(status);
+				if (exitChild) {
+					_Exit(status);
+				} else {
+					return status;
+				}
+			} else if (pid > 0) {
+				return pid;
 			} else {
-				return status;
+				ThrowBalauException(Exception::ForkException, errno, "Failed to fork process.");
 			}
-		} else if (pid > 0) {
-			return pid;
-		} else {
-			ThrowBalauException(Exception::ForkException, errno, "Failed to fork process.");
-		}
+		#else
+			return 0; // not supported
+		#endif
 	}
 
 	///
@@ -84,19 +89,23 @@ class Fork {
 	/// @return the child pid for the parent process and zero for the child process
 	/// @throw ForkException if the fork call failed
 	///
-	public: static int performFork(const std::function<int ()> & function) {
+	public: static int performFork(const std::function<long long ()> & function) {
 		Assert::assertion(forkSupported(), "fork() called for platform that does not support it.");
 
-		const int pid = ::fork();
+		#if BOOST_OS_UNIX
+			const int pid = ::fork();
 
-		if (pid == 0) {
-			function();
-			return 0;
-		} else if (pid > 0) {
-			return pid;
-		} else {
-			ThrowBalauException(Exception::ForkException, errno, "Failed to fork process.");
-		}
+			if (pid == 0) {
+				function();
+				return 0;
+			} else if (pid > 0) {
+				return pid;
+			} else {
+				ThrowBalauException(Exception::ForkException, errno, "Failed to fork process.");
+			}
+		#else
+			return 0; // not supported
+		#endif
 	}
 
 	///
@@ -150,21 +159,23 @@ class Fork {
 	/// @return a termination report
 	/// @throw WaitException if the waitid call failed
 	///
-	public: static TerminationReport waitOnProcess(int pid) {
+	public: static TerminationReport waitOnProcess(long long pid) {
 		if (pid <= 0) {
 			return TerminationReport();
 		}
 
-		siginfo_t infop;
-		int options = WEXITED;
+		#if BOOST_OS_UNIX
+			siginfo_t infop;
+			int options = WEXITED;
 
-		memset(&infop, 0, sizeof(siginfo_t));
+			memset(&infop, 0, sizeof(siginfo_t));
 
-		if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
-			ThrowBalauException(Exception::WaitException, errno);
-		} else if (infop.si_pid) {
-			return TerminationReport(pid, infop.si_code, infop.si_status);
-		}
+			if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
+				ThrowBalauException(Exception::WaitException, errno);
+			} else if (infop.si_pid) {
+				return TerminationReport(pid, infop.si_code, infop.si_status);
+			}
+		#endif
 
 		// TODO what else may happen here?
 		return TerminationReport();
@@ -187,26 +198,28 @@ class Fork {
 			return TerminationReport();
 		}
 
-		siginfo_t infop;
-		int options = WEXITED | WNOHANG;
+		#if BOOST_OS_UNIX
+			siginfo_t infop;
+			int options = WEXITED | WNOHANG;
 
-		memset(&infop, 0, sizeof(siginfo_t));
+			memset(&infop, 0, sizeof(siginfo_t));
 
-		if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
-			ThrowBalauException(Exception::WaitException, errno);
-		} else if (infop.si_pid) {
-			switch (infop.si_code) {
-				case CLD_EXITED:
-				case CLD_KILLED:
-				case CLD_DUMPED: {
-					return TerminationReport(pid, infop.si_code, infop.si_status);
-				}
+			if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
+				ThrowBalauException(Exception::WaitException, errno);
+			} else if (infop.si_pid) {
+				switch (infop.si_code) {
+					case CLD_EXITED:
+					case CLD_KILLED:
+					case CLD_DUMPED: {
+						return TerminationReport(pid, infop.si_code, infop.si_status);
+					}
 
-				default: {
-					break;
+					default: {
+						break;
+					}
 				}
 			}
-		}
+		#endif
 
 		return TerminationReport();
 	}
@@ -220,32 +233,35 @@ class Fork {
 	///
 	public: static std::vector<TerminationReport> checkForTermination(const std::vector<int> & pids) {
 		std::vector<TerminationReport> reports;
-		siginfo_t infop;
-		int options = WEXITED | WNOHANG; // NOLINT
 
-		for (int pid : pids) {
-			if (pid <= 0) {
-				continue;
-			}
+		#if BOOST_OS_UNIX
+			siginfo_t infop;
+			int options = WEXITED | WNOHANG; // NOLINT
 
-			memset(&infop, 0, sizeof(siginfo_t));
+			for (int pid : pids) {
+				if (pid <= 0) {
+					continue;
+				}
 
-			if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
-				ThrowBalauException(Exception::WaitException, errno);
-			} else if (infop.si_pid) {
-				switch (infop.si_code) {
-					case CLD_EXITED:
-					case CLD_KILLED:
-					case CLD_DUMPED: {
-						reports.emplace_back(pid, infop.si_code, infop.si_status);
-					}
+				memset(&infop, 0, sizeof(siginfo_t));
 
-					default: {
-						break;
+				if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
+					ThrowBalauException(Exception::WaitException, errno);
+				} else if (infop.si_pid) {
+					switch (infop.si_code) {
+						case CLD_EXITED:
+						case CLD_KILLED:
+						case CLD_DUMPED: {
+							reports.emplace_back(pid, infop.si_code, infop.si_status);
+						}
+
+						default: {
+							break;
+						}
 					}
 				}
 			}
-		}
+		#endif
 
 		return reports;
 	}
@@ -265,27 +281,29 @@ class Fork {
 			return TerminationReport();
 		}
 
-		siginfo_t infop;
-		int options = WEXITED | WNOHANG; // NOLINT
+		#if BOOST_OS_UNIX
+			siginfo_t infop;
+			int options = WEXITED | WNOHANG; // NOLINT
 
-		memset(&infop, 0, sizeof(siginfo_t));
+			memset(&infop, 0, sizeof(siginfo_t));
 
-		if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
-			ThrowBalauException(Exception::WaitException, errno);
-		} else if (infop.si_pid) {
-			switch (infop.si_code) {
-				case CLD_EXITED:
-				case CLD_KILLED:
-				case CLD_DUMPED: {
-					return TerminationReport(pid, infop.si_code, infop.si_status);
-				}
+			if (waitid(P_PID, (unsigned int) pid, &infop, options) == -1) {
+				ThrowBalauException(Exception::WaitException, errno);
+			} else if (infop.si_pid) {
+				switch (infop.si_code) {
+					case CLD_EXITED:
+					case CLD_KILLED:
+					case CLD_DUMPED: {
+						return TerminationReport(pid, infop.si_code, infop.si_status);
+					}
 
-				default: {
-					kill(pid, SIGKILL);
-					break;
+					default: {
+						kill(pid, SIGKILL);
+						break;
+					}
 				}
 			}
-		}
+		#endif
 
 		return TerminationReport();
 	}

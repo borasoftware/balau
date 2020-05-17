@@ -14,7 +14,12 @@
 #include <Balau/Util/User.hpp>
 #include <boost/dll/runtime_symbol_info.hpp>
 
-namespace Balau::Util::Impl {
+#if BOOST_OS_WINDOWS
+	#include <shlobj.h>
+	#include <winerror.h>
+#endif
+
+namespace Balau::Impl {
 
 struct AppImpl final {
 	static Resource::File getUserApplicationDataDirectory(const std::string & appGroup, const std::string & appName) {
@@ -29,11 +34,19 @@ struct AppImpl final {
 			auto home = User::getHomeDirectory();
 			return home / ".local" / "share" / appGroup / appName;
 		#elif BOOST_OS_WINDOWS
-			#error "The Windows platform is not yet implemented."
+			PWSTR * ppszPath {};
+			HRESULT result = SHGetKnownFolderPath(FOLDERID_AppDataProgramData, 0, nullptr, ppszPath);
 
-			// TODO implement
-			//CHAR szPath[MAX_PATH];
-			//SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)));
+			if (result == S_OK) {
+				auto folder = Resource::File(*ppszPath) / appGroup / appName / "data";
+				CoTaskMemFree(ppszPath);
+				return folder;
+			} else {
+				ThrowBalauException(
+					Exception::NotFoundException
+					, "Failed to locate the user's AppDataProgramData location whilst determining the user application data directory."
+				);
+			}
 		#else
 			#error "Platform not implemented."
 		#endif
@@ -55,7 +68,7 @@ struct AppImpl final {
 			const Resource::File parentDirectory = programLocationDirectory.getParentDirectory();
 			return parentDirectory / "share" / appGroup / appName / "data";
 		#elif BOOST_OS_WINDOWS
-			return programLocationDirectory / "data";
+			return programLocationDirectory / L"data";
 		#else
 			#error "Platform not implemented."
 		#endif
@@ -73,11 +86,19 @@ struct AppImpl final {
 			auto home = User::getHomeDirectory();
 			return home / ".config" / appGroup / appName;
 		#elif BOOST_OS_WINDOWS
-			#error "The Windows platform is not yet implemented."
+			PWSTR * ppszPath {};
+			HRESULT result = SHGetKnownFolderPath(FOLDERID_AppDataProgramData, 0, nullptr, ppszPath);
 
-			// TODO implement
-			//CHAR szPath[MAX_PATH];
-			//SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath)));
+			if (result == S_OK) {
+				auto folder = Resource::File(*ppszPath) / appGroup / appName / "config";
+				CoTaskMemFree(ppszPath);
+				return folder;
+			} else {
+				ThrowBalauException(
+					Exception::NotFoundException
+					, "Failed to locate the user's AppDataProgramData location whilst determining the user application config directory."
+				);
+			}
 		#else
 			#error "Platform not implemented."
 		#endif
@@ -99,7 +120,7 @@ struct AppImpl final {
 			const Resource::File parentDirectory = programLocationDirectory.getParentDirectory();
 			return parentDirectory / "share" / appGroup / appName / "config";
 		#elif BOOST_OS_WINDOWS
-			return programLocationDirectory / "config";
+			return programLocationDirectory / L"config";
 		#else
 			#error "Platform not implemented."
 		#endif
@@ -127,7 +148,19 @@ struct AppImpl final {
 			dir.createDirectories();
 			return dir;
 		#elif BOOST_OS_WINDOWS
-			#error "The Windows platform is not yet implemented."
+			PWSTR * ppszPath {};
+			HRESULT result = SHGetKnownFolderPath(FOLDERID_AppDataProgramData, 0, nullptr, ppszPath);
+
+			if (result == S_OK) {
+				auto folder = Resource::File(*ppszPath) / appGroup / appName / "runtime";
+				CoTaskMemFree(ppszPath);
+				return folder;
+			} else {
+				ThrowBalauException(
+					Exception::NotFoundException
+					, "Failed to locate the user's AppDataProgramData location whilst determining the user application runtime directory."
+				);
+			}
 		#else
 			#error "Platform not implemented."
 		#endif
@@ -140,6 +173,6 @@ struct AppImpl final {
 	AppImpl & operator = (const AppImpl &) = delete;
 };
 
-} // namespace Balau::Util::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL__APP_IMPL

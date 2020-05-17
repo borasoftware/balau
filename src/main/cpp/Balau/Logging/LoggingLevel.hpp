@@ -19,6 +19,10 @@
 
 #include <Balau/Exception/BalauException.hpp>
 
+#ifdef WIN32
+	#undef ERROR
+#endif
+
 namespace Balau {
 
 //////////////////////////////// Logging level ////////////////////////////////

@@ -22,13 +22,13 @@
 ///
 /// Annotate an injectable class header by specifying the class name .
 ///
-#define InjectHeader(...) BalauInjectHeader(__VA_ARGS__)
+#define InjectHeader(...) BalauVaArgsExpand(BalauVaArgsExpand(BalauInjectHeader)(__VA_ARGS__))
 
 ///
 /// Annotate an injectable class header by specifying the class name.
 ///
 /// This version includes the definition of an injectable constructor.
 ///
-#define InjectHeaderConstruct(...) BalauInjectHeaderConstruct(__VA_ARGS__)
+#define InjectHeaderConstruct(...) BalauVaArgsExpand(BalauVaArgsExpand(BalauInjectHeaderConstruct)(__VA_ARGS__))
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_HEADER

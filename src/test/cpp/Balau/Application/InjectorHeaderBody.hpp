@@ -82,6 +82,27 @@ struct HBDerivedC : public HBBaseC1 {
 	BalauInjectHeaderConstruct(HBDerivedC);
 };
 
+//#define _BBalauExpand(ARG)       ARG
+//#define _BBalauStringExpand(ARG) #ARG
+
+//#define _BBalauInjectHeaderConstruct__2(TYPE, F0)
+//	_BalauInjectHeader(TYPE);
+//
+//	public: explicit TYPE(_BalauHIPF(F0)) : _BalauHIMF(F0) {}
+
+//#define _BBalauVariadicNArg_(...) _BBalauExpand(_BBalauVariadicNArgN(__VA_ARGS__))
+//#define _BBalauVariadicNArgN(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, N, ...) N
+//#define _BBalauVariadicRSeqN() 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+//#define BBalauVariadicNArg(...)  _BBalauExpand(_BBalauVariadicNArg_(__VA_ARGS__, _BBalauVariadicRSeqN()))
+//#define _BBalauInjectHeaderConstruct__(N)          _BBalauInjectHeaderConstruct__##N
+//#define _BBalauInjectHeaderConstruct__Eval(N)      _BBalauInjectHeaderConstruct__(N)
+//#define _BBalauInjectHeaderConstruct(...)        BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectHeaderConstruct__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+//#define MACRO_VA_ARGS(...) BalauVaArgsExpand(BalauVaArgsExpand(MACRO_WITH_3_PARAMS)( __VA_ARGS__))
+//#define __BBalauInjectHeaderConstruct(A, B)        _BBalauInjectHeaderConstruct__Eval(BBalauVariadicNArg(A, B))(A, B)
+//#define STRING2(x) #x
+//#define STRING(x) STRING2(x)
+////#pragma message("content: " STRING(_BBalauInjectHeaderConstruct(HBDerivedCD, b)))
+
 struct HBDerivedCD : public HBBaseC2 {
 	std::shared_ptr<HBBase1> b;
 	BalauInjectHeaderConstruct(HBDerivedCD, b);

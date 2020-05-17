@@ -26,9 +26,6 @@ inline std::string toString(const ObjectTrieTestValue & value) {
 #include <TestResources.hpp>
 #include "Balau/Container/ObjectTrie.hpp"
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-
 namespace {
 
 const unsigned int UINT_DEPTH_ITERATION_DATA[] = {
@@ -306,5 +303,3 @@ struct ObjectTrieTest : public Testing::TestGroup<ObjectTrieTest> {
 } // namespace Container
 
 } // namespace Balau
-
-#pragma clang diagnostic pop

@@ -218,7 +218,7 @@ struct Strings final {
 		size_t count = 0;
 
 		while ((index = str.find(substring, index)) != StringT<CharT, T ...>::npos) {
-			index += Balau::Util::Impl::length(substring);
+			index += Balau::Impl::length(substring);
 			++count;
 		}
 
@@ -250,7 +250,7 @@ struct Strings final {
 	///
 	static size_t occurrences(const std::string_view & str, const std::regex & regex) {
 		size_t count = 0;
-		std::cregex_iterator iter(str.begin(), str.end(), regex);
+		std::cregex_iterator iter(str.data(), str.data() + str.length(), regex);
 		std::cregex_iterator end;
 
 		while (iter != end) {
@@ -310,7 +310,7 @@ struct Strings final {
 			++iter;
 		}
 
-		if (includeExtraTextAsLine && (long) text.length() > lineStart) {
+		if (includeExtraTextAsLine && (long long) text.length() > lineStart) {
 			lengths.emplace_back(text.length() - lineStart);
 		}
 
@@ -332,7 +332,7 @@ struct Strings final {
 	///
 	template <typename ... T, template <typename ...> class StringT>
 	static std::vector<size_t> lineLengths(const StringT<char, T ...> & text, bool includeExtraTextAsLine = true) {
-		return lineLengths(std::string_view{text}, Impl<0>::defaultLineBreakRegex, includeExtraTextAsLine);
+		return lineLengths(std::string_view{text}, StringsRegexImpl<0>::defaultLineBreakRegex, includeExtraTextAsLine);
 	}
 
 	///
@@ -349,7 +349,7 @@ struct Strings final {
 	/// @todo u32 regex?
 	///
 	static std::vector<size_t> lineLengths(const char * text, bool includeExtraTextAsLine = true) {
-		return lineLengths(std::string_view{text}, Impl<0>::defaultLineBreakRegex, includeExtraTextAsLine);
+		return lineLengths(std::string_view{text}, StringsRegexImpl<0>::defaultLineBreakRegex, includeExtraTextAsLine);
 	}
 
 	///////////////////////////////////
@@ -722,7 +722,8 @@ struct Strings final {
 			return std::string_view(input.data(), 0);
 		}
 
-		return std::string_view(input.data() + (size_t) startPosition, (size_t) (endPosition - startPosition));
+		const auto length = endPosition - startPosition;
+		return std::string_view(input.data() + (size_t) startPosition, (size_t) length);
 	}
 
 	///
@@ -893,7 +894,7 @@ struct Strings final {
 		std::basic_string<CharT, std::char_traits<CharT>, AllocatorT> ret(input);
 		auto m = std::string(match.data(), match.length());
 		auto r = std::string(replacement.data(), replacement.length());
-		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
+		Balau::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -908,7 +909,7 @@ struct Strings final {
 		std::basic_string<CharT> ret(input);
 		auto m = std::string(match.data(), match.length());
 		auto r = std::string(replacement.data(), replacement.length());
-		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
+		Balau::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -922,7 +923,7 @@ struct Strings final {
 		std::string ret(input);
 		auto m = std::string(match.data(), match.length());
 		auto r = std::string(replacement.data(), replacement.length());
-		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
+		Balau::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -936,7 +937,7 @@ struct Strings final {
 		std::u32string ret(input);
 		auto m = std::u32string(match.data(), match.length());
 		auto r = std::u32string(replacement.data(), replacement.length());
-		Balau::Util::Impl::replaceAllImpl(ret, m, r, count);
+		Balau::Impl::replaceAllImpl(ret, m, r, count);
 		return ret;
 	}
 
@@ -1242,7 +1243,7 @@ struct Strings final {
 	                                           bool returnDelimiters = false,
 	                                           bool compress = true) {
 		std::vector<std::string_view> elements;
-		auto begin = std::cregex_iterator(input.begin(), input.end(), delimiter);
+		auto begin = std::cregex_iterator(input.data(), input.data() + input.length(), delimiter);
 		auto end = std::cregex_iterator();
 
 		if (begin == end) {
@@ -1274,7 +1275,7 @@ struct Strings final {
 			auto j = i;
 			++j;
 
-			if (j == end && (currentStart < (long) input.length() || !compress)) {
+			if (j == end && (currentStart < (long long) input.length() || !compress)) {
 				elements.emplace_back(input.data() + currentStart, input.length() - currentStart);
 			}
 		}
@@ -1396,9 +1397,9 @@ struct Strings final {
 	                                                            std::basic_string_view<CharT> delimiter,
 	                                                            bool compress = true) {
 		std::vector<std::basic_string_view<CharT>> elements;
-		const size_t delimiterLength = Balau::Util::Impl::length(delimiter);
+		const size_t delimiterLength = Balau::Impl::length(delimiter);
 
-		if (Balau::Util::Impl::length(delimiter) == 0) {
+		if (Balau::Impl::length(delimiter) == 0) {
 			elements.emplace_back(input.data(), input.length());
 			return elements;
 		}
@@ -1432,7 +1433,7 @@ struct Strings final {
 	static bool delimiterFound(const StringT<CharT, T ...> & input, size_t currentIndex, const DelimiterT & delimiter) {
 		size_t inputIndex = currentIndex;
 		size_t delimiterIndex = 0;
-		const size_t delimiterLength = Balau::Util::Impl::length(delimiter);
+		const size_t delimiterLength = Balau::Impl::length(delimiter);
 
 		while (inputIndex < input.length() && delimiterIndex < delimiterLength) {
 			if (input[inputIndex] != delimiter[delimiterIndex]) {
@@ -1463,19 +1464,19 @@ struct Strings final {
 	}
 
 	private: template <typename CharT> static auto end(const CharT * str) {
-		return str + Balau::Util::Impl::length(str);
+		return str + Balau::Impl::length(str);
 	}
 
 	private: template <typename CharT> static auto end(std::basic_string_view<CharT> str) {
 		return str.data() + str.length();
 	}
 
-	private: template <int> struct Impl {
+	private: template <int> struct StringsRegexImpl {
 		static const std::regex defaultLineBreakRegex;
 	};
 };
 
-template <int Unused> const std::regex Strings::Impl<Unused>::defaultLineBreakRegex = std::regex("\n\r|\r\n|\n|\r");
+template <int Unused> const std::regex Strings::StringsRegexImpl<Unused>::defaultLineBreakRegex = std::regex("\n\r|\r\n|\n|\r");
 
 } // namespace Balau::Util
 

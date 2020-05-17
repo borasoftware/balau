@@ -64,13 +64,13 @@ FileLoggingStream::~FileLoggingStream() {
 }
 
 void FileLoggingStream::createNewStream() {
-	Date::year_month_day today = clock->today();
+	date::year_month_day today = clock->today();
 	std::ostringstream str;
 
 	for (const auto & pathComponent : pathComponents) {
 		if (std::regex_search(pathComponent, dateRegExExact)) {
 			const std::string formatString = pathComponent.substr(5, pathComponent.length() - 5 - 1);
-			Date::to_stream(str, formatString.c_str(), today);
+			date::to_stream(str, formatString.c_str(), today);
 		} else {
 			str << pathComponent;
 		}

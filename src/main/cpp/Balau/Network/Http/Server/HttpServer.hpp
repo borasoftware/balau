@@ -30,21 +30,17 @@
 #include <mutex>
 #include <thread>
 
-// Avoid false positive (due to make_shared).
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau {
 
 class Logger;
-
-namespace Network::Http {
 
 namespace Impl {
 
 class Listener;
 
-}
+} // namespace Impl
+
+namespace Network::Http {
 
 ///
 /// An asynchronous HTTP/WebSocket server.
@@ -106,7 +102,7 @@ class HttpServer {
 	/// @param registerSignalHandler (default = true) set to false in order to prevent signal handler installation
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
-	                   const std::shared_ptr<EnvironmentProperties>& configuration,
+	                   const std::shared_ptr<EnvironmentProperties> & configuration,
 	                   bool registerSignalHandler = true);
 
 	///
@@ -129,7 +125,7 @@ class HttpServer {
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
 	                   const std::string & serverIdentification,
-	                   const TCP::endpoint & endpoint,
+	                   const AsioTCP::endpoint & endpoint,
 	                   std::string threadNamePrefix_,
 	                   size_t workerCount_,
 	                   std::shared_ptr<HttpWebApp> httpHandler,
@@ -154,11 +150,11 @@ class HttpServer {
 	/// @param loggingNamespace the logging namespace to use (default = "balau.network.server")
 	/// @param sessionCookieName the name of the cookie in which the session id is stored (default = "session")
 	/// @param defaultFile the default file to return if no file is specified in the request
-	/// @param registerSignalHandler (default = true) set to false in order to prevent signal handler installation
+	/// @param registerSignalHandler (Unix type OS only) (default = true) set to false in order to prevent signal handler installation
 	///
 	public: HttpServer(std::shared_ptr<System::Clock> clock,
 	                   const std::string & serverIdentification,
-	                   const TCP::endpoint & endpoint,
+	                   const AsioTCP::endpoint & endpoint,
 	                   std::string threadNamePrefix_,
 	                   size_t workerCount_,
 	                   const Resource::File & documentRoot,
@@ -281,8 +277,13 @@ class HttpServer {
 
 	private: void launchListener();
 	private: void workerThreadFunction(size_t workerIndex);
+
+	#if BOOST_OS_UNIX
+
 	private: void doRegisterSignalHandler();
 	private: void handleSignal(const boost::system::error_code & error, int sig);
+
+	#endif
 
 	private: std::shared_ptr<HttpServerConfiguration> state;
 	private: const std::string threadNamePrefix;
@@ -298,7 +299,5 @@ class HttpServer {
 } // namespace Network::Http
 
 } // namespace Balau
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SERVER

@@ -21,7 +21,7 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
 
-namespace Balau::Resource::Impl {
+namespace Balau::Impl {
 
 ///
 /// Boost IO streams zip entry source, used in the zip entry input stream.
@@ -59,6 +59,6 @@ class ZipEntrySource : public boost::iostreams::source {
 //	public: std::streamsize write(char * s, std::streamsize n);
 //};
 
-} // namespace Balau::Resource::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE_IMPL__ZIP_ENTRY_SOURCE

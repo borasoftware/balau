@@ -93,10 +93,10 @@ class HttpsClient : public HttpClient {
 		/////////////// Connect ///////////////
 
 		boost::asio::io_context ioc;
-		SSL::context ctx { SSL::context::tls_client };
+		AsioSSL::context ctx { AsioSSL::context::tls_client };
 		load_root_certificates(ctx);
-		TCP::resolver resolver { ioc };
-		SSL::stream<TCP::socket> stream { ioc, ctx };
+		AsioTCP::resolver resolver {ioc };
+		AsioSSL::stream<AsioTCP::socket> stream {ioc, ctx };
 
 		if (!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())) {
 			boost::system::error_code errorCode { static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category() };
@@ -105,7 +105,7 @@ class HttpsClient : public HttpClient {
 
 		auto resolverResults = resolver.resolve(host.c_str(), ::toString(port).c_str());
 		boost::asio::connect(stream.next_layer(), resolverResults.begin(), resolverResults.end());
-		stream.handshake(SSL::stream_base::client);
+		stream.handshake(AsioSSL::stream_base::client);
 
 		///////////// Send message /////////////
 

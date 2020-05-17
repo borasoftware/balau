@@ -16,11 +16,6 @@
 #include <Balau/Util/Files.hpp>
 #include <Balau/Type/OnScopeExit.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "MemberFunctionCanBeStatic"
-#pragma ide diagnostic ignored "cert-err58-cpp"
-#pragma clang diagnostic ignored "-Wstring-plus-int"
-
 namespace Balau {
 
 using namespace Util;
@@ -522,5 +517,3 @@ com.borasoftware {
 };
 
 } // namespace Balau
-
-#pragma clang diagnostic pop

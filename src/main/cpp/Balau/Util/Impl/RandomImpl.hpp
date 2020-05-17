@@ -13,7 +13,7 @@
 
 #include <random>
 
-namespace Balau::Util::Impl {
+namespace Balau::Util::RandomImpl {
 
 inline double inclusivise(double upper) {
 	return std::nextafter(upper, upper > 0.0 ? upper + 1.0 : upper - 1.0);
@@ -27,6 +27,6 @@ template <typename IntegerT> inline IntegerT inclusivise(IntegerT upper) {
 	return upper;
 }
 
-} // namespace Balau::Util::Impl
+} // namespace Balau::Util::RandomImpl
 
 #endif // COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__RANDOM_IMPL

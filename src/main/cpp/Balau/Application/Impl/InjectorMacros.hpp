@@ -14,9 +14,6 @@
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Util/Macros.hpp>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedMacroInspection"
-
 #define _BalauIGF(F, N) _BalauInjector.getInstance<decltype(F)>(N)
 #define _BalauIGT(T, N) _BalauInjector.getInstance<T>(N)
 #define _BalauIPF(F)    decltype(F) F ## _
@@ -1100,13 +1097,11 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define _BalauInject(...)               _BalauInject__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectNamed(...)          _BalauInjectNamed__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectConstruct(...)      _BalauInjectConstruct__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectConstructNamed(...) _BalauInjectConstructNamed__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectTypes(...)          _BalauInjectTypes__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-#define _BalauInjectNamedTypes(...)     _BalauInjectNamedTypes__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
-
-#pragma clang diagnostic pop
+#define _BalauInject(...)               BalauVaArgsExpand(BalauVaArgsExpand(_BalauInject__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectNamed(...)          BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectNamed__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectConstruct(...)      BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectConstruct__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectConstructNamed(...) BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectConstructNamed__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectTypes(...)          BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectTypes__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
+#define _BalauInjectNamedTypes(...)     BalauVaArgsExpand(BalauVaArgsExpand(_BalauInjectNamedTypes__Eval(BalauVaArgsExpand(BalauVaArgsExpand(BalauVariadicNArg)(__VA_ARGS__))))(__VA_ARGS__))
 
 #endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__INJECTOR_MACROS

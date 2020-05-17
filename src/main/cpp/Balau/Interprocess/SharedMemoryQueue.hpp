@@ -37,10 +37,6 @@
 
 #include <deque>
 
-// Ignore false positives for constructor field initialisation.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
-
 namespace Balau::Interprocess {
 
 ///
@@ -253,7 +249,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	public: T dequeue() override {
 		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage.queueBuffer;
-		unsigned long receivedSize;
+		unsigned long long receivedSize;
 		unsigned int priority;
 
 		dequeueNextBuffer(queueBuffer, receivedSize, priority, 0);
@@ -269,7 +265,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queueBuffer, receivedSize, priority
 				, [this] (CharVector &,
 					      CharVector & queueBuffer,
-					      unsigned long & thisReceivedSize,
+					      unsigned long long & thisReceivedSize,
 					      unsigned int & thisPriority,
 					      size_t rejected) {
 					dequeueNextBuffer(queueBuffer, thisReceivedSize, thisPriority, rejected);
@@ -282,7 +278,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queueBuffer, receivedSize, priority
 				, [this] (CharVector &,
 					      CharVector & queueBuffer,
-					      unsigned long & thisReceivedSize,
+					      unsigned long long & thisReceivedSize,
 					      unsigned int & thisPriority,
 					      size_t rejected) {
 					dequeueNextBuffer(queueBuffer, thisReceivedSize, thisPriority, rejected);
@@ -311,7 +307,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	public: T tryDequeue(std::chrono::milliseconds waitTime) override {
 		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage.queueBuffer;
 
-		unsigned long receivedSize;
+		unsigned long long receivedSize;
 		unsigned int priority;
 
 		if (!tryDequeueNextBuffer(queueBuffer, receivedSize, priority, 0, waitTime)) {
@@ -329,7 +325,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queueBuffer, receivedSize, priority
 				, [waitTime, this] (CharVector & marshalBuffer,
 					                CharVector & queueBuffer,
-					                unsigned long & thisReceivedSize,
+					                unsigned long long & thisReceivedSize,
 					                unsigned int & thisPriority,
 					                size_t rejected) {
 					if (!tryDequeueNextBuffer(queueBuffer, thisReceivedSize, thisPriority, rejected, waitTime)) {
@@ -350,7 +346,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 				queueBuffer, receivedSize, priority
 				, [waitTime, this] (CharVector & marshalBuffer,
 					                CharVector & queueBuffer,
-					                unsigned long & thisReceivedSize,
+					                unsigned long long & thisReceivedSize,
 					                unsigned int & thisPriority,
 					                size_t rejected) {
 					if (!tryDequeueNextBuffer(queueBuffer, thisReceivedSize, thisPriority, rejected, waitTime)) {
@@ -393,7 +389,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	//
 	private: template <typename DequeueFunctionT>
 	T performMultiChunkDequeue(CharVector & queueBuffer,
-	                           unsigned long & receivedSize,
+	                           unsigned long long & receivedSize,
 	                           unsigned int & priority,
 	                           DequeueFunctionT dequeueFunction) {
 		const auto * queueHeader = (const Impl::QueueHeader *) queueBuffer.data();
@@ -409,7 +405,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		marshalHeader->chunkNumber = marshalHeader->chunkCount;
 
 		size_t rejectedPendingBuffers = 0;
-		const unsigned long sequenceNumber = queueHeader->sequenceNumber;
+		const unsigned long long sequenceNumber = queueHeader->sequenceNumber;
 		unsigned int partsLeft = queueHeader->chunkCount;
 
 		while (true) {
@@ -448,7 +444,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	private:
 	template <typename DequeueFunctionT>
 	T completeMultiChunkDequeue(CharVector & marshalBuffer,
-	                            unsigned long & receivedSize,
+	                            unsigned long long & receivedSize,
 	                            unsigned int & priority,
 	                            DequeueFunctionT dequeueFunction) {
 		auto * marshalHeader = (Impl::QueueHeader *) marshalBuffer.data();
@@ -460,7 +456,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		);
 
 		size_t rejectedPendingBuffers = 0;
-		const unsigned long sequenceNumber = marshalHeader->sequenceNumber;
+		const unsigned long long sequenceNumber = marshalHeader->sequenceNumber;
 		unsigned int partsLeft = 2 * marshalHeader->chunkCount - marshalHeader->chunkNumber;
 		CharVector queueBuffer {};
 
@@ -496,7 +492,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	// than rejectedPendingBuffers, otherwise dequeue from the shared memory queue.
 	//
 	private: void dequeueNextBuffer(CharVector & buffer,
-	                                unsigned long & receivedSize,
+	                                unsigned long long & receivedSize,
 	                                unsigned int & priority,
 	                                size_t rejectedPendingBuffers) {
 		if (rejectedPendingBuffers < pendingBuffers.size()) {
@@ -517,7 +513,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	// than rejectedPendingBuffers, otherwise dequeue from the shared memory queue.
 	//
 	private: bool tryDequeueNextBuffer(CharVector & buffer,
-	                                   unsigned long & receivedSize,
+	                                   unsigned long long & receivedSize,
 	                                   unsigned int & priority,
 	                                   size_t rejectedPendingBuffers,
 	                                   std::chrono::milliseconds waitTime) {
@@ -632,10 +628,10 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	// Pending buffers are used to support single process dequeueing of oversize objects.
 	private: struct PendingBuffer {
 		CharVector buffer;
-		unsigned long receivedSize;
+		unsigned long long receivedSize;
 		unsigned int priority;
 
-		PendingBuffer(CharVector && buffer_, unsigned long receivedSize_, unsigned int priority_)
+		PendingBuffer(CharVector && buffer_, unsigned long long receivedSize_, unsigned int priority_)
 			: buffer(std::move(buffer_))
 			, receivedSize(receivedSize_)
 			, priority(priority_) {}
@@ -650,7 +646,5 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 };
 
 } // namespace Balau::Interprocess
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_INTERPROCESS__SHARED_MEMORY_QUEUE

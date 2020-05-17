@@ -20,7 +20,14 @@
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Resource/File.hpp>
 
-#include <pwd.h>
+#if BOOST_OS_UNIX
+	#include <pwd.h>
+#elif BOOST_OS_WINDOWS
+	#define VC_EXTRALEAN
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <Lmcons.h>
+#endif
 
 namespace Balau::Util {
 
@@ -46,7 +53,14 @@ struct User final {
 				);
 			}
 		#elif BOOST_OS_WINDOWS
-			#error "The Windows platform is not yet implemented."
+			char username[UNLEN + 1];
+			DWORD username_len = UNLEN + 1;
+			
+			if (GetUserName(username, &username_len)) {
+				return username;
+			} else {
+				ThrowBalauException(Exception::NotFoundException, "Failed to obtain the user name.");
+			}
 		#else
 			#error "Platform not implemented."
 		#endif
@@ -113,8 +127,6 @@ struct User final {
 
 			return Resource::File(result->pw_dir);
 		#elif BOOST_OS_WINDOWS
-			#error "The Windows platform is not yet implemented."
-
 			// TODO verify
 			const char * up = std::getenv("USERPROFILE");
 
@@ -127,8 +139,10 @@ struct User final {
 
 			if (hd != nullptr && hp != nullptr && !Util::Strings::trim(hd).empty() && !std::string(hp).empty()) {
 				// TODO
-				return Resource::File(h);
+				return Resource::File(hp);
 			}
+
+			ThrowBalauException(Exception::NotFoundException, ::toString("Failed to locate the user home directory"));
 		#else
 			#error "Platform not implemented."
 		#endif

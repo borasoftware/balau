@@ -13,7 +13,7 @@
 
 #include <memory>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 class TestGroupBase;
 class TestMethodBase;
@@ -42,6 +42,6 @@ class TestCase {
 	}
 }; // class TestCase
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_CASE

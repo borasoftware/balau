@@ -16,7 +16,7 @@
 
 #include "../../Exception/ResourceExceptions.hpp"
 
-namespace Balau::Resource::Impl {
+namespace Balau::Impl {
 
 inline zip_file_t * cast(std::shared_ptr<void> & zipFileHandle) {
 	return (zip_file_t *) zipFileHandle.get();
@@ -81,4 +81,4 @@ std::shared_ptr<void> ZipEntrySource::createZipFilePointer(Util::Unzipper & arch
 //	// TODO
 //}
 
-} // namespace Balau::Resource::Impl
+} // namespace Balau::Impl

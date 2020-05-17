@@ -15,6 +15,10 @@
 #include "../../System/SystemClock.hpp"
 #include "../../Util/User.hpp"
 
+#ifdef WIN32
+	#undef ERROR
+#endif
+
 // Defines for logging system development logging.
 
 // Set to 1 to print out the loggers between each stage.

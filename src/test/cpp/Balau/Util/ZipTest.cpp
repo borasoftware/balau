@@ -50,9 +50,13 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	}
 
 	static std::chrono::system_clock::time_point tp(int64_t s) {
-		return std::chrono::system_clock::time_point(std::chrono::nanoseconds(s * 1000000000UL));
+		auto d = std::chrono::duration_cast<std::chrono::system_clock::time_point::duration>(
+			std::chrono::nanoseconds(s * 1000000000UL)
+		);
+
+		return std::chrono::system_clock::time_point(d);
 	}
-	
+
 	static std::pair<std::string, std::vector<char>> mpv(std::string s, std::vector<char> v) {
 		return std::make_pair<std::string, std::vector<char>>(std::move(s), std::move(v));
 	}
@@ -344,12 +348,12 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	}
 	
 	void libzipSoakTest() {
-		const size_t iterationCount = 1;
+		constexpr size_t iterationCount = 1;
 		std::vector<std::thread> threads;
 	
 		for (size_t m = 0; m < 2; m++) {
 			threads.emplace_back(
-				[this] () {
+				[this, iterationCount] () {
 					for (size_t m = 0; m < iterationCount; m++) {
 						unzipperTest();
 					}

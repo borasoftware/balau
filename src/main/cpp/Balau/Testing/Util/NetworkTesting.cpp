@@ -46,11 +46,11 @@ unsigned short NetworkTesting::initialiseWithFreeTcpPort(std::function<unsigned 
 unsigned short NetworkTesting::getFreeTcpPort(unsigned short start, unsigned short count) {
 	boost::system::error_code errorCode;
 	boost::asio::io_context context;
-	Network::TCP::acceptor acceptor(context);
+	Network::AsioTCP::acceptor acceptor(context);
 	unsigned short port = start;
 
 	while (port < USHRT_MAX && port < start + count) {
-		Network::TCP::endpoint endpoint { boost::asio::ip::tcp::v4(), port };
+		Network::AsioTCP::endpoint endpoint {boost::asio::ip::tcp::v4(), port };
 
 		acceptor.open(endpoint.protocol(), errorCode);
 

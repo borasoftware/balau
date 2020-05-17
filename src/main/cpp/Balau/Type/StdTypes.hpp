@@ -17,6 +17,11 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
 #define COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
 
+#ifdef WIN32
+	#pragma warning(disable : 26812)
+	#pragma warning(disable : 26495)
+#endif
+
 // Switches for optional features.
 #include <Balau/BalauConfig.hpp>
 
@@ -102,9 +107,6 @@
 /// @namespace Balau::Util Utility functions.
 
 ///////////////////////////////////////////////////////////////////////////////
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 
 #include <cassert>
 #include <climits>
@@ -240,7 +242,5 @@ template <typename T> struct equal_to<vector<T>> {
 };
 
 } // namespace std
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES

@@ -13,7 +13,7 @@
 
 #include <Balau/Testing/Impl/MultiProcessTestRunnerExecutor.hpp>
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 // Test runner executor which implements the WorkerProcesses execution model.
 class WorkerProcessesTestRunnerExecutor : public MultiProcessTestRunnerExecutor {
@@ -153,6 +153,6 @@ class WorkerProcessesTestRunnerExecutor : public MultiProcessTestRunnerExecutor 
 	}
 }; // class WorkerProcessesTestRunnerExecutor
 
-} // namespace Balau::Testing::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__WORKER_PROCESSES_TEST_RUNNER_EXECUTOR

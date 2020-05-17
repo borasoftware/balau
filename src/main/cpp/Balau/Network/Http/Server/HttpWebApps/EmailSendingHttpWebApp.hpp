@@ -20,10 +20,6 @@
 #include <Balau/Network/Http/Server/HttpWebApp.hpp>
 #include <Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.hpp>
 
-// Avoid false positive (due to make_shared).
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau{
 
 class BalauLogger;
@@ -151,7 +147,5 @@ class EmailSendingHttpWebApp : public HttpWebApp {
 } // namespace Network::Http::HttpWebApps
 
 } // namespace Balau
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__EMAIL_SENDING_HTTP_WEB_APP

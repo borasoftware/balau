@@ -20,19 +20,21 @@ namespace Balau::Resource {
 
 class Https;
 
-namespace Impl {
+} // namespace Balau::Resource
+
+namespace Balau::Impl {
 
 ///
 /// Boost IO streams HTTPS source, used in the HTTPS input stream.
 ///
 class HttpsSource : public boost::iostreams::source {
-	private: std::shared_ptr<Https> https;
-	private: UriComponents url;
+	private: std::shared_ptr<Resource::Https> https;
+	private: Resource::UriComponents url;
 	private: Network::Http::HttpsClient client;
 	private: std::vector<char> responseBody;
 	private: std::streamsize currentPosition;
 
-	public: HttpsSource(const Https & url_);
+	public: HttpsSource(const Resource::Https & url_);
 
 	public: HttpsSource(const HttpsSource &) = default;
 
@@ -40,7 +42,7 @@ class HttpsSource : public boost::iostreams::source {
 
 	public: std::streamsize read(char * s, std::streamsize n);
 
-	public: const Https & getUrl() const;
+	public: const Resource::Https & getUrl() const;
 
 	///////////////////////// Private implementation //////////////////////////
 
@@ -48,8 +50,6 @@ class HttpsSource : public boost::iostreams::source {
 	private: std::vector<char> getBody();
 };
 
-} // namespace Impl
-
-} // namespace Balau::Resource
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_RESOURCE_IMPL__HTTPS_SOURCE

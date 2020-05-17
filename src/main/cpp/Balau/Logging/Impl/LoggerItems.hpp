@@ -11,10 +11,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEMS
 #define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEMS
 
-// Avoid false positivies.
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 #include <Balau/Logging/Impl/LoggerItemParameters.hpp>
 #include <Balau/System/ThreadName.hpp>
 #include <Balau/Util/DateTime.hpp>
@@ -229,7 +225,5 @@ class DoubleQuotationLoggerItem : public LogItem {
 };
 
 } // namespace Balau::LoggingSystem
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEMS

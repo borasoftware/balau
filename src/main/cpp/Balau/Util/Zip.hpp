@@ -37,12 +37,12 @@
 
 namespace Balau {
 
-namespace Resource::Impl {
+namespace Impl {
 
 class ZipEntrySource;
 class ZipEntrySink;
 
-} // namespace Resource::Impl
+} // namespace Impl
 
 namespace Util {
 
@@ -359,8 +359,8 @@ class Unzipper {
 
 	///////////////////////// Private implementation //////////////////////////
 
-	friend class Resource::Impl::ZipEntrySource;
-	friend class Resource::Impl::ZipEntrySink;
+	friend class Impl::ZipEntrySource;
+	friend class Impl::ZipEntrySink;
 
 	private: std::vector<char> readEntryAsBytesImpl(const ZipEntryInfo & info, const std::string & name) const;
 	private: std::string readEntryAsStringImpl(const ZipEntryInfo & info, const std::string & name) const;

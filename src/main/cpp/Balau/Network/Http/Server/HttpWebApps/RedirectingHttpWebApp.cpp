@@ -100,7 +100,7 @@ RedirectingHttpWebApp::buildRedirections(const EnvironmentProperties & configura
 				const std::string codeStr = matchResult[3];
 				fromString(position, positionStr);
 				fromString(code, codeStr);
-				path = std::string(Util::Strings::trim(path.substr((unsigned long) matchResult[1].length())));
+				path = std::string(Util::Strings::trim(path.substr((unsigned long long) matchResult[1].length())));
 			} else if (std::regex_match(path, matchResult, codeOnly)) {
 				// The HTTP code has been provided but no position.
 				const std::string codeStr = matchResult[1];

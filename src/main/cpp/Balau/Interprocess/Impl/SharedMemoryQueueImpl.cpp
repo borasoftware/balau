@@ -10,8 +10,8 @@
 
 #include "SharedMemoryQueueImpl.hpp"
 
-namespace Balau::Interprocess::Impl {
+namespace Balau::Impl {
 
 thread_local SharedMemoryQueueTLS SharedMemoryQueueTLS::storage;
 
-} // namespace Balau::Interprocess::Impl
+} // namespace Balau::Impl

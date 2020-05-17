@@ -196,6 +196,34 @@ table p {
 	text-align: left;
 }
 
+.bdml-table402040 .bdml-col1 {
+	width: 40%;
+}
+
+.bdml-table402040 .bdml-col2 {
+	width: 20%;
+}
+
+.bdml-table402040 .bdml-col3 {
+	width: 40%;
+}
+
+.bdml-table4015L45 .bdml-col1 {
+	width: 40%;
+}
+
+.bdml-table4015L45 .bdml-col2 {
+	width: 15%;
+}
+
+.bdml-table4015L45 .bdml-col3 {
+	width: 45%;
+}
+
+.bdml-table4015L45 td:first-child + td + td {
+	text-align: left;
+}
+
 .bdml-table333333 .bdml-col1 {
 	width: 33%;
 }

@@ -251,7 +251,7 @@ UriComponents::UriComponents(std::string uri_)
 
 	// Pre-convert the port into an unsigned short if it is set.
 	if (portOffset != -1) {
-		const unsigned long p = std::stoul(uri.substr((size_t) portOffset));
+		const unsigned long long p = std::stoul(uri.substr((size_t) portOffset));
 
 		if (p > UINT16_MAX) {
 			ThrowBalauException(Exception::InvalidUriException, std::string("Invalid port number: ") + ::toString(p));

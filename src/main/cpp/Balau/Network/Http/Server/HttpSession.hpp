@@ -23,18 +23,14 @@
 #include <Balau/Network/Http/Server/ClientSession.hpp>
 #include <Balau/Util/DateTime.hpp>
 
-// Avoid false positive (due to std::make_shared).
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
-namespace Balau::Network::Http {
-
-namespace Impl {
+namespace Balau::Impl {
 
 class ClientSessions;
 class HttpSessions;
 
-} // namespace Impl
+} // namespace Balau::Impl
+
+namespace Balau::Network::Http {
 
 ///
 /// Manages the handling of HTTP messages and WebSocket upgrade requests in an HTTP connection.
@@ -55,7 +51,7 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	public: HttpSession(Impl::HttpSessions & httpSessions_,
 	                    Impl::ClientSessions & clientSessions_,
 	                    std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-	                    TCP::socket && socket_);
+	                    AsioTCP::socket && socket_);
 
 	///
 	/// Get the shared state of the http server.
@@ -132,7 +128,7 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	////////////////////////// Private implementation /////////////////////////
 
 	friend class Listener;
-	friend class ::Balau::Network::Http::Impl::HttpSessions;
+	friend class ::Balau::Impl::HttpSessions;
 
 	///
 	/// @throw NetworkException if there was an issue reading
@@ -205,7 +201,7 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	private: std::shared_ptr<ClientSession> clientSession;
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
 	private: boost::asio::strand<boost::asio::io_context::executor_type> strand;
-	private: TCP::socket socket;
+	private: AsioTCP::socket socket;
 	private: Buffer buffer;
 	private: StringRequest request;
 	private: std::string cookieString;
@@ -215,7 +211,5 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 };
 
 } // namespace Balau::Network::Http
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SESSION

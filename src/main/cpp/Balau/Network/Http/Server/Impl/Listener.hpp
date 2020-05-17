@@ -16,18 +16,14 @@
 #include <Balau/Network/Http/Server/Impl/HttpSessions.hpp>
 #include <Balau/Logging/Impl/BalauLogger.hpp>
 
-// Avoid false positive (due to std::make_shared).
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
-namespace Balau::Network::Http::Impl {
+namespace Balau::Impl {
 
 // Listener for HttpServer.
 class Listener final : public std::enable_shared_from_this<Listener> {
 	//
 	// @throw NetworkException if there was an issue constructing the listener
 	//
-	public: Listener(std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
+	public: Listener(std::shared_ptr<Network::Http::HttpServerConfiguration> serverConfiguration_,
 	                 boost::asio::io_context & context)
 		: serverConfiguration(std::move(serverConfiguration_))
 		, acceptor(context)
@@ -65,7 +61,7 @@ class Listener final : public std::enable_shared_from_this<Listener> {
 		if (!errorCode) {
 			// ASIO states that following the socket move, the moved-from socket is in the same
 			// state as if constructed using basic_stream_socket<tcp>(io_context &) constructor.
-			auto session = std::make_shared<HttpSession>(
+			auto session = std::make_shared<Network::Http::HttpSession>(
 				httpSessions, clientSessions, serverConfiguration, std::move(socket)
 			);
 
@@ -101,20 +97,18 @@ class Listener final : public std::enable_shared_from_this<Listener> {
 		}
 	}
 
-	private: std::shared_ptr<ClientSession> getClientSession() {
+	private: std::shared_ptr<Network::Http::ClientSession> getClientSession() {
 		// TODO
-		return std::shared_ptr<ClientSession>();
+		return std::shared_ptr<Network::Http::ClientSession>();
 	}
 
-	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
-	private: TCP::acceptor acceptor;
-	private: TCP::socket socket;
-	private: Impl::HttpSessions httpSessions;
-	private: Impl::ClientSessions clientSessions;
+	private: std::shared_ptr<Network::Http::HttpServerConfiguration> serverConfiguration;
+	private: Network::AsioTCP::acceptor acceptor;
+	private: Network::AsioTCP::socket socket;
+	private: HttpSessions httpSessions;
+	private: ClientSessions clientSessions;
 };
 
-} // namespace Balau::Network::Http::Impl
-
-#pragma clang diagnostic pop
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__LISTENER

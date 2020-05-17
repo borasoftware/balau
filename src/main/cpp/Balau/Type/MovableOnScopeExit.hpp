@@ -39,7 +39,7 @@ class MovableOnScopeExit final {
 	/// Run the function on scope exit.
 	///
 	public: template <typename FunctionT> explicit MovableOnScopeExit(FunctionT function)
-		: exiter(new ContainerImpl<FunctionT>(function)) {}
+		: exiter(new Impl<FunctionT>(function)) {}
 
 	///
 	/// Move the scope exit running to a different instance.
@@ -73,15 +73,15 @@ class MovableOnScopeExit final {
 		public: virtual void executeNow() = 0;
 	};
 
-	private: template <typename FunctionT> struct ContainerImpl : public ContainerBase {
-		explicit ContainerImpl(FunctionT function_) : function(function_) {}
+	private: template <typename FunctionT> struct Impl : public ContainerBase {
+		explicit Impl(FunctionT function_) : function(function_) {}
 
-		~ContainerImpl() override {
+		~Impl() override {
 			function();
 		}
 
-		ContainerImpl(const ContainerImpl &) = delete;
-		ContainerImpl & operator =(const ContainerImpl &) = delete;
+		Impl(const Impl &) = delete;
+		Impl & operator =(const Impl &) = delete;
 
 		public: void clear() override {
 			function = [] () {};

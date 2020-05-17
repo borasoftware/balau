@@ -23,6 +23,7 @@
 #include <Balau/Resource/FileUtf32To8WriteResource.hpp>
 #include <Balau/Resource/FileUtf8To32ReadResource.hpp>
 
+#include <Balau/Type/FromString.hpp>
 #include <Balau/Util/Strings.hpp>
 
 #include <chrono>
@@ -33,6 +34,36 @@ namespace Balau::Resource {
 /// A file on the local file system.
 ///
 class File : public Uri {
+	///
+	/// The character type for the platform.
+	///
+	public: using ValueType  = boost::filesystem::path::value_type;
+
+	///
+	/// The character type for the platform.
+	///
+	public: using CharType = ValueType;
+
+	///
+	/// The string type for for the platform.
+	///
+	public: using StringType = boost::filesystem::path::string_type;
+
+	///
+	/// The string view type for for the platform.
+	///
+	public: using StringViewType = std::basic_string_view<CharType>;
+
+	///
+	/// The path separator character for the platform.
+	///
+	public: static const ValueType separator = boost::filesystem::path::preferred_separator;
+
+	///
+	/// The dot character for the platform.
+	///
+	public: static constexpr ValueType dot = boost::filesystem::path::dot;
+
 	///
 	/// Recursive iteration into a directory structure.
 	///
@@ -150,11 +181,6 @@ class File : public Uri {
 	};
 
 	///
-	/// The path separator character for the platform.
-	///
-	public: static const boost::filesystem::path::value_type separator = boost::filesystem::path::preferred_separator;
-
-	///
 	/// Create an empty file URI.
 	///
 	public: File() = default;
@@ -174,35 +200,35 @@ class File : public Uri {
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(const std::string & path) : entry(boost::filesystem::directory_entry(path)) {}
+	public: explicit File(const StringType & path) : entry(boost::filesystem::directory_entry(path)) {}
 
 	///
 	/// Create a file path with the supplied path string.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(const char * path) : entry(boost::filesystem::directory_entry(path)) {}
+	public: explicit File(const CharType * path) : entry(boost::filesystem::directory_entry(path)) {}
 
 	///
 	/// Create a file path with the supplied path string.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(std::string_view path) : entry(boost::filesystem::directory_entry(std::string(path))) {}
+	public: explicit File(StringViewType path) : entry(boost::filesystem::directory_entry(StringType(path))) {}
 
 	///
 	/// Create a file path with the supplied path string and filename string.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: File(const std::string & path, const std::string & name) : entry(create(path, name)) {}
+	public: File(const StringType & path, const StringType & name) : entry(create(path, name)) {}
 
 	///
 	/// Create a file path with the supplied path and filename.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: File(const File & path, const std::string & name) : entry(append(path.entry, name)) {}
+	public: File(const File & path, const StringType & name) : entry(append(path.entry, name)) {}
 
 	///
 	/// Move an existing file URI into a new File URI.
@@ -219,7 +245,9 @@ class File : public Uri {
 	}
 
 	public: std::unique_ptr<Uri> append(const std::string & pathComponent) const override {
-		return std::unique_ptr<Uri>(new File(*this / pathComponent));
+		StringType p; // Convert from UTF-8 if necessary.
+		::fromString(p, pathComponent);
+		return std::unique_ptr<Uri>(new File(*this / p));
 	}
 
 	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
@@ -510,7 +538,7 @@ class File : public Uri {
 	///
 	/// @return a new file representing the specified sub-directory of the file URI
 	///
-	public: File getSubDirectory(std::string subDirectory) const {
+	public: File getSubDirectory(StringType subDirectory) const {
 		return File(
 			boost::filesystem::directory_entry(boost::filesystem::path(entry.path()) /= subDirectory)
 		);
@@ -519,7 +547,7 @@ class File : public Uri {
 	///
 	/// @todo document this
 	///
-	public: File getChildEntry(std::string child) const {
+	public: File getChildEntry(StringType child) const {
 		boost::filesystem::path p = entry.path();
 		p /= child;
 		return File(boost::filesystem::directory_entry(p));
@@ -566,14 +594,17 @@ class File : public Uri {
 	}
 
 	public: std::string toUriString() const override {
+		// Convert to UTF-8 if necessary.
 		return std::string("file://") + Util::Strings::replaceAll(entry.path().string(), "\\", "/");
 	}
 
 	public: std::string toRawString() const override {
+		// Convert to UTF-8 if necessary.
 		return entry.path().string();
 	}
 
 	public: template <typename AllocatorT> Balau::U8String<AllocatorT> toRawString() const {
+		// Convert to UTF-8 if necessary.
 		return ::toString<AllocatorT>(entry.path().string());
 	}
 
@@ -609,8 +640,8 @@ class File : public Uri {
 	///
 	/// @return a new file instance with the appended path component
 	///
-	public: File operator / (const char * component) const {
-		return File(append(entry, component));
+	public: File operator / (std::string_view component) const {
+		return File(append(entry, toStringType(component)));
 	}
 
 	///
@@ -618,35 +649,41 @@ class File : public Uri {
 	///
 	/// @return a new file instance with the appended path component
 	///
-	public: File operator / (const std::string & component) const {
-		return File(append(entry, component));
-	}
-
-	///
-	/// Append a path component to the path represented by the file.
-	///
-	/// @return a new file instance with the appended path component
-	///
-	public: File operator / (const std::string_view & component) const {
-		return File(append(entry, std::string(component)));
+	public: File operator / (std::wstring_view component) const {
+		return File(append(entry, toStringType(component)));
 	}
 
 	///
 	/// Append a sequence of path components to the path represented by the file.
 	///
-	/// @tparam T the string type in the container
 	/// @tparam Container the container type
 	/// @param container the container containing the components to append
 	/// @return a new file instance with the appended path components
 	///
 	public: template <typename ... T, template <typename ...> class Container>
-	File operator / (const Container<T ...> & container) const {
-		using ::toString;
-
+	File operator / (const Container<std::string, T ...> & container) const {
 		boost::filesystem::path p = entry.path();
 
 		for (const auto & component : container) {
-			p /= toString(component);
+			p /= toStringType(component);
+		}
+
+		return File(boost::filesystem::directory_entry(p));
+	}
+
+	///
+	/// Append a sequence of path components to the path represented by the file.
+	///
+	/// @tparam Container the container type
+	/// @param container the container containing the components to append
+	/// @return a new file instance with the appended path components
+	///
+	public: template <typename ... T, template <typename ...> class Container>
+	File operator / (const Container<std::wstring, T ...> & container) const {
+		boost::filesystem::path p = entry.path();
+
+		for (const auto & component : container) {
+			p /= toStringType(component);
 		}
 
 		return File(boost::filesystem::directory_entry(p));
@@ -657,18 +694,8 @@ class File : public Uri {
 	///
 	/// @return the current object
 	///
-	public: File & operator /= (const char * component) {
-		entry = append(entry, component);
-		return *this;
-	}
-
-	///
-	/// Append a path component to the path represented by the file in place.
-	///
-	/// @return the current object
-	///
-	public: File & operator /= (const std::string & component) {
-		entry = append(entry, component);
+	public: File & operator /= (const std::wstring_view & component) {
+		entry = append(entry, toStringType(component));
 		return *this;
 	}
 
@@ -678,7 +705,7 @@ class File : public Uri {
 	/// @return the current object
 	///
 	public: File & operator /= (const std::string_view & component) {
-		entry = append(entry, std::string(component));
+		entry = append(entry, toStringType(component));
 		return *this;
 	}
 
@@ -687,9 +714,20 @@ class File : public Uri {
 	///
 	/// @return a new file instance with the concatenated fragment
 	///
-	public: File operator + (const std::string & fragment) const {
+	public: File operator + (std::wstring_view fragment) const {
 		boost::filesystem::path p = entry.path();
-		p += fragment;
+		p += toStringType(fragment);
+		return File(boost::filesystem::directory_entry(p));
+	}
+
+	///
+	/// Concatenate the supplied path fragment to the end of the path represented by the file.
+	///
+	/// @return a new file instance with the concatenated fragment
+	///
+	public: File operator + (std::string_view fragment) const {
+		boost::filesystem::path p = entry.path();
+		p += toStringType(fragment);
 		return File(boost::filesystem::directory_entry(p));
 	}
 
@@ -701,17 +739,32 @@ class File : public Uri {
 
 	protected: boost::filesystem::directory_entry entry;
 
-	private: static boost::filesystem::directory_entry create(const std::string & path,
-	                                                          const std::string & name) {
+	private: static boost::filesystem::directory_entry create(const StringType & path,
+	                                                          const StringType & name) {
 		boost::filesystem::directory_entry ret(path);
 		return append(ret, name);
 	}
 
 	private: static boost::filesystem::directory_entry append(const boost::filesystem::directory_entry & de,
-	                                                          const std::string & name) {
+	                                                          const StringType& name) {
 		boost::filesystem::path p = de.path();
 		p /= name;
 		return boost::filesystem::directory_entry(p);
+	}
+
+	//
+	// Support for narrow literals.
+	//
+	private: static StringType toStringType(std::string_view value) {
+			return boost::locale::conv::utf_to_utf<CharType, char>(std::string(value));
+
+	}
+
+	//
+	// Support for wide literals.
+	//
+	private: static StringType toStringType(std::wstring_view value) {
+		return boost::locale::conv::utf_to_utf<CharType, wchar_t>(std::wstring(value));
 	}
 };
 
@@ -722,6 +775,7 @@ class File : public Uri {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const File & file) {
+	// Convert to UTF-8 if necessary.
 	return file.toRawString<AllocatorT>();
 }
 
@@ -731,7 +785,9 @@ inline Balau::U8String<AllocatorT> toString(const File & file) {
 /// @return a file URI
 ///
 inline void fromString(File & destination, std::string_view value) {
-	destination = File(value);
+	File::StringType v; // Convert from UTF-8 if necessary.
+	::fromString(v, value);
+	destination = File(v);
 }
 
 } // namespace Balau::Resource

@@ -31,7 +31,9 @@ namespace Balau::Testing {
 class TestRunner;
 template <typename T> class TestGroup;
 
-namespace Impl {
+} // namespace Balau::Testing
+
+namespace Balau::Impl {
 
 // Common functionality for test runner executors.
 class TestRunnerExecutor {
@@ -42,7 +44,7 @@ class TestRunnerExecutor {
 
 	protected: std::unique_ptr<TestResultQueue> resultQueue;
 	protected: CompositeWriter & writer;
-	private: std::shared_ptr<Impl::TestReportGenerator> & reportGenerator;
+	private: std::shared_ptr<TestReportGenerator> & reportGenerator;
 	protected: const size_t maxLineLength;
 	protected: std::vector<FlattenedTestCase> tests;
 
@@ -56,7 +58,7 @@ class TestRunnerExecutor {
 	// Runs the executor.
 	public: virtual void run() = 0;
 
-	public: virtual ExecutionModel getExecutionModel() const = 0;
+	public: virtual Testing::ExecutionModel getExecutionModel() const = 0;
 
 	// For final reporting.
 	public: const std::vector<FlattenedTestCase> & getTests() const {
@@ -75,7 +77,7 @@ class TestRunnerExecutor {
 
 	protected: TestRunnerExecutor(std::unique_ptr<TestResultQueue> resultQueue_,
 	                              CompositeWriter & writer_,
-	                              std::shared_ptr<Impl::TestReportGenerator> & reportGenerator_,
+	                              std::shared_ptr<TestReportGenerator> & reportGenerator_,
 	                              bool useNamespaces_,
 	                              GroupedTestCaseMap & testCasesByGroup,
 	                              const std::string & testList,
@@ -180,9 +182,9 @@ class TestRunnerExecutor {
 		TestResult::Result result;
 
 		try {
-			Balau::Testing::Impl::TestGroupBase::resetIgnoreCurrent();
+			TestGroupBase::resetIgnoreCurrent();
 			testToRun.method->run();
-			return Balau::Testing::Impl::TestGroupBase::currentIsIgnored() ? TestResult::Result::Ignored : TestResult::Result::Success;
+			return TestGroupBase::currentIsIgnored() ? TestResult::Result::Ignored : TestResult::Result::Success;
 		} catch (const Exception::AssertionException & e) {
 			output << " - FAILED!\n\n"
 			       << "Assertion failed: " << e.message << "\n\n";
@@ -463,8 +465,6 @@ class TestRunnerExecutor {
 	}
 };
 
-} // namespace Impl
-
-} // namespace Balau::Testing
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RUNNER_EXECUTOR

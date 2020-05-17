@@ -11,7 +11,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_BASE
 #define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_BASE
 
-namespace Balau::Testing::Impl {
+namespace Balau::Impl {
 
 class TestGroupBase;
 
@@ -21,6 +21,6 @@ class TestRunnerBase {
 	private: virtual unsigned int getGroupIndex() = 0;
 };
 
-} // namespace Balau::Testing:::Impl
+} // namespace Balau::Impl
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER

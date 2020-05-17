@@ -21,10 +21,6 @@
 #include <Balau/Network/Http/Server/HttpServerConfiguration.hpp>
 #include <Balau/Util/DateTime.hpp>
 
-// Avoid false positive (due to std::make_shared).
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
 namespace Balau::Network::Http {
 
 ///
@@ -44,7 +40,7 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 	/// TODO This can be selected from the routing trie in advance.
 	///
 	public: WsSession(std::shared_ptr<HttpServerConfiguration> serverConfiguration_,
-	                  TCP::socket && socket_,
+	                  AsioTCP::socket && socket_,
 	                  std::string path_)
 		: serverConfiguration(std::move(serverConfiguration_))
 		, strand(socket_.get_executor())
@@ -177,13 +173,11 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 
 	private: std::shared_ptr<HttpServerConfiguration> serverConfiguration;
 	private: boost::asio::strand<boost::asio::io_context::executor_type> strand;
-	private: WS::stream<TCP::socket> socket;
+	private: WS::stream<AsioTCP::socket> socket;
 	private: const std::string path;
 	private: boost::beast::multi_buffer buffer;
 };
 
 } // namespace Balau::Network::Http
-
-#pragma clang diagnostic pop
 
 #endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__WS_SESSION
