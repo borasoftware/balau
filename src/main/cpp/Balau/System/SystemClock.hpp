@@ -46,6 +46,12 @@ class SystemClock : public Clock {
 		);
 	}
 
+	public: std::chrono::microseconds microtime() const override {
+		return std::chrono::duration_cast<std::chrono::microseconds>(
+			std::chrono::system_clock::now().time_since_epoch()
+		);
+	}
+
 	public: std::chrono::milliseconds millitime() const override {
 		return std::chrono::duration_cast<std::chrono::milliseconds>(
 			std::chrono::system_clock::now().time_since_epoch()

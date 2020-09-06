@@ -63,6 +63,11 @@ class Clock {
 	public: virtual std::chrono::nanoseconds nanotime() const = 0;
 
 	///
+	/// Get the current time in microseconds since the unix epoch.
+	///
+	public: virtual std::chrono::microseconds microtime() const = 0;
+
+	///
 	/// Get the current time in milliseconds since the unix epoch.
 	///
 	public: virtual std::chrono::milliseconds millitime() const = 0;

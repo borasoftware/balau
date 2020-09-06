@@ -42,6 +42,11 @@ struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
 			return std::chrono::nanoseconds(0); // avoid compiler complaint
 		}
 
+		public: std::chrono::microseconds microtime() const override {
+			AssertFail("now() called");
+			return std::chrono::microseconds(0); // avoid compiler complaint
+		}
+
 		public: std::chrono::milliseconds millitime() const override {
 			AssertFail("now() called");
 			return std::chrono::milliseconds(0); // avoid compiler complaint
