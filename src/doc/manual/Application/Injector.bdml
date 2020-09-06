@@ -1179,7 +1179,7 @@
 
 		<para>Registering callbacks provides a convenient way to execute program logic immediate after injector creation and/or immediately before injector destruction. Post-construction and pre-destruction callbacks are also useful for the explicit management of cyclic dependencies between singletons (discussed in the next section).</para>
 
-		<para>The only restriction to the program logic that may be run within a callback is that pre-destruction callbacks must be <emph>noexcept(true)</emph>. This is because the pre-destruction callbacks are run from within the injector desctructor.</para>
+		<para>The only restriction to the program logic that may be run within a callback is that pre-destruction callbacks must be <emph>noexcept(true)</emph>. This is because the pre-destruction callbacks are run from within the injector destructor.</para>
 
 		<para>The signatures of the callback registration methods are as follows.</para>
 
@@ -1207,7 +1207,7 @@
 
 		<graphic position="right" url="../resources/images/StaticSingletons.png" width="70mm" />
 
-		<para>The static singleton call convenience method provides registration of shared pointer containers that will be managed by the injector post-construction and pre-destruction. This method allows a singleton to be statically available in the application, between the post-construction and pre-destruction exeuction points.</para>
+		<para>The static singleton call convenience method provides registration of shared pointer containers that will be managed by the injector post-construction and pre-destruction. This method allows a singleton to be statically available in the application, between the post-construction and pre-destruction execution points.</para>
 
 		<para>The signature of the static singleton registration method is as follows.</para>
 
@@ -1231,7 +1231,7 @@
 
 		<h2>Configuration cycles</h2>
 
-		<para>The Balau injector provides a constructor injection paradigm. One consequence of this is that if a cyclic dependency is created between instances obtained from the injector, the application will crash due to a call stack overflow for stack based types or a segmentation fault for hreap based types.</para>
+		<para>The Balau injector provides a constructor injection paradigm. One consequence of this is that if a cyclic dependency is created between instances obtained from the injector, the application will crash due to a call stack overflow for stack based types or a segmentation fault for heap based types.</para>
 
 		<para>Due to this, the injector runs cyclic dependency analysis in the validation phase run during injector instantiation. If a cycle is found in the binding dependency tree constructed from the supplied configuration, a <emph>CyclicDependencyException</emph> is thrown.</para>
 
@@ -1239,9 +1239,9 @@
 
 		<para>If a cyclic relationship between two instances is required, this must be managed explicitly by the application. If an explicitly constructed cyclic relationship approach is used using shared pointer containers, the normal rules in C++ regarding <emph>std::shared_ptr</emph> cycles apply and must be managed accordingly.</para>
 
-		<para>The best way to achieve an explicitly managed cyclic dependency is by creating a weak or shared pointer in one of the cyclically depedendent classes, then registering a post-construction callback with the injector from within the constructor of the class. This callback can then set the pointer container to point to the other instance, by obtaining the instance from the injector supplied in the callback.</para>
+		<para>The best way to achieve an explicitly managed cyclic dependency is by creating a weak or shared pointer in one of the cyclically dependent classes, then registering a post-construction callback with the injector from within the constructor of the class. This callback can then set the pointer container to point to the other instance, by obtaining the instance from the injector supplied in the callback.</para>
 
-		<para>The choice of weak or shared pointer will depend on the chosen destruction strategy. If no action is taken to explicitly remove the cyclic relationship, then a weak pointer should be used. This ensures that there is no permanent cyclic dependency in place. The inconvenince with using a weak pointer is that the pointer must be obtained via the <emph>lock</emph> call each time the pointer is required.</para>
+		<para>The choice of weak or shared pointer will depend on the chosen destruction strategy. If no action is taken to explicitly remove the cyclic relationship, then a weak pointer should be used. This ensures that there is no permanent cyclic dependency in place. The inconvenience with using a weak pointer is that the pointer must be obtained via the <emph>lock</emph> call each time the pointer is required.</para>
 
 		<para>If a shared pointer is used, then a pre-destruction callback should be registered with the injector from within the constructor of one of the instances that form the cyclic dependency (typically the same class that contains the post-construction callback registration call). This pre-destruction callback should reset the shared pointer, breaking the cyclic dependency before the injector destructor destroys the binding map.</para>
 
@@ -1253,7 +1253,7 @@
 
 		<para>As singleton instances may be created during the creation of the injector, it is important to note that such singletons must not use the injector from within their constructor. Instead, a pointer to the injector should be maintained within a field of the class and set in the constructor initialisation list. The injector can then be used in non-constructor methods in the class.</para>
 
-		<para>If the injector is nevertheless required during construction, a post construct callback may be registered with the injected injector. This callback will be executed by the injector immmediate after construction is complete.</para>
+		<para>If the injector is nevertheless required during construction, a post construct callback may be registered with the injected injector. This callback will be executed by the injector immediate after construction is complete.</para>
 
 		<para>Injection of the injector can only be achieved via a <emph>std::weak_ptr&lt;Injector></emph>, either specified as a field of the injectable class, or explicitly via the injector macros that specify the exact types of the dependencies. This ensures that the writer of the injectable class be aware that maintaining a shared pointer to the injector in the instance will result in a cyclic dependency if the instance is a singleton (i.e. owned by the injector). If a shared pointer is used to reference the injected injector, the injector will become a node within an implicitly created dependency cycle.</para>
 
@@ -1263,7 +1263,7 @@
 
 		<graphic position="center" url="../resources/images/NoCyclicShared.png" width="160mm" />
 
-		<para>In this example, singleton instance <emph>B</emph> has a shared pointer field to singleton instance <emph>A</emph>. It can be verified that there are no cycles by following sequences of agregation/composition paths and nodes. All paths lead to the terminal node <emph>A</emph>.</para>
+		<para>In this example, singleton instance <emph>B</emph> has a shared pointer field to singleton instance <emph>A</emph>. It can be verified that there are no cycles by following sequences of aggregation/composition paths and nodes. All paths lead to the terminal node <emph>A</emph>.</para>
 
 		<para>If a <emph>std::shared_ptr&lt;Injector></emph> member variable is added to <emph>A</emph>, then the relationships change to those in the diagram below. Two cycles have been formed within the pathways. The new <emph>std::shared_ptr&lt;Injector></emph> member variable of <emph>A</emph> is shown in red. Also shown in red are the path segments that form the cycles.</para>
 
@@ -1287,7 +1287,7 @@
 
 		<h2>Root injectors</h2>
 
-		<para>Unit testing an injector configuration that does not contain any eager singletons could be achived by simply instantiating the injector. However, if the configuration has any eager singletons, they would be instantiated in the constructor. The <emph>validate</emph> method thus performs injector instantiation without eager singleton instantiation.</para>
+		<para>Unit testing an injector configuration that does not contain any eager singletons could be achieved by simply instantiating the injector. However, if the configuration has any eager singletons, they would be instantiated in the constructor. The <emph>validate</emph> method thus performs injector instantiation without eager singleton instantiation.</para>
 
 		<para>The unit test can consist of a single statement. The test passes if no exception is thrown.</para>
 

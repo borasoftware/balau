@@ -35,7 +35,7 @@
 
 		<para>A simple non-blocking queue that uses a std::list and a mutex to provide a thread safe queue.</para>
 
-		<para><emph>SynchronizedQueue</emph> implements the <emph>Queue</emph> API and provides a simple (and ineffIcient) thread safe queue.</para>
+		<para><emph>SynchronizedQueue</emph> implements the <emph>Queue</emph> API and provides a simple (and inefficient) thread safe queue.</para>
 
 		<h1>Quick start</h1>
 

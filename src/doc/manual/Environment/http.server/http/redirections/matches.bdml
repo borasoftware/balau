@@ -43,7 +43,7 @@
 
 		<para>The <emph>matches</emph> composite property can contain any conforming simple property.</para>
 
-		<para>A conforming simple property represents a redirection specification. The key of such a property is a regular expression defining the set of possible paths that will be redirected. The value of such a propery is the redirection path.</para>
+		<para>A conforming simple property represents a redirection specification. The key of such a property is a regular expression defining the set of possible paths that will be redirected. The value of such a property is the redirection path.</para>
 
 		<para>The regular expression may contain capture groups. The text of these capture groups are added to the request variables, with names $1, $2, $3, etc.</para>
 

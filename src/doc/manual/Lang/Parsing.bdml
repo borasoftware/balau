@@ -44,7 +44,7 @@
 	<para>So removing performance from the argument, some benefits are proposed below.</para>
 
 	<bullets>
-		<entry><strong>Fine tuning of semantics</strong> - Language definitions of any complexity will often require additional semantic rules that are expressed separately from the language's grammar specfication. These additional semantic rules may not fit naturally into the language definition processed by a parser generator tool.</entry>
+		<entry><strong>Fine tuning of semantics</strong> - Language definitions of any complexity will often require additional semantic rules that are expressed separately from the language's grammar specification. These additional semantic rules may not fit naturally into the language definition processed by a parser generator tool.</entry>
 
 		<entry><strong>Debuggability</strong> - The code is hand written pure C++ and thus can be structured for readability and easy debugging.</entry>
 
@@ -59,7 +59,7 @@
 
 	<h1>Approach</h1>
 
-	<para>Having read the introductory words in the overview section of this page, it could be natural to imagine that the parsing utilties in the Balau library are large and complex. This is actually not the case. The parsing utilities total less than 1000 lines of code and a handful of classes.</para>
+	<para>Having read the introductory words in the overview section of this page, it could be natural to imagine that the parsing utilities in the Balau library are large and complex. This is actually not the case. The parsing utilities total less than 1000 lines of code and a handful of classes.</para>
 
 	<para>As the aim is to hand write a scanner and parser implementation pair, the value of the utilities lies in the approach rather than the amount of code provided. The parser tools do not actually provide any classes for parsing at all. The code only provides an abstract scanner base class and a common contract between the scanner and the to be written parser.</para>
 
@@ -247,7 +247,7 @@
 
 	<h1>Classes</h1>
 
-	<para>The following classes are defined in the parsing utilties.</para>
+	<para>The following classes are defined in the parsing utilities.</para>
 
 	<table class="bdml-table40L60">
 		<head>

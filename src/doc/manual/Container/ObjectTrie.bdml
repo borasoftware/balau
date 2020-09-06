@@ -121,7 +121,7 @@
 
 		<h3>Find</h3>
 
-		<para>To use the <emph>find</emph> methods, call one of the methods with a vector of values to compare. The find method will descend into the trie, comparing each supplied value in turn with the current set of childen. If a match is not found in one of levels, <emph>nullptr</emph> is returned.</para>
+		<para>To use the <emph>find</emph> methods, call one of the methods with a vector of values to compare. The find method will descend into the trie, comparing each supplied value in turn with the current set of children. If a match is not found in one of levels, <emph>nullptr</emph> is returned.</para>
 
 		<para>There are two <emph>find</emph> method overloads. The first overload uses the default <emph>operator ==</emph> function/method for the type <emph>T</emph> and the second overload allows a custom comparator to be specified.</para>
 

@@ -56,7 +56,7 @@
 
 		<bullets>
 			<entry>cleaning of CMake produced build files;</entry>
-			<entry>configuing the project's build system by running CMake;</entry>
+			<entry>configuring the project's build system by running CMake;</entry>
 			<entry>compiling production code targets via CMake's <emph>--build</emph> option;</entry>
 			<entry>compiling test code targets via CMake's <emph>--build</emph> option;</entry>
 			<entry>running unit tests via the Balau test framework;</entry>
@@ -257,7 +257,7 @@
 
 		<h3>environmentVariables</h3>
 
-		<para>Extra evironment variables to be defined for the CMake process. Note that this does not set the environment variables prior to calling the CMake executable.</para>
+		<para>Extra environment variables to be defined for the CMake process. Note that this does not set the environment variables prior to calling the CMake executable.</para>
 
 		<para>Use of existing environment variables within new environment variables can be achieved via the <emph>%ENV_VAR_NAME%</emph> syntax. This syntax avoids clashes with the Maven <emph>${ENV_VAR_NAME}</emph> syntax.</para>
 

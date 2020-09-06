@@ -444,7 +444,7 @@
 			}
 		</code>
 
-		<para>In the above example, the <emph>:</emph> separator has been used in order to accentuate that the property values are type annotations. Alternative <emph>=</emph> or whitespace separators can also be used if preferred, athough the visual representation of default values will look less attractive if an <emph>=</emph> token is used for both the property delimiter and the devault value.</para>
+		<para>In the above example, the <emph>:</emph> separator has been used in order to accentuate that the property values are type annotations. Alternative <emph>=</emph> or whitespace separators can also be used if preferred, although the visual representation of default values will look less attractive if an <emph>=</emph> token is used for both the property delimiter and the devault value.</para>
 
 		<para>Property type specification files look very similar to property files, as they have a similar hierarchical structure.</para>
 

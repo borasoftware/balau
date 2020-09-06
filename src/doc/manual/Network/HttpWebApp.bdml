@@ -33,7 +33,7 @@
 	<chapter title="HTTP web applications">
 		<h1>Overview</h1>
 
-		<para>This documentation chapter contains information on the HTTP web application framework and the predefiend HTTP web applications currently available in the Balau library. Developers may also define their own HTTP web applications.</para>
+		<para>This documentation chapter contains information on the HTTP web application framework and the predefined HTTP web applications currently available in the Balau library. Developers may also define their own HTTP web applications.</para>
 
 		<h1>Framework</h1>
 

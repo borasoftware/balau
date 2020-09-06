@@ -201,7 +201,7 @@
 		<para>To configure the Boost sources on Linux, unzip the sources and run the following commands in the unzipped Boost source directory. If you intend to use different install prefixes than the Balau default, the <emph>--prefix</emph> and <emph>--with-icu</emph> options should be set to the required path.</para>
 
 		<code>
-			# Replace ${HOME}/usr ocurrances to alternative paths if required.
+			# Replace ${HOME}/usr occurrences to alternative paths if required.
 			./bootstrap.sh --with-icu=${HOME}/usr --prefix=${HOME}/usr
 		</code>
 

@@ -102,7 +102,7 @@
 
 			<entry>Beware of the <emph>std::string_view::data()</emph> method. Do not use this method unless you are 100% sure null pointer character array termination is not required in the program logic that uses the data.</entry>
 
-			<entry>Beware of returning <emph>std::string_view</emph> from methods. Returning <emph>std::string_view</emph> from a method should only be done when the lifetime of the referenced string data is guaranteed to outlive the string view being returnd.</entry>
+			<entry>Beware of returning <emph>std::string_view</emph> from methods. Returning <emph>std::string_view</emph> from a method should only be done when the lifetime of the referenced string data is guaranteed to outlive the string view being returned.</entry>
 		</bullets>
 
 		<h2>Const correctness</h2>
@@ -348,6 +348,6 @@
 
 		<para>The visibility prefixes are the <emph>public</emph>, <emph>protected</emph>, and <emph>private</emph> tokens used in class declarations.</para>
 
-		<para>In Balau sources, class declarations use explicit visibility prefixes on all declaration items (fields, methods, inner class/enum declarations). This provides physically colocated visibility information for all items, avoiding the need to search upwards in the source code for the visibility of a class item and declaring that the item is part of a class declaration.</para>
+		<para>In Balau sources, class declarations use explicit visibility prefixes on all declaration items (fields, methods, inner class/enum declarations). This provides physically collocated visibility information for all items, avoiding the need to search upwards in the source code for the visibility of a class item and declaring that the item is part of a class declaration.</para>
 	</chapter>
 </document>

@@ -71,7 +71,7 @@
 			<body>
 				<row>
 					<cell>charsToString</cell>
-					<cell>Convert the characters in the supplied char/char16_t/chare32_t vector to a UTF-8/UTF-16/UTF-32 string.</cell>
+					<cell>Convert the characters in the supplied char/char16_t/char32_t vector to a UTF-8/UTF-16/UTF-32 string.</cell>
 				</row>
 
 				<row>

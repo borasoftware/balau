@@ -105,7 +105,7 @@
 
 		<h2>Logger references</h2>
 
-		<para>Loggers are identified via logging namespaces. A logging namespace is a string of dot delimited idenfiers. Typically, the application name or the reverse domain name of the company is used as the logging namespace prefix, i.e. <emph>"balau"</emph> or <emph>"com.borasoftware"</emph>. Namespaces are case sensitive.</para>
+		<para>Loggers are identified via logging namespaces. A logging namespace is a string of dot delimited identifiers. Typically, the application name or the reverse domain name of the company is used as the logging namespace prefix, i.e. <emph>"balau"</emph> or <emph>"com.borasoftware"</emph>. Namespaces are case sensitive.</para>
 
 		<para>Loggers are owned by the logging system and can be obtained by reference, by calling the <emph>Logger::getLogger</emph> function.</para>
 

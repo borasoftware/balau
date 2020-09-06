@@ -100,7 +100,7 @@
 		@sites-enabled/*.site
 	</code>
 
-	<para>Glob patterns are only supported by certain URI types (e.g. files and zip archives). It is the reponsibility of the property file writer/consumer to ensure that globbed includes are only used for URI types that support them.</para>
+	<para>Glob patterns are only supported by certain URI types (e.g. files and zip archives). It is the responsibility of the property file writer/consumer to ensure that globbed includes are only used for URI types that support them.</para>
 
 	<h2>Parsing</h2>
 
@@ -172,7 +172,7 @@
 
 	<h1>Hierarchical format</h1>
 
-	<para>The basic format of the hierarchical propery format is the same as that of Java <emph>.properties</emph> files.</para>
+	<para>The basic format of the hierarchical property format is the same as that of Java <emph>.properties</emph> files.</para>
 
 	<bullets>
 		<entry>Leading blanks of each line are stripped.</entry>

@@ -224,7 +224,7 @@
 
 		<para>Iteration functions are defined for UTF-8 string views. These functions advance or retreat an integer offset to the next or previous UTF-8 character. Two of the functions also return the resulting character.</para>
 
-		<para>The following iteration functions are currrently available.</para>
+		<para>The following iteration functions are currently available.</para>
 
 		<table class="bdml-table30L70">
 			<head> <cell>Function name</cell> <cell>Description</cell> </head>
@@ -256,7 +256,7 @@
 
 		<para>Mutation functions are available for <emph>char32_t</emph> characters and for UTF-8 <emph>char</emph> characters at offsets inside <emph>std::string</emph> strings.</para>
 
-		<para>The following mutating functions are currrently available.</para>
+		<para>The following mutating functions are currently available.</para>
 
 		<table class="bdml-table30L70">
 			<head> <cell>Function name</cell> <cell>Description</cell> </head>
