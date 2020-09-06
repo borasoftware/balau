@@ -60,12 +60,12 @@ const std::vector<std::pair<double, std::string>> fixedTestData = {
 
 struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 	PrettyPrintTest() {
-		registerTest(&PrettyPrintTest::fixed,        "fixed");
-		registerTest(&PrettyPrintTest::scientific,   "scientific");
-		registerTest(&PrettyPrintTest::metricPrefix, "metricPrefix");
-		registerTest(&PrettyPrintTest::binaryPrefix, "binaryPrefix");
-		registerTest(&PrettyPrintTest::byteValue,    "byteValue");
-		registerTest(&PrettyPrintTest::duration,     "duration");
+		RegisterTestCase(fixed);
+		RegisterTestCase(scientific);
+		RegisterTestCase(metricPrefix);
+		RegisterTestCase(binaryPrefix);
+		RegisterTestCase(byteValue);
+		RegisterTestCase(duration);
 	}
 
 	void fixed() {
@@ -73,7 +73,7 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 			AssertThat(PrettyPrint::fixed(element.first, 3), is(element.second));
 		}
 	}
-	
+
 	const std::vector<std::pair<double, std::string>> scientificTestData = {
 		  std::make_pair(0.000000000000000001234,  "1.234e-18")
 		, std::make_pair(0.00000000000000001234,   "1.234e-17")
@@ -116,13 +116,13 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 		, std::make_pair(123400000000000000000.0,  "1.234e+20")
 		, std::make_pair(1234000000000000000000.0, "1.234e+21")
 	};
-	
+
 	void scientific() {
 		for (const auto & element : scientificTestData) {
 			AssertThat(PrettyPrint::scientific(element.first, 3), is(element.second));
 		}
 	}
-	
+
 	const std::vector<std::pair<double, std::string>> metricPrefixTestData = {
 		  std::make_pair(0.000000000000000001234,  "1.234a")
 		, std::make_pair(0.000000000000000012345,  "12.345a")
@@ -165,13 +165,13 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 		, std::make_pair(123456789012345678901.0,  "123.457E")
 		, std::make_pair(1234567890123456789012.0, "1234.568E")
 	};
-	
+
 	void metricPrefix() {
 		for (const auto & element : metricPrefixTestData) {
 			AssertThat(PrettyPrint::metricPrefix(element.first, 3), is(element.second));
 		}
 	}
-	
+
 	const std::vector<std::pair<double, std::string>> binaryPrefixTestData = {
 		  std::make_pair(pow(1024.0, -6), "1a")
 		, std::make_pair(pow(1024.0, -5), "1f")
@@ -187,13 +187,13 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 		, std::make_pair(pow(1024.0,  5), "1P")
 		, std::make_pair(pow(1024.0,  6), "1E")
 	};
-	
+
 	void binaryPrefix() {
 		for (const auto & element : binaryPrefixTestData) {
 			AssertThat(PrettyPrint::binaryPrefix(element.first, 0), is(element.second));
 		}
 	}
-	
+
 	const std::vector<std::pair<double, std::string>> byteValueTestData = {
 		  std::make_pair(pow(1024.0,  0), "1B")
 		, std::make_pair(pow(1024.0,  1), "1kB")
@@ -203,13 +203,13 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 		, std::make_pair(pow(1024.0,  5), "1PB")
 		, std::make_pair(pow(1024.0,  6), "1EB")
 	};
-	
+
 	void byteValue() {
 		for (const auto & element : byteValueTestData) {
 			AssertThat(PrettyPrint::byteValue((size_t) element.first), is(std::string(element.second)));
 		}
 	}
-	
+
 	const std::vector<std::pair<std::chrono::milliseconds, std::string>> durationTestData = {
 		  std::make_pair(std::chrono::milliseconds(-42),       "-42.0ms")
 		, std::make_pair(std::chrono::milliseconds(42),        "42.0ms")
@@ -217,7 +217,7 @@ struct PrettyPrintTest : public Testing::TestGroup<PrettyPrintTest> {
 		, std::make_pair(std::chrono::milliseconds(43143123),  "11h59m03.1s")
 		, std::make_pair(std::chrono::milliseconds(215943123), "02d11h59m03.1s")
 	};
-	
+
 	void duration() {
 		for (const auto & element : durationTestData) {
 			AssertThat(PrettyPrint::duration(element.first, 1), is(std::string(element.second)));

@@ -24,11 +24,11 @@ namespace Resource {
 
 struct FileTest : public Testing::TestGroup<FileTest> {
 	FileTest() {
-		registerTest(&FileTest::recursiveIteration, "recursiveIteration");
-		registerTest(&FileTest::nonRecursiveIteration, "nonRecursiveIteration");
-		registerTest(&FileTest::resolve, "resolve");
-		registerTest(&FileTest::fileAppend, "fileAppend");
-		registerTest(&FileTest::uriAppend, "uriAppend");
+		RegisterTestCase(recursiveIteration);
+		RegisterTestCase(nonRecursiveIteration);
+		RegisterTestCase(resolve);
+		RegisterTestCase(fileAppend);
+		RegisterTestCase(uriAppend);
 	}
 
 	void recursiveIteration() {

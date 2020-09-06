@@ -22,8 +22,8 @@ namespace Resource {
 
 struct HttpsUtf8To32ReadResourceTest : public Testing::TestGroup<HttpsUtf8To32ReadResourceTest> {
 	explicit HttpsUtf8To32ReadResourceTest() {
-		registerTest(&HttpsUtf8To32ReadResourceTest::nonEmptyPath, "nonEmptyPath");
-		registerTest(&HttpsUtf8To32ReadResourceTest::emptyPath, "emptyPath");
+		RegisterTestCase(nonEmptyPath);
+		RegisterTestCase(emptyPath);
 	}
 
 	void performTest(const std::string & url_, const std::u32string & expectedStart) {

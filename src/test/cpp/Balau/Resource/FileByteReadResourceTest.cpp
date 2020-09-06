@@ -21,7 +21,7 @@ namespace Resource {
 
 struct FileByteReadResourceTest : public Testing::TestGroup<FileByteReadResourceTest> {
 	FileByteReadResourceTest() {
-		registerTest(&FileByteReadResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

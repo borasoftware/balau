@@ -21,7 +21,7 @@ namespace Resource {
 
 struct FileByteWriteResourceTest : public Testing::TestGroup<FileByteWriteResourceTest> {
 	FileByteWriteResourceTest() {
-		registerTest(&FileByteWriteResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	static File prepWritePath(const std::string & testName, const std::string & text) {

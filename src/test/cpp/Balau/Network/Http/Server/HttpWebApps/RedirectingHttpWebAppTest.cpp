@@ -33,7 +33,7 @@ namespace Network::Http::HttpWebApps {
 
 struct RedirectingHttpWebAppTest : public Testing::TestGroup<RedirectingHttpWebAppTest> {
 	RedirectingHttpWebAppTest() {
-		registerTest(&RedirectingHttpWebAppTest::injectedInstantiation, "injectedInstantiation");
+		RegisterTestCase(injectedInstantiation);
 	}
 
 	static void assertResponse(const CharVectorResponse & response, Status expectedStatus, const std::string & redirectionPath) {

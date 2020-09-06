@@ -77,8 +77,8 @@ struct TestExecutor {
 
 struct ArrayBlockingQueueTest : public Testing::TestGroup<ArrayBlockingQueueTest> {
 	ArrayBlockingQueueTest() {
-		registerTest(&ArrayBlockingQueueTest::fullQueue,          "fullQueue");
-		registerTest(&ArrayBlockingQueueTest::fullQueueCallbacks, "fullQueueCallbacks");
+		RegisterTestCase(fullQueue);
+		RegisterTestCase(fullQueueCallbacks);
 	}
 
 	void fullQueue() {

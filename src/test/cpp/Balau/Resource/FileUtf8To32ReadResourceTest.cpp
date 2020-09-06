@@ -21,7 +21,7 @@ namespace Resource {
 
 struct FileUtf8To32ReadResourceTest : public Testing::TestGroup<FileUtf8To32ReadResourceTest> {
 	explicit FileUtf8To32ReadResourceTest() {
-		registerTest(&FileUtf8To32ReadResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

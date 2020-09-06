@@ -22,11 +22,11 @@ namespace Util {
 ///
 struct AppTest : public Testing::TestGroup<AppTest> {
 	AppTest() {
-		registerTest(&AppTest::userAppDataDirectory,            "userAppDataDirectory");
-		registerTest(&AppTest::globalAppDataDirectory,          "globalAppDataDirectory");
-		registerTest(&AppTest::userAppConfigDirectory,          "userAppConfigDirectory");
-		registerTest(&AppTest::globalAppConfigDirectory,        "globalAppConfigDirectory");
-		registerTest(&AppTest::applicationRuntimeDataDirectory, "applicationRuntimeDataDirectory");
+		RegisterTestCase(userAppDataDirectory);
+		RegisterTestCase(globalAppDataDirectory);
+		RegisterTestCase(userAppConfigDirectory);
+		RegisterTestCase(globalAppConfigDirectory);
+		RegisterTestCase(applicationRuntimeDataDirectory);
 	}
 
 	void userAppDataDirectory() {

@@ -20,7 +20,7 @@ namespace Util {
 // This test is currently only implemented for Unix type OSes and relies on the HOME environment variable.
 struct UserTest : public Testing::TestGroup<UserTest> {
 	UserTest() {
-		registerTest(&UserTest::homeDirectory, "homeDirectory");
+		RegisterTestCase(homeDirectory);
 	}
 
 	void homeDirectory() {

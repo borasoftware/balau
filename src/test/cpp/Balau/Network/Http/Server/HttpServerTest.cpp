@@ -28,7 +28,7 @@ namespace Network::Http {
 
 struct HttpServerTest : public Testing::TestGroup<HttpServerTest> {
 	HttpServerTest() {
-		registerTest(&HttpServerTest::injectedInstantiation, "injectedInstantiation");
+		RegisterTestCase(injectedInstantiation);
 	}
 
 	template <typename ResponseT> static void assertResponse(const ResponseT & response,

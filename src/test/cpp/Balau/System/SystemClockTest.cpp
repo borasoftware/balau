@@ -23,8 +23,8 @@ namespace System {
 
 struct SystemClockTest : public Testing::TestGroup<SystemClockTest> {
 	SystemClockTest() {
-		registerTest(&SystemClockTest::nanotime,  "nanotime");
-		registerTest(&SystemClockTest::millitime, "millitime");
+		RegisterTestCase(nanotime);
+		RegisterTestCase(millitime);
 	}
 
 	void nanotime() {

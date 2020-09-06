@@ -77,12 +77,12 @@ using UIntTrieNode = ObjectTrieNode<unsigned int>;
 
 struct ObjectTrieTest : public Testing::TestGroup<ObjectTrieTest> {
 	ObjectTrieTest() {
-		registerTest(&ObjectTrieTest::uIntTrieBuild,               "uIntTrieBuild");
-		registerTest(&ObjectTrieTest::uIntTrieCopy,                "uIntTrieCopy");
-		registerTest(&ObjectTrieTest::uIntTreeDepthIterate,        "uIntTreeDepthIterate");
-		registerTest(&ObjectTrieTest::uIntTreeDepthIterateForLoop, "uIntTreeDepthIterateForLoop");
-		registerTest(&ObjectTrieTest::uIntTreeBreadthIterate,      "uIntTreeBreadthIterate");
-		registerTest(&ObjectTrieTest::fluentBuild,                 "fluentBuild");
+		RegisterTestCase(uIntTrieBuild);
+		RegisterTestCase(uIntTrieCopy);
+		RegisterTestCase(uIntTreeDepthIterate);
+		RegisterTestCase(uIntTreeDepthIterateForLoop);
+		RegisterTestCase(uIntTreeBreadthIterate);
+		RegisterTestCase(fluentBuild);
 	}
 
 	static void populateUIntTrie(UIntTrie & trie, unsigned int dataCounter = 0) {

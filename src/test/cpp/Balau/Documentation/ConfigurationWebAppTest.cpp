@@ -18,7 +18,7 @@ namespace Balau::Documentation {
 
 struct ConfigurationWebAppTest : public Testing::TestGroup<ConfigurationWebAppTest> {
 	ConfigurationWebAppTest() {
-		registerTest(&ConfigurationWebAppTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

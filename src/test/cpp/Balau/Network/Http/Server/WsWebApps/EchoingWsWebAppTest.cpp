@@ -27,7 +27,7 @@ namespace Network::Http::WsWebApps {
 
 struct EchoingWsWebAppTest : public Testing::TestGroup<EchoingWsWebAppTest> {
 	EchoingWsWebAppTest() {
-		// WIP registerTest(&EchoingWsWebAppTest::test, "test");
+		// WIP RegisterTestCase(test);
 	}
 
 	void test() {

@@ -32,9 +32,9 @@ const char * Format = "%H:%M:%S";
 
 struct DateTimeTest : public Testing::TestGroup<DateTimeTest> {
 	DateTimeTest() {
-		registerTest(&DateTimeTest::toStringString, "toStringString");
-		registerTest(&DateTimeTest::toStringStream, "toStringStream");
-		registerTest(&DateTimeTest::toDuration,     "toTimePoint");
+		RegisterTestCase(toStringString);
+		RegisterTestCase(toStringStream);
+		RegisterTestCase(toDuration);
 	}
 
 	void toStringString() {

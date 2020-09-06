@@ -157,7 +157,7 @@ TestSet testset[NumTests] =
 
 struct HashLibraryTest : public Testing::TestGroup<HashLibraryTest> {
     HashLibraryTest() {
-      registerTest(&HashLibraryTest::test, "test");
+      RegisterTestCase(test);
     }
 
 	// return number of failed hashes

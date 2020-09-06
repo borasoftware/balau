@@ -563,10 +563,10 @@ class TestRunner : public Impl::TestRunnerBase {
 		return failureCount == 0 && errorCount == 0;
 	}
 
-	private: void registerTest(Impl::TestGroupBase * group,
-	                           const std::string & testGroupName,
-	                           const std::shared_ptr<Impl::TestMethodBase> & method,
-	                           const std::string & name) {
+	private: void registerTestCase(Impl::TestGroupBase * group,
+	                               const std::string & testGroupName,
+	                               const std::shared_ptr<Impl::TestMethodBase> & method,
+	                               const std::string & name) {
 		std::lock_guard<std::mutex> lock(mutex);
 		auto & testCases = testCasesByGroup[testGroupName];
 		testCases.emplace_back(Impl::TestCase(group, method, testGroupName + "::" + name));
@@ -664,10 +664,10 @@ inline TestGroup<TestClassT>::TestGroup(unsigned int executionModels_)
 }
 
 template <typename TestClassT>
-inline void TestGroup<TestClassT>::registerTest(Method method, const std::string & testName) {
+inline void TestGroup<TestClassT>::registerTestCase(Method method, const std::string & testName) {
 	auto m = std::shared_ptr<Impl::TestMethodBase>(new TestMethod(*static_cast<TestClassT *>(this), method));
 	auto & runner = Testing::TestRunner::runner();
-	runner.registerTest(this, testGroupName, m, testName);
+	runner.registerTestCase(this, testGroupName, m, testName);
 }
 
 } // namespace Balau::Testing

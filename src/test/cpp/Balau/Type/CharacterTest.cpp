@@ -19,51 +19,51 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 	CharacterTest() {
 		//// Classification ////
 
-		registerTest(&CharacterTest::isLower,                       "isLower");
-		registerTest(&CharacterTest::isUpper,                       "isUpper");
-		registerTest(&CharacterTest::isDigit,                       "isDigit");
-		registerTest(&CharacterTest::isHexDigit,                    "isHexDigit");
-		registerTest(&CharacterTest::isOctalDigit,                  "isOctalDigit");
-		registerTest(&CharacterTest::isBinaryDigit,                 "isBinaryDigit");
-		registerTest(&CharacterTest::isAlpha,                       "isAlpha");
-		registerTest(&CharacterTest::isAlphaOrDecimal,              "isAlphaOrDecimal");
-		registerTest(&CharacterTest::isControlCharacter,            "isControlCharacter");
-		registerTest(&CharacterTest::isSpace,                       "isSpace");
-		registerTest(&CharacterTest::isSpaceExcludingCRLF,          "isSpaceExcludingCRLF");
-		registerTest(&CharacterTest::isWhitespace,                  "isWhitespace");
-		registerTest(&CharacterTest::isBlank,                       "isBlank");
-		registerTest(&CharacterTest::isPrintable,                   "isPrintable");
-		registerTest(&CharacterTest::isPunctuation,                 "isPunctuation");
-		registerTest(&CharacterTest::isIdStart,                     "isIdStart");
-		registerTest(&CharacterTest::isIdPart,                      "isIdPart");
-		registerTest(&CharacterTest::isBreakableCharacter,          "isBreakableCharacter");
-		registerTest(&CharacterTest::isInclusiveBreakableCharacter, "isInclusiveBreakableCharacter");
+		RegisterTestCase(isLower);
+		RegisterTestCase(isUpper);
+		RegisterTestCase(isDigit);
+		RegisterTestCase(isHexDigit);
+		RegisterTestCase(isOctalDigit);
+		RegisterTestCase(isBinaryDigit);
+		RegisterTestCase(isAlpha);
+		RegisterTestCase(isAlphaOrDecimal);
+		RegisterTestCase(isControlCharacter);
+		RegisterTestCase(isSpace);
+		RegisterTestCase(isSpaceExcludingCRLF);
+		RegisterTestCase(isWhitespace);
+		RegisterTestCase(isBlank);
+		RegisterTestCase(isPrintable);
+		RegisterTestCase(isPunctuation);
+		RegisterTestCase(isIdStart);
+		RegisterTestCase(isIdPart);
+		RegisterTestCase(isBreakableCharacter);
+		RegisterTestCase(isInclusiveBreakableCharacter);
 
 		//// Iteration ////
 
-		registerTest(&CharacterTest::getNextUtf8,                   "getNextUtf8");
-		registerTest(&CharacterTest::advanceUtf8,                   "advanceUtf8");
-		registerTest(&CharacterTest::retreatUtf8,                   "retreatUtf8");
+		RegisterTestCase(getNextUtf8);
+		RegisterTestCase(advanceUtf8);
+		RegisterTestCase(retreatUtf8);
 
 		//// Mutation ////
 
-		registerTest(&CharacterTest::toUpper,                       "toUpper");
-		registerTest(&CharacterTest::toLower,                       "toLower");
-		registerTest(&CharacterTest::setUtf8AndAdvanceOffset,       "setUtf8AndAdvanceOffset");
-		registerTest(&CharacterTest::setUtf8AndAdvanceOffset,       "setUtf8AndAdvanceOffset");
+		RegisterTestCase(toUpper);
+		RegisterTestCase(toLower);
+		RegisterTestCase(setUtf8AndAdvanceOffset);
+		RegisterTestCase(setUtf8AndAdvanceOffset);
 	}
 
 	// TODO implement the rest of the character tests.
 
 	//// Classification ////
-	
+
 	void isLower() {}
 	void isUpper() {}
 	void isDigit() {}
 	void isHexDigit() {}
 	void isOctalDigit() {}
 	void isBinaryDigit() {}
-	
+
 	void isAlpha() {	// C0 Controls and Basic Latin
 		// Range: 0000–007F
 		AssertThat(Character::isAlpha(U'\u0000'), is(false)); // NUL
@@ -74,7 +74,7 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 		AssertThat(Character::isAlpha(U'\u0055'), is(true));  // U
 		AssertThat(Character::isAlpha(U'\u007E'), is(false)); // ~
 		AssertThat(Character::isAlpha(U'\u007F'), is(false)); // DEL
-	
+
 		// C1 Controls and Latin-1 Supplement
 		// Range: 0080–00FF
 		AssertThat(Character::isAlpha(U'\u0080'), is(false)); // XXX
@@ -85,7 +85,7 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 		AssertThat(Character::isAlpha(U'\u00E7'), is(true));  // ç
 		AssertThat(Character::isAlpha(U'\u00F7'), is(false)); // ÷
 		AssertThat(Character::isAlpha(U'\u00FF'), is(true));  // ÿ
-	
+
 		// Latin Extended-A
 		// Range: 0100–017F
 		AssertThat(Character::isAlpha(U'\u0100'), is(true));  // Ā
@@ -96,7 +96,7 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 		AssertThat(Character::isAlpha(U'\u016B'), is(true));  // ū
 		AssertThat(Character::isAlpha(U'\u016F'), is(true));  // ů
 		AssertThat(Character::isAlpha(U'\u017F'), is(true));  // s s
-	
+
 		// Greek and Coptic
 		// Range: 0370–03FF
 		AssertThat(Character::isAlpha(U'\u037E'), is(false)); // ;
@@ -108,13 +108,13 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 		AssertThat(Character::isAlpha(U'\u03FB'), is(true));  // ϻ
 		AssertThat(Character::isAlpha(U'\u03FF'), is(true));  // Ͽ
 	}
-	
-	
+
+
 	void isAlphaOrDecimal() {}
 	void isControlCharacter() {}
 	void isSpace() {}
 	void isSpaceExcludingCRLF() {}
-	
+
 	void isWhitespace() {
 		AssertThat(Character::isWhitespace(U' '),  is(true)); // ;
 		AssertThat(Character::isWhitespace(U'a'),  is(false));  // Ξ
@@ -123,7 +123,7 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 		AssertThat(Character::isWhitespace(U'\r'), is(true));  // λ
 		AssertThat(Character::isWhitespace(U'\t'), is(true));  // Θ
 	}
-	
+
 	void isBlank() {}
 	void isPrintable() {}
 	void isPunctuation() {}
@@ -131,15 +131,15 @@ struct CharacterTest : public Testing::TestGroup<CharacterTest> {
 	void isIdPart() {}
 	void isBreakableCharacter() {}
 	void isInclusiveBreakableCharacter() {}
-	
+
 	//// Iteration ////
-	
+
 	void getNextUtf8() {}
 	void advanceUtf8() {}
 	void retreatUtf8() {}
-	
+
 	//// Mutation ////
-	
+
 	void toUpper() {}
 	void toLower() {}
 	void setUtf8AndAdvanceOffset() {}

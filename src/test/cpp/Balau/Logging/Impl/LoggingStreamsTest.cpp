@@ -20,7 +20,7 @@ namespace LoggingSystem {
 struct LoggingStreamsTest : public Testing::TestGroup<LoggingStreamsTest> {
 	LoggingStreamsTest() {
 		// Work in progress.
-		//registerTest(&LoggingStreamsTest::fileRotation, "fileRotation");
+		//RegisterTestCase(fileRotation);
 	}
 
 	class TestClock : public System::Clock {

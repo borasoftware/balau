@@ -19,7 +19,7 @@ namespace Util {
 
 struct RandomTest : public Testing::TestGroup<RandomTest> {
 	RandomTest() {
-		registerTest(&RandomTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

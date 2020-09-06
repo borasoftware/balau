@@ -26,10 +26,10 @@ namespace Network::Http {
 
 struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	HttpClientTest() {
-		registerTest(&HttpClientTest::getRequest, "getRequest");
-		registerTest(&HttpClientTest::headRequest, "headRequest");
-		registerTest(&HttpClientTest::postRequest, "postRequest");
-		registerTest(&HttpClientTest::newClient,   "newClient");
+		RegisterTestCase(getRequest);
+		RegisterTestCase(headRequest);
+		RegisterTestCase(postRequest);
+		RegisterTestCase(newClient);
 	}
 
 	static void assertResponse(Response<CharVectorBody> & response,
@@ -87,7 +87,7 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	void getRequest() {
 		try {
 			HttpClient client("borasoftware.com");
-	
+
 			try {
 				Response<CharVectorBody> response = client.get("/");
 				const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
@@ -106,12 +106,12 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 			}
 		}
 	}
-	
+
 	void headRequest() {
 		// TODO finish
 		ignore();
 		return;
-	
+
 	//	try {
 	//		HttpClient client("borasoftware.com");
 	//
@@ -132,11 +132,11 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	//		}
 	//	}
 	}
-	
+
 	void postRequest() {
 		try {
 			HttpClient client("borasoftware.com");
-	
+
 			try {
 				Response<CharVectorBody> response = client.post("/", "");
 				const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
@@ -155,20 +155,20 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 			}
 		}
 	}
-	
+
 	void newClient() {
 		Resource::Http http("http://borasoftware.com");
 		auto httpClient1 = HttpClient::newClient(http);
-	
+
 		Resource::Https https("https://borasoftware.com");
 		auto httpsClient1 = HttpClient::newClient(https);
-	
+
 		Resource::Http httpWithPort("http://borasoftware.com:80");
 		auto httpClient2 = HttpClient::newClient(httpWithPort);
-	
+
 		Resource::Https httpsWithPort("https://borasoftware.com:443");
 		auto httpsClient2 = HttpClient::newClient(httpsWithPort);
-	
+
 		AssertThat([] () { HttpClient::newClient("borasoftware.com"); }, throws<Exception::NetworkException>());
 		AssertThat([] () { HttpClient::newClient("http://"); }, throws<Exception::NetworkException>());
 		AssertThat([] () { HttpClient::newClient("http://:80"); }, throws<Exception::InvalidUriException>());

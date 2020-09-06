@@ -46,8 +46,8 @@ const std::vector<std::string> expectedLines = {
 
 struct StreamsTest : public Testing::TestGroup<StreamsTest> {
 	StreamsTest() {
-		registerTest(&StreamsTest::readLinesToVector, "readLinesToVector");
-		registerTest(&StreamsTest::consume,           "consume");
+		RegisterTestCase(readLinesToVector);
+		RegisterTestCase(consume);
 	}
 
 	void readLinesToVector() {

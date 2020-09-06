@@ -65,15 +65,15 @@ namespace Interprocess {
 
 struct SharedMemoryQueueTest : public Testing::TestGroup<SharedMemoryQueueTest> {
 	SharedMemoryQueueTest() {
-		registerTest(&SharedMemoryQueueTest::singleBufferSPST,      "singleBufferSPST");
-		registerTest(&SharedMemoryQueueTest::singleBufferSISO,      "singleBufferSISO");
-		registerTest(&SharedMemoryQueueTest::singleBufferSIMO,      "singleBufferSIMO");
-		registerTest(&SharedMemoryQueueTest::singleBufferMISO,      "singleBufferMISO");
-		registerTest(&SharedMemoryQueueTest::singleBufferMIMO,      "singleBufferMIMO");
-		registerTest(&SharedMemoryQueueTest::multipleBufferSPST,    "multipleBufferSPST");
-		registerTest(&SharedMemoryQueueTest::multipleBufferSISO,    "multipleBufferSISO");
-		registerTest(&SharedMemoryQueueTest::multipleBufferMISO,    "multipleBufferMISO");
-		registerTest(&SharedMemoryQueueTest::multipleBufferPending, "multipleBufferPending");
+		RegisterTestCase(singleBufferSPST);
+		RegisterTestCase(singleBufferSISO);
+		RegisterTestCase(singleBufferSIMO);
+		RegisterTestCase(singleBufferMISO);
+		RegisterTestCase(singleBufferMIMO);
+		RegisterTestCase(multipleBufferSPST);
+		RegisterTestCase(multipleBufferSISO);
+		RegisterTestCase(multipleBufferMISO);
+		RegisterTestCase(multipleBufferPending);
 	}
 
 	// Shared between the child processes in the tests.

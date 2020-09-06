@@ -56,20 +56,20 @@ namespace Balau {
 
 struct CommandLineTest : public Testing::TestGroup<CommandLineTest> {
 	CommandLineTest() {
-		registerTest(&CommandLineTest::basicSsv,           "basicSsv");
-		registerTest(&CommandLineTest::finalValueSsv,      "finalValueSsv");
-		registerTest(&CommandLineTest::numericValueSsv,    "numericValueSsv");
-		registerTest(&CommandLineTest::docOutputSsv,       "docOutputSsv");
+		RegisterTestCase(basicSsv);
+		RegisterTestCase(finalValueSsv);
+		RegisterTestCase(numericValueSsv);
+		RegisterTestCase(docOutputSsv);
 
-		registerTest(&CommandLineTest::basicSev,           "basicSev");
-		registerTest(&CommandLineTest::finalValueSev,      "finalValueSev");
-		registerTest(&CommandLineTest::numericValueSev,    "numericValueSev");
-		registerTest(&CommandLineTest::docOutputSev,       "docOutputSev");
+		RegisterTestCase(basicSev);
+		RegisterTestCase(finalValueSev);
+		RegisterTestCase(numericValueSev);
+		RegisterTestCase(docOutputSev);
 
-		registerTest(&CommandLineTest::basicDetect,        "basicDetect");
-		registerTest(&CommandLineTest::finalValueDetect,   "finalValueDetect");
-		registerTest(&CommandLineTest::numericValueDetect, "numericValueDetect");
-		registerTest(&CommandLineTest::docOutputDetect,    "docOutputDetect");
+		RegisterTestCase(basicDetect);
+		RegisterTestCase(finalValueDetect);
+		RegisterTestCase(numericValueDetect);
+		RegisterTestCase(docOutputDetect);
 	}
 
 	static void basicImpl(int argc, const char * argv[], CommandLineStyle style) {

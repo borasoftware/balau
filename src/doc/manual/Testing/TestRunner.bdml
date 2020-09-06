@@ -62,19 +62,19 @@
 
 		<para>Tests are defined within test groups. Each test group is defined as a class.</para>
 
-		<para>Test group classes inherit from the <emph>Testing::TestGroup</emph> test runner base template class, using <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</ref>. Each test case is an instance method of the test class, which takes zero parameters and returns void. The constructor body of a test class registers test methods via calls to the registerTest method.</para>
+		<para>Test group classes inherit from the <emph>Testing::TestGroup</emph> test runner base template class, using <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</ref>. Each test case is an instance method of the test class, which takes zero parameters and returns void. The constructor body of a test class registers test methods via calls to the <emph>registerTestCase</emph> method or the <emph>RegisterTestCase</emph> convenience macro.</para>
 
 		<code lang="C++">
 			// Example test group from the Balau unit tests.
 
 			struct ObjectTrieTest : public Testing::TestGroup&lt;ObjectTrieTest&gt; {
 				ObjectTrieTest() {
-					registerTest(&amp;ObjectTrieTest::uIntTrieBuild,               "uIntTrieBuild");
-					registerTest(&amp;ObjectTrieTest::uIntTrieCopy,                "uIntTrieCopy");
-					registerTest(&amp;ObjectTrieTest::uIntTreeDepthIterate,        "uIntTreeDepthIterate");
-					registerTest(&amp;ObjectTrieTest::uIntTreeDepthIterateForLoop, "uIntTreeDepthIterateForLoop");
-					registerTest(&amp;ObjectTrieTest::uIntTreeBreadthIterate,      "uIntTreeBreadthIterate");
-					registerTest(&amp;ObjectTrieTest::fluentBuild,                 "fluentBuild");
+					RegisterTestCase(uIntTrieBuild);
+					RegisterTestCase(uIntTrieCopy);
+					RegisterTestCase(uIntTreeDepthIterate);
+					RegisterTestCase(uIntTreeDepthIterateForLoop);
+					RegisterTestCase(uIntTreeBreadthIterate);
+					RegisterTestCase(fluentBuild);
 				}
 
 				void uIntTrieBuild();
@@ -100,7 +100,7 @@
 			}
 		</code>
 
-		<para>The test runner uses the command line parser to parse a space separated command line which can also contain globbed test name pattners to run.</para>
+		<para>The test runner uses the command line parser to parse a space separated command line which can also contain globbed test name patterns to run.</para>
 
 		<para>The following command line options are available.</para>
 
@@ -169,17 +169,17 @@
 
 		<para>Tests are grouped inside test classes.</para>
 
-		<para>Test classes derive from the <emph>Testing::TestGroup</emph> base class template, using <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</ref>. Each test is an instance method of the test class, which takes zero parameters and returns void. The constructor body of a test class registers test methods via calls to the registerTest method.</para>
+		<para>Test classes derive from the <emph>Testing::TestGroup</emph> base class template, using <ref type="raw" new="true" url="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">CRTP</ref>. Each test is an instance method of the test class, which takes zero parameters and returns void. The constructor body of a test class registers test methods via calls to the <emph>registerTestCase</emph> method or the <emph>RegisterTestCase</emph> convenience macro.</para>
 
 		<para>The following is the header of a test class which has four test methods.</para>
 
 		<code lang="C++">
 			struct CommandLineTest : public Testing::TestGroup&lt;CommandLineTest&gt; {
 				CommandLineTest() {
-					registerTest(&amp;CommandLineTest::basicTest,        "basicTest");
-					registerTest(&amp;CommandLineTest::failingTest,      "failingTest");
-					registerTest(&amp;CommandLineTest::finalValueTest,   "finalValueTest");
-					registerTest(&amp;CommandLineTest::numericValueTest, "numericValueTest");
+					RegisterTestCase(basicTest);
+					RegisterTestCase(failingTest);
+					RegisterTestCase(finalValueTest);
+					RegisterTestCase(numericValueTest);
 				}
 
 				void basicTest();
@@ -240,9 +240,9 @@
 		<code lang="C++">
 			class CommandLineTest : public Testing::TestGroup&lt;CommandLineTest&gt; {
 				public: CommandLineTest() {
-					registerTest(&amp;CommandLineTest::basicTest,        "basicTest");
-					registerTest(&amp;CommandLineTest::finalValueTest,   "finalValueTest");
-					registerTest(&amp;CommandLineTest::numericValueTest, "numericValueTest");
+					RegisterTestCase(basicTest);
+					RegisterTestCase(finalValueTest);
+					RegisterTestCase(numericValueTest);
 				}
 
 				void basicTest();
@@ -719,7 +719,7 @@
 
 		<h2>CI configuration</h2>
 
-		<para>This section only discusses coninuous integration via a CMake target.</para>
+		<para>This section only discusses continuous integration via a CMake target.</para>
 
 		<para>In order to create CI jobs in tools such as <ref type="raw" new="true" url="https://jenkins.io/">Jenkins</ref>, the test application will require a CMake target to run. This can be achieved with the following configuration in the CMakeLists.txt file.</para>
 

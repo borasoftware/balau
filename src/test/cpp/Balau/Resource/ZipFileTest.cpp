@@ -20,7 +20,7 @@ namespace Resource {
 
 struct ZipFileTest : public Testing::TestGroup<ZipFileTest> {
 	ZipFileTest() {
-		registerTest(&ZipFileTest::iteration, "iteration");
+		RegisterTestCase(iteration);
 	}
 
 	void iteration() {

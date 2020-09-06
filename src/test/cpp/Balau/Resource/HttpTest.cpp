@@ -20,7 +20,7 @@ namespace Resource {
 
 struct HttpTest : public Testing::TestGroup<HttpTest> {
 	HttpTest() {
-		registerTest(&HttpTest::uriAppend,  "uriAppend");
+		RegisterTestCase(uriAppend);
 	}
 
 	void uriAppend() {

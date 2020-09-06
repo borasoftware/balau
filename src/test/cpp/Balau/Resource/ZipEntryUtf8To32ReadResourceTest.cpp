@@ -24,7 +24,7 @@ namespace Resource {
 
 struct ZipEntryUtf8To32ReadResourceTest : public Testing::TestGroup<ZipEntryUtf8To32ReadResourceTest> {
 	explicit ZipEntryUtf8To32ReadResourceTest() {
-		registerTest(&ZipEntryUtf8To32ReadResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

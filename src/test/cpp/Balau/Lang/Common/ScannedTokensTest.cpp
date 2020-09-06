@@ -33,8 +33,8 @@ const std::vector<CodeSpan> codeSpans  = { C(1,1,1,6), C(1,6,1,7), C(1,7,1,13), 
 
 struct ScannedTokensTest : public Testing::TestGroup<ScannedTokensTest> {
 	ScannedTokensTest() {
-		registerTest(&ScannedTokensTest::randomAccessBuilding, "randomAccessBuilding");
-		registerTest(&ScannedTokensTest::scannerApiConsumeAndPutBack, "scannerApiConsumeAndPutBack");
+		RegisterTestCase(randomAccessBuilding);
+		RegisterTestCase(scannerApiConsumeAndPutBack);
 	}
 
 	void randomAccessBuilding() {

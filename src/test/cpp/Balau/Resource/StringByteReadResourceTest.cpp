@@ -21,7 +21,7 @@ namespace Resource {
 
 struct StringByteReadResourceTest : public Testing::TestGroup<StringByteReadResourceTest> {
 	StringByteReadResourceTest() {
-		registerTest(&StringByteReadResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

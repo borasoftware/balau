@@ -21,8 +21,8 @@ namespace Resource {
 
 struct HttpsByteReadResourceTest : public Testing::TestGroup<HttpsByteReadResourceTest> {
 	HttpsByteReadResourceTest() {
-		registerTest(&HttpsByteReadResourceTest::emptyPath, "emptyPath");
-		registerTest(&HttpsByteReadResourceTest::nonEmptyPath, "nonEmptyPath");
+		RegisterTestCase(emptyPath);
+		RegisterTestCase(nonEmptyPath);
 	}
 
 	void performTest(const std::string & url_, const std::string & expectedStart) {

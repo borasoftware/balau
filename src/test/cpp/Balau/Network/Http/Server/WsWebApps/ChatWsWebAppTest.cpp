@@ -28,7 +28,7 @@ namespace Network::Http::WsWebApps {
 struct ChatWsWebAppTest : public Testing::TestGroup<ChatWsWebAppTest> {
 	ChatWsWebAppTest() {
 		// Work in progress.
-		//registerTest(&ChatWsWebAppTest::test, "test");
+		//RegisterTestCase(test);
 	}
 
 	void test() {

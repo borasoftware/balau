@@ -18,8 +18,8 @@ namespace Resource {
 
 struct StringUriTest : public Testing::TestGroup<StringUriTest> {
 	StringUriTest() {
-		registerTest(&StringUriTest::cloning, "cloning");
-		registerTest(&StringUriTest::byteStream, "byteStream");
+		RegisterTestCase(cloning);
+		RegisterTestCase(byteStream);
 	}
 
 	void cloning() {

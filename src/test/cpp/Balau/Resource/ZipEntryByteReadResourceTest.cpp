@@ -21,7 +21,7 @@ namespace Resource {
 
 struct ZipEntryByteReadResourceTest : public Testing::TestGroup<ZipEntryByteReadResourceTest> {
 	ZipEntryByteReadResourceTest() {
-		registerTest(&ZipEntryByteReadResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

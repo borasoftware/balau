@@ -23,9 +23,9 @@ namespace Network::Http {
 
 struct HttpsClientTest : public Testing::TestGroup<HttpsClientTest> {
 	HttpsClientTest() {
-		registerTest(&HttpsClientTest::getRequest, "getRequest");
-		registerTest(&HttpsClientTest::headRequest, "headRequest");
-		registerTest(&HttpsClientTest::postRequest, "postRequest");
+		RegisterTestCase(getRequest);
+		RegisterTestCase(headRequest);
+		RegisterTestCase(postRequest);
 	}
 
 	static void assertResponse(Response<CharVectorBody> & response,
@@ -85,7 +85,7 @@ struct HttpsClientTest : public Testing::TestGroup<HttpsClientTest> {
 			HttpsClient client("borasoftware.com");
 
 			try {
-				Response<CharVectorBody> response = client.get("/test/testfile.html");
+				Response<CharVectorBody> response = client.get("/en/index.html");
 				assertResponse(response, "<!DOCTYPE html", "OK", Status::ok);
 			} catch (const boost::system::system_error & e) {
 				logLine(e.what());

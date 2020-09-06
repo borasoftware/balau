@@ -24,6 +24,7 @@ namespace Balau::Testing {
 /// template parameter.
 ///
 template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
+	protected: using TestGroupCls = TestGroupT;
 	private: using Method = void (TestGroupT::*)();
 
 	// Container for test instance and test method.
@@ -97,7 +98,7 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 	/// @param method the method of the test case to register
 	/// @param testName the name of the test case to register
 	///
-	protected: void registerTest(Method method, const std::string & testName);
+	protected: void registerTestCase(Method method, const std::string & testName);
 
 	///
 	/// This method is called before each test is called.
@@ -138,6 +139,11 @@ template <typename TestGroupT> class TestGroup : public Impl::TestGroupBase {
 };
 
 template <typename TestGroupT> TestGroupT TestGroup<TestGroupT>::instance;
+
+///
+/// Convenience macro to register test cases.
+///
+#define RegisterTestCase(NAME) registerTestCase(&TestGroupCls::NAME, #NAME)
 
 } // namespace Balau::Testing
 

@@ -29,7 +29,7 @@ using Testing::throws;
 // This test group tests the assertions of the test runner.
 struct AssertionsTest : public Testing::TestGroup<AssertionsTest> {
 	AssertionsTest() {
-		registerTest(&AssertionsTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	void test() {

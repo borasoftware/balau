@@ -22,8 +22,8 @@ namespace Network {
 
 struct UrlDecodeTest : public Testing::TestGroup<UrlDecodeTest> {
 	UrlDecodeTest() {
-		registerTest(&UrlDecodeTest::decodeTest, "decodeTest");
-		registerTest(&UrlDecodeTest::splitAndDecodeTest, "splitAndDecodeTest");
+		RegisterTestCase(decodeTest);
+		RegisterTestCase(splitAndDecodeTest);
 	}
 
 	void decodeTest() {

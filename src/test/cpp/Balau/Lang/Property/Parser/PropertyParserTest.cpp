@@ -73,29 +73,29 @@ const std::string rootIncludesText = 1 + R"Property(
 
 struct PropertyParserTest : public Testing::TestGroup<PropertyParserTest> {
 	PropertyParserTest() {
-		registerTest(&PropertyParserTest::simpleHierarchy,    "simpleHierarchy");
-		registerTest(&PropertyParserTest::specialSymbolNames, "specialSymbolNames");
-		registerTest(&PropertyParserTest::complexNames,       "complexNames");
-		registerTest(&PropertyParserTest::rootIncludes,       "rootIncludes");
-		registerTest(&PropertyParserTest::normalisation,      "normalisation");
+		RegisterTestCase(simpleHierarchy);
+		RegisterTestCase(specialSymbolNames);
+		RegisterTestCase(complexNames);
+		RegisterTestCase(rootIncludes);
+		RegisterTestCase(normalisation);
 	}
 
 	void simpleHierarchy() {
 		PropertyParserTest_test(simpleHierarchyText);
 	}
-	
+
 	void specialSymbolNames() {
 		PropertyParserTest_test(specialSymbolNamesText);
 	}
-	
+
 	void complexNames() {
 		PropertyParserTest_test(complexNamesText);
 	}
-	
+
 	void rootIncludes() {
 		PropertyParserTest_test(rootIncludesText);
 	}
-	
+
 	void normalisation() {
 		AssertThat(PropertyNode::normalise("\\{"), is("{"));
 		AssertThat(PropertyNode::normalise("abc\\\n  def\\\n  ghi"), is("abcdefghi"));

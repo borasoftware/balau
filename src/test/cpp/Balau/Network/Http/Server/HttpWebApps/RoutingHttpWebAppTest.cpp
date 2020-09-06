@@ -35,7 +35,7 @@ namespace Network::Http::HttpWebApps {
 
 struct RoutingHttpWebAppTest : public Testing::TestGroup<RoutingHttpWebAppTest> {
 	RoutingHttpWebAppTest() {
-		registerTest(&RoutingHttpWebAppTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	static void assertResponse(const CharVectorResponse & response, const Resource::File & filePath) {

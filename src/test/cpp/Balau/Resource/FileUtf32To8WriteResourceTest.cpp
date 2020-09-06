@@ -21,7 +21,7 @@ namespace Resource {
 
 struct FileUtf32To8WriteResourceTest : public Testing::TestGroup<FileUtf32To8WriteResourceTest> {
 	explicit FileUtf32To8WriteResourceTest() {
-		registerTest(&FileUtf32To8WriteResourceTest::test, "test");
+		RegisterTestCase(test);
 	}
 
 	static File prepWritePath(const std::string & testName, const std::string & text) {

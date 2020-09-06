@@ -116,8 +116,8 @@ void addEdge(Graph & g, const char * from, const char * to) {
 
 struct DependencyGraphTest : public Testing::TestGroup<DependencyGraphTest> {
 	DependencyGraphTest() {
-		registerTest(&DependencyGraphTest::test_prep, "test_prep");
-		registerTest(&DependencyGraphTest::test, "test");
+		RegisterTestCase(test_prep);
+		RegisterTestCase(test);
 	}
 
 	void test_prep() {

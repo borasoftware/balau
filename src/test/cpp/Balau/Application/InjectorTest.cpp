@@ -424,26 +424,26 @@ namespace Balau {
 
 struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	InjectorTest() {
-		registerTest(&InjectorTest::creationAndDeletion,                "creationAndDeletion");
-		registerTest(&InjectorTest::singletonCreation,                  "singletonCreation");
-		registerTest(&InjectorTest::simpleTypeInjection,                "simpleTypeInjection");
-		registerTest(&InjectorTest::multipleCustomScopes,               "multipleCustomScopes");
-		registerTest(&InjectorTest::namedDependency,                    "namedDependency");
-		registerTest(&InjectorTest::eagerSingletons,                    "eagerSingletons");
-		registerTest(&InjectorTest::runtimeCustomScopes,                "runtimeCustomScopes");
-		registerTest(&InjectorTest::threadLocalScopeUsage,              "threadLocalScopeUsage");
-		registerTest(&InjectorTest::allBindings,                        "allBindings");
-		registerTest(&InjectorTest::docTest,                            "docTest");
-		registerTest(&InjectorTest::injectTheInjector,                  "injectTheInjector");
-		registerTest(&InjectorTest::sharedCycleChecks,                  "sharedCycleChecks");
-		registerTest(&InjectorTest::mixedCycleChecks,                   "mixedCycleChecks");
-		registerTest(&InjectorTest::injectorCycleAvoidance,             "injectorCycleAvoidance");
-		registerTest(&InjectorTest::uniqueBindingCustomDeleter,         "uniqueBindingCustomDeleter");
-		registerTest(&InjectorTest::uniqueBindingCustomDeleterInjected, "uniqueBindingCustomDeleterInjected");
-		registerTest(&InjectorTest::singletonProvider,                  "singletonProvider");
-		registerTest(&InjectorTest::providedSingletonProvider,          "providedSingletonProvider");
-		registerTest(&InjectorTest::headerBodyMacros,                   "headerBodyMacros");
-		registerTest(&InjectorTest::printBindingsDetailed,              "printBindingsDetailed");
+		RegisterTestCase(creationAndDeletion);
+		RegisterTestCase(singletonCreation);
+		RegisterTestCase(simpleTypeInjection);
+		RegisterTestCase(multipleCustomScopes);
+		RegisterTestCase(namedDependency);
+		RegisterTestCase(eagerSingletons);
+		RegisterTestCase(runtimeCustomScopes);
+		RegisterTestCase(threadLocalScopeUsage);
+		RegisterTestCase(allBindings);
+		RegisterTestCase(docTest);
+		RegisterTestCase(injectTheInjector);
+		RegisterTestCase(sharedCycleChecks);
+		RegisterTestCase(mixedCycleChecks);
+		RegisterTestCase(injectorCycleAvoidance);
+		RegisterTestCase(uniqueBindingCustomDeleter);
+		RegisterTestCase(uniqueBindingCustomDeleterInjected);
+		RegisterTestCase(singletonProvider);
+		RegisterTestCase(providedSingletonProvider);
+		RegisterTestCase(headerBodyMacros);
+		RegisterTestCase(printBindingsDetailed);
 	}
 
 	void creationAndDeletion() {
