@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -39,7 +47,6 @@
 #include <thread>
 
 #include <unistd.h>
-#include <boost/predef.h>
 
 namespace Balau::Testing {
 
@@ -278,7 +285,7 @@ class TestRunner : public Impl::TestRunnerBase {
 	private: static void setReportOutputFolder(const Resource::File & reportOutputFolder,
 	                                           std::shared_ptr<Impl::TestReportGenerator> & reportGenerator) {
 		if (!reportOutputFolder.toRawString().empty()) {
-			auto path = Resource::File(boost::filesystem::system_complete(reportOutputFolder.getEntry()));
+			auto path = Resource::File(std::filesystem::absolute(reportOutputFolder.getEntry().path()));
 
 			if (path.isRegularFile()) {
 				ThrowBalauException(
@@ -290,7 +297,7 @@ class TestRunner : public Impl::TestRunnerBase {
 			if (!path.isRegularDirectory()) {
 				try {
 					path.createDirectories();
-				} catch (const boost::filesystem::filesystem_error & e) {
+				} catch (const std::filesystem::filesystem_error & e) {
 					ThrowBalauException(
 						  Exception::IllegalArgumentException
 						, ::toString("The specified report output folder could not be created: ", path.toRawString())
@@ -671,5 +678,7 @@ inline void TestGroup<TestClassT>::registerTest(Method method, const std::string
 }
 
 } // namespace Balau::Testing
+
+#define RegisterTest(NAME) TestGroupType::registerTest(&TestGroupType::NAME, #NAME)
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER

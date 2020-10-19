@@ -1,13 +1,20 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STATE
 #define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STATE
 
@@ -16,8 +23,6 @@
 #include <Balau/Logging/Impl/LoggerItems.hpp>
 #include <Balau/Logging/Impl/LoggingStreams.hpp>
 #include <Balau/Util/Files.hpp>
-
-#include <boost/dll/runtime_symbol_info.hpp>
 
 #include <mutex>
 
@@ -103,7 +108,7 @@ class LoggingState final {
 
 	// Utility method for placeholder expansion.
 	std::string expandConfigurationTextMacros(std::string_view configurationText,
-	                                          const boost::filesystem::path & exeLocation,
+	                                          const Resource::File & exeLocation,
 	                                          const std::string & homeDir,
 	                                          const std::string & executableName,
 	                                          const std::map<std::string, std::string> & encasedPlaceholders);
@@ -115,7 +120,7 @@ class LoggingState final {
 	// Expands the ${user.home} and ${executable} placeholders.
 	std::unique_ptr<Impl::AbstractBinding> expandConfigurationValueTextMacros(Impl::BindingKey key,
 	                                                                          const std::shared_ptr<EnvironmentProperties> & configuration,
-	                                                                          const boost::filesystem::path & exeLocation,
+	                                                                          const Resource::File & exeLocation,
 	                                                                          const std::string & homeDir,
 	                                                                          const std::string & executableName,
 	                                                                          const std::map<std::string, std::string> & encasedPlaceholders);

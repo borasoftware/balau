@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -32,15 +40,13 @@
 
 		<para>Balau is a C++ application framework designed for enterprise quality C++ software development.</para>
 
-		<para>Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise quality application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.</para>
+		<para>Following the recent revisions of the programming language, C++ has matured to become an attractive candidate for rapid enterprise quality application development. Balau provides components designed to support the rapid development of high performance C++ enterprise applications.</para>
 
-		<para>Balau builds on the foundations of the <ref type="raw" new="true" url="http://www.boost.org">Boost</ref> and <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref> projects, and focuses on using modern C++17 features and the standard unicode string classes.</para>
-
-		<para>The library has been conceived for the development of applications that have a dependency injection based architecture, have complex logging requirements, and will be developed with a test driven development methodology. Balau has also been designed to provide an application framework for Unicode aware C++ software applications.</para>
+		<para>Balau focuses on using modern C++17 features and the standard Unicode string classes. The library has been conceived for the development of applications that have a dependency injection based architecture, have potentially complex logging requirements, and will be developed with a test driven development methodology. Balau has also been designed to provide an application framework for Unicode aware C++ software applications.</para>
 
 		<para>Four key components of the Balau library are the <ref url="Application/Injector">injector</ref>, the <ref url="Application/Environment">environment configuration</ref> framework, the <ref url="Logging/Logger">logging system</ref>, and the <ref url="Testing/TestRunner">test runner</ref>. In this respect, part of Balau is a C++ equivalent to the de facto standard Java based application development components consisting of <emph>Guice</emph>/<emph>Spring</emph> for dependency injection and environment configuration, <emph>Log4j</emph>/<emph>Slf4j</emph>/<emph>Logback</emph> for logging, and <emph>JUnit</emph>/<emph>TestNG</emph> for testing.</para>
 
-		<para>In addition to the injector, environment configuration, logger, and test runner, Balau provides a set of components and utilities with simple APIs, including an HTTP/WebSocket web application framework.</para>
+		<para>In addition to the injector, environment configuration, logger, test runner, and Unicode support, Balau provides a set of components and utilities with simple APIs, including an HTTP/WebSocket web application framework.</para>
 
 		<h1>Links</h1>
 
@@ -58,8 +64,6 @@
 			<entry>Do you wish to develop a software application in C++ using modern best practices?</entry>
 
 			<entry>Will the code be based on C++17 or a later specification?</entry>
-
-			<entry>Will you be using the Boost libraries?</entry>
 
 			<entry>Do you wish to structure your application via a dependency injection based architecture?</entry>
 
@@ -114,6 +118,45 @@
 			<entry>Utilities (system, compression, files, hashing, streams, strings, etc.)</entry>
 		</bullets>
 
+		<h1>License</h1>
+
+		<para>Balau is licensed under the <ref type="raw" new="true" url="https://borasoftware.com/licenses/balau-license.html">Apache License Version 2.0</ref>.</para>
+
+		<h1>Dependencies</h1>
+
+		<para>Balau does not have any mandatory dependencies other than the C++ standard library.</para>
+
+		<para>Three optional utility library dependencies are required if the library is built with compression and email protocol support. These three libraries are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. The <emph>zlib</emph> and <emph>libzip</emph> libraries provide low level compression support for the compression utilities in Balau. The <emph>curl</emph> library provides email protocol support for the Balau email sender webapp.</para>
+
+		<para>Balau includes a small number of third party utility libraries in its source code release. As these are contained within the Balau source code tree, they are not external dependencies and thus do not require linkage. These third party libraries are contained within the <emph>ThirdParty</emph> folder. The libraries have been namespaced within the <emph>Balau</emph> global namespace in order to avoid potential clashes.</para>
+
+		<h1>Supported platforms</h1>
+
+		<h2>C++ version</h2>
+
+		<para>Balau requires a compiler that is compliant with C++17 or a later version of the specification.</para>
+
+		<h2>Operating systems</h2>
+
+		<para>Balau has been developed and tested on 64 bit Linux with the GCC and Clang compilers. A port to Windows 7/10 is planned.</para>
+
+		<para>Other Posix compliant platforms may work if they comply with the primitive type size assertion checks in the <emph>StdTypes.hpp</emph> header:</para>
+
+		<code lang="C++">
+			static_assert(CHAR_BIT          == 8);
+			static_assert(sizeof(short)     == 2);
+			static_assert(sizeof(int)       == 4);
+			static_assert(sizeof(long long) == 8);
+		</code>
+
+		<para>Due to the size difference between long integers in different common data models, the <emph>long</emph> and <emph>unsigned long</emph> integer types are not used in the library other than when a dependency requires a value of one of those types. Instead, use of the <emph>long long</emph> and <emph>unsigned  long long</emph> integer types allows the commonly accepted data models to be supported without primitive type size conflicts.</para>
+
+		<h2>CPU architectures</h2>
+
+		<para>Balau has been developed and tested on x86-64.</para>
+
+		<para>Concurrent code in the library uses the C++ 11 atomic operations library. Consequently, the library should be free of data races on all platforms that have a standards compliant C++17 compiler and standard library.</para>
+
 		<h1>Documentation pages</h1>
 
 		<h2>Developer manual</h2>
@@ -138,71 +181,15 @@
 
 		<para>API documentation can be generated by running the <emph>BalauApiDoc</emph> make target (<ref type="raw" new="true" url="http://doxygen.org">doxygen</ref> is required). The API documentation can also be viewed online at <ref type="raw" new="true" url="https://borasoftware.com/doc/balau/latest/api" />.</para>
 
-		<h1>Dependencies</h1>
-
-		<para>In addition to the C++17 standard library, Balau relies on two main third party libraries and three utility libraries.</para>
-
-		<para>The first main dependency is <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref>, which provides Unicode support functions. The second main dependency is the <ref type="raw" new="true" url="http://www.boost.org">Boost library</ref>. Boost is used for low level essential utilities and complex, low level components not found in the C++ standard library.</para>
-
-		<para>The three utility library dependencies are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. The first two utility libraries provide low level compression support for the compression utilities in Balau. The third utility library provides network protocol support in the network classes.</para>
-
-		<para>The only other dependencies used are standard dependencies on each supported platform.</para>
-
-		<para>Balau includes a small number of third party utility libraries in its source code release. As these are contained within the Balau source code tree, they are not external dependencies and thus do not require linkage. These third party libraries are contained within the <emph>ThirdParty</emph> folder. As these libraries are supplied with Balau, application developers can also use them directly if required. The libraries have been namespaced within the <emph>Balau</emph> outer namespace in order to avoid potential clashes.</para>
-
-		<h1>Application structure</h1>
-
-		<para>The high level structure of a software application or library based on Balau is shown in the diagram below.</para>
-
-		<graphic position="center" url="../resources/images/ApplicationStructure.png">
-			<target target="html" width="130mm" />
-			<target target="pdf" width="100mm" />
-		</graphic>
-
-		<h1>License</h1>
-
-		<para>Balau is licensed under the <ref type="raw" new="true" url="https://borasoftware.com/licenses/balau-license.html">Boost Software License Version 1.0</ref>.</para>
-
-		<h1>Supported platforms</h1>
-
-		<h2>C++ version</h2>
-
-		<para>Balau requires a compiler that is compliant with C++17 or a later version of the specification, with certain exceptions. Notably, guaranteed copy elision is not required (since version 2019.5.1) and <emph>boost::string_view</emph> is used as a substitute for <emph>std::string_view</emph> if <emph>std::string_view</emph> is not available.</para>
-
-		<para>These exceptions allow Balau to be built with the partially C++17 compliant GCC version 6.</para>
-
-		<h2>Operating systems</h2>
-
-		<para>Balau has been developed and tested on 64 bit Linux with the GCC and Clang compilers. A port to Windows 7/10 is planned.</para>
-
-		<para>Other Posix compliant platforms that are supported by Boost and ICU may work if they comply with the primitive type size assertion checks in the <emph>StdTypes.hpp</emph> header:</para>
-
-		<code lang="C++">
-			static_assert(CHAR_BIT          == 8);
-			static_assert(sizeof(short)     == 2);
-			static_assert(sizeof(int)       == 4);
-			static_assert(sizeof(long long) == 8);
-		</code>
-
-		<para>Due to the size difference between long integers in different common data models, the <emph>long</emph> and <emph>unsigned long</emph> integer types are not used in the library other than when a dependency requires a value of one of those types. Instead, use of the <emph>long long</emph> and <emph>unsigned  long long</emph> integer types allows the commonly accepted data models to be supported without primitive type size conflicts.</para>
-
-		<h2>CPU architectures</h2>
-
-		<para>Balau has been developed and tested on x86-64.</para>
-
-		<para>Concurrent code in the library uses the C++ 11 atomic operations library. Consequently, the library should be free of data races on all platforms that have a standards compliant C++17 compiler and standard library.</para>
-
 		<h1>Building</h1>
 
-		<para>Balau uses the CMake build system. See the <ref url="NonCode/Building">building page</ref> for information on building Balau and its dependencies.</para>
+		<para>Balau uses the CMake meta-build system. See the <ref url="NonCode/Building">building page</ref> for information on building Balau.</para>
 
-		<para>The source code includes a set of unit tests, implemented with the Balau test runner. After building the library, the tests may be run by launching the <emph>BalauTests</emph> application. The tests can also be used as an aid in getting up to speed quickly with each feature in the library.</para>
+		<para>The source code includes a set of unit tests, implemented with the Balau test runner. After building the library, the tests may be run by launching the <emph>BalauTests</emph> application. The test source code can also be used as an aid in getting up to speed quickly with each feature in the library.</para>
 
 		<h1>Contributing</h1>
 
-		<para>The core principal of the Balau core C++ library is to provide a user friendly C++ application framework on top of Boost and ICU, on which complex Unicode based C++ software applications may be created. To achieve this aim, the library contains a set of core application components (injector, environment configuration framework, logger, test runner) that form the basis of a complex C++ software application, and a set of utilities with straightforward APIs.</para>
-
-		<para>The library is in active development. Many of the themes can be expanded to cover a greater breadth of features and utilities.</para>
+		<para>The core principal of the Balau core C++ library is to provide a user friendly C++ application framework on which complex, enterprise quality, Unicode based C++ software applications may be created. To achieve this aim, the library contains a set of core application components (injector, environment configuration framework, logger, test runner) that form the basis of a complex C++ software application, and a set of utilities with straightforward APIs.</para>
 
 		<para>Pull requests with additional components and utilities are welcome. Some guidelines are included on the <ref url="NonCode/Contributing">contributing</ref> page. A current list of planned development is available on the <ref url="NonCode/PlannedFeatures">planned features</ref> page.</para>
 
@@ -235,8 +222,6 @@
 				</row>
 			</body>
 		</table>
-
-		<para>It is anticipated that these items will be completed by July 2019.</para>
 
 		<section class="notices">
 			<para class="notice-body">* Configuration of the browser's security settings may be required. See the documentation on <ref type="raw" new="true" url="https://borasoftware.com/doc/boradoc/latest/manual/direct-loading.html">direct loading</ref> for more information.</para>

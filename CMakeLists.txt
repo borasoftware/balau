@@ -1,10 +1,18 @@
 ##
 ## Balau core C++ library
-##
 ## Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 ##
-## Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-## See the LICENSE file for the full license text.
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
 ##
 
 ##
@@ -17,7 +25,7 @@ cmake_minimum_required(VERSION 3.10.2)
 ################################ Balau version ################################
 
 set(BALAU_VERSION_YEAR 2020)
-set(BALAU_VERSION_MONTH 5)
+set(BALAU_VERSION_MONTH 12)
 set(BALAU_VERSION_PATCH 1)
 set(BALAU_VERSION "${BALAU_VERSION_YEAR}.${BALAU_VERSION_MONTH}.${BALAU_VERSION_PATCH}")
 
@@ -57,14 +65,22 @@ set(BALAU_SOURCE_TEST_RESOURCES_FOLDER ${CMAKE_SOURCE_DIR}/src/test/resources)
 set(BALAU_TARGET_FOLDER ${CMAKE_BINARY_DIR})
 set(BALAU_TEST_RESULTS_FOLDER ${CMAKE_BINARY_DIR}/testResults)
 
-set(BALAU_TEST_EMAIL_HOST $ENV{BALAU_TEST_EMAIL_HOST})
-set(BALAU_TEST_EMAIL_PORT $ENV{BALAU_TEST_EMAIL_PORT})
-set(BALAU_TEST_EMAIL_SENDER_USER $ENV{BALAU_TEST_EMAIL_SENDER_USER})
-set(BALAU_TEST_EMAIL_SENDER_PASSWORD $ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD})
-set(BALAU_TEST_EMAIL_TO $ENV{BALAU_TEST_EMAIL_TO})
+if (BALAU_ENABLE_NETWORK)
+	set(BALAU_TEST_EMAIL_HOST $ENV{BALAU_TEST_EMAIL_HOST})
+	set(BALAU_TEST_EMAIL_PORT $ENV{BALAU_TEST_EMAIL_PORT})
+	set(BALAU_TEST_EMAIL_SENDER_USER $ENV{BALAU_TEST_EMAIL_SENDER_USER})
+	set(BALAU_TEST_EMAIL_SENDER_PASSWORD $ENV{BALAU_TEST_EMAIL_SENDER_PASSWORD})
+	set(BALAU_TEST_EMAIL_TO $ENV{BALAU_TEST_EMAIL_TO})
 
-if (DEFINED BALAU_TEST_EMAIL_HOST)
-	message(STATUS "BALAU_TEST_EMAIL_HOST defined as ${BALAU_TEST_EMAIL_HOST}")
+	if (DEFINED BALAU_TEST_EMAIL_HOST)
+		message(STATUS "BALAU_TEST_EMAIL_HOST defined as ${BALAU_TEST_EMAIL_HOST}")
+	endif ()
+else ()
+	set(BALAU_TEST_EMAIL_HOST )
+	set(BALAU_TEST_EMAIL_PORT )
+	set(BALAU_TEST_EMAIL_SENDER_USER )
+	set(BALAU_TEST_EMAIL_SENDER_PASSWORD )
+	set(BALAU_TEST_EMAIL_TO )
 endif ()
 
 if (DEFINED BALAU_LOGGING_THREAD_LOCAL_ALLOCATOR_BUFFER_SIZE_KB)
@@ -174,11 +190,13 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Container/ArrayBlockingQueue.hpp
 	src/main/cpp/Balau/Container/BlockingQueue.hpp
 	src/main/cpp/Balau/Container/DependencyGraph.hpp
+	src/main/cpp/Balau/Container/DependencyGraph2.hpp
 	src/main/cpp/Balau/Container/ObjectTrie.hpp
 	src/main/cpp/Balau/Container/SynchronizedQueue.hpp
 	src/main/cpp/Balau/Container/Queue.hpp
 	src/main/cpp/Balau/Container/Impl/ContainerLogger.cpp
 	src/main/cpp/Balau/Container/Impl/ContainerLogger.hpp
+	src/main/cpp/Balau/Container/Impl/AdjacencyList.hpp
 
 	src/main/cpp/Balau/Dev/Assert.hpp
 
@@ -327,6 +345,22 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Type/Impl/FromStringImpl.hpp
 	src/main/cpp/Balau/Type/Impl/ToStringImpl.hpp
 
+	src/main/cpp/Balau/Unicode/UnicodeCase.cpp
+	src/main/cpp/Balau/Unicode/UnicodeCase.hpp
+	src/main/cpp/Balau/Unicode/UnicodeChar.cpp
+	src/main/cpp/Balau/Unicode/UnicodeChar.hpp
+	src/main/cpp/Balau/Unicode/UnicodeCharPropertyData.cpp
+	src/main/cpp/Balau/Unicode/UnicodeCharPropertyData.hpp
+	src/main/cpp/Balau/Unicode/UnicodeErrorCode.hpp
+	src/main/cpp/Balau/Unicode/UnicodeProperties.hpp
+	src/main/cpp/Balau/Unicode/UnicodeTrie2.cpp
+	src/main/cpp/Balau/Unicode/UnicodeTrie2.hpp
+	src/main/cpp/Balau/Unicode/UnicodeTrie2Impl.hpp
+	src/main/cpp/Balau/Unicode/UTF8.cpp
+	src/main/cpp/Balau/Unicode/UTF8.hpp
+	src/main/cpp/Balau/Unicode/UTF16.hpp
+	src/main/cpp/Balau/Unicode/UTF32.hpp
+
 	src/main/cpp/Balau/Util/App.hpp
 	src/main/cpp/Balau/Util/Containers.hpp
 	src/main/cpp/Balau/Util/DateTime.hpp
@@ -352,9 +386,9 @@ set(BALAU_SOURCE_FILES
 
 set_source_files_properties(${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp PROPERTIES GENERATED TRUE)
 
-if (BALAU_ENABLE_HTTP)
+if (BALAU_ENABLE_NETWORK)
 	set(BALAU_HTTP_SOURCE_FILES
-		src/main/cpp/Balau/ThirdParty/Boost/Beast/Http/BasicFileBody.hpp
+
 		src/main/cpp/Balau/Documentation/ConfigurationWebApp.cpp
 		src/main/cpp/Balau/Documentation/ConfigurationWebApp.hpp
 		src/main/cpp/Balau/Network/Http/Client/HttpClient.cpp
@@ -420,21 +454,21 @@ if (BALAU_ENABLE_HTTP)
 		src/main/cpp/Balau/Testing/Util/NetworkTesting.cpp
 		src/main/cpp/Balau/Testing/Util/NetworkTesting.hpp
 	)
+
+	if (BALAU_ENABLE_CURL)
+		set(BALAU_CURL_SOURCE_FILES
+			src/main/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.cpp
+			src/main/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp
+			src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.cpp
+			src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.hpp
+			src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlInitializer.cpp
+			src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlInitializer.hpp
+		)
+	else ()
+		set(BALAU_CURL_SOURCE_FILES)
+	endif ()
 else ()
 	set(BALAU_HTTP_SOURCE_FILES)
-endif ()
-
-if (BALAU_ENABLE_HTTP AND BALAU_ENABLE_CURL)
-	set(BALAU_CURL_SOURCE_FILES
-		src/main/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.cpp
-		src/main/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebApp.hpp
-		src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.cpp
-		src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlEmailSender.hpp
-		src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlInitializer.cpp
-		src/main/cpp/Balau/Network/Http/Server/HttpWebApps/Impl/CurlInitializer.hpp
-	)
-else ()
-	set(BALAU_CURL_SOURCE_FILES)
 endif ()
 
 if (BALAU_ENABLE_ZLIB)
@@ -547,6 +581,7 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Testing/AssertionsTestData.hpp
 	src/test/cpp/Balau/ThirdParty/HashLibrary/HashLibraryTest.cpp
 	src/test/cpp/Balau/Type/CharacterTest.cpp
+	src/test/cpp/Balau/Type/UUIDTest.cpp
 	src/test/cpp/Balau/Util/AppTest.cpp
 	src/test/cpp/Balau/Util/DateTimeTest.cpp
 	src/test/cpp/Balau/Util/PrettyPrintTest.cpp
@@ -556,31 +591,27 @@ set(BALAU_TESTS_SOURCE_FILES
 	src/test/cpp/Balau/Util/UserTest.cpp
 )
 
-if (BALAU_ENABLE_HTTP)
-	set(BALAU_TESTS_HTTP_SOURCE_FILES
-		src/test/cpp/Balau/Application/EnvironmentConfigurationTest.cpp
-		src/test/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderTest.cpp
-		src/test/cpp/Balau/Documentation/ConfigurationWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Client/HttpClientTest.cpp
-		src/test/cpp/Balau/Network/Http/Client/HttpsClientTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpServerTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.cpp
-		src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.cpp
-		src/test/cpp/Balau/Network/Utilities/UrlDecodeTest.cpp
-		src/test/cpp/Balau/Resource/HttpByteReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpsByteReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpsUtf8To32ReadResourceTest.cpp
-		src/test/cpp/Balau/Resource/HttpsTest.cpp
-		src/test/cpp/Balau/Resource/HttpTest.cpp
-		src/test/cpp/Balau/Resource/HttpUtf8To32ReadResourceTest.cpp
-	)
-else ()
-	set(BALAU_TESTS_HTTP_SOURCE_FILES)
-endif ()
+set(BALAU_TESTS_HTTP_SOURCE_FILES
+	src/test/cpp/Balau/Application/EnvironmentConfigurationTest.cpp
+	src/test/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderTest.cpp
+	src/test/cpp/Balau/Documentation/ConfigurationWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Client/HttpClientTest.cpp
+	src/test/cpp/Balau/Network/Http/Client/HttpsClientTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/HttpServerTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/FileServingHttpWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/EmailSendingHttpWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RedirectingHttpWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/WsWebApps/ChatWsWebAppTest.cpp
+	src/test/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebAppTest.cpp
+	src/test/cpp/Balau/Network/Utilities/UrlDecodeTest.cpp
+	src/test/cpp/Balau/Resource/HttpByteReadResourceTest.cpp
+	src/test/cpp/Balau/Resource/HttpsByteReadResourceTest.cpp
+	src/test/cpp/Balau/Resource/HttpsUtf8To32ReadResourceTest.cpp
+	src/test/cpp/Balau/Resource/HttpsTest.cpp
+	src/test/cpp/Balau/Resource/HttpTest.cpp
+	src/test/cpp/Balau/Resource/HttpUtf8To32ReadResourceTest.cpp
+)
 
 if (BALAU_ENABLE_CURL)
 	set(BALAU_TESTS_CURL_SOURCE_FILES
@@ -705,10 +736,8 @@ add_dependencies(RunCppCheck BalauTests)
 
 ################################# Example apps ################################
 
-if (BALAU_ENABLE_HTTP)
-	add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
-	target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
-endif ()
+add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
+target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
 
 add_executable(ExampleSkeletonApp src/examples/SkeletonApp/SkeletonApp.cpp)
 target_link_libraries(ExampleSkeletonApp Balau ${ALL_LIBS})

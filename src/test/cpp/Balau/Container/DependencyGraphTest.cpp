@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 // Original dependency example from the Boost Graph library.
 //
@@ -116,8 +124,8 @@ void addEdge(Graph & g, const char * from, const char * to) {
 
 struct DependencyGraphTest : public Testing::TestGroup<DependencyGraphTest> {
 	DependencyGraphTest() {
-		registerTest(&DependencyGraphTest::test_prep, "test_prep");
-		registerTest(&DependencyGraphTest::test, "test");
+		RegisterTest(test_prep);
+		RegisterTest(test);
 	}
 
 	void test_prep() {

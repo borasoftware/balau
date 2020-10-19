@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -33,7 +41,7 @@ struct User final {
 	///
 	///
 	static std::string getUserName() {
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			const uid_t uid = geteuid();
 			const passwd * pw = getpwuid(uid);
 
@@ -45,7 +53,7 @@ struct User final {
 					, "Failed to obtain the user name: user entry not found in passwd."
 				);
 			}
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			#error "The Windows platform is not yet implemented."
 		#else
 			#error "Platform not implemented."
@@ -59,7 +67,7 @@ struct User final {
 	///
 	static Resource::File getHomeDirectory() {
 		// Best effort approach.
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			const char * home = std::getenv("HOME");
 
 			if (home != nullptr && !Util::Strings::trim(home).empty()) {
@@ -112,7 +120,7 @@ struct User final {
 			}
 
 			return Resource::File(result->pw_dir);
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			#error "The Windows platform is not yet implemented."
 
 			// TODO verify

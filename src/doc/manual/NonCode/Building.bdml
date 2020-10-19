@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -37,7 +45,7 @@
 
 		<h2>CMAKE_PREFIX_PATH</h2>
 
-		<para>If the <emph>CMAKE_PREFIX_PATH</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. This setup allows the ICU, Boost, and optionally libzip dependencies to be installed in <emph>${HOME}/usr</emph>, to be picked up during CMake configuration automatically.</para>
+		<para>If the <emph>CMAKE_PREFIX_PATH</emph> is not set, the Balau CMakeLists.txt file defaults it to the <emph>${HOME}/usr</emph> folder. This setup allows the optional libzip dependency to be installed in <emph>${HOME}/usr</emph>, to be picked up during CMake configuration automatically.</para>
 
 		<para>If the dependencies are located elsewhere, the <emph>CMAKE_PREFIX_PATH</emph> should be set, as discussed in the <emph>CMake variables</emph> section below.</para>
 
@@ -76,12 +84,6 @@
 					<cell>ON</cell>
 					<cell>Enable use of Curl library (email sending web app).</cell>
 				</row>
-
-				<row>
-					<cell>BALAU_ENABLE_HTTP</cell>
-					<cell>ON</cell>
-					<cell>Enable use of HTTP components (disabled for Boost &lt; 1.68.0).</cell>
-				</row>
 			</body>
 		</table>
 
@@ -89,13 +91,9 @@
 
 		<h1>Dependencies</h1>
 
-		<para>In addition to the C++ standard library, Balau relies on two third party libraries and three utility libraries.</para>
+		<para>In addition to the C++ standard library, Balau relies on three optional utility libraries.</para>
 
-		<para>The first dependency is <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref>, which provides Unicode support. ICU version <strong>60.2</strong> is the currently specified version in the CMakeLists.txt file.</para>
-
-		<para>The second dependency is the <ref type="raw" new="true" url="http://www.boost.org">Boost library</ref>. Boost version <strong>1.68.0</strong> is the currently specified version in the CMakeLists.txt file.</para>
-
-		<para>The three utility library dependencies are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. These libraries should be installed via your distribution's standard packaging system.</para>
+		<para>These utility libraries are <emph>zlib</emph>, <emph>libzip</emph> and <emph>curl</emph>. These libraries should be installed via your distribution's standard packaging system.</para>
 
 		<para>The only other dependencies used are standard dependencies on each supported platform.</para>
 
@@ -147,74 +145,6 @@
 		</code>
 
 		<para>RHEL / CentOS also ship with old versions of CMake (<emph>2.8</emph>). As Balau requires at least CMake version <emph>3.10.2</emph>, a suitable build of CMake must be available. Please refer to the <ref type="raw" new="true" url="https://cmake.org/">CMake</ref> website for more information.</para>
-
-		<h2>ICU</h2>
-
-		<h3>Linux</h3>
-
-		<para>Download the ICU version 60.2 sources <ref new="true" type="raw" url="http://download.icu-project.org/files/icu4c/60.2/icu4c-60_2-src.tgz">here</ref>.</para>
-
-		<para>To configure the ICU sources on Linux, unzip the sources and run the following commands in the unzipped ICU source directory. If you intend to use a different install prefix that the Balau default, the <emph>--prefix</emph> option should be set to the required path.</para>
-
-		<code>
-			cd /path/to/icu/code
-			cd source
-
-			# Replace ${HOME}/usr to alternative path if required.
-			./runConfigureICU Linux --enable-static    \
-			                        --disable-shared   \
-			                        --disable-renaming \
-			                        --prefix=${HOME}/usr
-		</code>
-
-		<para>Then add the necessary ICU defines in the <emph>source/common/unicode/uconfig.h</emph> file. These additionally configure ICU's build.</para>
-
-		<code lang="C++">
-			#define U_USING_ICU_NAMESPACE            1
-			#define UNISTR_FROM_CHAR_EXPLICIT        explicit
-			#define UNISTR_FROM_STRING_EXPLICIT      explicit
-			#define U_NO_DEFAULT_INCLUDE_UTF_HEADERS 1
-			#define U_HIDE_OBSOLETE_UTF_OLD_H        1
-			#define ICU_NO_USER_DATA_OVERRIDE        1
-			#define U_DISABLE_RENAMING               1
-			// Linux/OSx platforms also use:
-			#define U_CHARSET_IS_UTF8                1
-		</code>
-
-		<para>Then build and install ICU.</para>
-
-		<code>
-			make CXXFLAGS='-std=c++17 -g -o2 -fPIC' -j4
-			make install
-		</code>
-
-		<h3>Windows</h3>
-
-		<para>This section will be filled in when the Windows port has been completed.</para>
-
-		<h2>Boost</h2>
-
-		<h3>Linux</h3>
-
-		<para>Download the Boost version 1.68.0 sources <ref new="true" type="raw" url="https://dl.bintray.com/boostorg/release/1.68.0/source/boost_1_68_0.tar.bz2">here</ref>.</para>
-
-		<para>To configure the Boost sources on Linux, unzip the sources and run the following commands in the unzipped Boost source directory. If you intend to use different install prefixes than the Balau default, the <emph>--prefix</emph> and <emph>--with-icu</emph> options should be set to the required path.</para>
-
-		<code>
-			# Replace ${HOME}/usr ocurrances to alternative paths if required.
-			./bootstrap.sh --with-icu=${HOME}/usr --prefix=${HOME}/usr
-		</code>
-
-		<para>Then build and install Boost.</para>
-
-		<code>
-			./b2 -j4
-			./b2 install
-		</code>
-
-		<h3>Windows</h3>
-
-		<para>This section will be filled in when the Windows port has been completed.</para>
 
 		<h1>CMake variables</h1>
 
@@ -291,40 +221,14 @@
 
 		<h1>Linking</h1>
 
-		<para>In order to link to the Balau library, your <emph>CMakeLists.txt</emph> file needs to be modified with the Balau library and its dependencies.</para>
-
-		<para>These instructions have been written in order to use statically linked libraries. On some platforms, the ordering of the entries in the <emph>CMakeLists.txt</emph> file is important, in order that the linker may resolve the dependencies correctly.</para>
-
-		<para>The following CMake commands will ensure all libraries are found and linked correctly.</para>
+		<para>In order to link to the Balau library, your <emph>CMakeLists.txt</emph> file needs to be modified with the Balau library.</para>
 
 		<code lang="C++">
-			######################## BALAU ########################
-
-			find_package(Balau 2019.7.1 REQUIRED)
-			message(STATUS "Balau include dirs: ${Balau_INCLUDE_DIRS}")
-			message(STATUS "Balau library:      ${Balau_LIBRARY}")
+			find_package(Balau 2020.11.1 REQUIRED)
+			message(STATUS "Balau includes: ${Balau_INCLUDE_DIRS}")
+			message(STATUS "Balau library:  ${Balau_LIBRARY}")
 			include_directories(BEFORE ${Balau_INCLUDE_DIRS})
 			set(ALL_LIBS ${ALL_LIBS} ${Balau_LIBRARY})
-
-			################### BOOST LIBRARIES ###################
-
-			set(Boost_DETAILED_FAILURE_MSG ON)
-			set(Boost_USE_STATIC_LIBS ON)
-			set(Boost_USE_MULTITHREADED ON)
-			set(Boost_USE_STATIC_RUNTIME OFF)
-			# Add any other Boost libraries that you may require.
-			find_package(Boost 1.68.0 REQUIRED COMPONENTS thread chrono date_time filesystem system serialization iostreams)
-			include_directories(${Boost_INCLUDE_DIRS})
-			set(ALL_LIBS ${ALL_LIBS} ${Boost_LIBRARIES})
-
-			message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
-
-			######################### ICU #########################
-
-			find_package(ICU 60.2 REQUIRED COMPONENTS i18n uc data)
-			include_directories(${ICU_INCLUDE_DIRS})
-			set(ALL_LIBS ${ALL_LIBS} ${ICU_LIBRARIES})
-			message(STATUS "ICU include dirs: ${ICU_INCLUDE_DIRS}")
 		</code>
 	</chapter>
 </document>

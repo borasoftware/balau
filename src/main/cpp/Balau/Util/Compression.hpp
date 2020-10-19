@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -44,11 +52,11 @@ struct GZip final {
 	/// @param output the file to write the gzipped stream to
 	///
 	static void gzip(const Resource::File & input, const Resource::File & output) {
-		boost::filesystem::ofstream out(output.getEntry(), std::ios::binary);
+		std::ofstream out(output.getEntry().path(), std::ios::binary);
 		boost::iostreams::filtering_streambuf<boost::iostreams::output> filter;
 		filter.push(boost::iostreams::gzip_compressor());
 		filter.push(out);
-		boost::filesystem::ifstream in(input.getEntry(), std::ios::binary);
+		std::ifstream in(input.getEntry().path(), std::ios::binary);
 		boost::iostreams::copy(in, filter);
 	}
 
@@ -59,7 +67,7 @@ struct GZip final {
 	/// @param output the file to write the gzipped stream to
 	///
 	static void gzip(const std::string & input, const Resource::File & output) {
-		boost::filesystem::ofstream out(output.getEntry(), std::ios::binary);
+		std::ofstream out(output.getEntry().path(), std::ios::binary);
 		boost::iostreams::filtering_streambuf<boost::iostreams::output> filter;
 		filter.push(boost::iostreams::gzip_compressor());
 		filter.push(out);
@@ -74,7 +82,7 @@ struct GZip final {
 	/// @param output the file to write the gzipped stream to
 	///
 	static void gzip(std::istream & input, const Resource::File & output) {
-		boost::filesystem::ofstream out(output.getEntry(), std::ios::binary);
+		std::ofstream out(output.getEntry().path(), std::ios::binary);
 		boost::iostreams::filtering_streambuf<boost::iostreams::output> filter;
 		filter.push(boost::iostreams::gzip_compressor());
 		filter.push(out);
@@ -88,11 +96,11 @@ struct GZip final {
 	/// @param output the file to write the uncompressed stream to
 	///
 	static void gunzip(const Resource::File & input, const Resource::File & output) {
-		boost::filesystem::ifstream in(input.getEntry(), std::ios::binary);
+		std::ifstream in(input.getEntry().path(), std::ios::binary);
 		boost::iostreams::filtering_streambuf<boost::iostreams::input> filter;
 		filter.push(boost::iostreams::gzip_decompressor());
 		filter.push(in);
-		boost::filesystem::ofstream out(output.getEntry(), std::ios::binary);
+		std::ofstream out(output.getEntry().path(), std::ios::binary);
 		boost::iostreams::copy(filter, out);
 	}
 
@@ -106,7 +114,7 @@ struct GZip final {
 	/// @return a string containing the uncompressed data
 	///
 	static void gunzip(const Resource::File & input, std::string & output) {
-		boost::filesystem::ifstream in(input.getEntry(), std::ios::binary);
+		std::ifstream in(input.getEntry().path(), std::ios::binary);
 		boost::iostreams::filtering_streambuf<boost::iostreams::input> filter;
 		filter.push(boost::iostreams::gzip_decompressor());
 		filter.push(in);
@@ -122,7 +130,7 @@ struct GZip final {
 	/// @return an input stream wrapper supplying a uncompressed stream
 	///
 	static void gunzip(const Resource::File & input, std::unique_ptr<std::istream> & stream) {
-		boost::filesystem::ifstream inputStream(input.getEntry(), std::ios::binary);
+		std::ifstream inputStream(input.getEntry().path(), std::ios::binary);
 		stream = std::make_unique<boost::iostreams::filtering_istream>();
 		auto * filterStream = static_cast<boost::iostreams::filtering_istream *>(stream.get());
 		filterStream->push(boost::iostreams::gzip_decompressor());

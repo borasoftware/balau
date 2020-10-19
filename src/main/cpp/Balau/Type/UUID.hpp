@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -17,13 +25,11 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_TYPE__UUID
 #define COM_BORA_SOFTWARE__BALAU_TYPE__UUID
 
+#include <Balau/Util/Random.hpp>
 #include <Balau/Type/ToString.hpp>
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
-#include <sstream>
+#include <iomanip>
+#include <cstring>
 
 namespace Balau {
 
@@ -34,7 +40,14 @@ class UUID {
 	///
 	/// Construct a new UUID with a random value.
 	///
-	public: UUID() : uuid(boost::uuids::random_generator()()) {}
+	public: UUID() : uuid(generateUUID()) {}
+
+	///
+	/// Construct a new UUID from the supplied array.
+	///
+	/// @param bytes exactly 16 bytes of data
+	///
+	public: UUID(const unsigned char * bytes) : uuid(generateUUID(bytes)) {}
 
 	///
 	/// Construct a new UUID by copying the supplied instance.
@@ -46,10 +59,8 @@ class UUID {
 	///
 	/// This allocates a std::array object.
 	///
-	public: std::array<unsigned char, 16> asArray() const {
-		std::array<unsigned char, 16> a {};
-		memcpy(a.data(), uuid.data, 16);
-		return a;
+	public: const std::array<unsigned char, 16> & asArray() const {
+		return uuid;
 	}
 
 	///
@@ -58,7 +69,7 @@ class UUID {
 	/// This returns the bytes directly. No object construction is performed.
 	///
 	public: const unsigned char * asBytes() const {
-		return uuid.data;
+		return uuid.data();
 	}
 
 	///
@@ -66,31 +77,14 @@ class UUID {
 	///
 	/// This allocates a string stream and string object.
 	///
-	public: template <typename AllocatorT> Balau::U8String<AllocatorT> asString() const {
-		Balau::U8OStringStream<AllocatorT> stream;
-		stream << uuid;
-		return stream.str();
-	}
+	public: template <typename AllocatorT> Balau::U8String<AllocatorT> asString() const;
 
 	///
 	/// Get the UUID as a UTF-8 string.
 	///
 	/// This allocates a string stream and string object.
 	///
-	public: std::string asString() const {
-		std::ostringstream stream;
-		stream << uuid;
-		return stream.str();
-	}
-
-	///
-	/// Get the UUID as the underlying Boost UUID.
-	///
-	/// No object construction is performed.
-	///
-	public: const boost::uuids::uuid & asUUID() const {
-		return uuid;
-	}
+	public: std::string asString() const;
 
 	///
 	/// Are the two UUIDs equal?
@@ -136,16 +130,44 @@ class UUID {
 
 	////////////////////////// Private implementation /////////////////////////
 
-	private: const boost::uuids::uuid uuid;
+	private: static std::array<unsigned char, 16> generateUUID() {
+		Util::UniformInt<unsigned char> r;
+		std::array<unsigned char, 16> ret;
+		std::generate(ret.begin(), ret.end(), [&r] () { return r(); });
+		return ret;
+	}
+
+	private: static std::array<unsigned char, 16> generateUUID(const unsigned char * bytes) {
+		std::array<unsigned char, 16> ret;
+		std::memcpy(ret.data(), bytes, 16);
+		return ret;
+	}
+
+	private: const std::array<uint8_t, 16> uuid;
+
+	friend std::ostream & operator << (std::ostream &, const UUID &);
+	template <typename AllocatorT> friend std::basic_ostringstream<char, std::char_traits<char>, AllocatorT> & operator << (std::basic_ostringstream<char, std::char_traits<char>, AllocatorT> &, const UUID &);
 };
+
+template <typename AllocatorT>
+inline std::basic_ostringstream<char, std::char_traits<char>, AllocatorT> & operator << (std::basic_ostringstream<char, std::char_traits<char>, AllocatorT> & stream, const UUID & uuid) {
+	for (size_t m = 0; m < uuid.uuid.size(); m++) {
+		stream << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(uuid.uuid[m]);
+
+		if (m == 3 || m == 5 || m == 7 || m == 9) {
+			stream << "-";
+		}
+	}
+
+	return stream;
+}
 
 ///
 /// Print the UUID as a UTF-8 string.
 ///
 /// @return a UTF-8 string representing the UUID
 ///
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const UUID & uuid) {
+template <typename AllocatorT> inline Balau::U8String<AllocatorT> toString(const UUID & uuid) {
 	return uuid.asString<AllocatorT>();
 }
 
@@ -156,6 +178,23 @@ inline Balau::U8String<AllocatorT> toString(const UUID & uuid) {
 ///
 inline std::string toString(const UUID & uuid) {
 	return uuid.asString();
+}
+
+template <typename AllocatorT> inline Balau::U8String<AllocatorT> UUID::asString() const {
+	Balau::U8OStringStream<AllocatorT> stream;
+	stream << uuid;
+	return stream.str();
+}
+
+///
+/// Get the UUID as a UTF-8 string.
+///
+/// This allocates a string stream and string object.
+///
+inline std::string UUID::asString() const {
+	std::ostringstream stream;
+	stream << *this;
+	return stream.str();
 }
 
 } // namespace Balau

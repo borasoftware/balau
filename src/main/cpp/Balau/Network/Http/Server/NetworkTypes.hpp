@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__NETWORK_TYPES
@@ -20,8 +28,6 @@
 #include <Balau/Type/ToString.hpp>
 #include <Balau/Type/FromString.hpp>
 #include <Balau/Util/Enums.hpp>
-
-#include <Balau/ThirdParty/Boost/Beast/Http/BasicFileBody.hpp>
 
 #include <boost/asio/bind_executor.hpp>
 #include <boost/asio/connect.hpp>
@@ -242,8 +248,7 @@ using StringBody = boost::beast::http::basic_string_body<char>;
 ///
 /// A message body represented by a file on the filesystem.
 ///
-using FileBody = Balau::Boost::Beast::Http::basic_file_body<boost::beast::file>;
-//using FileBody = boost::beast::http::file_body;
+using FileBody = boost::beast::http::file_body;
 
 ///
 /// The type of the message body represented by a file on the filesystem.

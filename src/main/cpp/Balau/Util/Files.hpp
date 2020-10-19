@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -23,26 +31,27 @@
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
+#include <fstream>
 #include <sstream>
 
 namespace std { // NOLINT
 
-template <> struct hash<boost::filesystem::directory_entry> {
-	size_t operator () (const boost::filesystem::directory_entry & value) const noexcept {
-		return hash<boost::filesystem::path::string_type>()(value.path().native());
+template <> struct hash<std::filesystem::directory_entry> {
+	size_t operator () (const std::filesystem::directory_entry & value) const noexcept {
+		return hash<std::filesystem::path::string_type>()(value.path().native());
 	}
 };
 
-template <> struct equal_to<boost::filesystem::directory_entry> {
-	bool operator () (const boost::filesystem::directory_entry & x,
-	                  const boost::filesystem::directory_entry & y) const {
+template <> struct equal_to<std::filesystem::directory_entry> {
+	bool operator () (const std::filesystem::directory_entry & x,
+	                  const std::filesystem::directory_entry & y) const {
 		return x == y;
 	}
 };
 
 } // namespace std
 
-namespace boost::filesystem {
+namespace std::filesystem {
 
 ///
 /// Print the file system path as a UTF-8 string.
@@ -50,7 +59,7 @@ namespace boost::filesystem {
 /// @return a UTF-8 string representing the file system path
 ///
 template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const boost::filesystem::path & path) {
+inline Balau::U8String<AllocatorT> toString(const std::filesystem::path & path) {
 	return toString<AllocatorT>(path.string());
 }
 
@@ -59,11 +68,11 @@ inline Balau::U8String<AllocatorT> toString(const boost::filesystem::path & path
 ///
 /// @return a UTF-8 string representing the file system path
 ///
-inline std::string toString(const boost::filesystem::path & path) {
+inline std::string toString(const std::filesystem::path & path) {
 	return path.string();
 }
 
-} // namespace boost::filesystem
+} // namespace std::filesystem
 
 namespace Balau::Util {
 
@@ -77,7 +86,7 @@ struct Files final {
 	/// Copy the contents of the source file into the destination file.
 	///
 	static void copy(const Resource::File & src, const Resource::File & dst) {
-		boost::filesystem::copy(src.getEntry(), dst.getEntry());
+		std::filesystem::copy(src.getEntry(), dst.getEntry());
 	}
 
 	///////////////////////////////// Reading /////////////////////////////////
@@ -92,7 +101,7 @@ struct Files final {
 			ThrowBalauException(Exception::FileNotFoundException, file);
 		}
 
-		boost::filesystem::ifstream inputStream(file.getEntry());
+		std::ifstream inputStream(file.getEntry().path());
 		std::vector<std::string> lines;
 		std::string s;
 
@@ -113,7 +122,7 @@ struct Files final {
 			ThrowBalauException(Exception::FileNotFoundException, file);
 		}
 
-		boost::filesystem::ifstream inputStream(file.getEntry());
+		std::ifstream inputStream(file.getEntry().path());
 		std::istreambuf_iterator<char> eos;
 		return std::string(std::istreambuf_iterator<char>(inputStream), eos);
 	}
@@ -128,7 +137,7 @@ struct Files final {
 			ThrowBalauException(Exception::FileNotFoundException, file);
 		}
 
-		boost::filesystem::ifstream inputStream(file.getEntry());
+		std::ifstream inputStream(file.getEntry().path());
 		std::istreambuf_iterator<char> eos;
 		return std::vector<char>(std::istreambuf_iterator<char>(inputStream), eos);
 	}

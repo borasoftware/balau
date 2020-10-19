@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #include "Impl/ClientSessions.hpp"
@@ -49,7 +57,7 @@ void HttpSession::close() {
 }
 
 void HttpSession::onRead(boost::system::error_code errorCode, std::size_t bytesTransferred) {
-	boost::ignore_unused(bytesTransferred);
+	BalauIgnoreUnused(bytesTransferred);
 
 	parseCookies();
 
@@ -75,7 +83,7 @@ void HttpSession::onRead(boost::system::error_code errorCode, std::size_t bytesT
 	}
 }
 
-bool HttpSession::validateRequest(boost::system::error_code errorCode, const StringRequest & request) {
+bool HttpSession::validateRequest(boost::system::error_code errorCode, const StringRequest & request_) {
 	if (errorCode == Error::end_of_stream) {
 		doClose(); // The client closed the connection.
 		return false;
@@ -84,10 +92,10 @@ bool HttpSession::validateRequest(boost::system::error_code errorCode, const Str
 		return false;
 	}
 
-	const auto target = request.target();
+	const auto target = request_.target();
 
-	if (target.empty() || target[0] != '/' || target.find("..") != boost::string_view::npos) {
-		sendResponse(HttpWebApp::createBadRequestResponse(*this, request, "Illegal path in request."));
+	if (target.empty() || target[0] != '/' || target.find("..") != std::string_view::npos) {
+		sendResponse(HttpWebApp::createBadRequestResponse(*this, request_, "Illegal path in request."));
 		return false;
 	}
 
@@ -95,7 +103,7 @@ bool HttpSession::validateRequest(boost::system::error_code errorCode, const Str
 }
 
 void HttpSession::onWrite(boost::system::error_code errorCode, std::size_t bytesTransferred, bool close) {
-	boost::ignore_unused(bytesTransferred);
+	BalauIgnoreUnused(bytesTransferred);
 
 	if (errorCode) {
 		BalauBalauLogWarn(serverConfiguration->logger, "HttpSession error: {}", errorCode);
@@ -127,7 +135,7 @@ void HttpSession::doClose() {
 
 void HttpSession::parseCookies() {
 	cookies.clear();
-	cookieString = ::toString(request[Field::cookie]);
+	cookieString = request[Field::cookie].to_string();
 
 	// According to RFC-6265, cookies must be split by the exact "; " string.
 	auto cookieViews = Util::Strings::split(cookieString, "; ");

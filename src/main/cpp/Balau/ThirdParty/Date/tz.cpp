@@ -2813,7 +2813,7 @@ run_program(const std::string& command)
 	// Allegedly CreateProcess overwrites the command line. Ugh.
 	std::string mutable_command(command);
 	if (CreateProcess(nullptr, &mutable_command[0],
-		nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi))
+		nullptr, nullptr, true, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi))
 	{
 		WaitForSingleObject(pi.hProcess, INFINITE);
 		DWORD exit_code;

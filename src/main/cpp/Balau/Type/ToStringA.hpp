@@ -1,10 +1,19 @@
+// @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -18,19 +27,17 @@
 
 #include <Balau/Type/StdTypes.hpp>
 #include <Balau/Type/Impl/ToStringImpl.hpp>
-#include <Balau/ThirdParty/Boost/Locale/EncodingUtf.hpp>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/locale.hpp>
-#include <boost/utility/string_view.hpp>
-
+#include <complex>
+#include <functional>
 #include <forward_list>
 #include <list>
 #include <map>
+#include <queue>
+#include <set>
+#include <stack>
 #include <unordered_set>
 #include <unordered_map>
-#include <stack>
-#include <queue>
 
 namespace Balau {
 
@@ -107,24 +114,13 @@ inline Balau::U8String<AllocatorT> toString(const std::string_view & value) {
 	return Balau::U8String<AllocatorT>(value);
 }
 
-#ifndef BALAU_USE_BOOST_STRING_VIEW
-
-///
-/// Creates a string from the Boost string view.
-///
-template <typename AllocatorT>
-inline Balau::U8String<AllocatorT> toString(const boost::string_view & value) {
-	return Balau::U8String<AllocatorT>(value.data(), value.length());
-}
-
-#endif
-
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const std::u16string & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char, char16_t, AllocatorT>(value);
+	// TODO
+	return Balau::U8String<AllocatorT>();
 }
 
 ///
@@ -132,7 +128,8 @@ inline Balau::U8String<AllocatorT> toString(const std::u16string & value) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const std::u16string_view & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char, char16_t, AllocatorT>(std::u16string(value));
+	// TODO
+	return Balau::U8String<AllocatorT>();
 }
 
 ///
@@ -140,7 +137,8 @@ inline Balau::U8String<AllocatorT> toString(const std::u16string_view & value) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const std::u32string & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char, char32_t, AllocatorT>(value);
+	// TODO
+	return Balau::U8String<AllocatorT>();
 }
 
 ///
@@ -148,7 +146,8 @@ inline Balau::U8String<AllocatorT> toString(const std::u32string & value) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(const std::u32string_view & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char, char32_t, AllocatorT>(std::u32string(value));
+	// TODO
+	return Balau::U8String<AllocatorT>();
 }
 
 ///
@@ -266,7 +265,7 @@ inline Balau::U8String<AllocatorT> toString(unsigned long long value) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(float value) {
-	return boost::lexical_cast<Balau::U8String<AllocatorT>>(value);
+	return std::to_string(value);
 }
 
 ///
@@ -274,7 +273,8 @@ inline Balau::U8String<AllocatorT> toString(float value) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(double value) {
-	return boost::lexical_cast<Balau::U8String<AllocatorT>>(value);
+	// TODO
+	return Balau::U8String<AllocatorT>();
 }
 
 ///
@@ -282,7 +282,8 @@ inline Balau::U8String<AllocatorT> toString(double value) {
 ///
 template <typename AllocatorT>
 inline Balau::U8String<AllocatorT> toString(long double value) {
-	return boost::lexical_cast<Balau::U8String<AllocatorT>>(value);
+	// TODO
+	return Balau::U8String<AllocatorT>();
 }
 
 ///
@@ -492,7 +493,8 @@ inline Balau::U8String<AllocatorT> toString(const P1 & p1, const P2 & p2, const 
 ///
 template <typename AllocatorT>
 inline Balau::U16String<AllocatorT> toString16(const Balau::U8String<AllocatorT> & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char16_t, char, AllocatorT>(value);
+	// TODO
+	return Balau::U16String<AllocatorT>();
 }
 
 ///
@@ -500,7 +502,8 @@ inline Balau::U16String<AllocatorT> toString16(const Balau::U8String<AllocatorT>
 ///
 template <typename AllocatorT>
 inline Balau::U16String<AllocatorT> toString16(const std::string & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char16_t, char, AllocatorT>(Balau::U8String<AllocatorT>(value));
+	// TODO
+	return Balau::U16String<AllocatorT>();
 }
 
 ///
@@ -510,19 +513,6 @@ template <typename AllocatorT>
 inline Balau::U16String<AllocatorT> toString16(const std::string_view & value) {
 	return toString16<AllocatorT>(Balau::U8String<AllocatorT>(value));
 }
-
-
-#ifndef BALAU_USE_BOOST_STRING_VIEW
-
-///
-/// Convert the supplied UTF-8 Boost string view to a UTF-16 string.
-///
-template <typename AllocatorT>
-inline Balau::U16String<AllocatorT> toString16(const boost::string_view & value) {
-	return toString16<AllocatorT>(Balau::U8String<AllocatorT>(value.to_string()));
-}
-
-#endif
 
 ///
 /// Returns the supplied value as is.
@@ -553,7 +543,8 @@ inline Balau::U16String<AllocatorT> toString16(const std::u16string_view & value
 ///
 template <typename AllocatorT>
 inline Balau::U16String<AllocatorT> toString16(const std::u32string & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char16_t, char32_t, AllocatorT>(value);
+	// TODO
+	return Balau::U16String<AllocatorT>();
 }
 
 ///
@@ -883,7 +874,8 @@ inline Balau::U16String<AllocatorT> toString16(const P1 & p1, const P2 & p2, con
 ///
 template <typename AllocatorT>
 inline Balau::U32String<AllocatorT> toString32(const std::string & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char32_t, char, AllocatorT>(Balau::U8String<AllocatorT>(value));
+	// TODO
+	return Balau::U32String<AllocatorT>();
 }
 
 ///
@@ -891,7 +883,8 @@ inline Balau::U32String<AllocatorT> toString32(const std::string & value) {
 ///
 template <typename AllocatorT>
 inline Balau::U32String<AllocatorT> toString32(const Balau::U8String<AllocatorT> & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char32_t, char, AllocatorT>(value);
+	// TODO
+	return Balau::U32String<AllocatorT>();
 }
 
 ///
@@ -902,24 +895,13 @@ inline Balau::U32String<AllocatorT> toString32(const std::string_view & value) {
 	return toString32<AllocatorT>(Balau::U8String<AllocatorT>(value));
 }
 
-#ifndef BALAU_USE_BOOST_STRING_VIEW
-
-///
-/// Convert the supplied UTF-8 Boost string view to a UTF-32 string.
-///
-template <typename AllocatorT>
-inline Balau::U32String<AllocatorT> toString32(const boost::string_view & value) {
-	return toString32<AllocatorT>(Balau::U8String<AllocatorT>(value.to_string()));
-}
-
-#endif
-
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.
 ///
 template <typename AllocatorT>
 inline Balau::U32String<AllocatorT> toString32(const std::u16string & value) {
-	return Balau::Boost::Locale::Conv::utf_to_utf<char32_t, char16_t, AllocatorT>(value);
+	// TODO
+	return Balau::U32String<AllocatorT>();
 }
 
 ///

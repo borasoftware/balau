@@ -1,13 +1,20 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #include <Balau/Util/Zip.hpp>
 #include <TestResources.hpp>
 
@@ -39,42 +46,42 @@ const std::string testPassword = "testPW";
 
 struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	CompressionTest() {
-		registerTest(&CompressionTest::fingerprintTest,       "fingerprintTest");
-		registerTest(&CompressionTest::unzipperTest,          "unzipperTest");
-		registerTest(&CompressionTest::encryptedUnzipperTest, "encryptedUnzipperTest");
-		registerTest(&CompressionTest::zipperTest,            "zipperTest");
-		registerTest(&CompressionTest::encryptedZipperTest,   "encryptedZipperTest");
-		registerTest(&CompressionTest::libzipSoakTest,        "libzipSoakTest");
-		registerTest(&CompressionTest::libzipSoakTest2,       "libzipSoakTest2");
-		registerTest(&CompressionTest::libzipSoakTest3,       "libzipSoakTest3");
+		RegisterTest(fingerprintTest);
+		RegisterTest(unzipperTest);
+		RegisterTest(encryptedUnzipperTest);
+		RegisterTest(zipperTest);
+		RegisterTest(encryptedZipperTest);
+		RegisterTest(libzipSoakTest);
+		RegisterTest(libzipSoakTest2);
+		RegisterTest(libzipSoakTest3);
 	}
 
 	static std::chrono::system_clock::time_point tp(int64_t s) {
 		return std::chrono::system_clock::time_point(std::chrono::nanoseconds(s * 1000000000UL));
 	}
-	
+
 	static std::pair<std::string, std::vector<char>> mpv(std::string s, std::vector<char> v) {
 		return std::make_pair<std::string, std::vector<char>>(std::move(s), std::move(v));
 	}
-	
+
 	static std::pair<std::string, std::string> mps(std::string s1, std::string s2) {
 		return std::make_pair<std::string, std::string>(std::move(s1), std::move(s2));
 	}
-	
+
 	void fingerprintTest() {
 		AssertThat(
 			  "ZipFileTest.zip has changed."
 			, Hashing::md5(zipFile)
 			, is("e4aab2f79683a428c7811f3492485320")
 		);
-	
+
 		AssertThat(
 			  "EncryptedUnzipperTest.zip has changed."
 			, Hashing::md5(encryptedZipFile)
 			, is("1b55fc4799b7d9cf2ac5ad765c7d8040")
 		);
 	}
-	
+
 	static void unzipperTestImpl(const Resource::File & file,
 	                             const std::string & pw,
 	                             const std::vector<ZipEntryInfo> & expectedEntryInfos) {
@@ -95,7 +102,7 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 			, "e/ed/edb"
 			, "f"
 		};
-	
+
 		const std::map<std::string, std::vector<char>> expectedEntryBytes = {
 			  mpv("a/",       {})
 			, mpv("a/aa",     { 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', '\n' })
@@ -113,7 +120,7 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 			, mpv("e/ed/edb", { 'e', 'e', 'e', 'e', 'd', 'd', 'd', 'd', 'b', 'b', 'b', 'b', '\n' })
 			, mpv("f",        { 'f', 'f', 'f', 'f', '\n' })
 		};
-	
+
 		const std::map<std::string, std::string> expectedEntryStrings = {
 			  mps("a/",       "")
 			, mps("a/aa",     "aaaaaaaa\n")
@@ -131,59 +138,59 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 			, mps("e/ed/edb", "eeeeddddbbbb\n")
 			, mps("f",        "ffff\n")
 		};
-	
+
 		Unzipper unzipper;
 		unzipper.open(file, true, pw);
-	
+
 		AssertThat(unzipper.isOpen(), is(true));
 		AssertThat(unzipper.readArchiveComment(), is(""));
 		AssertThat(unzipper.entryCount(), is((long long) expectedEntryNames.size()));
-	
+
 		const auto names = unzipper.entryNames();
 		AssertThat(std::set<std::string>(names.begin(), names.end()), is(expectedEntryNames));
-	
+
 		for (auto & name : expectedEntryNames) {
 			AssertThat(unzipper.hasEntry(name), is(true));
 		}
-	
+
 		AssertThat(unzipper.hasEntry("not-found"), is(false));
 		AssertThat(unzipper.hasEntry("a/b/c/not-found"), is(false));
-	
+
 		std::set<long long> indices;
-	
+
 		for (auto expectedInfo : expectedEntryInfos) {
 			ZipEntryInfo actualInfo {};
 			unzipper.getEntryInfo(expectedInfo.name, actualInfo);
-	
+
 			// Zero out the index.. just check that all indices were returned.
 			AssertThat(indices.find(actualInfo.index) == indices.end(), is(true));
 			indices.insert(actualInfo.index);
 			actualInfo.index = 0;
 			actualInfo.modificationTime = std::chrono::system_clock::time_point();
 			expectedInfo.modificationTime = std::chrono::system_clock::time_point();
-	
+
 			// Zero the encryption method in the expected if the test is not using encryption.
 			if (pw.empty()) {
 				expectedInfo.encryptionMethod = 0;
 			}
-	
+
 			AssertThat(actualInfo, is(expectedInfo));
 		}
-	
+
 		for (auto & name : expectedEntryNames) {
 			AssertThat(unzipper.readEntryComment(name), is(""));
-	
+
 			if (!Strings::endsWith(name, "/")) {
 				AssertThat(unzipper.readEntryAsBytes(name), is(expectedEntryBytes.at(name)));
 				AssertThat(unzipper.readEntryAsString(name), is(expectedEntryStrings.at(name)));
 			}
 		}
-	
+
 		unzipper.close();
-	
+
 		AssertThat(unzipper.isOpen(), is(false));
 	}
-	
+
 	void unzipperTest() {
 		const std::vector<ZipEntryInfo> expectedEntryInfos = {
 			// name, index (not checked), uncompressedSize, compressedSize, modificationTime, crc, compressionMethod, encryptionMethod
@@ -203,10 +210,10 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 			, { "e/ed/edb", 0, 13, 12, tp(1534336062), 2369158682, 8, 0 }
 			, { "f",        0,  5,  5, tp(1534335924), 1362448258, 0, 0 }
 		};
-	
+
 		unzipperTestImpl(zipFile, "", expectedEntryInfos);
 	}
-	
+
 	void encryptedUnzipperTest() {
 		const std::vector<ZipEntryInfo> expectedEntryInfos = {
 			// name, index (not checked), uncompressedSize, compressedSize, modificationTime, crc, compressionMethod, encryptionMethod
@@ -226,10 +233,10 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 			, { "e/ed/edb", 0, 13, 24, tp(1534336062), 2369158682, 8, ZIP_EM_TRAD_PKWARE }
 			, { "f",        0,  5, 17, tp(1534335924), 1362448258, 0, ZIP_EM_TRAD_PKWARE }
 		};
-	
+
 		unzipperTestImpl(encryptedZipFile, testPassword, expectedEntryInfos);
 	}
-	
+
 	const std::string archiveComment = "This is an archive comment."; // NOLINT
 	const std::string newDirectory = "q/w/e/r/"; // NOLINT
 	const std::string newEntryExistingDirectoryFromFile = "q/w/e/r/newEntry.zip"; // NOLINT
@@ -238,115 +245,115 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	const std::vector<char> bytes {1, 2, 3, 4, 5, 6, 7, 8, 9}; // NOLINT
 	const std::string str = "qwertyuiop"; // NOLINT
 	const std::string newEntryExistingDirectoryFromStringRenamed = "q/w/e/r/newStringRenamed"; // NOLINT
-	
+
 	void zipperTestImpl2(const Resource::File & file, bool commit, const std::string & pw) {
 		Zipper zipper;
 		zipper.open(file, true);
-	
+
 		AssertThat(zipper.isOpen(), is(true));
 		AssertThat(zipper.readArchiveComment(), is(""));
-	
+
 		zipper.putArchiveComment(archiveComment);
-	
+
 		AssertThat(zipper.readArchiveComment(), is(archiveComment));
-	
+
 		zipper.deleteComment();
-	
+
 		AssertThat(zipper.readArchiveComment(), is(""));
 		AssertThat(zipper.hasEntry(newDirectory), is(false));
-	
+
 		zipper.putDirectory(newDirectory);
-	
+
 		AssertThat(zipper.hasEntry(newDirectory), is(true));
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromFile), is(false));
-	
+
 		zipper.putEntry(newEntryExistingDirectoryFromFile, zipFile);
-	
+
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromFile), is(true));
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromBytes), is(false));
-	
+
 		zipper.putEntry(newEntryExistingDirectoryFromBytes, bytes);
-	
+
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromBytes), is(true));
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(false));
-	
+
 		zipper.putEntry(newEntryExistingDirectoryFromString, str);
-	
+
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(true));
-	
+
 		zipper.renameEntry(newEntryExistingDirectoryFromString, newEntryExistingDirectoryFromStringRenamed);
-	
+
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromString), is(false));
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromStringRenamed), is(true));
-	
+
 		zipper.deleteEntry(newEntryExistingDirectoryFromStringRenamed);
-	
+
 		AssertThat(zipper.hasEntry(newEntryExistingDirectoryFromStringRenamed), is(false));
-	
+
 		if (commit) {
 			zipper.commit();
-	
+
 			// Check commit.
-	
+
 			Unzipper unzipper;
 			unzipper.open(file, true);
-	
+
 			AssertThat(unzipper.hasEntry(newDirectory), is(true));
 			AssertThat(unzipper.hasEntry(newEntryExistingDirectoryFromFile), is(true));
 			AssertThat(unzipper.hasEntry(newEntryExistingDirectoryFromBytes), is(true));
-	
+
 			unzipper.close();
-	
+
 			AssertThat(unzipper.isOpen(), is(false));
 		} else {
 			zipper.close();
 		}
-	
+
 		AssertThat(zipper.isOpen(), is(false));
 	}
-	
+
 	void zipperTestImpl1(const Resource::File & srcFile, Resource::File dstFile, const std::string & pw) {
 		// Remove any existing file from a previous partial run.
 		dstFile.removeFile();
-	
+
 		// Remove the file created in this run on scope exit.
 		OnScopeExit removeTestFile([&dstFile] () { dstFile.removeFile(); });
-	
+
 		dstFile.getParentDirectory().createDirectories();
 		Files::copy(srcFile, dstFile);
-	
+
 		AssertThat(dstFile.exists(), is(true));
-	
+
 		auto md5Hash = Hashing::md5(dstFile);
-	
+
 		// First try with rollback.
 		zipperTestImpl2(dstFile, false, pw);
-	
+
 		// Verify that the file is not modified.
 		auto newMd5Hash = Hashing::md5(dstFile);
-	
+
 		AssertThat(md5Hash, is(newMd5Hash));
-	
+
 		// Then try with commit.
 		zipperTestImpl2(dstFile, true, pw);
-	
+
 		newMd5Hash = Hashing::md5(dstFile);
-	
+
 		AssertThat(md5Hash, isNot(newMd5Hash));
 	}
-	
+
 	void zipperTest() {
 		zipperTestImpl1(zipFile, mutatedZipFile, "");
 	}
-	
+
 	void encryptedZipperTest() {
 		zipperTestImpl1(encryptedZipFile, mutatedEncryptedZipFile, testPassword);
 	}
-	
+
 	void libzipSoakTest() {
 		const size_t iterationCount = 1;
 		std::vector<std::thread> threads;
-	
+
 		for (size_t m = 0; m < 2; m++) {
 			threads.emplace_back(
 				[this] () {
@@ -355,9 +362,9 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 					}
 				}
 			);
-	
+
 		}
-	
+
 	//	threads.emplace_back(
 	//		[this] () {
 	//			for (size_t m = 0; m < iterationCount; m++) {
@@ -383,12 +390,12 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	//			}
 	//		}
 	//	);
-	
+
 		for (auto & thread : threads) {
 			thread.join();
 		}
 	}
-	
+
 	static void unzipperTestImpl2() {
 		int error = 0;
 
@@ -399,14 +406,14 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 		if (error) { throw std::exception(); }
 		zip_discard(archive);
 	}
-	
+
 	void libzipSoakTest2() {
 		std::thread t1(unzipperTestImpl2);
 		std::thread t2(unzipperTestImpl2);
 		t1.join();
 		t2.join();
 	}
-	
+
 	static void unzipperTestImpl3() {
 		const Resource::File zipFile = resDir / "Zips" / "ZipFile.zip";
 		const auto path = zipFile.toRawString().c_str();
@@ -416,16 +423,16 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 		struct zip_stat sb {};
 		zip_stat_init(&sb);
 		const long long count = zip_get_num_entries(archive, 0);
-	
+
 		if (count < 0) { throw std::exception(); }
-	
+
 		zip_discard(archive);
 	}
-	
+
 	void libzipSoakTest3() {
 		std::thread t1([this] () { unzipperTestImpl2(); });
 		std::thread t2([this] () { unzipperTestImpl2(); });
-	
+
 		t1.join();
 		t2.join();
 	}

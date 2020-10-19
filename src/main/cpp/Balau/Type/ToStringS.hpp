@@ -1,10 +1,19 @@
+// @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -19,9 +28,7 @@
 #include <Balau/Type/StdTypes.hpp>
 #include <Balau/Type/Impl/ToStringImpl.hpp>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/locale.hpp>
-
+#include <codecvt>
 #include <complex>
 #include <forward_list>
 #include <list>
@@ -30,6 +37,7 @@
 #include <unordered_map>
 #include <stack>
 #include <queue>
+#include <locale>
 
 template <typename P1, typename P2, typename ... P>
 std::string toString(const P1 & p1, const P2 & p2, const P & ... p);
@@ -56,43 +64,40 @@ inline std::string toString(const std::string_view & value) {
 	return std::string(value);
 }
 
-#ifndef BALAU_USE_BOOST_STRING_VIEW
-
-///
-/// Creates a string from the Boost string view.
-///
-inline std::string toString(const boost::string_view & value) {
-	return value.to_string();
-}
-
-#endif
-
 ///
 /// Convert the supplied UTF-16 string to a UTF-8 string.
 ///
 inline std::string toString(const std::u16string & value) {
-	return boost::locale::conv::utf_to_utf<char, char16_t>(value);
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convertor;
+	return convertor.to_bytes(value);
 }
 
 ///
 /// Creates a UTF-8 string from the UTF-16 string view.
 ///
+/// Currently this materialises the string view into a string.
+///
 inline std::string toString(const std::u16string_view & value) {
-	return boost::locale::conv::utf_to_utf<char, char16_t>(std::u16string(value));
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convertor;
+	return convertor.to_bytes(std::u16string(value));
 }
 
 ///
 /// Convert the supplied UTF-32 string to a UTF-8 string.
 ///
 inline std::string toString(const std::u32string & value) {
-	return boost::locale::conv::utf_to_utf<char, char32_t>(value);
+	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convertor;
+	return convertor.to_bytes(value);
 }
 
 ///
 /// Creates a UTF-8 string from the UTF-32 string view.
 ///
+/// Currently this materialises the string view into a string.
+///
 inline std::string toString(const std::u32string_view & value) {
-	return boost::locale::conv::utf_to_utf<char, char32_t>(std::u32string(value));
+	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convertor;
+	return convertor.to_bytes(std::u32string(value));
 }
 
 ///
@@ -196,21 +201,21 @@ inline std::string toString(unsigned long long value) {
 /// Convert the supplied float to a UTF-8 string.
 ///
 inline std::string toString(float value) {
-	return boost::lexical_cast<std::string>(value);
+	return std::to_string(value);
 }
 
 ///
 /// Convert the supplied double to a UTF-8 string.
 ///
 inline std::string toString(double value) {
-	return boost::lexical_cast<std::string>(value);
+	return std::to_string(value);
 }
 
 ///
 /// Convert the supplied long double to a UTF-8 string.
 ///
 inline std::string toString(long double value) {
-	return boost::lexical_cast<std::string>(value);
+	return std::to_string(value);
 }
 
 ///
@@ -386,7 +391,23 @@ BALAU_CONTAINER2_TO_STRING(std::vector)
 /// @return the supplied array as a UTF-8 string
 ///
 template <typename T, size_t N> inline std::string toString(const std::array<T, N> & c) {
-	return toStringHelper(c);
+	std::string builder = "{";
+	std::string prefix = " ";
+	bool empty = true;
+
+	for (size_t m = 0; m < N; m++) {
+		builder += prefix + toString(c[m]);
+		prefix = ", ";
+		empty = false;
+	}
+
+	if (!empty) {
+		builder += " ";
+	}
+
+	builder += "}";
+
+	return builder;
 }
 
 ///
@@ -406,26 +427,19 @@ inline std::string toString(const P1 & p1, const P2 & p2, const P & ... p) {
 /// Convert the supplied UTF-8 string to a UTF-16 string.
 ///
 inline std::u16string toString16(const std::string & value) {
-	return boost::locale::conv::utf_to_utf<char16_t, char>(value);
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convertor;
+	return convertor.from_bytes(value);
 }
 
 ///
 /// Convert the supplied UTF-8 string view to a UTF-16 string.
 ///
+/// Currently this materialises the string view into a string.
+///
 inline std::u16string toString16(const std::string_view & value) {
-	return toString16(std::string(value));
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convertor;
+	return convertor.from_bytes(std::string(value));
 }
-
-#ifndef BALAU_USE_BOOST_STRING_VIEW
-
-///
-/// Convert the supplied UTF-8 Boost string view to a UTF-16 string.
-///
-inline std::u16string toString16(const boost::string_view & value) {
-	return toString16(value.to_string());
-}
-
-#endif
 
 ///
 /// Returns the supplied value as is.
@@ -445,7 +459,7 @@ inline std::u16string toString16(const std::u16string_view & value) {
 /// Convert the supplied UTF-32 string to a UTF-16 string.
 ///
 inline std::u16string toString16(const std::u32string & value) {
-	return boost::locale::conv::utf_to_utf<char16_t, char32_t>(value);
+	return toString16(toString(value));
 }
 
 ///
@@ -747,32 +761,34 @@ inline std::u16string toString16(const P1 & p1, const P2 & p2, const P & ... p) 
 /// Convert the supplied UTF-8 string to a UTF-32 string.
 ///
 inline std::u32string toString32(const std::string & value) {
-	return boost::locale::conv::utf_to_utf<char32_t, char>(value);
+	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convertor;
+	return convertor.from_bytes(value);
 }
 
 ///
 /// Convert the supplied UTF-8 string view to a UTF-32 string.
 ///
+/// Currently this materialises the string view into a string.
+///
 inline std::u32string toString32(const std::string_view & value) {
-	return toString32(std::string(value));
+	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convertor;
+	return convertor.from_bytes(std::string(value));
 }
 
-#ifndef BALAU_USE_BOOST_STRING_VIEW
-
 ///
-/// Convert the supplied UTF-8 Boost string view to a UTF-32 string.
-///
-inline std::u32string toString32(const boost::string_view & value) {
-	return toString32(value.to_string());
-}
-
-#endif
-
-///
-/// Convert the supplied UTF-16 string to a UTF-8 string.
+/// Convert the supplied UTF-16 string to a UTF-32 string.
 ///
 inline std::u32string toString32(const std::u16string & value) {
-	return boost::locale::conv::utf_to_utf<char32_t, char16_t>(value);
+	return toString32(toString(value));
+}
+
+///
+/// Convert the supplied UTF-16 string view to a UTF-32 string.
+///
+/// Currently this materialises the string view into a string.
+///
+inline std::u32string toString32(const std::u16string_view & value) {
+	return toString32(toString(value));
 }
 
 ///

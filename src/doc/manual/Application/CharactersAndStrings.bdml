@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -38,8 +46,6 @@
 		<para>The C++ language <emph>char</emph> character type is used for UTF-8 data and the <emph>char32_t</emph> character type is used for UTF-32 data. As the size of the C++ language <emph>wchar_t</emph> character type is not defined in the specification, the <emph>wchar_t</emph> character type and associated <emph>std::wstring</emph> string type are not used in Balau.</para>
 
 		<para>The <emph>char16_t</emph> character type is not used in Balau components. A set of universal to-string and from-string function overloads is however included for UTF-16 string generation and conversion. These functions provide to-string and from-string conversions when another library works with UTF-16 strings or when application code requires UTF-16 encoded strings.</para>
-
-		<para>Balau uses the ICU library for unicode support. Unlike ICU, Balau uses the standard <emph>char32_t</emph> primitive type for representing UTF-32 characters. This is implicitly cast to and from ICU's <emph>UChar32</emph> (which is a <emph>signed int</emph>) within the <ref url="Util/Character">Character</ref> functions.</para>
 
 		<para>The primary character and string related functionality that Balau provides is:</para>
 
@@ -102,8 +108,6 @@
 
 			<entry>mutation (UTF-8 / UTF-32).</entry>
 		</bullets>
-
-		<para>Many of the character utility functions are proxies to corresponding ICU functions.</para>
 
 		<h2>Classification</h2>
 
@@ -289,10 +293,6 @@
 
 		<para>The C++ standard library provides a <emph>to_string</emph> function for several primitive types, defined within the <emph>std</emph> namespace. Whilst the C++ specification forbids the overloading of functions in the <emph>std</emph> namespace, the <emph>to_string</emph> function can be overloaded in the namespaces of user defined classes and the compiler will resolve them by examining the parameter type of the function call.</para>
 
-		<para>The Boost library also provides a <emph>boost:lexical_cast&lt;std::string&gt;</emph> function which relies on user defined <emph>operator &lt;&lt;</emph> functions to perform the to-string conversion.</para>
-
-		<para>The output of each of the above to-string implementations may differ.</para>
-
 		<para>In addition,</para>
 
 		<bullets>
@@ -367,9 +367,9 @@
 
 		<code lang="C++">
 			///
-			/// Helper for container to UTF-8 string functions.
+		/// Helper for container to UTF-8 string functions.
 			///
-			/// This helper function can be used for custom container types if required.
+		/// This helper function can be used for custom container types if required.
 			///
 			template &lt;typename ... T, template &lt;typename ...&gt; class C>
 			inline std::string toStringHelper(const C&lt;T ...&gt; &amp; c);
@@ -391,7 +391,7 @@
 
 		<code lang="C++">
 			///
-			/// Calls toString on each input argument and concatenates them together to
+		/// Calls toString on each input argument and concatenates them together to
 			/// form a single UTF-8 string.
 			///
 			template &lt;typename P1, typename P2, typename ... P&gt;
@@ -410,7 +410,7 @@
 
 		<code lang="C++">
 			///
-			/// Convert the supplied object to a std::string by calling toString.
+		/// Convert the supplied object to a std::string by calling toString.
 			///
 			template &lt;&gt; struct ToString&lt;char&gt; {
 				template &lt;typename T&gt; std::string operator () (const T &amp; object) const {
@@ -463,13 +463,13 @@
 
 		<code lang="C++">
 			///
-			/// UTF-8 specialisation of FromString&lt;T>.
+		/// UTF-8 specialisation of FromString&lt;T>.
 			///
-			/// Converts the supplied std::string to an object of type T by calling fromString.
+		/// Converts the supplied std::string to an object of type T by calling fromString.
 			///
 			template &lt;> struct FromString&lt;char> {
 				///
-				/// @param destination the destination value that is set via assignment
+		/// @param destination the destination value that is set via assignment
 				/// @param value the string input
 				/// @throw ConversionException when the conversion fails
 				///

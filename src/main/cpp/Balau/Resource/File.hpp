@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -56,10 +64,10 @@ class File : public Uri {
 		friend class File;
 
 		private: explicit RecursiveFileIterator(const File & file)
-			: iterator(boost::filesystem::recursive_directory_iterator(file.entry)) {}
+			: iterator(std::filesystem::recursive_directory_iterator(file.entry)) {}
 
-		private: boost::filesystem::recursive_directory_iterator iterator;
-		private: boost::filesystem::recursive_directory_iterator end;
+		private: std::filesystem::recursive_directory_iterator iterator;
+		private: std::filesystem::recursive_directory_iterator end;
 	};
 
 	///
@@ -77,7 +85,7 @@ class File : public Uri {
 		/// Get the next item in the iterator.
 		///
 		public: std::unique_ptr<Uri> next() override {
-			boost::filesystem::directory_entry e = *iterator;
+			std::filesystem::directory_entry e = *iterator;
 			++iterator;
 			return std::unique_ptr<Uri>(new File(e));
 		}
@@ -85,10 +93,10 @@ class File : public Uri {
 		friend class File;
 
 		private: explicit RecursiveFileUriIterator(const File & file)
-			: iterator(boost::filesystem::recursive_directory_iterator(file.entry)) {}
+			: iterator(std::filesystem::recursive_directory_iterator(file.entry)) {}
 
-		private: boost::filesystem::recursive_directory_iterator iterator;
-		private: boost::filesystem::recursive_directory_iterator end;
+		private: std::filesystem::recursive_directory_iterator iterator;
+		private: std::filesystem::recursive_directory_iterator end;
 	};
 
 	///
@@ -114,10 +122,10 @@ class File : public Uri {
 		friend class File;
 
 		private: explicit FileIterator(const File & file)
-			: iterator(boost::filesystem::directory_iterator(file.entry)) {}
+			: iterator(std::filesystem::directory_iterator(file.entry)) {}
 
-		private: boost::filesystem::directory_iterator iterator;
-		private: boost::filesystem::directory_iterator end;
+		private: std::filesystem::directory_iterator iterator;
+		private: std::filesystem::directory_iterator end;
 	};
 
 	///
@@ -135,7 +143,7 @@ class File : public Uri {
 		/// Get the next item in the iterator.
 		///
 		public: std::unique_ptr<Uri> next() override {
-			boost::filesystem::directory_entry e = *iterator;
+			std::filesystem::directory_entry e = *iterator;
 			++iterator;
 			return std::unique_ptr<Uri>(new File(e));
 		}
@@ -143,16 +151,16 @@ class File : public Uri {
 		friend class File;
 
 		private: explicit FileUriIterator(const File & file)
-			: iterator(boost::filesystem::directory_iterator(file.entry)) {}
+			: iterator(std::filesystem::directory_iterator(file.entry)) {}
 
-		private: boost::filesystem::directory_iterator iterator;
-		private: boost::filesystem::directory_iterator end;
+		private: std::filesystem::directory_iterator iterator;
+		private: std::filesystem::directory_iterator end;
 	};
 
 	///
 	/// The path separator character for the platform.
 	///
-	public: static const boost::filesystem::path::value_type separator = boost::filesystem::path::preferred_separator;
+	public: static const std::filesystem::path::value_type separator = std::filesystem::path::preferred_separator;
 
 	///
 	/// Create an empty file URI.
@@ -162,33 +170,33 @@ class File : public Uri {
 	///
 	/// Create a file from the supplied directory entry.
 	///
-	public: explicit File(boost::filesystem::directory_entry entry_) : entry(std::move(entry_)) {}
+	public: explicit File(std::filesystem::directory_entry entry_) : entry(std::move(entry_)) {}
 
 	///
 	/// Create a file from the supplied Boost path.
 	///
-	public: explicit File(const boost::filesystem::path & entry_) : entry(entry_) {}
+	public: explicit File(const std::filesystem::path & entry_) : entry(entry_) {}
 
 	///
 	/// Create a file path with the supplied path string.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(const std::string & path) : entry(boost::filesystem::directory_entry(path)) {}
+	public: explicit File(const std::string & path) : entry(std::filesystem::directory_entry(path)) {}
 
 	///
 	/// Create a file path with the supplied path string.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(const char * path) : entry(boost::filesystem::directory_entry(path)) {}
+	public: explicit File(const char * path) : entry(std::filesystem::directory_entry(path)) {}
 
 	///
 	/// Create a file path with the supplied path string.
 	///
 	/// The path must be formatted correctly for the platform.
 	///
-	public: explicit File(std::string_view path) : entry(boost::filesystem::directory_entry(std::string(path))) {}
+	public: explicit File(std::string_view path) : entry(std::filesystem::directory_entry(std::string(path))) {}
 
 	///
 	/// Create a file path with the supplied path string and filename string.
@@ -276,7 +284,7 @@ class File : public Uri {
 			// Relative.. resolve according to the current path
 			// (current file if folder or parent otherwise).
 
-			auto bPath = boost::filesystem::path(sPath);
+			auto bPath = std::filesystem::path(sPath);
 
 			if (isRegularDirectory()) {
 				auto newPath = (getEntry() / bPath).lexically_normal();
@@ -376,7 +384,7 @@ class File : public Uri {
 	/// Get a recursive file iterator for this file (directory).
 	///
 	/// @return a recursive file iterator
-	/// @throw boost::filesystem::filesystem_error if the current object is not a directory
+	/// @throw std::filesystem::filesystem_error if the current object is not a directory
 	///
 	public: virtual RecursiveFileIterator recursiveFileIterator() const {
 		return RecursiveFileIterator(*this);
@@ -386,7 +394,7 @@ class File : public Uri {
 	/// Get a non-recursive file iterator for this file (directory).
 	///
 	/// @return a file iterator
-	/// @throw boost::filesystem::filesystem_error if the current object is not a directory
+	/// @throw std::filesystem::filesystem_error if the current object is not a directory
 	///
 	public: virtual FileIterator fileIterator() const {
 		return FileIterator(*this);
@@ -397,7 +405,7 @@ class File : public Uri {
 	///
 	/// @return a directory entry
 	///
-	public: boost::filesystem::directory_entry getEntry() const {
+	public: std::filesystem::directory_entry getEntry() const {
 		return entry;
 	}
 
@@ -426,7 +434,7 @@ class File : public Uri {
 	///
 	/// @return the current object
 	///
-	public: File & operator = (const boost::filesystem::directory_entry & entry_) {
+	public: File & operator = (const std::filesystem::directory_entry & entry_) {
 		entry = entry_;
 		return *this;
 	}
@@ -436,8 +444,8 @@ class File : public Uri {
 	///
 	/// @return the current object
 	///
-	public: File & operator = (const boost::filesystem::path & path) {
-		entry = boost::filesystem::directory_entry(path);
+	public: File & operator = (const std::filesystem::path & path) {
+		entry = std::filesystem::directory_entry(path);
 		return *this;
 	}
 
@@ -447,7 +455,7 @@ class File : public Uri {
 	/// @return true if an item exits in the file system for the file URI
 	///
 	public: bool exists() const {
-		return boost::filesystem::exists(entry);
+		return std::filesystem::exists(entry);
 	}
 
 	///
@@ -456,8 +464,8 @@ class File : public Uri {
 	/// @throw IOException if there was an error when getting the file size
 	///
 	public: size_t size() const {
-		boost::system::error_code errorCode;
-		boost::uintmax_t sz = boost::filesystem::file_size(entry, errorCode);
+		std::error_code errorCode;
+		const auto sz = std::filesystem::file_size(entry, errorCode);
 
 		if (errorCode) {
 			ThrowBalauException(
@@ -474,8 +482,11 @@ class File : public Uri {
 	///
 	/// @return the modified time of the file
 	///
+	/// TODO CHECK
+	///
 	public: std::chrono::system_clock::time_point getModifiedTimestamp() const {
-		return std::chrono::system_clock::from_time_t(boost::filesystem::last_write_time(entry));
+		const auto t = std::filesystem::last_write_time(entry).time_since_epoch();
+		return std::chrono::system_clock::time_point(t);
 	}
 
 	///
@@ -484,7 +495,7 @@ class File : public Uri {
 	/// @return true if the file URI points to a directory
 	///
 	public: bool isRegularDirectory() const override {
-		return boost::filesystem::is_directory(entry);
+		return std::filesystem::is_directory(entry);
 	}
 
 	///
@@ -493,7 +504,7 @@ class File : public Uri {
 	/// @return true if the file URI points to a regular file
 	///
 	public: bool isRegularFile() const override {
-		return boost::filesystem::is_regular_file(entry);
+		return std::filesystem::is_regular_file(entry);
 	}
 
 	///
@@ -502,7 +513,16 @@ class File : public Uri {
 	/// @return the parent directory of the file URI
 	///
 	public: File getParentDirectory() const {
-		return File(boost::filesystem::directory_entry(entry.path().parent_path()));
+		return File(std::filesystem::directory_entry(entry.path().parent_path()));
+	}
+
+	///
+	/// Get the last component of the path.
+	///
+	/// @return the last component of the path
+	///
+	public: std::string getFilename() const {
+		return entry.path().filename().string();
 	}
 
 	///
@@ -512,7 +532,7 @@ class File : public Uri {
 	///
 	public: File getSubDirectory(std::string subDirectory) const {
 		return File(
-			boost::filesystem::directory_entry(boost::filesystem::path(entry.path()) /= subDirectory)
+			std::filesystem::directory_entry(std::filesystem::path(entry.path()) /= subDirectory)
 		);
 	}
 
@@ -520,9 +540,9 @@ class File : public Uri {
 	/// @todo document this
 	///
 	public: File getChildEntry(std::string child) const {
-		boost::filesystem::path p = entry.path();
+		std::filesystem::path p = entry.path();
 		p /= child;
-		return File(boost::filesystem::directory_entry(p));
+		return File(std::filesystem::directory_entry(p));
 	}
 
 	///
@@ -535,7 +555,7 @@ class File : public Uri {
 	/// @throw filesystem_error when there was an error attempting to create one or more of the directories
 	///
 	public: bool createDirectories() const {
-		return boost::filesystem::create_directories(entry);
+		return std::filesystem::create_directories(entry);
 	}
 
 	///
@@ -544,7 +564,7 @@ class File : public Uri {
 	/// @return true if the file was removed
 	///
 	public: bool removeFile() const {
-		return boost::filesystem::remove(entry);
+		return std::filesystem::remove(entry);
 	}
 
 	///
@@ -553,7 +573,7 @@ class File : public Uri {
 	/// @return a copy of the file converted to an absolute path
 	///
 	public: File toAbsolutePath() const {
-		return File(boost::filesystem::absolute(entry));
+		return File(std::filesystem::absolute(entry));
 	}
 
 	///
@@ -562,7 +582,7 @@ class File : public Uri {
 	/// @return the relative path of the current object, compared to the supplied file
 	///
 	public: File relative(const File & base) const {
-		return File(boost::filesystem::relative(entry, base.entry));
+		return File(std::filesystem::relative(entry, base.entry));
 	}
 
 	public: std::string toUriString() const override {
@@ -643,13 +663,13 @@ class File : public Uri {
 	File operator / (const Container<T ...> & container) const {
 		using ::toString;
 
-		boost::filesystem::path p = entry.path();
+		std::filesystem::path p = entry.path();
 
 		for (const auto & component : container) {
 			p /= toString(component);
 		}
 
-		return File(boost::filesystem::directory_entry(p));
+		return File(std::filesystem::directory_entry(p));
 	}
 
 	///
@@ -688,9 +708,9 @@ class File : public Uri {
 	/// @return a new file instance with the concatenated fragment
 	///
 	public: File operator + (const std::string & fragment) const {
-		boost::filesystem::path p = entry.path();
+		std::filesystem::path p = entry.path();
 		p += fragment;
-		return File(boost::filesystem::directory_entry(p));
+		return File(std::filesystem::directory_entry(p));
 	}
 
 	public: void dispatch(UriDispatcher & dispatcher) const override {
@@ -699,19 +719,19 @@ class File : public Uri {
 
 	///////////////////////// Private implementation //////////////////////////
 
-	protected: boost::filesystem::directory_entry entry;
+	protected: std::filesystem::directory_entry entry;
 
-	private: static boost::filesystem::directory_entry create(const std::string & path,
+	private: static std::filesystem::directory_entry create(const std::string & path,
 	                                                          const std::string & name) {
-		boost::filesystem::directory_entry ret(path);
+		std::filesystem::directory_entry ret(path);
 		return append(ret, name);
 	}
 
-	private: static boost::filesystem::directory_entry append(const boost::filesystem::directory_entry & de,
+	private: static std::filesystem::directory_entry append(const std::filesystem::directory_entry & de,
 	                                                          const std::string & name) {
-		boost::filesystem::path p = de.path();
+		std::filesystem::path p = de.path();
 		p /= name;
-		return boost::filesystem::directory_entry(p);
+		return std::filesystem::directory_entry(p);
 	}
 };
 

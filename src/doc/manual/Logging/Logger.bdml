@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -82,7 +90,7 @@
 
 		<para>The <emph>{}</emph> placeholders are replaced with the result of the <ref url="Application/CharactersAndStrings#universal-to-string">toString</ref> call of the object(s) supplied in the logging call. It is thus necessary that suitable <emph>toString</emph> functions are defined for all object types passed to logging calls.</para>
 
-		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
+		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the <emph>toString</emph> function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
 
 		<para>In addition to the standard logging methods that accept a variable number of parameters, there is a function based logging method for each logging level. These methods accept a function that is used to generate the message to log.</para>
 
@@ -91,7 +99,7 @@
 			log.info([&amp;v1, &amp;v2] () { return toString("Value = ", v1 * v2); });
 		</code>
 
-		<para>The function based logging methods are useful when derived arguments need to be logged. If a function based logging method were not used, the code used to derive the arguments would execute, regardless of whether the message is needed or not, as prescribed by the logging level of the logger.</para>
+		<para>The function based logging methods are useful when derived arguments need to be logged. If a function based logging method were not used, the code used to derive the arguments would execute, regardless of whether the message should be logged or not (as prescribed by the logging level of the logger).</para>
 
 		<para>In order to use loggers, there are two tasks required:</para>
 
@@ -236,7 +244,7 @@
 
 		<para>The templated methods accept any types as const references. Each parameter is converted to a string via the Balau universal to-string function (see the documentation on the <ref url="Application/CharactersAndStrings#universal-to-string">universal to-string function</ref> for more information). It is sufficient to ensure that a <emph>toString</emph> function has been defined for the type of each parameter at the point of template function instantiation, and the logger will use it to stringify the parameter.</para>
 
-		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
+		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> functions during the function template instantiation, the header file(s) containing the <emph>toString</emph> function(s) must be included before the <emph>Logger.hpp</emph> header is included.</strong></para>
 
 		<para>It is often more convenient to add an incomplete <emph><strong>class Logger;</strong></emph> declaration in the header file where a logger reference is defined, and include the <emph>Logger.hpp</emph> header in the body file instead. This ensures that verification of header include order is confined to the single body file instead of propagating to all files that include the header containing the logger reference.</para>
 

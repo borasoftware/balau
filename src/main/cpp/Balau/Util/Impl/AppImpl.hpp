@@ -1,25 +1,49 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #ifndef COM_BORA_SOFTWARE__BALAU_UTIL__APP_IMPL
 #define COM_BORA_SOFTWARE__BALAU_UTIL__APP_IMPL
 
 #include <Balau/Util/User.hpp>
-#include <boost/dll/runtime_symbol_info.hpp>
 
 namespace Balau::Util::Impl {
 
 struct AppImpl final {
+	static Resource::File getProgramLocation() {
+		#ifdef BALAU_LINUX_PLATFORM
+			std::error_code ec;
+			auto location = std::filesystem::read_symlink("/proc/self/exe", ec);
+
+			if (ec) {
+				ThrowBalauException(Exception::NotFoundException, "Failed to locate the program location.");
+			}
+
+			return Resource::File(location);
+		#elif defined BALAU_WINDOWS_PLATFORM
+			#error "The Windows platform is not yet implemented."
+		#else
+			#error "Platform not implemented."
+		#endif
+
+	}
+
 	static Resource::File getUserApplicationDataDirectory(const std::string & appGroup, const std::string & appName) {
 		// Best effort approach.
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			const char * xdg = std::getenv("XDG_DATA_HOME");
 
 			if (xdg != nullptr && !Util::Strings::trim(xdg).empty()) {
@@ -28,7 +52,7 @@ struct AppImpl final {
 
 			auto home = User::getHomeDirectory();
 			return home / ".local" / "share" / appGroup / appName;
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			#error "The Windows platform is not yet implemented."
 
 			// TODO implement
@@ -40,21 +64,13 @@ struct AppImpl final {
 	}
 
 	static Resource::File getGlobalApplicationDataDirectory(const std::string & appGroup, const std::string & appName) {
-		const boost::filesystem::path programLocation = boost::dll::program_location();
+		const auto programLocation = getProgramLocation();
+		const Resource::File programLocationDirectory = getProgramLocation().getParentDirectory();
 
-		if (programLocation.empty()) {
-			ThrowBalauException(
-				  Exception::NotFoundException
-				, "Failed to locate the program location whilst determining the application's global data directory."
-			);
-		}
-
-		const Resource::File programLocationDirectory(programLocation.parent_path());
-
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			const Resource::File parentDirectory = programLocationDirectory.getParentDirectory();
 			return parentDirectory / "share" / appGroup / appName / "data";
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			return programLocationDirectory / "data";
 		#else
 			#error "Platform not implemented."
@@ -63,7 +79,7 @@ struct AppImpl final {
 
 	static Resource::File getUserApplicationConfigDirectory(const std::string & appGroup, const std::string & appName) {
 		// Best effort approach.
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			const char * xdg = std::getenv("XDG_CONFIG_HOME");
 
 			if (xdg != nullptr && !Util::Strings::trim(xdg).empty()) {
@@ -72,7 +88,7 @@ struct AppImpl final {
 
 			auto home = User::getHomeDirectory();
 			return home / ".config" / appGroup / appName;
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			#error "The Windows platform is not yet implemented."
 
 			// TODO implement
@@ -84,21 +100,14 @@ struct AppImpl final {
 	}
 
 	static Resource::File getGlobalApplicationConfigDirectory(const std::string & appGroup, const std::string & appName) {
-		const boost::filesystem::path programLocation = boost::dll::program_location();
+		const auto programLocation = getProgramLocation();
 
-		if (programLocation.empty()) {
-			ThrowBalauException(
-				  Exception::NotFoundException
-				, "Failed to locate the program location whilst determining the application's global config directory."
-			);
-		}
+		const Resource::File programLocationDirectory = programLocation.getParentDirectory();
 
-		const Resource::File programLocationDirectory(programLocation.parent_path());
-
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			const Resource::File parentDirectory = programLocationDirectory.getParentDirectory();
 			return parentDirectory / "share" / appGroup / appName / "config";
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			return programLocationDirectory / "config";
 		#else
 			#error "Platform not implemented."
@@ -106,7 +115,7 @@ struct AppImpl final {
 	}
 
 	static Resource::File getApplicationRuntimeDataDirectory(const std::string & appGroup, const std::string & appName) {
-		#if BOOST_OS_UNIX
+		#ifdef BALAU_LINUX_PLATFORM
 			Resource::File dir;
 
 			const char * xdg = std::getenv("XDG_RUNTIME_DIR");
@@ -126,7 +135,7 @@ struct AppImpl final {
 
 			dir.createDirectories();
 			return dir;
-		#elif BOOST_OS_WINDOWS
+		#elif defined BALAU_WINDOWS_PLATFORM
 			#error "The Windows platform is not yet implemented."
 		#else
 			#error "Platform not implemented."

@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__WS_SESSION
@@ -17,6 +25,7 @@
 /// Manages the handling of WebSocket messages in a WebSocket connection.
 ///
 
+#include <Balau/Exception/NetworkExceptions.hpp>
 #include <Balau/Network/Http/Server/WsWebApp.hpp>
 #include <Balau/Network/Http/Server/HttpServerConfiguration.hpp>
 #include <Balau/Util/DateTime.hpp>
@@ -62,8 +71,6 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 
 	public: template <typename Body, typename AllocatorT>
 	void doAccept(HTTP::request<Body, HTTP::basic_fields<AllocatorT>> req) {
-
-
 		// TODO
 //		ws.control_callback(
 //			std::bind(
@@ -93,7 +100,7 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 	}
 
 	public: void onControl(WsFrame frameType, boost::beast::string_view payload) {
-		boost::ignore_unused(payload);
+		BalauIgnoreUnused(payload);
 
 		switch (frameType) {
 			case WsFrame::close: {
@@ -137,7 +144,7 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 	/// @throw NetworkException if there was an issue reading
 	///
 	public: void onRead(boost::system::error_code ec, std::size_t bytes_transferred) {
-		boost::ignore_unused(bytes_transferred);
+		BalauIgnoreUnused(bytes_transferred);
 
 		if (ec == WS::error::closed) {
 			return;
@@ -160,7 +167,7 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 	/// @throw NetworkException if there was an issue writing
 	///
 	public: void onWrite(boost::system::error_code ec, std::size_t bytes_transferred) {
-		boost::ignore_unused(bytes_transferred);
+		BalauIgnoreUnused(bytes_transferred);
 
 		checkError(ec);
 		buffer.consume(buffer.size());

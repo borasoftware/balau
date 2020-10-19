@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -33,7 +41,17 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
-		<h1>V2020.5.1</h1>
+		<h1>V2020.11.1</h1>
+
+		<para>Non-functional changes in this release:</para>
+
+		<bullets>
+			<entry>migrated file system to C++17 standard library implementation;</entry>
+			<entry>from v2020.11.1 onward, Balau does not support GCC6/GCC7.</entry>
+			<entry>changed the Balau license to Apache License, Version 2.0.</entry>
+		</bullets>
+
+		<h1>V2020.4.1</h1>
 
 		<para>New features in this release:</para>
 
@@ -41,7 +59,7 @@
 			<entry>blocking queue improvements;</entry>
 			<entry>added code coverage compiler flags CMake option;</entry>
 			<entry>fixed injector iterate function issue;</entry>
-			<entry>Added backports for GCC6.</entry>
+			<entry>added backports for GCC6.</entry>
 		</bullets>
 
 		<h1>V2020.2.2</h1>

@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SESSION
@@ -96,11 +104,11 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 			, request.method()
 			, response.version() == 11 ? "HTTP/1.1" : "HTTP/1.0"
 			, response.result_int()
-			, response[Field::content_type]
-			, response[Field::content_length]
-			, request.target() // path
+			, response[Field::content_type].to_string()
+			, response[Field::content_length].to_string()
+			, request.target().to_string() // path
 			, extraLogging.empty() ? "" : " - " + extraLogging
-			, request[Field::user_agent]
+			, request[Field::user_agent].to_string()
 		);
 
 		// Set the session cookie.
@@ -152,29 +160,29 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 	private: bool validateRequest(boost::system::error_code errorCode, const StringRequest & request);
 
 	// Dispatch the request to the appropriate handler method.
-	private: void handleRequest(const StringRequest & request) {
+	private: void handleRequest(const StringRequest & request_) {
 		try {
 			// The variables generated and consumed during this request.
 			std::map<std::string, std::string> variables;
 
-			switch (request.method()) {
+			switch (request_.method()) {
 				case Method::get: {
-					serverConfiguration->httpHandler->handleGetRequest(*this, request, variables);
+					serverConfiguration->httpHandler->handleGetRequest(*this, request_, variables);
 					break;
 				}
 
 				case Method::head: {
-					serverConfiguration->httpHandler->handleHeadRequest(*this, request, variables);
+					serverConfiguration->httpHandler->handleHeadRequest(*this, request_, variables);
 					break;
 				}
 
 				case Method::post: {
-					serverConfiguration->httpHandler->handlePostRequest(*this, request, variables);
+					serverConfiguration->httpHandler->handlePostRequest(*this, request_, variables);
 					break;
 				}
 
 				default: {
-					sendResponse(HttpWebApp::createBadRequestResponse(*this, request, "Unsupported HTTP method."));
+					sendResponse(HttpWebApp::createBadRequestResponse(*this, request_, "Unsupported HTTP method."));
 					break;
 				}
 			}
@@ -182,14 +190,14 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 			BalauBalauLogError(serverConfiguration->logger, "Exception thrown during request: {}", e);
 			sendResponse(
 				HttpWebApp::createServerErrorResponse(
-					*this, request, "The server experienced an error during the request. A report has been logged."
+					*this, request_, "The server experienced an error during the request. A report has been logged."
 				)
 			);
 		} catch (...) {
 			BalauBalauLogError(serverConfiguration->logger, "Unknown exception thrown during request: {}");
 			sendResponse(
 				HttpWebApp::createServerErrorResponse(
-					*this, request, "The server experienced an error during the request. A report has been logged."
+					*this, request_, "The server experienced an error during the request. A report has been logged."
 				)
 			);
 		}

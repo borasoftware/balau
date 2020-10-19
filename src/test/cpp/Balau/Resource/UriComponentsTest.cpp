@@ -1,13 +1,20 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #include <Balau/Resource/UriComponents.hpp>
 #include <TestResources.hpp>
 
@@ -21,38 +28,38 @@ namespace Resource {
 
 struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 	UriComponentsTest() {
-		registerTest(&UriComponentsTest::uriParse_full,                                  "uriParse_full");
-		registerTest(&UriComponentsTest::uriParse_noUserinfo,                            "uriParse_noUserinfo");
-		registerTest(&UriComponentsTest::uriParse_noAuthority,                           "uriParse_noAuthority");
-		registerTest(&UriComponentsTest::uriParse_noPort,                                "uriParse_noPort");
-		registerTest(&UriComponentsTest::uriParse_noQuery,                               "uriParse_noQuery");
-		registerTest(&UriComponentsTest::uriParse_noFragment,                            "uriParse_noFragment");
-		registerTest(&UriComponentsTest::uriParse_noQueryNoFragment,                     "uriParse_noQueryNoFragment");
-		registerTest(&UriComponentsTest::uriParse_noPortNoPathNoQueryNoFragment,         "uriParse_noPortNoPathNoQueryNoFragment");
-		registerTest(&UriComponentsTest::uriParse_noPortNoPathNoFragment,                "uriParse_noPortNoPathNoFragment");
-		registerTest(&UriComponentsTest::uriParse_noPortNoPathNoQuery,                   "uriParse_noPortNoPathNoQuery");
-		registerTest(&UriComponentsTest::uriParse_noHostNoPortNoPathNoQuery,             "uriParse_noHostNoPortNoPathNoQuery");
-		registerTest(&UriComponentsTest::uriParse_ipv6Host,                              "uriParse_ipv6Host");
-		registerTest(&UriComponentsTest::uriParse_ipv6HostNoPort,                        "uriParse_ipv6HostNoPort");
-		registerTest(&UriComponentsTest::uriParse_ipv6HostEmptyPath,                     "uriParse_ipv6HostEmptyPath");
-		registerTest(&UriComponentsTest::uriParse_ipv6HostNoPortNoPathNoQueryNoFragment, "uriParse_ipv6HostNoPortNoPathNoQueryNoFragment");
-		registerTest(&UriComponentsTest::uriParse_ipv4Host,                              "uriParse_ipv4Host");
-		registerTest(&UriComponentsTest::uriParse_ipv4HostNoPort,                        "uriParse_ipv4HostNoPort");
-		registerTest(&UriComponentsTest::uriParse_ipv4HostEmptyPath,                     "uriParse_ipv4HostEmptyPath");
-		registerTest(&UriComponentsTest::uriParse_ipv4HostNoPortNoPathNoQueryNoFragment, "uriParse_ipv4HostNoPortNoPathNoQueryNoFragment");
-		registerTest(&UriComponentsTest::uriParse_mailto,                                "uriParse_mailto");
-		registerTest(&UriComponentsTest::uriParse_full1000,                              "uriParse_full1000");
-		registerTest(&UriComponentsTest::uriParse_invalidUris,                           "uriParse_invalidUris");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example1,                       "uriParse_RCF3986Example1");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example2,                       "uriParse_RCF3986Example2");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example3,                       "uriParse_RCF3986Example3");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example4,                       "uriParse_RCF3986Example4");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example5,                       "uriParse_RCF3986Example5");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example6,                       "uriParse_RCF3986Example6");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example7,                       "uriParse_RCF3986Example7");
-		registerTest(&UriComponentsTest::uriParse_RCF3986Example8,                       "uriParse_RCF3986Example8");
+		RegisterTest(uriParse_full);
+		RegisterTest(uriParse_noUserinfo);
+		RegisterTest(uriParse_noAuthority);
+		RegisterTest(uriParse_noPort);
+		RegisterTest(uriParse_noQuery);
+		RegisterTest(uriParse_noFragment);
+		RegisterTest(uriParse_noQueryNoFragment);
+		RegisterTest(uriParse_noPortNoPathNoQueryNoFragment);
+		RegisterTest(uriParse_noPortNoPathNoFragment);
+		RegisterTest(uriParse_noPortNoPathNoQuery);
+		RegisterTest(uriParse_noHostNoPortNoPathNoQuery);
+		RegisterTest(uriParse_ipv6Host);
+		RegisterTest(uriParse_ipv6HostNoPort);
+		RegisterTest(uriParse_ipv6HostEmptyPath);
+		RegisterTest(uriParse_ipv6HostNoPortNoPathNoQueryNoFragment);
+		RegisterTest(uriParse_ipv4Host);
+		RegisterTest(uriParse_ipv4HostNoPort);
+		RegisterTest(uriParse_ipv4HostEmptyPath);
+		RegisterTest(uriParse_ipv4HostNoPortNoPathNoQueryNoFragment);
+		RegisterTest(uriParse_mailto);
+		RegisterTest(uriParse_full1000);
+		RegisterTest(uriParse_invalidUris);
+		RegisterTest(uriParse_RCF3986Example1);
+		RegisterTest(uriParse_RCF3986Example2);
+		RegisterTest(uriParse_RCF3986Example3);
+		RegisterTest(uriParse_RCF3986Example4);
+		RegisterTest(uriParse_RCF3986Example5);
+		RegisterTest(uriParse_RCF3986Example6);
+		RegisterTest(uriParse_RCF3986Example7);
+		RegisterTest(uriParse_RCF3986Example8);
 
-		registerTest(&UriComponentsTest::normalizePath,                                  "normalizePath");
+		RegisterTest(normalizePath);
 	}
 
 	static void uriComponentsAssertions(const UriComponents & actual,
@@ -76,7 +83,7 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		const std::string_view path     = actual.path();
 		const std::string_view query    = actual.query();
 		const std::string_view fragment = actual.fragment();
-	
+
 		// Private field assertions.
 		AssertThat("uri",            actual.uri,            is(expected.uri));
 		AssertThat("userinfoOffset", actual.userinfoOffset, is(expected.userinfoOffset));
@@ -85,7 +92,7 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		AssertThat("pathOffset",     actual.pathOffset,     is(expected.pathOffset));
 		AssertThat("queryOffset",    actual.queryOffset,    is(expected.queryOffset));
 		AssertThat("fragmentOffset", actual.fragmentOffset, is(expected.fragmentOffset));
-	
+
 		// Public API assertions.
 		AssertThat("hasAuthority", actual.hasAuthority(), is(hasAuthority));
 		AssertThat("hasUserInfo",  actual.hasUserInfo(),  is(hasUserInfo));
@@ -93,7 +100,7 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		AssertThat("hasPort",      actual.hasPort(),      is(hasPort));
 		AssertThat("hasQuery",     actual.hasQuery(),     is(hasQuery));
 		AssertThat("hasFragment",  actual.hasFragment(),  is(hasFragment));
-	
+
 		AssertThat("scheme",   scheme,   is(expectedScheme));
 		AssertThat("userInfo", userInfo, is(expectedUserInfo));
 		AssertThat("host",     host,     is(expectedHost));
@@ -102,12 +109,12 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		AssertThat("query",    query,    is(expectedQuery));
 		AssertThat("fragment", fragment, is(expectedFragment));
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////////
-	
+
 	void uriParse_full() {
 		const std::string http = "http://usr1@localhost:12345/path/to/doc?query-string#frag-string";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -118,10 +125,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr1", "localhost", "/path/to/doc", "query-string", "frag-string"
 		);
 	}
-	
+
 	void uriParse_noUserinfo() {
 		const std::string http = "http://localhost:12345/path/to/doc?query-string#frag-string";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -132,10 +139,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "localhost", "/path/to/doc", "query-string", "frag-string"
 		);
 	}
-	
+
 	void uriParse_noAuthority() {
 		const std::string http = "http:/path/to/doc?query-string#frag-string";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -146,10 +153,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "", "/path/to/doc", "query-string", "frag-string"
 		);
 	}
-	
+
 	void uriParse_noPort() {
 		const std::string http = "http://localhost/path/to/doc?query-string#frag-string";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -160,10 +167,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "localhost", "/path/to/doc", "query-string", "frag-string"
 		);
 	}
-	
+
 	void uriParse_noQuery() {
 		const std::string http = "http://localhost/path/to/doc#frag-string";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -174,10 +181,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "localhost", "/path/to/doc", "", "frag-string"
 		);
 	}
-	
+
 	void uriParse_noFragment() {
 		const std::string http = "http://localhost/path/to/doc?query-string";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -188,10 +195,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "localhost", "/path/to/doc", "query-string", ""
 		);
 	}
-	
+
 	void uriParse_noQueryNoFragment() {
 		const std::string http = "http://localhost/path/to/doc.html";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -202,10 +209,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "localhost", "/path/to/doc.html", "", ""
 		);
 	}
-	
+
 	void uriParse_noPortNoPathNoQueryNoFragment() {
 		const std::string http = "http://borasoftware.com";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -216,10 +223,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "borasoftware.com", "", "", ""
 		);
 	}
-	
+
 	void uriParse_noPortNoPathNoFragment() {
 		const std::string http = "http://borasoftware.com?blah";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -230,10 +237,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "borasoftware.com", "", "blah", ""
 		);
 	}
-	
+
 	void uriParse_noPortNoPathNoQuery() {
 		const std::string http = "http://borasoftware.com#blah";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -244,10 +251,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "borasoftware.com", "", "", "blah"
 		);
 	}
-	
+
 	void uriParse_noHostNoPortNoPathNoQuery() {
 		const std::string http = "http://";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -258,10 +265,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "", "", "", ""
 		);
 	}
-	
+
 	void uriParse_ipv6Host() {
 		const std::string http = "http://usr123@[1::1]:12345/a/path?query-string#fragment";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -272,10 +279,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr123", "[1::1]", "/a/path", "query-string", "fragment"
 		);
 	}
-	
+
 	void uriParse_ipv6HostNoPort() {
 		const std::string http = "http://usr123@[1::1]/a/path?query-string#fragment";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -286,10 +293,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr123", "[1::1]", "/a/path", "query-string", "fragment"
 		);
 	}
-	
+
 	void uriParse_ipv6HostEmptyPath() {
 		const std::string http = "http://usr123@[1::1]:12345?query-string#fragment";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -300,10 +307,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr123", "[1::1]", "", "query-string", "fragment"
 		);
 	}
-	
+
 	void uriParse_ipv6HostNoPortNoPathNoQueryNoFragment() {
 		const std::string http = "http://[1::1]";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -314,10 +321,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "[1::1]", "", "", ""
 		);
 	}
-	
+
 	void uriParse_ipv4Host() {
 		const std::string http = "http://usr123@123.45.67.89:12345/a/path?query-string#fragment";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -328,10 +335,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr123", "123.45.67.89", "/a/path", "query-string", "fragment"
 		);
 	}
-	
+
 	void uriParse_ipv4HostNoPort() {
 		const std::string http = "http://usr123@123.45.67.89/a/path?query-string#fragment";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -342,10 +349,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr123", "123.45.67.89", "/a/path", "query-string", "fragment"
 		);
 	}
-	
+
 	void uriParse_ipv4HostEmptyPath() {
 		const std::string http = "http://usr123@123.45.67.89:12345?query-string#fragment";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -356,10 +363,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "usr123", "123.45.67.89", "", "query-string", "fragment"
 		);
 	}
-	
+
 	void uriParse_ipv4HostNoPortNoPathNoQueryNoFragment() {
 		const std::string http = "http://123.45.67.89";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -370,10 +377,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "123.45.67.89", "", "", ""
 		);
 	}
-	
+
 	void uriParse_mailto() {
 		const std::string http = "mailto:someone@example.com?subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body";
-	
+
 		uriComponentsAssertions(
 			UriComponents(http)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -384,19 +391,19 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "mailto", "", "", "someone@example.com", "subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body", ""
 		);
 	}
-	
+
 	void uriParse_full1000() {
 		const std::string http = "http://usr1@localhost:12345/path/to/doc?query-string#frag-string";
 		size_t sum = 0U;
-	
+
 		for (size_t m = 0U; m < 1000U; m++) {
 			UriComponents actual(http);
 			sum += actual.port();
 		}
-	
+
 		AssertThat(sum, is(1000U * UriComponents(http).port()));
 	}
-	
+
 	void uriParse_invalidUris() {
 		AssertThat([] () { UriComponents(""); }, throws<Exception::InvalidUriException>());
 		AssertThat([] () { UriComponents("0http://example.com"); }, throws<Exception::InvalidUriException>());
@@ -405,10 +412,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		AssertThat([] () { UriComponents("https://usr:password@example.com"); }, throws<Exception::InvalidUriException>());
 		AssertThat([] () { UriComponents("http://:80"); }, throws<Exception::InvalidUriException>());
 	}
-	
+
 	void uriParse_RCF3986Example1() {
 		const std::string r = "ftp://ftp.is.co.za/rfc/rfc1808.txt";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -419,10 +426,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "ftp", "", "ftp.is.co.za", "/rfc/rfc1808.txt", "", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example2() {
 		const std::string r = "http://www.ietf.org/rfc/rfc2396.txt";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -433,10 +440,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "http", "", "www.ietf.org", "/rfc/rfc2396.txt", "", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example3() {
 		const std::string r = "ldap://[2001:db8::7]/c=GB?objectClass?one";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -447,10 +454,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "ldap", "", "[2001:db8::7]", "/c=GB", "objectClass?one", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example4() {
 		const std::string r = "mailto:John.Doe@example.com";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -461,10 +468,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "mailto", "", "", "John.Doe@example.com", "", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example5() {
 		const std::string r = "news:comp.infosystems.www.servers.unix";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -475,10 +482,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "news", "", "", "comp.infosystems.www.servers.unix", "", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example6() {
 		const std::string r = "tel:+1-816-555-1212";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -489,10 +496,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "tel", "", "", "+1-816-555-1212", "", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example7() {
 		const std::string r = "telnet://192.0.2.16:80/";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -503,10 +510,10 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "telnet", "", "192.0.2.16", "/", "", ""
 		);
 	}
-	
+
 	void uriParse_RCF3986Example8() {
 		const std::string r = "urn:oasis:names:specification:docbook:dtd:xml:4.1.2";
-	
+
 		uriComponentsAssertions(
 			UriComponents(r)
 			// uri, schemeEnd, userinfoOffset, hostOffset, portOffset, pathOffset, queryOffset, fragmentOffset, port
@@ -517,7 +524,7 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 			, "urn", "", "", "oasis:names:specification:docbook:dtd:xml:4.1.2", "", ""
 		);
 	}
-	
+
 	void normalizePath() {
 		AssertThat(UriComponents::normalizePath(""),                                       is(""));
 		AssertThat(UriComponents::normalizePath("one"),                                    is("one"));
@@ -527,7 +534,7 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		AssertThat(UriComponents::normalizePath("one/two/../.."),                          is(""));
 		AssertThat(UriComponents::normalizePath("one/two/three/four/../../../five"),       is("one/five"));
 		AssertThat(UriComponents::normalizePath("one/two/../three/four/five/../../six"),   is("one/three/six"));
-	
+
 	    AssertThat(UriComponents::normalizePath("/"),                                      is("/"));
 		AssertThat(UriComponents::normalizePath("/one"),                                   is("/one"));
 		AssertThat(UriComponents::normalizePath("/one/two"),                               is("/one/two"));
@@ -536,7 +543,7 @@ struct UriComponentsTest : public Testing::TestGroup<UriComponentsTest> {
 		AssertThat(UriComponents::normalizePath("/one/two/../.."),                         is("/"));
 		AssertThat(UriComponents::normalizePath("/one/two/three/four/../../../five"),      is("/one/five"));
 		AssertThat(UriComponents::normalizePath("/one/two/../three/four/five/../../six"),  is("/one/three/six"));
-	
+
 		AssertThat(UriComponents::normalizePath("/one/"),                                  is("/one"));
 		AssertThat(UriComponents::normalizePath("/one/two/"),                              is("/one/two"));
 		AssertThat(UriComponents::normalizePath("/one/../two/"),                           is("/two"));

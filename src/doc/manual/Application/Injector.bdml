@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -35,9 +43,9 @@
 
 		<h2>Introduction</h2>
 
-		<para>A C++ dependency injection framework. The injector is configured via templated binding functions and provides get-instance methods for non-polymorphic and polymorphic values, references, thread-local and non-thread-local singletons. The code based application configuration mechanism is performed via implementations of the <emph>ApplicationConfiguration</emph> base class. Binding declaration calls within application configuration classes define non-polymorphic value (termed <emph>value</emph>), polymorphic value (termed <emph>unique</emph>), reference, and singleton bindings.</para>
+		<para>The Balau injector provides a C++ dependency injection framework, using a constructor injection paradigm. The injector is configured via type-safe, templated binding functions, and provides get-instance methods for non-polymorphic and polymorphic values, references, thread-local and non-thread-local singletons. The code based application configuration mechanism is performed via implementations of the <emph>ApplicationConfiguration</emph> base class. Binding declaration calls within application configuration classes define non-polymorphic value (termed <emph>value</emph>), polymorphic value (termed <emph>unique</emph>), reference, and singleton bindings.</para>
 
-		<para>The dependency injection framework also integrates with the <ref url="Lang/PropertyParser">hierarchical property framework</ref>. This allows typed and untyped (<emph>std::string</emph>) environment properties (simple and composite) to be created in the injector via implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
+		<para>The dependency injection framework integrates with the Balau <ref url="Lang/PropertyParser">hierarchical property framework</ref>. This allows typed and untyped (<emph>std::string</emph>) environment properties (simple and composite) to be created in the injector via implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
 
 		<para>Using this approach, multiple application processes (one set of processes per application environment) may be run from the same injector configuration. Each environment is configured according to the environment's property file(s) and the environment configuration is validated and loaded into the injector by the meta-configuration contained in the implementations of the <emph>EnvironmentConfiguration</emph> class.</para>
 

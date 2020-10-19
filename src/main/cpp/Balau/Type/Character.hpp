@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -18,9 +26,9 @@
 #define COM_BORA_SOFTWARE__BALAU_TYPE__CHARACTER
 
 #include <Balau/Type/StdTypes.hpp>
-
-#include <unicode/uchar.h>
-#include <unicode/utf8.h>
+#include <Balau/Unicode/UTF8.hpp>
+#include <Balau/Unicode/UnicodeCase.hpp>
+#include <Balau/Unicode/UnicodeChar.hpp>
 
 namespace Balau {
 
@@ -28,41 +36,57 @@ namespace Balau {
 /// Utilities for unicode characters and code points.
 ///
 struct Character {
+	//////////////////////////// Unicode version ////////////////////////////
+
+	///
+	/// Returns the unicode version as a c-string.
+	///
+	const char * unicodeVersion() noexcept {
+		return "10.0";
+	}
+
 	//////////////////////////// Classification /////////////////////////////
 
 	///
 	/// Does the specified code point have the general category "Ll" (lowercase letter).
 	///
 	static bool isLower(char32_t c) {
-		return u_islower((UChar32) c);
+		return Unicode::isLower(c);
 	}
 
 	///
 	/// Does the specified code point have the general category "Lu" (uppercase letter).
 	///
 	static bool isUpper(char32_t c) {
-		return u_isupper((UChar32) c);
+		return Unicode::isUpper(c);
+	}
+
+	///
+	/// Is the character a title case letter (usually upper case letters).
+	///
+	static bool isTitle(char32_t c) {
+		return Unicode::isTitle(c);
 	}
 
 	///
 	/// Does the specified code point have the general category "Nd" (decimal digit numbers).
 	///
 	static bool isDigit(char32_t c) {
-		return u_isdigit((UChar32) c);
+		return Unicode::isDigit(c);
 	}
 
 	///
 	/// Does the specified code point have the general category "Nd" (decimal digit numbers) or is one of the ASCII latin letters a-f or A-F.
 	///
 	static bool isHexDigit(char32_t c) {
-		return c <= 0x7f && u_isxdigit((UChar32) c);
+		return c <= 0x7f && Unicode::isHexDigit(c);
 	}
 
 	///
 	/// Is the specified code point one of the ASCII characters 0-7.
 	///
 	static bool isOctalDigit(char32_t c) {
-		return c >= U'0' && c <= U'9';
+		return c >= U'0' && c <= U'7';
 	}
 
 	///
@@ -76,77 +100,97 @@ struct Character {
 	/// Does the specified code point have the general category "L" (letters).
 	///
 	static bool isAlpha(char32_t c) {
-		return u_isalpha((UChar32) c);
+		return Unicode::isAlpha(c);
+	}
+
+	///
+	/// Does the code point have the Alphabetic Unicode property. This is different from isAlpha.
+	///
+	static bool isUAlphabetic(char32_t c) {
+		return Unicode::isUAlphabetic(c);
 	}
 
 	///
 	/// Does the specified code point have the general category "L" (letters) or "Nd" (decimal digit numbers).
 	///
 	static bool isAlphaOrDecimal(char32_t c) {
-		return u_isalnum((UChar32) c);
+		return Unicode::isAlphaNum(c);
+	}
+
+	///
+	/// Checks if the specified character is a unicode character with assigned character type.
+	///
+	static bool isDefined(char32_t c) {
+		return Unicode::isDefined(c);
+	}
+
+	///
+	/// Checks if the specified character is a base form character that can take a diacritic.
+	static bool isBase(char32_t c) {
+		return Unicode::isBase(c);
 	}
 
 	///
 	/// Is the specified code point a control character.
 	///
 	static bool isControlCharacter(char32_t c) {
-		return u_iscntrl((UChar32) c);
+		return Unicode::isControlCharacter(c);
 	}
 
 	///
 	/// Is the specified code point a space character (excluding CR / LF).
 	///
 	static bool isSpace(char32_t c) {
-		return u_isJavaSpaceChar((UChar32) c);
+		return Unicode::isJavaSpaceChar(c);
 	}
 
 	///
 	/// Is the specified code point a whitespace character.
 	///
 	static bool isWhitespace(char32_t c) {
-		return u_isWhitespace((UChar32) c);
+		return Unicode::isWhitespace(c);
 	}
 
 	///
 	/// Is the specified code point a character that visibly separates words on a line.
 	///
 	static bool isBlank(char32_t c) {
-		return u_isblank((UChar32) c);
+		return Unicode::isBlank(c);
 	}
 
 	///
 	/// Is the specified code point a printable character.
 	///
 	static bool isPrintable(char32_t c) {
-		return u_isprint((UChar32) c);
+		return Unicode::isPrintable(c);
 	}
 
 	///
 	/// Does the specified code point have the general category "P" (punctuation).
 	///
 	static bool isPunctuation(char32_t c) {
-		return u_ispunct((UChar32) c);
+		return Unicode::isPunctuation(c);
 	}
 
 	///
 	/// Does the specified code point have the general category "L" (letters) or "Nl" (letter numbers).
 	///
 	static bool isIdStart(char32_t c) {
-		return u_isIDStart((UChar32) c);
+		return Unicode::isIDStart(c);
 	}
 
 	///
 	/// Is the specified code point valid as part of an Id.
 	///
 	static bool isIdPart(char32_t c) {
-		return u_isIDPart((UChar32) c);
+		return Unicode::isIDPart(c);
 	}
 
 	///
 	/// Is the specified code point a breakable character for line endings.
 	///
 	static bool isBreakableCharacter(char32_t c) {
-		return (u_isWhitespace((UChar32) c) || c == U'-');
+		return (Unicode::isWhitespace(c) || c == U'-');
 	}
 
 	///
@@ -160,7 +204,7 @@ struct Character {
 	/// Returns the number of bytes that the character occupies when UTF-8 encoded.
 	///
 	static size_t utf8ByteCount(char32_t c) {
-		return U8_LENGTH((UChar32) c);
+		return Unicode::utf8Length(c);
 	}
 
 	//////////////////////////////// Iteration ////////////////////////////////
@@ -177,9 +221,9 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static char32_t getNextUtf8(const std::string_view & text, int & offset) {
-		UChar32 newUChar;
-		U8_NEXT_UNSAFE(text.data(), offset, newUChar); // NOLINT
-		return (char32_t) newUChar;
+		char32_t newUChar;
+		Unicode::nextUnsafe(text.data(), offset, newUChar);
+		return newUChar;
 	}
 
 	///
@@ -196,9 +240,9 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static char32_t getNextUtf8Safe(const std::string_view & text, int & offset) {
-		UChar32 newUChar;
-		U8_NEXT(text.data(), offset, (int32_t) text.length(), newUChar); // NOLINT
-		return (char32_t) newUChar;
+		char32_t newUChar;
+		Unicode::next(text.data(), offset, text.length(), newUChar);
+		return newUChar;
 	}
 
 	///
@@ -213,9 +257,9 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static char32_t getPreviousUtf8(const std::string_view & text, int & offset) {
-		UChar32 newUChar;
-		U8_PREV_UNSAFE(text.data(), offset, newUChar); // NOLINT
-		return (char32_t) newUChar;
+		char32_t newUChar;
+		Unicode::previousUnsafe(text.data(), offset, newUChar);
+		return newUChar;
 	}
 
 	///
@@ -232,9 +276,9 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static char32_t getPreviousUtf8Safe(const std::string_view & text, int & offset) {
-		UChar32 newUChar;
-		U8_PREV(text.data(), 0, offset, newUChar); // NOLINT
-		return (char32_t) newUChar;
+		char32_t newUChar;
+		Unicode::previous(text.data(), 0, offset, newUChar);
+		return newUChar;
 	}
 
 	///
@@ -246,7 +290,7 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static void advanceUtf8(const std::string_view & text, int & offset) {
-		U8_FWD_1_UNSAFE(text.data(), offset); // NOLINT
+		Unicode::forwardOneUnsafe(text.data(), offset);
 	}
 
 	///
@@ -260,7 +304,7 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static void advanceUtf8Safe(const std::string_view & text, int & offset) {
-		U8_FWD_1(text.data(), offset, ((int32_t) text.length())); // NOLINT
+		Unicode::forwardOne(text.data(), offset, text.length());
 	}
 
 	///
@@ -272,7 +316,7 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static void retreatUtf8(const std::string_view & text, int & offset) {
-		U8_BACK_1_UNSAFE(text.data(), offset);
+		Unicode::backOneUnsafe(text.data(), offset);
 	}
 
 	///
@@ -286,7 +330,7 @@ struct Character {
 	/// TODO decide on most appropriate error handling strategy.
 	///
 	static void retreatUtf8Safe(const std::string_view & text, int & offset) {
-		U8_BACK_1(((uint8_t *) text.data()), ((int32_t) 0), offset);
+		Unicode::backOne(text.data(), 0, offset);
 	}
 
 	/////////////////////////////// Validation ////////////////////////////////
@@ -301,14 +345,14 @@ struct Character {
 	/// Convert the supplied code point to uppercase.
 	///
 	static char32_t toUpper(char32_t c) {
-		return (char32_t) u_toupper((UChar32) c);
+		return Unicode::toUpper(c);
 	}
 
 	///
 	/// Convert the supplied code point to lowercase.
 	///
 	static char32_t toLower(char32_t c) {
-		return (char32_t) u_tolower((UChar32) c);
+		return Unicode::toLower(c);
 	}
 
 	///
@@ -327,8 +371,8 @@ struct Character {
 	///
 	///
 	static void setUtf8AndAdvanceOffset(std::string & destination, int & offset, char32_t c) {
-		auto newUChar = (UChar32) c;
-		U8_APPEND_UNSAFE(&destination[0], offset, newUChar); // NOLINT
+		auto newUChar = c;
+		Unicode::appendUnsafe(&destination[0], offset, newUChar);
 	}
 };
 

@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -17,8 +25,7 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_DEV__ASSERT
 #define COM_BORA_SOFTWARE__BALAU_DEV__ASSERT
 
-#include <boost/core/ignore_unused.hpp>
-#include <string>
+#include <Balau/Type/StdTypes.hpp>
 
 #ifdef BALAU_ENABLE_STACKTRACES
 	#include <boost/stacktrace.hpp>
@@ -92,9 +99,9 @@ class Assert {
 
 	private: template <typename FunctionT>
 	static void performAssertion(bool test, FunctionT function, const char * testType) {
-		boost::ignore_unused(test);
-		boost::ignore_unused(function);
-		boost::ignore_unused(testType);
+		BalauIgnoreUnused(test);
+		BalauIgnoreUnused(function);
+		BalauIgnoreUnused(testType);
 
 		#ifdef BALAU_DEBUG
 			if (!test) {
@@ -106,9 +113,9 @@ class Assert {
 
 	private: template <typename TestT, typename FunctionT>
 	static void performAssertion(TestT test, FunctionT function, const char * testType) {
-		boost::ignore_unused(test);
-		boost::ignore_unused(function);
-		boost::ignore_unused(testType);
+		BalauIgnoreUnused(test);
+		BalauIgnoreUnused(function);
+		BalauIgnoreUnused(testType);
 
 		#ifdef BALAU_DEBUG
 			if (!test()) {
@@ -119,9 +126,9 @@ class Assert {
 	}
 
 	private: static void performAssertion(bool test, const char * fatalMessage, const char * testType) {
-		boost::ignore_unused(test);
-		boost::ignore_unused(fatalMessage);
-		boost::ignore_unused(testType);
+		BalauIgnoreUnused(test);
+		BalauIgnoreUnused(fatalMessage);
+		BalauIgnoreUnused(testType);
 
 		#ifdef BALAU_DEBUG
 			if (!test) {
@@ -132,9 +139,9 @@ class Assert {
 
 	private: template <typename TestT>
 	static void performAssertion(TestT test, const char * fatalMessage, const char * testType) {
-		boost::ignore_unused(test);
-		boost::ignore_unused(fatalMessage);
-		boost::ignore_unused(testType);
+		BalauIgnoreUnused(test);
+		BalauIgnoreUnused(fatalMessage);
+		BalauIgnoreUnused(testType);
 
 		#ifdef BALAU_DEBUG
 			if (!test()) {

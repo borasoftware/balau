@@ -3,11 +3,19 @@
 
 <!--
   - Balau core C++ library
-  -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -127,31 +135,31 @@
 
 		<code lang="C++">
 			///
-			/// Get a byte read resource for the URI.
+		/// Get a byte read resource for the URI.
 			///
-			/// This will throw a NotImplementedException if the URI does not support reading.
+		/// This will throw a NotImplementedException if the URI does not support reading.
 
 			///
 			public: virtual std::unique_ptr&lt;ByteReadResource> byteReadResource() = 0;
 
 			///
-			/// Get a UTF-8 to UTF-32 read resource for the URI.
+		/// Get a UTF-8 to UTF-32 read resource for the URI.
 			///
-			/// This will throw a NotImplementedException if the URI does not support reading.
+		/// This will throw a NotImplementedException if the URI does not support reading.
 			///
 			public: virtual std::unique_ptr&lt;Utf8To32ReadResource> utf8To32ReadResource() = 0;
 
 			///
-			/// Get a byte write resource for the URI.
+		/// Get a byte write resource for the URI.
 			///
-			/// This will throw a NotImplementedException if the URI does not support writing.
+		/// This will throw a NotImplementedException if the URI does not support writing.
 			///
 			public: virtual std::unique_ptr&lt;ByteWriteResource> byteWriteResource() = 0;
 
 			///
-			/// Get a UTF-32 to UTF-8 write resource for the URI.
+		/// Get a UTF-32 to UTF-8 write resource for the URI.
 			///
-			/// This will throw a NotImplementedException if the URI does not support writing.
+		/// This will throw a NotImplementedException if the URI does not support writing.
 			///
 			public: virtual std::unique_ptr&lt;Utf32To8WriteResource> utf32To8WriteResource() = 0;
 		</code>
@@ -160,12 +168,12 @@
 
 		<code lang="C++">
 			///
-			/// Can data be read from the URI via a read resource.
+		/// Can data be read from the URI via a read resource.
 			///
 			public: virtual bool canReadFrom() const = 0;
 
 			///
-			/// Can data be written to the URI via a write resource.
+		/// Can data be written to the URI via a write resource.
 			///
 			public: virtual bool canWriteTo() const = 0;
 		</code>
@@ -174,9 +182,9 @@
 
 		<code lang="C++">
 			///
-			/// Get a recursive iterator.
+		/// Get a recursive iterator.
 			///
-			/// This will throw a NotImplementedException if the URI does not have a recursive iterator.
+		/// This will throw a NotImplementedException if the URI does not have a recursive iterator.
 			///
 			public: virtual std::unique_ptr&lt;RecursiveUriIterator> recursiveIterator() = 0;
 		</code>
@@ -185,7 +193,7 @@
 
 		<code lang="C++">
 			///
-			/// Does the URI have a recursive iterator (e.g. file and zip archive URIs).
+		/// Does the URI have a recursive iterator (e.g. file and zip archive URIs).
 			///
 			public: virtual bool isRecursivelyIterable() const = 0;
 		</code>

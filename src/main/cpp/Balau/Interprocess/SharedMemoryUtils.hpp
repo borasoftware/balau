@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -18,10 +26,10 @@
 #define COM_BORA_SOFTWARE__BALAU_INTERPROCESS__SHARED_MEMORY_UTILS
 
 #include <Balau/Type/UUID.hpp>
+#include <Balau/Util/App.hpp>
 #include <Balau/Util/Strings.hpp>
 
 #include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/dll/runtime_symbol_info.hpp>
 
 namespace Balau::Interprocess {
 
@@ -77,7 +85,7 @@ struct SharedMemoryUtils {
 	/// Create a name prefix by canonicalising the application path.
 	///
 	static std::string namePrefixFromAppPath() {
-		return Util::Strings::replaceAll(boost::dll::program_location().string(), "[:/\\\\]", "_");
+		return Util::Strings::replaceAll(Util::App::getProgramLocation().toRawString(), "[:/\\\\]", "_");
 	}
 
 	///

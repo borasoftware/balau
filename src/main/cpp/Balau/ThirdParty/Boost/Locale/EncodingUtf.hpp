@@ -32,11 +32,11 @@ std::basic_string<CharOut, std::char_traits<CharOut>, AllocatorT>
 utf_to_utf(CharIn const * begin,
            CharIn const * end,
            boost::locale::conv::method_type how = boost::locale::conv::default_method) {
-	typedef std::basic_string<CharOut, std::char_traits<CharOut>, AllocatorT> StringOutT;
+	using StringOutT = std::basic_string<CharOut, std::char_traits<CharOut>, AllocatorT>;
 
 	StringOutT result;
 	result.reserve(end - begin);
-	typedef std::back_insert_iterator<StringOutT> inserter_type;
+	using inserter_type = std::back_insert_iterator<StringOutT>;
 	inserter_type inserter(result);
 	boost::locale::utf::code_point c;
 

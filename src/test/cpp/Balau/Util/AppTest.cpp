@@ -1,13 +1,20 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #include <TestResources.hpp>
 #include <Balau/Util/App.hpp>
 
@@ -22,11 +29,11 @@ namespace Util {
 ///
 struct AppTest : public Testing::TestGroup<AppTest> {
 	AppTest() {
-		registerTest(&AppTest::userAppDataDirectory,            "userAppDataDirectory");
-		registerTest(&AppTest::globalAppDataDirectory,          "globalAppDataDirectory");
-		registerTest(&AppTest::userAppConfigDirectory,          "userAppConfigDirectory");
-		registerTest(&AppTest::globalAppConfigDirectory,        "globalAppConfigDirectory");
-		registerTest(&AppTest::applicationRuntimeDataDirectory, "applicationRuntimeDataDirectory");
+		RegisterTest(userAppDataDirectory);
+		RegisterTest(globalAppDataDirectory);
+		RegisterTest(userAppConfigDirectory);
+		RegisterTest(globalAppConfigDirectory);
+		RegisterTest(applicationRuntimeDataDirectory);
 	}
 
 	void userAppDataDirectory() {
@@ -51,10 +58,9 @@ struct AppTest : public Testing::TestGroup<AppTest> {
 	}
 
 	void globalAppDataDirectory() {
-		const boost::filesystem::path programLocation = boost::dll::program_location();
-
+		const auto programLocation = Util::App::getProgramLocation();
 		const auto actual = App::getGlobalApplicationDataDirectory("ACompanyName", "AnApplication");
-		const auto expected = Resource::File(programLocation.parent_path().parent_path()) / "share" / "ACompanyName" / "AnApplication" / "data";
+		const auto expected = Resource::File(programLocation.getParentDirectory().getParentDirectory()) / "share" / "ACompanyName" / "AnApplication" / "data";
 
 		AssertThat(actual, is(expected));
 	}
@@ -81,10 +87,10 @@ struct AppTest : public Testing::TestGroup<AppTest> {
 	}
 
 	void globalAppConfigDirectory() {
-		const boost::filesystem::path programLocation = boost::dll::program_location();
+		const auto programLocation = Util::App::getProgramLocation();
 
 		const auto actual = App::getGlobalApplicationConfigDirectory("ACompanyName", "AnApplication");
-		const auto expected = Resource::File(programLocation.parent_path().parent_path()) / "share" / "ACompanyName" / "AnApplication" / "config";
+		const auto expected = Resource::File(programLocation.getParentDirectory().getParentDirectory()) / "share" / "ACompanyName" / "AnApplication" / "config";
 
 		AssertThat(actual, is(expected));
 	}

@@ -1,13 +1,20 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #include <Balau/Exception/InjectorExceptions.hpp>
 #include <TestResources.hpp>
 
@@ -424,26 +431,26 @@ namespace Balau {
 
 struct InjectorTest : public Testing::TestGroup<InjectorTest> {
 	InjectorTest() {
-		registerTest(&InjectorTest::creationAndDeletion,                "creationAndDeletion");
-		registerTest(&InjectorTest::singletonCreation,                  "singletonCreation");
-		registerTest(&InjectorTest::simpleTypeInjection,                "simpleTypeInjection");
-		registerTest(&InjectorTest::multipleCustomScopes,               "multipleCustomScopes");
-		registerTest(&InjectorTest::namedDependency,                    "namedDependency");
-		registerTest(&InjectorTest::eagerSingletons,                    "eagerSingletons");
-		registerTest(&InjectorTest::runtimeCustomScopes,                "runtimeCustomScopes");
-		registerTest(&InjectorTest::threadLocalScopeUsage,              "threadLocalScopeUsage");
-		registerTest(&InjectorTest::allBindings,                        "allBindings");
-		registerTest(&InjectorTest::docTest,                            "docTest");
-		registerTest(&InjectorTest::injectTheInjector,                  "injectTheInjector");
-		registerTest(&InjectorTest::sharedCycleChecks,                  "sharedCycleChecks");
-		registerTest(&InjectorTest::mixedCycleChecks,                   "mixedCycleChecks");
-		registerTest(&InjectorTest::injectorCycleAvoidance,             "injectorCycleAvoidance");
-		registerTest(&InjectorTest::uniqueBindingCustomDeleter,         "uniqueBindingCustomDeleter");
-		registerTest(&InjectorTest::uniqueBindingCustomDeleterInjected, "uniqueBindingCustomDeleterInjected");
-		registerTest(&InjectorTest::singletonProvider,                  "singletonProvider");
-		registerTest(&InjectorTest::providedSingletonProvider,          "providedSingletonProvider");
-		registerTest(&InjectorTest::headerBodyMacros,                   "headerBodyMacros");
-		registerTest(&InjectorTest::printBindingsDetailed,              "printBindingsDetailed");
+		RegisterTest(creationAndDeletion);
+		RegisterTest(singletonCreation);
+		RegisterTest(simpleTypeInjection);
+		RegisterTest(multipleCustomScopes);
+		RegisterTest(namedDependency);
+		RegisterTest(eagerSingletons);
+		RegisterTest(runtimeCustomScopes);
+		RegisterTest(threadLocalScopeUsage);
+		RegisterTest(allBindings);
+		RegisterTest(docTest);
+		RegisterTest(injectTheInjector);
+		RegisterTest(sharedCycleChecks);
+		RegisterTest(mixedCycleChecks);
+		RegisterTest(injectorCycleAvoidance);
+		RegisterTest(uniqueBindingCustomDeleter);
+		RegisterTest(uniqueBindingCustomDeleterInjected);
+		RegisterTest(singletonProvider);
+		RegisterTest(providedSingletonProvider);
+		RegisterTest(headerBodyMacros);
+		RegisterTest(printBindingsDetailed);
 	}
 
 	void creationAndDeletion() {

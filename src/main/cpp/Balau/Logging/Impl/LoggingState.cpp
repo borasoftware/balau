@@ -1,19 +1,26 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 #include "LoggingState.hpp"
 #include "LoggerPropertyVisitor.hpp"
 #include "LoggerConfigurationVisitor.hpp"
 #include "../../Application/Impl/PropertyBindingBuilderFactory.hpp"
 #include "../../System/SystemClock.hpp"
-#include "../../Util/User.hpp"
+#include "../../Util/App.hpp"
 
 // Defines for logging system development logging.
 
@@ -354,8 +361,6 @@ LoggingStream * LoggingState::getOrCreateStream(const std::string & uri) {
 	return cachedStream->second;
 }
 
-using LoggingNamespace = std::vector<std::string>;
-
 void LoggingState::wipeProperties(LoggerTree & theLoggers) {
 	printLoggingDebugMessage("wipeProperties called");
 
@@ -368,18 +373,19 @@ LoggerTree LoggingState::autoConfigure() noexcept {
 	printLoggingDebugMessage("autoConfigure called");
 
 	// Attempt normal configuration.
+
 	try {
 		const char * configurationFileName = "balau-logging.hconf";
-		boost::filesystem::path exeLocation = boost::dll::program_location();
+		const auto exeLocation = Util::App::getProgramLocation();
 		std::string configurationText;
 
-		if (!boost::filesystem::is_regular_file(exeLocation)) {
+		if (!exeLocation.isRegularFile()) {
 			std::cerr << "ERROR: cannot locate executable. "
 			          << "Implicit logging system configuration from balau-logging.hconf cannot be performed."
 			          << std::endl;
 		} else {
-			boost::filesystem::path confLocation = exeLocation.parent_path() / configurationFileName;
-			if (boost::filesystem::is_regular_file(confLocation)) {
+			const auto confLocation = exeLocation.getParentDirectory() / configurationFileName;
+			if (confLocation.isRegularFile()) {
 				configurationText = Files::readToString(Resource::File(confLocation));
 			}
 		}
@@ -447,15 +453,15 @@ LoggerTree LoggingState::manualConfigure(const EnvironmentProperties & configura
 
 std::string LoggingState::expandConfigurationTextMacros(std::string_view configurationText,
                                                         const std::map<std::string, std::string> & encasedPlaceholders) {
-	const boost::filesystem::path exeLocation = boost::dll::program_location();
+	const auto exeLocation = Util::App::getProgramLocation();
 	const std::string homeDir = User::getHomeDirectory().toUriString();
-	const std::string executableName = exeLocation.filename().string();
+	const std::string executableName = exeLocation.toRawString();
 
 	return expandConfigurationTextMacros(configurationText, exeLocation, homeDir, executableName, encasedPlaceholders);
 }
 
 std::string LoggingState::expandConfigurationTextMacros(std::string_view configurationText,
-                                                        const boost::filesystem::path & exeLocation,
+                                                        const Resource::File & exeLocation,
                                                         const std::string & homeDir,
                                                         const std::string & executableName,
                                                         const std::map<std::string, std::string> & encasedPlaceholders) {
@@ -490,10 +496,9 @@ std::string LoggingState::expandConfigurationTextMacros(std::string_view configu
 
 std::unique_ptr<EnvironmentProperties> LoggingState::expandConfigurationTextMacros(const EnvironmentProperties & configuration,
                                                                                    const std::map<std::string, std::string> & encasedPlaceholders) {
-	const boost::filesystem::path exeLocation = boost::dll::program_location();
+	const auto exeLocation = Util::App::getProgramLocation();
 	const std::string homeDir = User::getHomeDirectory().toUriString();
-	const std::string executableName = exeLocation.filename().string();
-
+	const std::string executableName = exeLocation.getFilename();
 	auto bindings = std::make_unique<::Balau::Impl::BindingMap>();
 
 	for (auto item : configuration) {
@@ -519,7 +524,7 @@ std::unique_ptr<EnvironmentProperties> LoggingState::expandConfigurationTextMacr
 std::unique_ptr<::Balau::Impl::AbstractBinding>
 LoggingState::expandConfigurationValueTextMacros(::Balau::Impl::BindingKey key,
                                                  const std::shared_ptr<EnvironmentProperties> & configuration,
-                                                 const boost::filesystem::path & exeLocation,
+                                                 const Resource::File & exeLocation,
                                                  const std::string & homeDir,
                                                  const std::string & executableName,
                                                  const std::map<std::string, std::string> & encasedPlaceholders) {

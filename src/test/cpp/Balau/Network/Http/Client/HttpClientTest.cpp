@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
@@ -26,10 +34,10 @@ namespace Network::Http {
 
 struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	HttpClientTest() {
-		registerTest(&HttpClientTest::getRequest, "getRequest");
-		registerTest(&HttpClientTest::headRequest, "headRequest");
-		registerTest(&HttpClientTest::postRequest, "postRequest");
-		registerTest(&HttpClientTest::newClient,   "newClient");
+		RegisterTest(getRequest);
+		RegisterTest(headRequest);
+		RegisterTest(postRequest);
+		RegisterTest(newClient);
 	}
 
 	static void assertResponse(Response<CharVectorBody> & response,
@@ -45,7 +53,7 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 		auto needEof = response.need_eof();
 		auto version = response.version();
 
-		AssertThat(reason, is(reasonStr));
+		AssertThat(reason.to_string(), is(reasonStr));
 		AssertThat(result, is(status));
 		AssertThat(chunked, is(false));
 		AssertThat(hasContentLength, is(true));
@@ -75,7 +83,7 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 		auto needEof = response.need_eof();
 		auto version = response.version();
 
-		AssertThat(reason, is(reasonStr));
+		AssertThat(reason.to_string(), is(reasonStr));
 		AssertThat(result, is(status));
 		AssertThat(chunked, is(false));
 		AssertThat(hasContentLength, is(false));
@@ -87,7 +95,7 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	void getRequest() {
 		try {
 			HttpClient client("borasoftware.com");
-	
+
 			try {
 				Response<CharVectorBody> response = client.get("/");
 				const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
@@ -106,12 +114,12 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 			}
 		}
 	}
-	
+
 	void headRequest() {
 		// TODO finish
 		ignore();
 		return;
-	
+
 	//	try {
 	//		HttpClient client("borasoftware.com");
 	//
@@ -132,11 +140,11 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 	//		}
 	//	}
 	}
-	
+
 	void postRequest() {
 		try {
 			HttpClient client("borasoftware.com");
-	
+
 			try {
 				Response<CharVectorBody> response = client.post("/", "");
 				const std::string expectedBody = "<html>\r\n<head><title>301 Moved Permanently</title></head>";
@@ -155,20 +163,20 @@ struct HttpClientTest : public Testing::TestGroup<HttpClientTest> {
 			}
 		}
 	}
-	
+
 	void newClient() {
 		Resource::Http http("http://borasoftware.com");
 		auto httpClient1 = HttpClient::newClient(http);
-	
+
 		Resource::Https https("https://borasoftware.com");
 		auto httpsClient1 = HttpClient::newClient(https);
-	
+
 		Resource::Http httpWithPort("http://borasoftware.com:80");
 		auto httpClient2 = HttpClient::newClient(httpWithPort);
-	
+
 		Resource::Https httpsWithPort("https://borasoftware.com:443");
 		auto httpsClient2 = HttpClient::newClient(httpsWithPort);
-	
+
 		AssertThat([] () { HttpClient::newClient("borasoftware.com"); }, throws<Exception::NetworkException>());
 		AssertThat([] () { HttpClient::newClient("http://"); }, throws<Exception::NetworkException>());
 		AssertThat([] () { HttpClient::newClient("http://:80"); }, throws<Exception::InvalidUriException>());

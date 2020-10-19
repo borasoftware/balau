@@ -1,11 +1,19 @@
 // @formatter:off
 //
 // Balau core C++ library
-//
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -39,8 +47,7 @@
 /// candidate for rapid enterprise quality application development. %Balau provides tools designed
 /// to support the rapid development of high performance C++ enterprise quality applications.
 ///
-/// %Balau builds on the foundations of the ICU and Boost projects, and focuses on using
-/// modern C++17 features and the standard unicode string classes.
+/// %Balau focuses on using modern C++17 features and the standard unicode string classes.
 ///
 /// The library has been conceived for the development of applications that have a
 /// dependency injection based architecture, have complex logging requirements, and will
@@ -62,7 +69,6 @@
 /// also provides a set of components and utilities with simple APIs, including an
 /// HTTP/WebSocket web application framework.
 ///
-
 /// @namespace Balau The root %Balau namespace.
 
 /// @namespace Balau::Concurrent Concurrency control classes.
@@ -98,6 +104,8 @@
 /// @namespace Balau::Testing::TestRenderers Pre-defined renderers used to print test assertion failures.
 
 /// @namespace Balau::Type The character utilities and other basic functionality.
+
+/// @namespace Balau::Unicode Low level %Unicode functions.
 
 /// @namespace Balau::Util Utility functions.
 
@@ -143,30 +151,30 @@ static_assert(sizeof(uint64_t)           == 8, "uint64_t is not 64 bits");
 
 ///////////////////////////// Additional pre-defs /////////////////////////////
 
-#if INTPTR_MAX == INT32_MAX
-	#define BalauPointerSize_ 32
-#elif INTPTR_MAX == INT64_MAX
-	#define BalauPointerSize_ 64
+#ifdef __linux
+	#define BALAU_LINUX_PLATFORM
+#elif __WIN64
+	#define BALAU_WINDOWS_PLATFORM
 #else
-	#error "Pointer size not supported for this platform."
+	#error "Platform not supported."
 #endif
 
 ///
-/// The pointer size in bits of the platform.
+/// Always inline macro.
 ///
-#define BalauPointerSize BalauPointerSize_
-
-////////////////////////////////// Backports //////////////////////////////////
-
-#ifdef BALAU_USE_BOOST_STRING_VIEW
-	#include <Balau/Type/Impl/StringView.hpp>
+#ifdef _MSC_VER
+	#define BalauAlwaysInline __forceinline
+#elif defined(__GNUC__) && __GNUC__ > 3
+	#define BalauAlwaysInline inline __attribute__ ((__always_inline__))
 #else
-	#include <string_view>
+	#define BalauAlwaysInline inline
 #endif
 
-#ifdef BALAU_USE_CUSTOM_REINTERPRET_POINTER_CAST
-	#include <Balau/Type/Impl/ReinterpretPointerCast.hpp>
-#endif
+///
+/// Ignore unused macro.
+///
+template <typename ... T> BalauAlwaysInline constexpr void BalauIgnoreUnused(const T & ...) {}
+BalauAlwaysInline constexpr void BalauIgnoreUnused() {}
 
 //////////////////////////////// Balau version ////////////////////////////////
 
