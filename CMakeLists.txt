@@ -135,6 +135,7 @@ set(BALAU_SOURCE_FILES
 
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
+	src/main/cpp/Balau/Application/CommandLineHolder.hpp
 	src/main/cpp/Balau/Application/Inject.hpp
 	src/main/cpp/Balau/Application/Injectable.hpp
 	src/main/cpp/Balau/Application/InjectBody.hpp

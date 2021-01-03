@@ -57,6 +57,11 @@ enum class CommandLineStyle {
 ///
 /// A compact command line argument parser.
 ///
+/// This class is currently not injectable. Use a provider instead, with the
+/// command line configuration set via the fluent API.
+///
+/// @param <KeyT> the key type (typically an enum or std::string)
+///
 template <typename KeyT> class CommandLine {
 	///
 	/// Create a command line parser with the specified style.

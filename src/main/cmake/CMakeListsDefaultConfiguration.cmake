@@ -39,6 +39,8 @@ endif()
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# using Clang
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-lambda-capture") # Required for Boost Process headers.
+	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-c11-extensions") # Required for Boost IOStreams headers.
+	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-deprecated-copy") # Required for Boost IOStreams headers.
 	set(BALAU_CXX_FLAGS "${BALAU_CXX_FLAGS} -Wno-unused-private-field")
 	set(BALAU_CXX_FLAGS_DEBUG "${BALAU_CXX_FLAGS_DEBUG} -fstandalone-debug")
 
