@@ -201,7 +201,6 @@ class LoggingState final {
 		std::shared_ptr<LogItem> nsLoggerItem               = std::make_shared<NsLoggerItem>();
 		std::shared_ptr<LogItem> filenameLoggerItem         = std::make_shared<FilenameLoggerItem>();
 		std::shared_ptr<LogItem> filePathLoggerItem         = std::make_shared<FilePathLoggerItem>();
-		std::shared_ptr<LogItem> lineNumberLoggerItem       = std::make_shared<LineNumberLoggerItem>();
 		std::shared_ptr<LogItem> messageLoggerItem          = std::make_shared<MessageLoggerItem>();
 		std::shared_ptr<LogItem> percentCharacterLoggerItem = std::make_shared<PercentCharacterLoggerItem>();
 		std::shared_ptr<LogItem> doubleQuotationLoggerItem  = std::make_shared<DoubleQuotationLoggerItem>();

@@ -22,23 +22,20 @@
 namespace Balau {
 
 ///
-/// A type used to representing a source code file and line number pair, obtained via the __FILE__ and __LINE__ macros.
+/// A type used to representing a source code file and line number pair,
+/// obtained by combining the __FILE__ and __LINE__ macros into a const char *.
+///
+/// Instances of this class are normally implicit, via the logging macros.
 ///
 struct SourceCodeLocation {
-	const char * file;
-	unsigned int line;
+	const char * location;
 
-	SourceCodeLocation()
-		: file(nullptr)
-		, line(0) {}
-
-	SourceCodeLocation(const char * file_, unsigned int line_)
-		: file(file_)
-		, line(line_) {}
+	explicit SourceCodeLocation(const char * location_ = nullptr)
+		: location(location_) {}
 };
 
 inline std::string toString(const SourceCodeLocation & location) {
-	return ::toString(location.file) + ":" + ::toString(location.line);
+	return location.location;
 }
 
 } // namespace Balau

@@ -180,7 +180,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		const std::string configurationText = 1 + R"RR(
 	. {
 		level = info
-		format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		stream = _STREAM_ENTRY_
 	}
 	)RR";
@@ -200,10 +200,10 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		const std::string actual = Files::readToString(logFile);
 
 		const std::vector<std::string> expectedContains = {
-			  ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A single 1 parameter message"
-			, ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A two 1 parameter 2 message"
-			, ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A three 1 parameter 2 message 3"
-			, ": - [LoggerTest::parameterisedMessages] INFO - com.borasoftware - 1, 2, 3, 4"
+			  " [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A single 1 parameter message"
+			, " [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A two 1 parameter 2 message"
+			, " [LoggerTest::parameterisedMessages] INFO - com.borasoftware - A three 1 parameter 2 message 3"
+			, " [LoggerTest::parameterisedMessages] INFO - com.borasoftware - 1, 2, 3, 4"
 		};
 
 		assertLines(actual, expectedContains);
@@ -213,7 +213,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		const std::string configurationText = 1 + R"RR(
 	. {
 		level = trace
-		format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		stream = _STREAM_ENTRY_
 	}
 	)RR";
@@ -283,7 +283,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		const std::string configurationText = 1 + R"RR(
 . {
 	level  = trace
-	format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+	format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 	stream = _STREAM_ENTRY_
 }
 )RR";
@@ -297,7 +297,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 
 		const std::string expectedConfigurationTextStart = 1 + R"RR(
 com.borasoftware {
-    format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+    format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
     level = trace
     stream = )RR";
 
@@ -308,7 +308,7 @@ com.borasoftware {
 		const std::string configurationText = 1 + R"RR(
 	. {
 		level  = info
-		format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		stream = _STREAM_ENTRY_
 	}
 	)RR";
@@ -320,7 +320,7 @@ com.borasoftware {
 
 		Logger::flushAll();
 		const std::string actual = Files::readToString(logFile);
-		const std::string expectedContains = " : - [LoggerTest::globalNamespace] WARN -  - This is a test message with parameter 2";
+		const std::string expectedContains = " [LoggerTest::globalNamespace] WARN -  - This is a test message with parameter 2";
 
 		AssertThat(actual, contains(expectedContains));
 	}
@@ -381,7 +381,7 @@ com.borasoftware {
 		const std::string configurationText = 1 + R"RR(
 	. {
 		level = info
-		format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		stream = _STREAM_ENTRY_
 	}
 	)RR";
@@ -391,7 +391,7 @@ com.borasoftware {
 		Logger & log1 = Logger::globalLogger();
 		Logger & log2 = Logger::getLogger("com.borasoftware");
 
-		log1.info(SourceCodeLocation(__FILE__, __LINE__), "hello {}", "mike");
+		log1.info(BalauSourceCodeLocation(__FILE__, __LINE__), "hello {}", "mike");
 		log1.info("hello {} {}", 8U, "john");
 
 		BalauLogInfo(log1, "hello {}", "bob");
@@ -414,7 +414,7 @@ com.borasoftware {
 		const std::string configurationText = 1 + R"RR(
 	. {
 		level  = info
-		format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		stream = _STREAM_ENTRY_
 	}
 	)RR";
@@ -488,7 +488,7 @@ com.borasoftware {
 		const std::string configurationText = 1 + R"RR(
 	. {
 		level  = info
-		format = %Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		stream = custom
 	}
 	)RR";

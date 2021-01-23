@@ -144,7 +144,7 @@ struct CommandLineTest : public Testing::TestGroup<CommandLineTest> {
 		AssertThat(commandLine.getOption(KEY7), is(fValueStr));
 		AssertThat(commandLine.getOption(KEY8), is(dValueStr));
 
-		AssertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", 0, "", ::toString(KEY9))));
+		AssertThat([&] () { commandLine.getOption(KEY9); }, throws(Exception::OptionNotFoundException("", ::toString(KEY9))));
 
 		AssertThat([&] () { commandLine.getOption(KEY9); }, throws<Exception::OptionNotFoundException>());
 

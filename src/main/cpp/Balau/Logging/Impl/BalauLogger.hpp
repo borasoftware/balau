@@ -15,7 +15,6 @@
 #include <Balau/Logging/LoggingLevel.hpp>
 #include <Balau/Logging/Impl/LoggerAllocator.hpp>
 #include <Balau/Logging/Impl/LoggerForwardDeclarations.hpp>
-#include <Balau/Type/SourceCodeLocation.hpp>
 
 #include <functional>
 
@@ -797,27 +796,27 @@ class BalauLogger {
 //
 // Log a trace message with the source code location of the logging statement.
 //
-#define BalauBalauLogTrace(LOGGER, ...) LOGGER.trace(SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define BalauBalauLogTrace(LOGGER, ...) LOGGER.trace(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 //
 // Log a debug message with the source code location of the logging statement.
 //
-#define BalauBalauLogDebug(LOGGER, ...) LOGGER.debug(SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define BalauBalauLogDebug(LOGGER, ...) LOGGER.debug(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 //
 // Log an info message with the source code location of the logging statement.
 //
-#define BalauBalauLogInfo(LOGGER, ...)  LOGGER.info(SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define BalauBalauLogInfo(LOGGER, ...)  LOGGER.info(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 //
 // Log a warn message with the source code location of the logging statement.
 //
-#define BalauBalauLogWarn(LOGGER, ...)  LOGGER.warn(SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define BalauBalauLogWarn(LOGGER, ...)  LOGGER.warn(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 //
 // Log an error message with the source code location of the logging statement.
 //
-#define BalauBalauLogError(LOGGER, ...) LOGGER.error(SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define BalauBalauLogError(LOGGER, ...) LOGGER.error(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 #pragma clang diagnostic pop
 

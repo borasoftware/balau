@@ -27,12 +27,20 @@ namespace Balau::Exception {
 class IndexOutOfRangeException : public BalauException {
 	public: const size_t index;
 
-	public: IndexOutOfRangeException(const char * file, int line, const std::string & st, size_t index_)
-		: BalauException(file, line, st, "IndexOutOfRange", ::toString(index_))
+	public: IndexOutOfRangeException(SourceCodeLocation location, const std::string & st, size_t index_)
+		: BalauException(location, st, "IndexOutOfRange", ::toString(index_))
 		, index(index_) {}
 
-	public: IndexOutOfRangeException(const char * file, int line, const std::string & st, const std::string & text, size_t index_)
-		: BalauException(file, line, st, "IndexOutOfRange", text + " - " + ::toString(index_))
+	public: IndexOutOfRangeException(const std::string & st, size_t index_)
+		: BalauException(st, "IndexOutOfRange", ::toString(index_))
+		, index(index_) {}
+
+	public: IndexOutOfRangeException(SourceCodeLocation location, const std::string & st, const std::string & text, size_t index_)
+		: BalauException(location, st, "IndexOutOfRange", text + " - " + ::toString(index_))
+		, index(index_) {}
+
+	public: IndexOutOfRangeException(const std::string & st, const std::string & text, size_t index_)
+		: BalauException(st, "IndexOutOfRange", text + " - " + ::toString(index_))
 		, index(index_) {}
 };
 
@@ -44,16 +52,22 @@ inline bool operator == (const IndexOutOfRangeException & lhs, const IndexOutOfR
 /// Thrown when a request is made for an element but no elements are available.
 ///
 class EmptyException : public BalauException {
-	public: EmptyException(const char * file, int line, const std::string & st, const std::string & text)
-		: BalauException(file, line, st, "Empty", text) {}
+	public: EmptyException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: BalauException(location, st, "Empty", text) {}
+
+	public: EmptyException(const std::string & st, const std::string & text)
+		: BalauException(st, "Empty", text) {}
 };
 
 ///
 /// Thrown when an invalid size is supplied or detected.
 ///
 class SizeException : public BalauException {
-	public: SizeException(const char * file, int line, const std::string & st, const std::string & text)
-		: BalauException(file, line, st, "Size", text) {}
+	public: SizeException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: BalauException(location, st, "Size", text) {}
+
+	public: SizeException(const std::string & st, const std::string & text)
+		: BalauException(st, "Size", text) {}
 };
 
 ///
@@ -62,8 +76,12 @@ class SizeException : public BalauException {
 template <typename T> class ItemExistsException : public BalauException {
 	public: const T item;
 
-	public: ItemExistsException(const char * file, int line, const std::string & st, T item_, const std::string & text)
-		: BalauException(file, line, st, "ItemExists", text)
+	public: ItemExistsException(SourceCodeLocation location, const std::string & st, T item_, const std::string & text)
+		: BalauException(location, st, "ItemExists", text)
+		, item(item_) {}
+
+	public: ItemExistsException(const std::string & st, T item_, const std::string & text)
+		: BalauException(st, "ItemExists", text)
 		, item(item_) {}
 };
 
@@ -73,8 +91,12 @@ template <typename T> class ItemExistsException : public BalauException {
 template <typename T> class ItemDoesNotExistException : public BalauException {
 	public: const T item;
 
-	public: ItemDoesNotExistException(const char * file, int line, const std::string & st, T item_, const std::string & text)
-		: BalauException(file, line, st, "ItemDoesNotExist", text)
+	public: ItemDoesNotExistException(SourceCodeLocation location, const std::string & st, T item_, const std::string & text)
+		: BalauException(location, st, "ItemDoesNotExist", text)
+		, item(item_) {}
+
+	public: ItemDoesNotExistException(const std::string & st, T item_, const std::string & text)
+		: BalauException(st, "ItemDoesNotExist", text)
 		, item(item_) {}
 };
 
@@ -85,8 +107,13 @@ template <typename T, typename U> class RelationshipDoesNotExistException : publ
 	public: const T item1;
 	public: const U item2;
 
-	public: RelationshipDoesNotExistException(const char * file, int line, const std::string & st, T item1_, U item2_, const std::string & text)
-		: BalauException(file, line, st, "RelationshipDoesNotExist", text)
+	public: RelationshipDoesNotExistException(SourceCodeLocation location, const std::string & st, T item1_, U item2_, const std::string & text)
+		: BalauException(location, st, "RelationshipDoesNotExist", text)
+		, item1(item1_)
+		, item2(item2_) {}
+
+	public: RelationshipDoesNotExistException(const std::string & st, T item1_, U item2_, const std::string & text)
+		: BalauException(st, "RelationshipDoesNotExist", text)
 		, item1(item1_)
 		, item2(item2_) {}
 };

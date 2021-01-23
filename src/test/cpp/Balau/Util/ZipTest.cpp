@@ -409,9 +409,9 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 
 	static void unzipperTestImpl3() {
 		const Resource::File zipFile = resDir / "Zips" / "ZipFile.zip";
-		const auto path = zipFile.toRawString().c_str();
+		const auto path = zipFile.toRawString();
 		int error = 0;
-		zip_t * archive = zip_open(path, ZIP_RDONLY | ZIP_CHECKCONS, &error);
+		zip_t * archive = zip_open(path.c_str(), ZIP_RDONLY | ZIP_CHECKCONS, &error);
 		if (error) { throw std::exception(); }
 		struct zip_stat sb {};
 		zip_stat_init(&sb);

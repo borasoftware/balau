@@ -95,12 +95,12 @@ struct AssertionsTest : public Testing::TestGroup<AssertionsTest> {
 		AssertThat(D{"test"}, doesNotContain(D{"ets"}));
 
 		AssertThat([&] () { foo(); }, throws<Exception::SizeException>());
-		AssertThat([&] () { foo(); }, throws(Exception::SizeException("", 0, "", "testing")));
+		AssertThat([&] () { foo(); }, throws(Exception::SizeException("", "testing")));
 
 		AssertThat(
 			  [&] () { foo(); }
 			, throws(
-				  Exception::SizeException("", 0, "", "testing")
+				  Exception::SizeException("", "testing")
 				, [] (auto a, auto e) { return std::string(a.message) == e.message; }
 			)
 		);

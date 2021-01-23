@@ -26,8 +26,11 @@ namespace Balau::Exception {
 /// Base class of network exceptions.
 ///
 class NetworkException : public BalauException {
-	public: NetworkException(const char * file, int line, const std::string & st, const std::string & text)
-		: BalauException(file, line, st, "Network", text) {}
+	public: NetworkException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: BalauException(location, st, "Network", text) {}
+
+	public: NetworkException(const std::string & st, const std::string & text)
+		: BalauException(st, "Network", text) {}
 };
 
 } // namespace Balau::Exception

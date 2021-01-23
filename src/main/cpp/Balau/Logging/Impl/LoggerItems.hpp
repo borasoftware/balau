@@ -51,9 +51,8 @@ using LogItemVector = std::vector<std::shared_ptr<LogItem>>;
 //  - %ns        - an abbreviation of the logger's logging namespace, created by
 //                 printing each identifier's first letter only apart from the last
 //                 identifier which is printed in its entirety
-//  - %filename  - the source file name
-//  - %filepath  - the full path to the source file
-//  - %line      - the line number in the source file
+//  - %filename  - the source file name plus line number
+//  - %filepath  - the full path to the source file plus line number
 //  - %message   - the message, after stringification and combination of all arguments
 //  - %%         - the percent character
 //  - %"         - the double quotation character
@@ -184,8 +183,9 @@ class NsLoggerItem : public LogItem {
 // The name of the file in which the log message is found.
 class FilenameLoggerItem : public LogItem {
 	public: void write(LoggerItemParameters & parameters) const override {
-		if (parameters.filename != nullptr) {
-			boost::filesystem::path p(parameters.filename);
+		if (parameters.location != nullptr) {
+			boost::filesystem::path p(parameters.location);
+			// TODO check that this parses ok with the line number suffix.
 			parameters.builder << p.filename().string();
 		}
 	}
@@ -194,16 +194,7 @@ class FilenameLoggerItem : public LogItem {
 // The full path of the file in which the log message is found.
 class FilePathLoggerItem : public LogItem {
 	public: void write(LoggerItemParameters & parameters) const override {
-		parameters.builder << parameters.filename;
-	}
-};
-
-// The line number in the source file where the log message is found.
-class LineNumberLoggerItem : public LogItem {
-	public: void write(LoggerItemParameters & parameters) const override {
-		if (parameters.line != 0) {
-			parameters.builder << parameters.line;
-		}
+		parameters.builder << parameters.location;
 	}
 };
 

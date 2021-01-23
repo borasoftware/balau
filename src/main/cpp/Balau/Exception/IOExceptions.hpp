@@ -26,8 +26,11 @@ namespace Balau::Exception {
 /// Thrown when an IO exception occurs.
 ///
 class IOException : public BalauException {
-	public: IOException(const char * file, int line, const std::string & st, const std::string & text)
-		: BalauException(file, line, st, "IO", text) {}
+	public: IOException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: BalauException(location, st, "IO", text) {}
+
+	public: IOException(const std::string & st, const std::string & text)
+		: BalauException(st, "IO", text) {}
 };
 
 } // namespace Balau::Exception

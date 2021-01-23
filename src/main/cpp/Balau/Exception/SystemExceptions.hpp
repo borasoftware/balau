@@ -27,21 +27,32 @@ namespace Balau::Exception {
 class ErrNoException : public BalauException {
 	public: int errorNumber;
 
-	protected: ErrNoException(const char * file,
-	                          int line,
+	protected: ErrNoException(SourceCodeLocation location,
 	                          const std::string & st,
 	                          int errorNumber_,
 	                          const std::string & name)
-		: BalauException(file, line, st, name, " - error: " + ::toString(errorNumber_))
+		: BalauException(location, st, name, " - error: " + ::toString(errorNumber_))
 		, errorNumber(errorNumber_) {}
 
-	protected: ErrNoException(const char * file,
-	                          int line,
+	protected: ErrNoException(const std::string & st,
+	                          int errorNumber_,
+	                          const std::string & name)
+		: BalauException(st, name, " - error: " + ::toString(errorNumber_))
+		, errorNumber(errorNumber_) {}
+
+	protected: ErrNoException(SourceCodeLocation location,
 	                          const std::string & st,
 	                          int errorNumber_,
 	                          const std::string & name,
 	                          const std::string & message_)
-		: BalauException(file, line, st, name, " - error: " + ::toString(errorNumber_) + " - " + message_)
+		: BalauException(location, st, name, " - error: " + ::toString(errorNumber_) + " - " + message_)
+		, errorNumber(errorNumber_) {}
+
+	protected: ErrNoException(const std::string & st,
+	                          int errorNumber_,
+	                          const std::string & name,
+	                          const std::string & message_)
+		: BalauException(st, name, " - error: " + ::toString(errorNumber_) + " - " + message_)
 		, errorNumber(errorNumber_) {}
 };
 
@@ -56,27 +67,38 @@ inline bool operator == (const ErrNoException & lhs, const ErrNoException & rhs)
 /// ENOMEM: insufficient storage space is available
 ///
 class ForkException : public ErrNoException {
-	public: ForkException(const char * file,
-	                      int line,
+	public: ForkException(SourceCodeLocation location,
 	                      const std::string & st,
 	                      int errorNumber_,
 	                      const std::string & message_)
-		: ErrNoException(file, line, st, errorNumber_, "Fork", message_) {}
+		: ErrNoException(location, st, errorNumber_, "Fork", message_) {}
+
+	public: ForkException(const std::string & st,
+	                      int errorNumber_,
+	                      const std::string & message_)
+		: ErrNoException(st, errorNumber_, "Fork", message_) {}
 };
 
 ///
 /// Thrown when a wait call fails.
 ///
 class WaitException : public ErrNoException {
-	public: WaitException(const char * file,
-	                      int line,
+	public: WaitException(SourceCodeLocation location,
 	                      const std::string & st,
 	                      int errorNumber_,
 	                      const std::string & message_)
-		: ErrNoException(file, line, st, errorNumber_, "Wait", message_) {}
+		: ErrNoException(location, st, errorNumber_, "Wait", message_) {}
 
-	public: WaitException(const char * file, int line, const std::string & st, int errorNumber_)
-		: ErrNoException(file, line, st, errorNumber_, "Wait") {}
+	public: WaitException(const std::string & st,
+	                      int errorNumber_,
+	                      const std::string & message_)
+		: ErrNoException(st, errorNumber_, "Wait", message_) {}
+
+	public: WaitException(SourceCodeLocation location, const std::string & st, int errorNumber_)
+		: ErrNoException(location, st, errorNumber_, "Wait") {}
+
+	public: WaitException(const std::string & st, int errorNumber_)
+		: ErrNoException(st, errorNumber_, "Wait") {}
 };
 
 } // namespace Balau::Exception

@@ -28,12 +28,17 @@ namespace Balau::Exception {
 class SyntaxErrorException : public BalauException {
 	public: const Lang::CodeSpan codeSpan;
 
-	public: SyntaxErrorException(const char * file,
-	                             int line,
+	public: SyntaxErrorException(SourceCodeLocation location,
 	                             const std::string & st,
 	                             const std::string & text,
 	                             const Lang::CodeSpan & codeSpan_)
-		: BalauException(file, line, st, "Network", text)
+		: BalauException(location, st, "Network", text)
+		, codeSpan(codeSpan_) {}
+
+	public: SyntaxErrorException(const std::string & st,
+	                             const std::string & text,
+	                             const Lang::CodeSpan & codeSpan_)
+		: BalauException(st, "Network", text)
 		, codeSpan(codeSpan_) {}
 };
 

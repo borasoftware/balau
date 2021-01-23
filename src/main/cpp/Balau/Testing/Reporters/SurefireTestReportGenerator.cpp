@@ -11,7 +11,6 @@
 #include "SurefireTestReportGenerator.hpp"
 #include "../Impl/TestGroupBase.hpp"
 #include "../Impl/TestResult.hpp"
-#include "../../Util/DateTime.hpp"
 
 #include <iostream>
 #include <numeric>
@@ -48,7 +47,7 @@ static size_t getResultCount(const std::vector<const Impl::TestResult *> & group
 }
 
 static std::string toSeconds(unsigned long long ns) {
-	std::string d = toString((double) ns / 1.0e9);
+	std::string d = std::to_string((double) ns / 1.0e9);
 	return d;
 }
 

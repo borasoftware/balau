@@ -26,35 +26,49 @@ namespace Balau::Exception {
 /// Abstract base class of resource classes.
 ///
 class ResourceException : public BalauException {
-	protected: ResourceException(const char * file,
-	                             int line,
+	protected: ResourceException(SourceCodeLocation location,
 	                             const std::string & st,
 	                             const std::string & name,
 	                             const std::string & text)
-		: BalauException(file, line, st, name, text) {}
+		: BalauException(location, st, name, text) {}
+
+	protected: ResourceException(const std::string & st,
+	                             const std::string & name,
+	                             const std::string & text)
+		: BalauException(st, name, text) {}
 };
 
 ///
 /// Thrown when a URI is invalid.
 ///
 class InvalidUriException : public ResourceException {
-	public: InvalidUriException(const char * file, int line, const std::string & st, const std::string & text)
-		: ResourceException(file, line, st, "InvalidUri", text) {}
+	public: InvalidUriException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: ResourceException(location, st, "InvalidUri", text) {}
+
+	public: InvalidUriException(const std::string & st, const std::string & text)
+		: ResourceException(st, "InvalidUri", text) {}
 };
 
 ///
 /// Thrown when a resource is not found.
 ///
 class NotFoundException : public ResourceException {
-	public: NotFoundException(const char * file, int line, const std::string & st, const std::string & text)
-		: ResourceException(file, line, st, "NotFound", text) {}
+	public: NotFoundException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: ResourceException(location, st, "NotFound", text) {}
 
-	protected: NotFoundException(const char * file,
-	                             int line,
+	public: NotFoundException(const std::string & st, const std::string & text)
+		: ResourceException(st, "NotFound", text) {}
+
+	protected: NotFoundException(SourceCodeLocation location,
 	                             const std::string & st,
 	                             const std::string & name,
 	                             const std::string & text)
-		: ResourceException(file, line, st, name, text) {}
+		: ResourceException(location, st, name, text) {}
+
+	protected: NotFoundException(const std::string & st,
+	                             const std::string & name,
+	                             const std::string & text)
+		: ResourceException(st, name, text) {}
 };
 
 ///
@@ -63,8 +77,12 @@ class NotFoundException : public ResourceException {
 class FileNotFoundException : public NotFoundException {
 	public: const Resource::File file;
 
-	public: FileNotFoundException(const char * file, int line, const std::string & st, const Resource::File & file_)
-		: NotFoundException(file, line, st, "FileNotFound", file_.toRawString())
+	public: FileNotFoundException(SourceCodeLocation location, const std::string & st, const Resource::File & file_)
+		: NotFoundException(location, st, "FileNotFound", file_.toRawString())
+		, file(file_) {}
+
+	public: FileNotFoundException(const std::string & st, const Resource::File & file_)
+		: NotFoundException(st, "FileNotFound", file_.toRawString())
 		, file(file_) {}
 };
 
@@ -78,16 +96,25 @@ inline bool operator == (const FileNotFoundException & lhs, const FileNotFoundEx
 class CouldNotOpenException : public ResourceException {
 	public: const Resource::File file;
 
-	public: CouldNotOpenException(const char * file, int line, const std::string & st, const Resource::File & file_)
-		: ResourceException(file, line, st, "CouldNotOpen", file_.toRawString())
+	public: CouldNotOpenException(SourceCodeLocation location, const std::string & st, const Resource::File & file_)
+		: ResourceException(location, st, "CouldNotOpen", file_.toRawString())
 		, file(file_) {}
 
-	public: CouldNotOpenException(const char * file,
-	                              int line,
+	public: CouldNotOpenException(const std::string & st, const Resource::File & file_)
+		: ResourceException(st, "CouldNotOpen", file_.toRawString())
+		, file(file_) {}
+
+	public: CouldNotOpenException(SourceCodeLocation location,
 	                              const std::string & st,
 	                              const std::string & message_,
 	                              const Resource::File & file_)
-		: ResourceException(file, line, st, "CouldNotOpen", message_ + " - " + file_.toRawString())
+		: ResourceException(location, st, "CouldNotOpen", message_ + " - " + file_.toRawString())
+		, file(file_) {}
+
+	public: CouldNotOpenException(const std::string & st,
+	                              const std::string & message_,
+	                              const Resource::File & file_)
+		: ResourceException(st, "CouldNotOpen", message_ + " - " + file_.toRawString())
 		, file(file_) {}
 };
 
@@ -101,16 +128,25 @@ inline bool operator == (const CouldNotOpenException & lhs, const CouldNotOpenEx
 class CouldNotCreateException : public ResourceException {
 	public: const Resource::File file;
 
-	public: CouldNotCreateException(const char * file, int line, const std::string & st, const Resource::File & file_)
-		: ResourceException(file, line, st, "CouldNotCreate", file_.toRawString())
+	public: CouldNotCreateException(SourceCodeLocation location, const std::string & st, const Resource::File & file_)
+		: ResourceException(location, st, "CouldNotCreate", file_.toRawString())
 		, file(file_) {}
 
-	public: CouldNotCreateException(const char * file,
-	                                int line,
+	public: CouldNotCreateException(const std::string & st, const Resource::File & file_)
+		: ResourceException(st, "CouldNotCreate", file_.toRawString())
+		, file(file_) {}
+
+	public: CouldNotCreateException(SourceCodeLocation location,
 	                                const std::string & st,
 	                                const std::string & message_,
 	                                const Resource::File & file_)
-		: ResourceException(file, line, st, "CouldNotCreate", message_ + " - " + file_.toRawString())
+		: ResourceException(location, st, "CouldNotCreate", message_ + " - " + file_.toRawString())
+		, file(file_) {}
+
+	public: CouldNotCreateException(const std::string & st,
+	                                const std::string & message_,
+	                                const Resource::File & file_)
+		: ResourceException(st, "CouldNotCreate", message_ + " - " + file_.toRawString())
 		, file(file_) {}
 };
 
@@ -124,16 +160,25 @@ inline bool operator == (const CouldNotCreateException & lhs, const CouldNotCrea
 class ZipException : public ResourceException {
 	public: const Resource::File file;
 
-	public: ZipException(const char * file, int line, const std::string & st, const Resource::File & file_)
-		: ResourceException(file, line, st, "Zip", file_.toRawString())
+	public: ZipException(SourceCodeLocation location, const std::string & st, const Resource::File & file_)
+		: ResourceException(location, st, "Zip", file_.toRawString())
 		, file(file_) {}
 
-	public: ZipException(const char * file,
-	                     int line,
+	public: ZipException(const std::string & st, const Resource::File & file_)
+		: ResourceException(st, "Zip", file_.toRawString())
+		, file(file_) {}
+
+	public: ZipException(SourceCodeLocation location,
 	                     const std::string & st,
 	                     const std::string & message_,
 	                     const Resource::File & file_)
-		: ResourceException(file, line, st, "Zip", message_ + " - " + file_.toRawString())
+		: ResourceException(location, st, "Zip", message_ + " - " + file_.toRawString())
+		, file(file_) {}
+
+	public: ZipException(const std::string & st,
+	                     const std::string & message_,
+	                     const Resource::File & file_)
+		: ResourceException(st, "Zip", message_ + " - " + file_.toRawString())
 		, file(file_) {}
 };
 

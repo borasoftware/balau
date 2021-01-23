@@ -239,8 +239,7 @@ void Logger::logMessage(const SourceCodeLocation & location,
 		, logger.nameSpace
 		, logger.ns
 		, level
-		, location.file
-		, location.line
+		, location.location
 		, message
 		, timePoint
 	);
@@ -303,8 +302,7 @@ void Logger::logMessage(const SourceCodeLocation & location,
 		, logger.nameSpace
 		, logger.ns
 		, level
-		, location.file
-		, location.line
+		, location.location
 		, messageText.c_str()
 		, timePoint
 	);

@@ -18,7 +18,6 @@
 #define COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS
 
 #include <Balau/Testing/Matchers.hpp>
-#include <Balau/Type/SourceCodeLocation.hpp>
 
 namespace Balau::Testing {
 
@@ -617,16 +616,16 @@ inline void assertThat(F function, const ThrowTypeExpectation<E> & expectedExcep
 ///
 /// Assertion macro, providing the source code location of the assertion.
 ///
-#define AssertFail(...) ::Balau::Testing::assertFail(::Balau::SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define AssertFail(...) ::Balau::Testing::assertFail(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 ///
 /// Assertion macro, providing the source code location of the assertion.
 ///
-#define AssertThat(...) ::Balau::Testing::assertThat(::Balau::SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define AssertThat(...) ::Balau::Testing::assertThat(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 ///
 /// Assertion macro, providing the source code location of the assertion.
 ///
-#define AssertThatNP(...) ::Balau::Testing::assertThatNP(::Balau::SourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define AssertThatNP(...) ::Balau::Testing::assertThatNP(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 #endif // COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS

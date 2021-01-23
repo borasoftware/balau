@@ -825,7 +825,7 @@ void LoggingState::setFormats(LoggerTree & theLoggers) {
 		try {
 			loggerItems = new LogItemVector;
 
-			static const std::regex re(R"(%message|%Y|%y|%m|%d|%H|%M|%S|%thread|%LEVEL|%level|%filename|%filepath|%line|%namespace|%ns|%%|%\")");
+			static const std::regex re(R"(%message|%Y|%y|%m|%d|%H|%M|%S|%thread|%LEVEL|%level|%filename|%filepath|%namespace|%ns|%%|%\")");
 			std::smatch sm;
 
 			while (std::regex_search(format, sm, re)) {
@@ -867,8 +867,6 @@ void LoggingState::setFormats(LoggerTree & theLoggers) {
 					loggerItems->emplace_back(allLogItems.filenameLoggerItem);
 				} else if (text == "%filepath") {
 					loggerItems->emplace_back(allLogItems.filePathLoggerItem);
-				} else if (text == "%line") {
-					loggerItems->emplace_back(allLogItems.lineNumberLoggerItem);
 				} else if (text == "%message") {
 					loggerItems->emplace_back(allLogItems.messageLoggerItem);
 				} else if (text == "%%") {

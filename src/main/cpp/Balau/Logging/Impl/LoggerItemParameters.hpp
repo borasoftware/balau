@@ -24,8 +24,7 @@ struct LoggerItemParameters {
 	const std::string & nameSpace; // NOLINT
 	const std::string & ns; // NOLINT
 	const LoggingLevel level;
-	const char * filename;
-	const unsigned int line;
+	const char * location;
 	const std::string_view message;
 	const std::chrono::system_clock::time_point & timePoint;
 
@@ -33,16 +32,14 @@ struct LoggerItemParameters {
 	                     const std::string & nameSpace_,
 	                     const std::string & ns_,
 	                     const LoggingLevel level_,
-	                     const char * filename_,
-	                     unsigned int line_,
+	                     const char * location_,
 	                     std::string_view message_,
 	                     const std::chrono::system_clock::time_point & timePoint_)
 		: builder(builder_)
 		, nameSpace(nameSpace_)
 		, ns(ns_)
 		, level(level_)
-		, filename(filename_)
-		, line(line_)
+		, location(location_)
 		, message(message_)
 		, timePoint(timePoint_) {}
 };

@@ -253,11 +253,11 @@
 		<para>In order to output source code file names, file paths, and/or line numbers of log message locations, it is necessary to call the logging functions that take file path and line information via a <emph>SourceCodeLocation</emph> instance:</para>
 
 		<code lang="C++">
-			LOG.info(SourceCodeLocation(__FILE__, __LINE__), "blah");
+			LOG.info(BalauSourceCodeLocation(__FILE__, __LINE__), "blah");
 
-			LOG.info(SourceCodeLocation(__FILE__, __LINE__), "blah {} {}", one, two);
+			LOG.info(BalauSourceCodeLocation(__FILE__, __LINE__), "blah {} {}", one, two);
 
-			LOG.info(SourceCodeLocation(__FILE__, __LINE__), [&amp;o1, &amp;o2] () {
+			LOG.info(BalauSourceCodeLocation(__FILE__, __LINE__), [&amp;o1, &amp;o2] () {
 				return toString("value = ", one * two);
 			});
 		</code>
@@ -492,9 +492,8 @@
 				<row> <cell>%LEVEL</cell>     <cell>the logging level in uppercase</cell> </row>
 				<row> <cell>%namespace</cell> <cell>the logger's logging namespace</cell> </row>
 				<row> <cell>%ns</cell>        <cell>an abbreviation of the logger's logging namespace, created by printing each identifier's first letter only, apart from the last identifier which is printed in its entirety</cell> </row>
-				<row> <cell>%filename</cell>  <cell>the source code file name</cell> </row>
-				<row> <cell>%filepath</cell>  <cell>the full path to the source code file</cell> </row>
-				<row> <cell>%line</cell>      <cell>the line number in the source code file</cell> </row>
+				<row> <cell>%filename</cell>  <cell>the source code file name plus line number</cell> </row>
+				<row> <cell>%filepath</cell>  <cell>the full path to the source code file plus line number</cell> </row>
 				<row> <cell>%message</cell>   <cell>the message, after stringification and combination of all arguments</cell> </row>
 				<row> <cell>%%</cell>         <cell>the percent character</cell> </row>
 				<row> <cell>%"</cell>         <cell>the double quotation character</cell> </row>
@@ -512,7 +511,7 @@
 		<para>An alternative to the default logging format that includes the filename and line number could be:</para>
 
 		<code>
-			%Y-%m-%d %H:%M:%S %filename:%line - [%thread] %LEVEL - %namespace - %message
+			%Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
 		</code>
 
 		<para>Log messages resulting from this format would be similar to the following:</para>
