@@ -21,3 +21,10 @@ Four key components of the Balau library are the [injector](https://github.com/b
 In addition to the injector, environment configuration, logger, and test runner, Balau also provides a set of components and utilities with simple APIs, including an HTTP/WebSocket web application framework.
  
 For more information on using and contributing to the library, please refer to the Balau [developer manual](https://borasoftware.com/doc/balau/latest/manual).
+
+**Pending work**
+
+The following work is pending completion:
+
+- remove the dependency on the Boost/ICU libraries;
+- port Balau to the Windows platform.
