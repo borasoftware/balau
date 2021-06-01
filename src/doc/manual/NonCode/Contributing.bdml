@@ -6,8 +6,17 @@
   -
   - Copyright (C) 2008 Bora Software (contact@borasoftware.com)
   -
-  - Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-  - See the LICENSE file for the full license text.
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
   -
   -->
 
@@ -47,15 +56,15 @@
 
 		<h1>Planned features</h1>
 
-		<para>The general aim of the library's development is reactive rather than proactive. If a useful feature for enterprise quality C++ application development is missing, convoluted, or lacking in features in the C++ standard library or Boost libraries, then the feature is a good candidate for development and inclusion in Balau.</para>
+		<para>The general aim of the library's development is reactive rather than proactive. If a useful feature for enterprise quality C++ application development is missing, convoluted, or lacking in features in the C++ standard library, then the feature is a good candidate for development and inclusion in Balau.</para>
 
-		<para>If an existing feature in the standard library or Boost exists and is designed as low level, fine grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library or Boost feature.</para>
+		<para>If an existing feature in the standard library exists and is designed as low level, fine grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library or Boost feature.</para>
 
 		<para>Consequently, there is no complex plan of planned features to be added to the library. The current list of planned features can be seen on the <ref url="NonCode/PlannedFeatures">planned features</ref> page.</para>
 
 		<h1>License</h1>
 
-		<para>Balau is licensed under the <emph>Boost Software License - Version 1.0 - 2003</emph>. All contributions will need to be licensed under the same license or under a license that allows relicensing under the Boost license.</para>
+		<para>Balau is licensed under the <emph>Apache License version 2.0</emph>. All contributions will need to be licensed under the same license or under a license that allows relicensing under the Apache license.</para>
 
 		<h1>Repository</h1>
 
