@@ -44,6 +44,7 @@
 			<entry>Core library is header only.</entry>
 			<entry>Simplify resource class files.</entry>
 			<entry>Use HttpLib instead of Balau HttpClient in HTTP read resources.</entry>
+			<entry>New BalauFake library supplying empty injectable macros.</entry>
 			<entry>Remove Balau logging dependency in Balau core.</entry>
 		</bullets>
 
