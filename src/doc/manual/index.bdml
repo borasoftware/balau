@@ -43,7 +43,7 @@
 
 		<para>Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise quality application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.</para>
 
-		<para>Balau builds on the foundations of the <ref type="raw" new="true" url="http://www.boost.org">Boost</ref> and <ref type="raw" new="true" url="http://site.icu-project.org">ICU</ref> projects, and focuses on using modern C++17 features and the standard unicode string classes.</para>
+		<para>Balau focuses on using modern C++17 features and the standard unicode string classes.</para>
 
 		<para>The library has been conceived for the development of applications that have a dependency injection based architecture, have complex logging requirements, and will be developed with a test driven development methodology. Balau has also been designed to provide an application framework for Unicode aware C++ software applications.</para>
 
@@ -67,8 +67,6 @@
 			<entry>Do you wish to develop a software application in C++ using modern best practices?</entry>
 
 			<entry>Will the code be based on C++17 or a later specification?</entry>
-
-			<entry>Will you be using the Boost libraries?</entry>
 
 			<entry>Do you wish to structure your application via a dependency injection based architecture?</entry>
 
@@ -170,7 +168,7 @@
 
 		<h1>License</h1>
 
-		<para>Balau is licensed under the <ref type="raw" new="true" url="https://borasoftware.com/licenses/balau-license.html">Boost Software License Version 1.0</ref>.</para>
+		<para>Balau is licensed under the <ref type="raw" new="true" url="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</ref>.</para>
 
 		<h1>Supported platforms</h1>
 

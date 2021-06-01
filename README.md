@@ -5,14 +5,13 @@ Balau
 
 **Main repository:** [Balau Git repository](https://github.com/borasoftware/balau)
 
-**License:** [Boost Software License Version 1.0](https://borasoftware.com/licenses/balau-license.html)
-
+**License:** [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 Balau is a C++ application framework designed for enterprise quality C++ software development.
 
 Following the recent revisions of the language, C++ has matured to become an attractive candidate for rapid enterprise quality application development. Balau provides tools designed to support the rapid development of high performance C++ enterprise applications.
 
-Balau builds on the foundations of the [ICU](http://site.icu-project.org) and [Boost](http://www.boost.org) projects, and focuses on using modern C++17 features and the standard unicode string classes.
+Balau focuses on using modern C++17 features and the standard unicode string classes.
 
 The library has been conceived for the development of applications that have a dependency injection based architecture, have complex logging requirements, and will be developed with a test driven development methodology. Balau has also been designed to provide a base on which Unicode aware C++ software applications may be written with ease.
 

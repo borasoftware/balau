@@ -46,7 +46,7 @@
 
 		<para>UTF-16 versions of the utilities are not current implemented. Pull requests with such new functionality are welcome.</para>
 
-		<para>These utility functions provide more coarse grained functionality compared to that provided by ICU, Boost, and the C++ standard library string manipulation calls.</para>
+		<para>These utility functions provide more coarse grained functionality compared to that provided by the C++ standard library string manipulation calls.</para>
 
 		<para>The utilities use and return <emph>std::string_view</emph> objects where possible. In order to support multiple string types, a two stage typename deduction / type conversion approach is used for many of the functions.</para>
 

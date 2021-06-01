@@ -113,7 +113,7 @@
 
 			<entry>Add an efficient single process blocking queue implementation.</entry>
 
-			<entry>Determine which other useful (high level API) containers are not available from the standard library / Boost libraries and implement.</entry>
+			<entry>Determine which other useful (high level API) containers are not available from the standard library and implement.</entry>
 		</bullets>
 
 		<h2>Lang</h2>

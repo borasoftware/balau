@@ -48,8 +48,7 @@
 /// candidate for rapid enterprise quality application development. %Balau provides tools designed
 /// to support the rapid development of high performance C++ enterprise quality applications.
 ///
-/// %Balau builds on the foundations of the ICU and Boost projects, and focuses on using
-/// modern C++17 features and the standard unicode string classes.
+/// %Balau focuses on using modern C++17 features and the standard unicode string classes.
 ///
 /// The library has been conceived for the development of applications that have a
 /// dependency injection based architecture, have complex logging requirements, and will

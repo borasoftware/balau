@@ -58,7 +58,7 @@
 
 		<para>The general aim of the library's development is reactive rather than proactive. If a useful feature for enterprise quality C++ application development is missing, convoluted, or lacking in features in the C++ standard library, then the feature is a good candidate for development and inclusion in Balau.</para>
 
-		<para>If an existing feature in the standard library exists and is designed as low level, fine grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library or Boost feature.</para>
+		<para>If an existing feature in the standard library exists and is designed as low level, fine grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library.</para>
 
 		<para>Consequently, there is no complex plan of planned features to be added to the library. The current list of planned features can be seen on the <ref url="NonCode/PlannedFeatures">planned features</ref> page.</para>
 
