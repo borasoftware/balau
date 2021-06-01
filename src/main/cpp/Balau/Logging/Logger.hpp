@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -988,7 +997,7 @@ class Logger {
 	// Apart from compiler ordering restrictions, reads on these atomics are
 	// free on x86/x64.
 	//
-	private: std::array<std::atomic<LoggingStream *>, _BalauLoggingLevelCount> streams {};
+	private: std::array<std::atomic<LoggingStream *>, BALAU_LoggingLevelCount> streams {};
 
 	friend class LoggingSystem::LoggerConfigurationVisitor;
 	friend class LoggingSystem::LoggerPropertyVisitor;
@@ -1064,5 +1073,10 @@ class Logger {
 /// Log an error message with the source code location of the logging statement.
 ///
 #define BalauLogError(LOGGER, ...) LOGGER.error(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+
+///
+/// Log a message at the specified level and with the source code location of the logging statement.
+///
+#define BalauLogLog(LOGGER, LEVEL, ...) LOGGER.log(LoggingLevel::LEVEL, BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
 #endif // COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGER

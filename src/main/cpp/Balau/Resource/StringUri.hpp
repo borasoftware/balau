@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -17,15 +26,21 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__STRING_URI
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__STRING_URI
 
-#include <Balau/Exception/ResourceExceptions.hpp>
-#include <Balau/Resource/StringUriByteReadResource.hpp>
-#include <Balau/Resource/StringUriByteWriteResource.hpp>
-#include <Balau/Resource/StringUriUtf8To32ReadResource.hpp>
-#include <Balau/Resource/StringUriUtf32To8WriteResource.hpp>
 #include <Balau/Resource/Uri.hpp>
 #include <Balau/Util/Strings.hpp>
 
+#include <boost/iostreams/code_converter.hpp>
+#include <boost/iostreams/stream.hpp>
+
+#include <codecvt>
+#include <memory>
+#include <sstream>
+
 namespace Balau::Resource {
+
+class StringUriByteReadResource;
+class StringUriByteWriteResource;
+class StringUriUtf8To32ReadResource;
 
 ///
 /// An immediate string pseudo-URI.
@@ -140,25 +155,8 @@ class StringUri : public Uri {
 		ThrowBalauException(Exception::UnsupportedOperationException, "StringUri does not support path appending.");
 	}
 
-	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
-		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
-
-		auto cleanPath = Util::Strings::trim(path);
-		auto str = std::string(cleanPath);
-
-		if (Util::Strings::startsWithRegex(str, scheme)) {
-			std::unique_ptr<Uri> uri;
-			fromString(uri, str);
-			return uri;
-		}
-
-		ThrowBalauException(
-			  Exception::IllegalArgumentException
-			, "StringUri does not support calls to the resolve method without specifying a schema in the path."
-		);
-
-		// Prevent compiler warning.
-		return std::unique_ptr<Uri>();
+	public: void visit(UriVisitor & visitor) const override {
+		visitor.visit(*this);
 	}
 
 	public: bool operator == (const Uri & rhs) const override {
@@ -177,32 +175,20 @@ class StringUri : public Uri {
 	///
 	/// Get a byte read resource for the HTTP source.
 	///
-	public: StringUriByteReadResource getByteReadResource() const {
-		return StringUriByteReadResource(*this);
-	}
+	public: StringUriByteReadResource getByteReadResource() const;
 
 	///
 	/// Get a UTF-8 to UTF-32 read resource for the HTTP source.
 	///
-	public: StringUriUtf8To32ReadResource getUtf8To32ReadResource() const {
-		return StringUriUtf8To32ReadResource(*this);
-	}
+	public: StringUriUtf8To32ReadResource getUtf8To32ReadResource() const;
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
-		return std::unique_ptr<ByteReadResource>(new StringUriByteReadResource(*this));
-	}
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override;
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
-		return std::unique_ptr<Utf8To32ReadResource>(new StringUriUtf8To32ReadResource(*this));
-	}
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override;
 
-	public: std::unique_ptr<ByteWriteResource> byteWriteResource() override {
-		return std::unique_ptr<ByteWriteResource>(new StringUriByteWriteResource(*this));
-	}
+	public: std::unique_ptr<ByteWriteResource> byteWriteResource() override;
 
-	public: std::unique_ptr<Utf32To8WriteResource> utf32To8WriteResource() override {
-		return std::unique_ptr<Utf32To8WriteResource>(new StringUriUtf32To8WriteResource(*this));
-	}
+	public: std::unique_ptr<Utf32To8WriteResource> utf32To8WriteResource() override;
 
 	public: bool isRecursivelyIterable() const override {
 		return false;
@@ -226,6 +212,192 @@ class StringUri : public Uri {
 
 	private: std::string data;
 };
+
+///
+/// A read-only String URI resource which is read as bytes.
+///
+class StringUriByteReadResource : public ByteReadResource {
+	///
+	/// Create a new string byte read resource from the supplied String URI.
+	///
+	public: explicit StringUriByteReadResource(const StringUri & stringUri_)
+		: stringUri(new StringUri(stringUri_))
+		, stream(std::string(stringUri_.getString())) {}
+
+	public: StringUriByteReadResource(StringUriByteReadResource && rhs) noexcept
+		: stringUri(std::move(rhs.stringUri))
+		, stream(std::move(rhs.stream)) {}
+
+	public: std::istream & readStream() override {
+		return stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *stringUri;
+	}
+
+	public: void close() override {}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<Uri> stringUri;
+	private: std::istringstream stream;
+};
+
+///
+/// A write only String URI that is written as bytes.
+///
+class StringUriByteWriteResource : public ByteWriteResource {
+	///
+	/// Create a new string Uri byte write resource from the supplied String URI.
+	///
+	public: explicit StringUriByteWriteResource(StringUri & stringUri_)
+		: stringUri(std::make_unique<StringUri>(stringUri_))
+		, stream(stringUri->getString()) {}
+
+	public: StringUriByteWriteResource(StringUriByteWriteResource && rhs) noexcept
+		: stringUri(std::move(rhs.stringUri))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~StringUriByteWriteResource() override {
+		close();
+	}
+
+	public: std::ostream & writeStream() override {
+		return stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *stringUri;
+	}
+
+	public: void close() override {}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<StringUri> stringUri;
+	private: std::ostringstream stream;
+};
+
+///
+/// A read-only String UTF-8 resource which is read as UTF-32 characters.
+///
+/// @todo Convert to UTF-32 characters on the fly instead of using toString32.
+///
+class StringUriUtf8To32ReadResource : public Utf8To32ReadResource {
+	private: using idevice_utf8_utf32 = boost::iostreams::code_converter<std::istream, std::codecvt_utf8<char32_t, 0x10ffff, std::consume_header>>;
+	private: using istream_utf8_utf32 = boost::iostreams::stream<idevice_utf8_utf32>;
+
+	///
+	/// Create a new String URI UTF-8 to UTF-32 read resource from the supplied String URI.
+	///
+	public: explicit StringUriUtf8To32ReadResource(const StringUri & stringUri_)
+		: stringUri(std::make_unique<StringUri>(stringUri_))
+		, utf8Stream(new std::istringstream(stringUri->getString()))
+		, ref(*utf8Stream)
+		, utf32Stream(new istream_utf8_utf32(ref)) {}
+
+	public: StringUriUtf8To32ReadResource(StringUriUtf8To32ReadResource && rhs) noexcept
+		: stringUri(std::move(rhs.stringUri))
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
+	public: std::u32istream & readStream() override {
+		return *utf32Stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *stringUri;
+	}
+
+	public: void close() override {}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<StringUri> stringUri;
+	private: std::unique_ptr<std::istringstream> utf8Stream;
+	private: std::istream & ref;
+	private: std::unique_ptr<istream_utf8_utf32> utf32Stream;
+};
+
+///
+/// A write-only UTF-8 resource in a standard file on a file system, which is written with UTF-32 characters.
+///
+class StringUriUtf32To8WriteResource : public Utf32To8WriteResource {
+	private: using odevice_utf32_utf8 = boost::iostreams::code_converter<std::ostream, std::codecvt_utf8<char32_t, 0x10ffff, std::consume_header>>;
+	private: using ostream_utf32_utf8 = boost::iostreams::stream<odevice_utf32_utf8>;
+
+	///
+	/// Create a new file UTF-32 to UTF-8 write resource from the supplied file URI.
+	///
+	/// @throw NotFoundException if the file does not exist
+	///
+	public: explicit StringUriUtf32To8WriteResource(StringUri & stringUri_)
+		: stringUri(stringUri_)
+		, utf8Stream(new std::ostringstream())
+		, ref(*utf8Stream)
+		, utf32Stream(new ostream_utf32_utf8(ref)) {}
+
+	public: StringUriUtf32To8WriteResource(StringUriUtf32To8WriteResource && rhs) noexcept
+		: stringUri(rhs.stringUri)
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
+	public: ~StringUriUtf32To8WriteResource() override {
+		close();
+	}
+
+	public: std::u32ostream & writeStream() override {
+		return *utf32Stream;
+	}
+
+	public: const Uri & uri() const override {
+		return stringUri;
+	}
+
+	public: void close() override {
+		// TODO Determine why the temporary padding is required.. is this a defect?
+		*utf32Stream << U"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+		utf32Stream->flush();
+		auto s = utf8Stream->str();
+		std::string_view sv = s;
+		std::string_view sv2 = sv.substr(0, sv.length() - 100);
+		stringUri.append(sv2);
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: StringUri & stringUri;
+	private: std::unique_ptr<std::ostringstream> utf8Stream;
+	private: std::ostream & ref;
+	private: std::unique_ptr<ostream_utf32_utf8> utf32Stream;
+};
+
+inline StringUriByteReadResource StringUri::getByteReadResource() const {
+	return StringUriByteReadResource(*this);
+}
+
+inline StringUriUtf8To32ReadResource StringUri::getUtf8To32ReadResource() const {
+	return StringUriUtf8To32ReadResource(*this);
+}
+
+inline std::unique_ptr<ByteReadResource> StringUri::byteReadResource() const {
+	return std::unique_ptr<ByteReadResource>(new StringUriByteReadResource(*this));
+}
+
+inline std::unique_ptr<Utf8To32ReadResource> StringUri::utf8To32ReadResource() const {
+	return std::unique_ptr<Utf8To32ReadResource>(new StringUriUtf8To32ReadResource(*this));
+}
+
+inline std::unique_ptr<ByteWriteResource> StringUri::byteWriteResource() {
+	return std::unique_ptr<ByteWriteResource>(new StringUriByteWriteResource(*this));
+}
+
+inline std::unique_ptr<Utf32To8WriteResource> StringUri::utf32To8WriteResource() {
+	return std::unique_ptr<Utf32To8WriteResource>(new StringUriUtf32To8WriteResource(*this));
+}
 
 } // namespace Balau::Resource
 

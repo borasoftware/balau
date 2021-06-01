@@ -1,0 +1,201 @@
+/*
+ * Balau core C++ library
+ * Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+body {
+	text-align: justify;
+	padding: 0;
+	margin: auto;
+	overflow-x: hidden;
+}
+
+.short-desc {
+	color: #000;
+	font-weight: bold;
+	font-style: italic;
+}
+
+.supported-targets {
+	font-weight: bold;
+	color: #144075;
+}
+
+.supported-targets::before {
+	content: "Supported targets: ";
+}
+
+.option {
+	margin: 1em 1em 0 1em;
+}
+
+.definition {
+	margin: 0.5em 1em 0.75em 2em;
+}
+
+.bdml-part-title {
+	padding: 0.3em 0;
+}
+
+.bdml-chapter-title {
+	color: #043065;
+	overflow: auto;
+	margin-top: 1.1em;
+	font-size: 1.6em;
+	border-top: solid 1px #999;
+	padding: 0.2em 0;
+}
+
+.bdml-header .bdml-chapter-title,
+.bdml-footer .bdml-chapter-title,
+.bdml-front-matter .bdml-chapter-title,
+.bdml-back-matter .bdml-chapter-title {
+	border: none;
+}
+
+.reference-doc-chapter > h1:first-child {
+	background-color: #eee;
+	border: solid 1px #999;
+	padding: 0.25em 0.25em;
+}
+
+.example-bdml {
+	border: solid 1px #955;
+}
+
+.example-bdml * {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.example-bdml .bdml-graphic-left {
+	margin-right: 1em;
+}
+
+.example-bdml .bdml-graphic-right {
+	margin-left: 1em;
+}
+
+.bdml-comment-question, .bdml-comment-remark {
+	margin-left: 1.5em;
+	margin-bottom: 1em;
+}
+
+.example-bdml {
+	padding-left: 24px;
+	padding-right: 24px;
+}
+
+.index-example-first-level {
+	margin: 1em 0 0 24px;
+}
+
+.index-example-second-level {
+	margin: 0 0 0 48px;
+}
+
+.index-example-second-level-last {
+	margin: 0 0 1em 48px;
+}
+
+.special-text {
+	color: #080;
+	font-style: italic;
+}
+
+@import url("../../bdml/css/bdml-pdf.css");
+
+body {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	font-size: 10pt;
+	line-height: 15pt;
+}
+
+#bdml-title-page {
+	margin-right: 2.5em;
+}
+
+#bdml-title-page .bdml-chapter-title {
+	font-size: 18pt;
+}
+
+.bdml-part-title, #bdml-index-title {
+	margin-top: 8em;
+}
+
+.bdml-part-title {
+	font-size: 22pt;
+}
+
+.bdml-chapter {
+	margin-top: 0;
+}
+
+.bdml-chapter-title {
+	font-size: 1.8em;
+}
+
+.example-bdml {
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+pre, .bdml-code, .bdml-grammar {
+}
+
+.reference-doc-chapter > h1:first-child {
+	background-color: #eee;
+	border: solid 1px #999;
+	padding: 0.1em 0.3em 0.2em 0.3em;
+	margin-top: 2em;
+}
+
+.reference-doc-chapter {
+	page-break-before: avoid;
+	page-break-after: avoid;
+}
+
+@page {
+	size: 152.40mm 228.60mm;
+	margin: 25mm 15mm 25mm 15mm;
+	padding: 0;
+}
+
+body {
+	font-size: 12pt;
+	line-height: 17pt;
+}
+
+#bdml-title-page .bdml-chapter-title {
+	font-size: 28pt;
+}
+
+.bdml-part-title, #bdml-index-title {
+	margin-top: 12em;
+}
+
+.bdml-part-title {
+	font-size: 28pt;
+}
+
+@page {
+	size: 210mm 297mm;
+	margin: 25mm 15mm 25mm 15mm;
+	padding: 0;
+}

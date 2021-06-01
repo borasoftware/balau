@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -22,6 +31,7 @@
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Resource/Url.hpp>
 #include <Balau/Type/StdTypes.hpp>
+#include <Balau/Type/BalauVersion.hpp>
 
 namespace Balau::Network::Http {
 
@@ -40,9 +50,19 @@ class HttpClient {
 	/// @throw InvalidUriException if the URI is not well formed
 	/// @throw NetworkException if host information is not provided in the URI or the scheme is not "http" or "https"
 	///
-	public: static std::unique_ptr<HttpClient> newClient(const Resource::Url & url,
-	                                                     std::string userAgent = "Balau " + BalauVersion,
-	                                                     const char * version = "1.1");
+	public: static std::unique_ptr<HttpClient> newClient(const Resource::Url & url, std::string userAgent, const char * version = "1.1");
+
+	///
+	/// Create a new HTTP or HTTPS client, according to the supplied URL, using the default user agent.
+	///
+	/// @param url the url containing the scheme, host, and port information
+	/// @param version either "1.0" or "1.1" (the default)
+	/// @throw InvalidUriException if the URI is not well formed
+	/// @throw NetworkException if host information is not provided in the URI or the scheme is not "http" or "https"
+	///
+	public: static std::unique_ptr<HttpClient> newClient(const Resource::Url & url, const char * version = "1.1") {
+		return newClient(url, "Balau " + balauVersion(), version);
+	}
 
 	///
 	/// Create a new HTTP or HTTPS client, according to the supplied URL string.
@@ -53,9 +73,19 @@ class HttpClient {
 	/// @throw InvalidUriException if the URI is not well formed
 	/// @throw NetworkException if host information is not provided in the URI or the scheme is not "http" or "https"
 	///
-	public: static std::unique_ptr<HttpClient> newClient(const std::string & url,
-	                                                     std::string userAgent = "Balau " + BalauVersion,
-	                                                     const char * version = "1.1");
+	public: static std::unique_ptr<HttpClient> newClient(const std::string & url, std::string userAgent, const char * version = "1.1");
+
+	///
+	/// Create a new HTTP or HTTPS client, according to the supplied URL string, using the default user agent.
+	///
+	/// @param url the url string containing the scheme, host, and port information
+	/// @param version either "1.0" or "1.1" (the default)
+	/// @throw InvalidUriException if the URI is not well formed
+	/// @throw NetworkException if host information is not provided in the URI or the scheme is not "http" or "https"
+	///
+	public: static std::unique_ptr<HttpClient> newClient(const std::string & url, const char * version = "1.1") {
+		return newClient(url, "Balau " + balauVersion(), version);
+	}
 
 	///
 	/// Create an HTTP client instance.
@@ -66,12 +96,28 @@ class HttpClient {
 	/// @param version_ either "1.0" or "1.1" (the default)
 	///
 	public: explicit HttpClient(std::string host_,
+	                            std::string userAgent_,
 	                            unsigned short port_ = 80,
-	                            std::string userAgent_ = "Balau " + BalauVersion,
 	                            const char * version_ = "1.1")
 		: host(std::move(host_))
 		, port(port_)
 		, userAgent(std::move(userAgent_))
+		, version(parseVersion(version_)) {}
+
+	///
+	/// Create an HTTP client instance, using the default user agent.
+	///
+	/// @param host_ the host name to connect to
+	/// @param port_ the port number to connect to
+	/// @param userAgent_ the user agent string to send
+	/// @param version_ either "1.0" or "1.1" (the default)
+	///
+	public: explicit HttpClient(std::string host_,
+	                            unsigned short port_ = 80,
+	                            const char * version_ = "1.1")
+		: host(std::move(host_))
+		, port(port_)
+		, userAgent("Balau " + balauVersion())
 		, version(parseVersion(version_)) {}
 
 	///

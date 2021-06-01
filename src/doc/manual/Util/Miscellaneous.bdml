@@ -78,7 +78,7 @@
 
 		<h1>Macros</h1>
 
-		<para class="cpp-define-statement">#include &lt;Balau/Util/Macros.hpp></para>
+		<para class="cpp-define-statement">#include &lt;Balau/Application/Macros.hpp></para>
 
 		<para>The <emph>Macros.hpp</emph> header file contains some low level macros used in Balau.</para>
 

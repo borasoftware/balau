@@ -33,6 +33,31 @@
 	<chapter title="Release history">
 		<para>Balau uses a continuous integration methodology, with a Jenkins build running on Bora's servers. Use of the head of the master branch should thus provide a stable library. Release tags are also created periodically in order to provide reference versions to link against.</para>
 
+		<h1>V2021.6.1</h1>
+
+		<para><emph>Draft release notes</emph></para>
+
+		<h2>New features</h2>
+
+		<bullets>
+			<entry>Split library into core, logging, network, and testing.</entry>
+			<entry>Core library is header only.</entry>
+			<entry>Simplify resource class files.</entry>
+			<entry>Use HttpLib instead of Balau HttpClient in HTTP read resources.</entry>
+			<entry>Remove Balau logging dependency in Balau core.</entry>
+		</bullets>
+
+		<h2>Other changes</h2>
+
+		<bullets>
+			<entry>General tidy up.</entry>
+			<entry>Move body code into headers for core library.</entry>
+			<entry>Rename internal macros to BALAU_* instead of _Balau*.</entry>
+			<entry>Clarify use of split injectable macros for libraries..</entry>
+			<entry>Rename BALAU_USER_* macros to CPP_USER_*.</entry>
+			<entry>Change license to Apache 2.</entry>
+		</bullets>
+
 		<h1>V2020.5.1</h1>
 
 		<para>New features in this release:</para>

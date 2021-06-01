@@ -1,0 +1,223 @@
+/*
+ * Balau core C++ library
+ * Copyright (C) 2008 Bora Software (contact@borasoftware.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import url("balau-pdf.css");
+
+body {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	font-size: 11pt;
+	line-height: 17pt;
+	margin: 0;
+	padding: 0;
+}
+
+#bdml-title-page {
+	margin-right: 2.5em;
+}
+
+#bdml-title-page .bdml-chapter-title {
+	font-size: 8pt;
+}
+
+.bdml-part-title {
+	font-size: 22pt;
+}
+
+.bdml-chapter {
+	margin-top: 0;
+}
+
+.bdml-chapter-title {
+	font-size: 1.8em;
+}
+
+.example-bdml {
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+pre, .bdml-code, .bdml-grammar {
+	font-size: 10pt;
+}
+
+.reference-doc-chapter > h1:first-child {
+	background-color: #eee;
+	border: solid 1px #999;
+	padding: 0.1em 0.3em 0.2em 0.3em;
+	margin-top: 2em;
+}
+
+.reference-doc-chapter {
+	page-break-before: avoid;
+	page-break-after: avoid;
+}
+
+@page {
+	size: 210mm 297mm;
+}
+
+@page :left {
+	margin: 25mm;
+}
+
+@page :right {
+	margin: 25mm;
+}
+
+@page front-matter:left {
+	margin: 25mm 25mm 35mm 25mm;
+
+	@bottom-left {
+		content: counter(page, lower-roman);
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-center {
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-right {
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+}
+
+@page front-matter:right {
+	margin: 25mm 25mm 35mm 25mm;
+
+	@bottom-left {
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-center {
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-right {
+		content: counter(page, lower-roman);
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+}
+
+@page main:left {
+	margin: 25mm 25mm 35mm 25mm;
+
+	@bottom-left {
+		content: counter(page, decimal);
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-center {
+		content: "Balau core C++ library";
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-right {
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+}
+
+@page main:right {
+	margin: 25mm 25mm 35mm 25mm;
+
+	@bottom-left {
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-center {
+		content: "Balau core C++ library";
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+
+	@bottom-right {
+		content: counter(page, decimal);
+		font-size: 9.5pt;
+		font-style: italic;
+		padding: 0 0 5mm 0;
+	}
+}
+
+.bdml-footer {
+	margin: 0;
+}
+
+.bdml-left-page-footer {
+	margin: 0;
+}
+
+.bdml-center-footer {
+	margin: 0;
+}
+
+.bdml-right-page-footer {
+	margin: 0;
+}
+
+.notices {
+	font-size: 9pt;
+	font-style: italic;
+}
+
+.notice-head {
+	font-size: 9pt;
+	font-style: italic;
+}
+
+.bdml-page-number {
+	font-size: 7pt;
+	font-style: italic;
+}
+
+#bdml-title-page {
+	border: none;
+	text-align: center;
+	margin-top: 18em;
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#bdml-title-page .bdml-chapter-title {
+	font-size: 17pt !important;
+	text-align: center;
+}

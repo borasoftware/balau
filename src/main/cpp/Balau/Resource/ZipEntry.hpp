@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -17,12 +26,30 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY
 
-#include <Balau/Resource/ZipEntryByteReadResource.hpp>
-#include <Balau/Resource/ZipEntryUtf8To32ReadResource.hpp>
+#include <Balau/Exception/ResourceExceptions.hpp>
+#include <Balau/Resource/ByteReadResource.hpp>
 #include <Balau/Resource/UriComponents.hpp>
+#include <Balau/Resource/Utf8To32ReadResource.hpp>
 #include <Balau/Util/Files.hpp>
+#include <Balau/Util/Zip.hpp>
+
+#include <boost/iostreams/categories.hpp>
+#include <boost/iostreams/code_converter.hpp>
+#include <boost/iostreams/concepts.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/stream.hpp>
+
+#include <codecvt>
 
 namespace Balau::Resource {
+
+class UriResolve;
+class ZipEntryByteReadResource;
+class ZipEntryUtf8To32ReadResource;
 
 ///
 /// An entry in a zip archive on the local file system.
@@ -41,31 +68,15 @@ class ZipEntry : public Uri {
 		ThrowBalauException(Exception::UnsupportedOperationException, "ZipEntry does not support path appending.");
 	}
 
-	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
-		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
-
-		auto cleanPath = Util::Strings::trim(path);
-		auto str = std::string(cleanPath);
-
-		if (Util::Strings::startsWithRegex(str, scheme)) {
-			std::unique_ptr<Uri> uri;
-			fromString(uri, str);
-			return uri;
-		}
-
-		if (Util::Strings::startsWith(str, "/")) {
-			// Absolute path.
-			return std::unique_ptr<Uri>(new ZipEntry(archive, archive.getEntryIndex(str)));
-		} else {
-			// Relative path.
-			const std::string entryName = archive.getEntryName(entryIndex);
-			const std::string normalisedName = UriComponents::normalizePath(entryName);
-			const auto newName = normalisedName + str;
-			return std::unique_ptr<Uri>(new ZipEntry(archive, archive.getEntryIndex(newName)));
-		}
+	public: void visit(UriVisitor & visitor) const override {
+		visitor.visit(*this);
 	}
 
-	public: std::string toUriString() const override;
+	public: std::string toUriString() const override {
+		Util::ZipEntryInfo info {};
+		archive.getEntryInfo(entryIndex, info);
+		return archive.getPath().toUriString() + "#" + ::toString(info.name);
+	}
 
 	public: std::string toRawString() const override {
 		return toUriString();
@@ -76,14 +87,20 @@ class ZipEntry : public Uri {
 	///
 	/// @return true if the entry is an archive directory
 	///
-	public: bool isEntryDirectory() const;
+	public: bool isEntryDirectory() const {
+		Util::ZipEntryInfo info {};
+		archive.getEntryInfo(entryIndex, info);
+		return Util::Strings::endsWith(info.name, "/");
+	}
 
 	///
 	/// Return true if the entry is an archive file.
 	///
 	/// @return true if the entry is an archive file
 	///
-	public: bool isEntryFile() const;
+	public: bool isEntryFile() const {
+		return !isEntryDirectory();
+	}
 
 	///
 	/// Get the name of the entry.
@@ -99,7 +116,11 @@ class ZipEntry : public Uri {
 	///
 	/// @return the uncompressed size of the entry in bytes
 	///
-	public: size_t size() const;
+	public: size_t size() const {
+		Util::ZipEntryInfo info {};
+		archive.getEntryInfo(entryIndex, info);
+		return info.uncompressedSize;
+	}
 
 	///
 	/// Get the comment on the entry if one exists.
@@ -130,9 +151,16 @@ class ZipEntry : public Uri {
 		return archive.readEntryAsString(entryIndex);
 	}
 
-	public: size_t hashcode() const noexcept override;
+	public: size_t hashcode() const noexcept override {
+		Util::ZipEntryInfo info {};
+		archive.getEntryInfo(entryIndex, info);
+		return archive.getPath().hashcode() ^ std::hash<std::string>()(::toString(info.name));
+	}
 
-	public: bool operator == (const Uri & rhs) const override;
+	public: bool operator == (const Uri & rhs) const override {
+		const auto * o = dynamic_cast<const ZipEntry *>(&rhs);
+		return o == nullptr ? false : (archive.getPath() == o->archive.getPath() && entryIndex == o->entryIndex);
+	}
 
 	public: bool canReadFrom() const override {
 		return true;
@@ -147,26 +175,18 @@ class ZipEntry : public Uri {
 	///
 	/// @throw ZipException if the resource could not be created
 	///
-	public: ZipEntryByteReadResource getByteReadResource() const {
-		return ZipEntryByteReadResource(*this);
-	}
+	public: ZipEntryByteReadResource getByteReadResource() const;
 
 	///
 	/// Get a byte read resource for this zip entry.
 	///
 	/// @throw ZipException if the resource could not be created
 	///
-	public: ZipEntryUtf8To32ReadResource getUtf8To32ReadResource() const {
-		return ZipEntryUtf8To32ReadResource(*this);
-	}
+	public: ZipEntryUtf8To32ReadResource getUtf8To32ReadResource() const;
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
-		return std::unique_ptr<ByteReadResource>(new ZipEntryByteReadResource(*this));
-	}
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override;
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
-		return std::unique_ptr<Utf8To32ReadResource>(new ZipEntryUtf8To32ReadResource(*this));
-	}
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override;
 
 	public: std::unique_ptr<ByteWriteResource> byteWriteResource() override {
 		ThrowBalauException(Exception::NotImplementedException, "ZipEntry URIs do not have a byte write resource.");
@@ -209,6 +229,7 @@ class ZipEntry : public Uri {
 	friend class ZipFile;
 	friend class ZipEntryByteReadResource;
 	friend class ZipEntryUtf8To32ReadResource;
+	friend class UriResolve;
 
 	private: ZipEntry(Util::Unzipper & archive_, long long entryIndex_)
 		: archive(archive_)
@@ -217,6 +238,195 @@ class ZipEntry : public Uri {
 	private: Util::Unzipper & archive;
 	private: long long entryIndex;
 };
+
+namespace Impl {
+
+///
+/// Boost IO streams zip entry source, used in the zip entry input stream.
+///
+class ZipEntrySource : public boost::iostreams::source {
+	private: Util::Unzipper & archive;
+	private: unsigned long long index;
+	private: std::shared_ptr<void> zipFile;
+
+	public: ZipEntrySource(Util::Unzipper & archive_, unsigned long long index_)
+		: archive(archive_)
+		, index(index_)
+		, zipFile(createZipFilePointer(archive)) {}
+
+	public: ZipEntrySource(const ZipEntrySource & copy) = default;
+
+	public: std::streamsize read(char * s, std::streamsize n) {
+		if (!archive.isOpen()) {
+			ThrowBalauException(Exception::ZipException, "Zip archive is not open.", archive.path);
+		}
+
+		long long result = zip_fread(cast(zipFile), s, (unsigned long long) n);
+
+		// TODO check if 0 or -1 is the normal EOF indicator.
+		if (result >= 0) {
+			return result;
+		} else {
+			ThrowBalauException(Exception::ZipException, "Unexpected error whilst reading zip file.", archive.path);
+		}
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::shared_ptr<void> createZipFilePointer(Util::Unzipper & archive) {
+		zip_file_t * file = zip_fopen_index((zip_t *) archive.archive, index, 0);
+
+		if (file == nullptr) {
+			ThrowBalauException(Exception::ZipException, "Could not open zip file.", archive.path);
+		}
+
+		return std::shared_ptr<void>(
+			file
+			, [] (auto ptr) {
+				if (ptr != nullptr) {
+					zip_fclose((zip_file_t *) ptr);
+				}
+			}
+		);
+	}
+
+	private: zip_file_t * cast(std::shared_ptr<void> & zipFileHandle) {
+		return (zip_file_t *) zipFileHandle.get();
+	}
+};
+
+//
+// Boost IO streams zip entry sink, used in the zip entry output stream.
+//
+// todo implement this class
+//
+//class ZipEntrySink : public boost::iostreams::sink {
+//	private: Util::Zipper & archive;
+//	private: unsigned long long index;
+//	private: void * zipFile;
+//
+//	public: ZipEntrySink(Util::Zipper & archive_, unsigned long long index_);
+//	: archive(archive_)
+//	, index(index_)
+//	, zipFile(zip_fopen_index((zip_t *) archive.archive, index, 0)) {
+//
+//	if (zipFile == nullptr) {
+//		ThrowBalauException(Exception::ZipException, "Could not open zip file.", archive.path);
+//	}
+//}
+//
+//	public: ~ZipEntrySink() {
+//	if (zipFile != nullptr) {
+//		zip_fclose(cast(zipFile));
+//	}
+//}
+//
+//	public: std::streamsize write(char * s, std::streamsize n) {
+////	// TODO
+////}
+//};
+
+} // namespace Impl
+
+///
+/// A read-only entry in a zip file which is read as bytes.
+///
+/// Zip entry byte read resources are created by calling ZipEntry::getByteReadResource.
+///
+class ZipEntryByteReadResource : public ByteReadResource {
+	public: ZipEntryByteReadResource(ZipEntryByteReadResource && rhs) noexcept
+		: entry(rhs.entry)
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~ZipEntryByteReadResource() override = default;
+
+	public: void close() override {
+		// NOP
+	}
+
+	public: const Uri & uri() const override {
+		return entry;
+	}
+
+	public: std::istream & readStream() override {
+		return *stream;
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	friend class ZipEntry;
+
+	private: explicit ZipEntryByteReadResource(const ZipEntry & entry_)
+		: entry(entry_)
+		, stream(new boost::iostreams::stream<Impl::ZipEntrySource>(Impl::ZipEntrySource(entry.archive, entry.entryIndex))) {}
+
+	private: const ZipEntry & entry;
+	private: std::unique_ptr<boost::iostreams::stream<Impl::ZipEntrySource>> stream;
+};
+
+///
+/// A read-only entry in a zip file which is read as UTF-8 characters and implicitly converted to UTF-32 characters.
+///
+/// Zip entry UTF-8 to UTF-32 read resources are created by calling ZipEntry::ZipEntryUtf8To32ReadResource.
+///
+class ZipEntryUtf8To32ReadResource : public Utf8To32ReadResource {
+	private: using idevice_utf8_utf32 = boost::iostreams::code_converter<std::istream, std::codecvt_utf8<char32_t, 0x10ffff, std::consume_header>>;
+	private: using istream_utf8_utf32 = boost::iostreams::stream<idevice_utf8_utf32>;
+
+	public: ~ZipEntryUtf8To32ReadResource() override = default;
+
+	public: ZipEntryUtf8To32ReadResource(ZipEntryUtf8To32ReadResource && rhs) noexcept
+		: entry(rhs.entry)
+		, utf8Stream(std::move(rhs.utf8Stream))
+		, ref(rhs.ref)
+		, utf32Stream(std::move(rhs.utf32Stream)) {}
+
+	public: void close() override {
+		// NOP
+	}
+
+	public: const Uri & uri() const override {
+		return entry;
+	}
+
+	public: std::u32istream & readStream() override {
+		return *utf32Stream;
+	}
+
+	///
+	/// Create a zip entry UTF-8 to UTF-32 read resource for the supplied zip entry URI.
+	///
+	public: explicit ZipEntryUtf8To32ReadResource(const ZipEntry & entry_)
+		: entry(entry_)
+		, utf8Stream(new boost::iostreams::stream<Impl::ZipEntrySource>(entry.archive, entry.entryIndex))
+		, ref(*utf8Stream)
+		, utf32Stream(new istream_utf8_utf32(ref)) {}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	friend class ZipEntry;
+
+	private: const ZipEntry & entry;
+	private: std::unique_ptr<boost::iostreams::stream<Impl::ZipEntrySource>> utf8Stream;
+	private: std::istream & ref;
+	private: std::unique_ptr<istream_utf8_utf32> utf32Stream;
+};
+
+inline ZipEntryByteReadResource ZipEntry::getByteReadResource() const {
+	return ZipEntryByteReadResource(*this);
+}
+
+inline ZipEntryUtf8To32ReadResource ZipEntry::getUtf8To32ReadResource() const {
+	return ZipEntryUtf8To32ReadResource(*this);
+}
+
+inline std::unique_ptr<ByteReadResource> ZipEntry::byteReadResource() const {
+	return std::unique_ptr<ByteReadResource>(new ZipEntryByteReadResource(*this));
+}
+
+inline std::unique_ptr<Utf8To32ReadResource> ZipEntry::utf8To32ReadResource() const {
+	return std::unique_ptr<Utf8To32ReadResource>(new ZipEntryUtf8To32ReadResource(*this));
+}
 
 } // namespace Balau::Resource
 

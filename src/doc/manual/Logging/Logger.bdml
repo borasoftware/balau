@@ -38,6 +38,8 @@
 
 		<para>Logging namespaces are configured via standard <ref url="Application/Environment">environment configuration</ref> syntax. This can be supplied statically (via a logging configuration file), or dynamically by calling the logging system <emph>configure</emph> method.</para>
 
+		<para>The Balau logging framework should be used in application code only. Libraries that have a requirement for logging should use the <ref type="raw" new="true" url="https://borasoftware.com/doc/CPPLF/latest/manual/index.html">CPPLF</ref> logging facade instead.</para>
+
 		<h1>Quick start</h1>
 
 		<para class="cpp-define-statement">#include &lt;Balau/Logging/Logger.hpp></para>
@@ -74,9 +76,9 @@
 			BalauLogError(log, "Something went wrong. Data: {} / {}", data1, data2);
 		</code>
 
-		<para>If you do not wish to see the prefix <emph>Balau</emph> on each of your logging statements, new defines can be created which alias these macros.</para>
+		<para>If you do not wish to see the prefix <emph>Balau</emph> on each of your logging statements, additional macros which do not have this prefix are supplied in the <emph>LoggerMacros.hpp</emph> header.</para>
 
-		<para>There are six logging levels: <emph>trace</emph>, <emph>debug</emph>, <emph>info</emph>, <emph>warn</emph>, <emph>error</emph>, and <emph>none</emph>.</para>
+		<para>There are five logging levels: <emph>trace</emph>, <emph>debug</emph>, <emph>info</emph>, <emph>warn</emph>, and <emph>error</emph>. The additional logging level <emph>none</emph> is also available for configuration purposes.</para>
 
 		<para>Whether a log message is output to the logging stream depends on whether the logging namespace is enabled for that logging level. This depends on the logging configuration.</para>
 
@@ -110,8 +112,8 @@
 		<para>Loggers are owned by the logging system and can be obtained by reference, by calling the <emph>Logger::getLogger</emph> function.</para>
 
 		<code lang="C++">
-			// Get a logger for the "balau.network" logging namespace.
-			Logger &amp; log = Logger::getLogger("balau.network");
+			// Get a logger for the "balau.example" logging namespace.
+			Logger &amp; log = Logger::getLogger("balau.example");
 		</code>
 
 		<para>Logger references are typically set up as static fields of classes, but instance references and local variables are also possible if the use case requires it.</para>
@@ -127,7 +129,7 @@
 			/////////// In body file. ///////////
 
 			// Static member logger reference definition.
-			Balau::Logger &amp; A::log = Balau::Logger::getLogger("balau.network");
+			Balau::Logger &amp; A::log = Balau::Logger::getLogger("balau.example");
 		</code>
 
 		<h2>Logging configuration</h2>
@@ -154,7 +156,7 @@
 
 		<para>If a logging configuration file is provided, the contained configuration will be used from the start of the application's execution. If logging configuration is provided via a <emph>Balau::Logger::configure</emph> call, the logging system will use the default configuration until the call is made.</para>
 
-		<para>The logging configuration is standard <ref url="Application/Environment">environment configuration</ref>. Composite property names specify the logging namespaces. The value properties defined within a composite property provide the logging configuration for that namespace.</para>
+		<para>The logging configuration format is standard <ref url="Application/Environment">environment configuration</ref>. Composite property names specify the logging namespaces. The value properties defined within a composite property provide the logging configuration for that namespace.</para>
 
 		<h1>Usage</h1>
 
@@ -286,7 +288,7 @@
 
 		<para>Use of these macros is recommended in preference to the explicit calls.</para>
 
-		<para>If you do not wish to see the <emph>Balau</emph> prefix on each logging line of your code, create a set of your own macros which delegate to the above macros:</para>
+		<para>If you do not wish to see the <emph>Balau</emph> prefix on each logging line of your code, a set of macros without prefixes are available in the <emph>LoggerMacros.hpp</emph> header. Alternatively, a custom set of macros could be defined, which delegate to the Balau macros:</para>
 
 		<code lang="C++">
 			#define MyAppLogTrace(LOGGER, ...)  BalauLogTrace(LOGGER, __VA_ARGS__)

@@ -2848,7 +2848,7 @@
 							</xsl:when>
 
 							<xsl:otherwise>
-								<xsl:value-of select="concat('bdml-code bdml-', @lang)" />
+								<xsl:value-of select="concat('bdml-code bdml-', translate(@lang, $uppercase, $lowercase))" />
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:when>

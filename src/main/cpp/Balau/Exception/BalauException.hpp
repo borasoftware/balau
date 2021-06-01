@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -18,16 +27,16 @@
 #define COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
 
 #include <Balau/Type/SourceCodeLocation.hpp>
-#include <Balau/Util/Macros.hpp>
+#include <Balau/Application/Macros.hpp>
 
-#define BalauSourceCodeLocation(F, L) ::Balau::SourceCodeLocation(F ":" _BalauStringExpand(L))
+#define BalauSourceCodeLocation(F, L) ::Balau::SourceCodeLocation(F ":" BALAU_StringExpand(L))
 
 #ifdef BALAU_ENABLE_STACKTRACES
 	#include <boost/stacktrace.hpp>
 	#include <exception>
 	#include <Balau/Util/Impl/StringsImpl.hpp>
 
-	#define _ThrowBalauException_generateStackTrace                              \
+	#define BALAU_ThrowBalauException_generateStackTrace                         \
 		std::ostringstream stStream;                                             \
 		stStream << boost::stacktrace::stacktrace();                             \
 		std::string st = stStream.str();                                         \
@@ -35,7 +44,7 @@
 		std::string replacement;                                                 \
 		::Balau::Util::Impl::replaceAllImpl(st, match, replacement, nullptr);
 #else
-	#define _ThrowBalauException_generateStackTrace std::string st;
+	#define BALAU_ThrowBalauException_generateStackTrace std::string st;
 #endif
 
 ///
@@ -44,10 +53,10 @@
 /// If you do not wish to see the ThrowBalau prefix on each of your throw
 /// statements in your code, define an alias macro for this macro.
 ///
-#define ThrowBalauException(ExceptionClass, ...) {            \
-	_ThrowBalauException_generateStackTrace                   \
+#define ThrowBalauException(ExceptionClass, ...) {                                      \
+	BALAU_ThrowBalauException_generateStackTrace                                        \
 	throw ExceptionClass(BalauSourceCodeLocation(__FILE__, __LINE__), st, __VA_ARGS__); \
-} _Balau_SwallowSemiColon_()
+} BALAU_SwallowSemiColon_()
 
 namespace Balau::Exception {
 

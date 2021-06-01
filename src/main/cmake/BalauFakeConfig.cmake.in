@@ -1,0 +1,4 @@
+
+get_filename_component(BalauFake_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+
+set(BalauFake_INCLUDE_DIRS ${BalauFake_INSTALL_PREFIX}/include/BalauFake-@BALAU_VERSION@)

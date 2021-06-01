@@ -9,15 +9,11 @@ message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 ## Disallow in-source builds.
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 	message(FATAL_ERROR
-		"
-No in-source builds please."
-		"
-  mkdir build; cd build; cmake .."
-		"
-Please first remove the files created by this failed run with"
-		"
-  rm -rf CMakeCache.txt CMakeFiles"
-)
+		"No in-source builds please."
+		"    mkdir build; cd build; cmake .."
+		"Please first remove the files created by this failed run with"
+		"    rm -rf CMakeCache.txt CMakeFiles"
+	)
 endif ()
 
 #
@@ -28,23 +24,23 @@ endif ()
 # These allow developers to set the prefix path and install path a single time
 # in .bashrc, instead of requiring them to be specified on the cmake command line.
 #
-set(BALAU_USER_CMAKE_PREFIX_PATH "$ENV{BALAU_USER_CMAKE_PREFIX_PATH}")
-set(BALAU_USER_CMAKE_INSTALL_PREFIX "$ENV{BALAU_USER_CMAKE_INSTALL_PREFIX}")
+set(CPP_USER_CMAKE_PREFIX_PATH "$ENV{CPP_USER_CMAKE_PREFIX_PATH}")
+set(CPP_USER_CMAKE_INSTALL_PREFIX "$ENV{CPP_USER_CMAKE_INSTALL_PREFIX}")
 
-message(STATUS "BALAU_USER_CMAKE_PREFIX_PATH: ${BALAU_USER_CMAKE_PREFIX_PATH}")
-message(STATUS "BALAU_USER_CMAKE_INSTALL_PREFIX: ${BALAU_USER_CMAKE_INSTALL_PREFIX}")
+message(STATUS "CPP_USER_CMAKE_PREFIX_PATH: ${CPP_USER_CMAKE_PREFIX_PATH}")
+message(STATUS "CPP_USER_CMAKE_INSTALL_PREFIX: ${CPP_USER_CMAKE_INSTALL_PREFIX}")
 
 if (NOT DEFINED CMAKE_PREFIX_PATH)
-	if (NOT "${BALAU_USER_CMAKE_PREFIX_PATH}" STREQUAL "")
-		message(STATUS "Setting CMAKE_PREFIX_PATH to: ${BALAU_USER_CMAKE_PREFIX_PATH}")
-		set(CMAKE_PREFIX_PATH "${BALAU_USER_CMAKE_PREFIX_PATH}" CACHE PATH "..." FORCE)
+	if (NOT "${CPP_USER_CMAKE_PREFIX_PATH}" STREQUAL "")
+		message(STATUS "Setting CMAKE_PREFIX_PATH to: ${CPP_USER_CMAKE_PREFIX_PATH}")
+		set(CMAKE_PREFIX_PATH "${CPP_USER_CMAKE_PREFIX_PATH}" CACHE PATH "..." FORCE)
 	endif ()
 endif ()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-	if (NOT "${BALAU_USER_CMAKE_INSTALL_PREFIX}" STREQUAL "")
-		message(STATUS "Setting CMAKE_INSTALL_PREFIX to: ${BALAU_USER_CMAKE_INSTALL_PREFIX}")
-		set(CMAKE_INSTALL_PREFIX "${BALAU_USER_CMAKE_INSTALL_PREFIX}" CACHE PATH "..." FORCE)
+	if (NOT "${CPP_USER_CMAKE_INSTALL_PREFIX}" STREQUAL "")
+		message(STATUS "Setting CMAKE_INSTALL_PREFIX to: ${CPP_USER_CMAKE_INSTALL_PREFIX}")
+		set(CMAKE_INSTALL_PREFIX "${CPP_USER_CMAKE_INSTALL_PREFIX}" CACHE PATH "..." FORCE)
 	endif ()
 endif()
 

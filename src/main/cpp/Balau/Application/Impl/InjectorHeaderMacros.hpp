@@ -4,21 +4,30 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__INJECTOR_HEADER_MACROS
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__INJECTOR_HEADER_MACROS
 
 #include <Balau/Application/Impl/BindingKey.hpp>
-#include <Balau/Util/Macros.hpp>
+#include <Balau/Application/Macros.hpp>
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedMacroInspection"
 
-#define _BalauHIPF(F)    decltype(F) F ## _
-#define _BalauHIMF(F)    F(std::forward<decltype(F)>(F ## _))
+#define BALAU_HIPF(F)    decltype(F) F ## _
+#define BALAU_HIMF(F)    F(std::forward<decltype(F)>(F ## _))
 
 namespace Balau {
 
@@ -26,168 +35,168 @@ class Injector;
 
 } // namespace Balau
 
-///////////////////////////////////// _BalauInjectHeader macros /////////////////////////////////////
+///////////////////////////////////// BALAU_InjectHeader macros /////////////////////////////////////
 
-#define _BalauInjectHeader(TYPE)                                                                    \
-	public: static TYPE * _Balau_newHeapInstance(const ::Balau::Injector & );                       \
-	public: static TYPE _Balau_newStackInstance(const ::Balau::Injector & );                        \
-	public: static std::vector<::Balau::Impl::BindingKey> _Balau_getDependencyKeys()
+#define BALAU_InjectHeader(TYPE)                                                                    \
+	public: static TYPE * BALAU_newHeapInstance(const ::Balau::Injector & );                        \
+	public: static TYPE BALAU_newStackInstance(const ::Balau::Injector & );                         \
+	public: static std::vector<::Balau::Impl::BindingKey> BALAU_getDependencyKeys()
 
-/////////////////////////////  _BalauInjectHeaderConstructNamed macros //////////////////////////////
+/////////////////////////////  BALAU_InjectHeaderConstructNamed macros //////////////////////////////
 
-#define _BalauInjectHeaderConstruct__1(TYPE)                                                        \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__1(TYPE)                                                        \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
 	public: TYPE() {}
 
-#define _BalauInjectHeaderConstruct__2(TYPE, F0)                                                    \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__2(TYPE, F0)                                                    \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: explicit TYPE(_BalauHIPF(F0)) : _BalauHIMF(F0) {}
+	public: explicit TYPE(BALAU_HIPF(F0)) : BALAU_HIMF(F0) {}
 
-#define _BalauInjectHeaderConstruct__3(TYPE, F0, F1)                                                \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__3(TYPE, F0, F1)                                                \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1))                                                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1))                                                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1) {}
 
-#define _BalauInjectHeaderConstruct__4(TYPE, F0, F1, F2)                                            \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__4(TYPE, F0, F1, F2)                                            \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2))                                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2))                                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2) {}
 
-#define _BalauInjectHeaderConstruct__5(TYPE, F0, F1, F2, F3)                                        \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__5(TYPE, F0, F1, F2, F3)                                        \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3))                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3))                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3) {}
 
-#define _BalauInjectHeaderConstruct__6(TYPE, F0, F1, F2, F3, F4)                                    \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__6(TYPE, F0, F1, F2, F3, F4)                                    \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3), _BalauHIPF(F4))    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3), _BalauHIMF(F4) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3), BALAU_HIPF(F4))    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3), BALAU_HIMF(F4) {}
 
-#define _BalauInjectHeaderConstruct__7(TYPE, F0, F1, F2, F3, F4, F5)                                \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__7(TYPE, F0, F1, F2, F3, F4, F5)                                \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3),                    \
-	             _BalauHIPF(F4), _BalauHIPF(F5))                                                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3)                            \
-		, _BalauHIMF(F4), _BalauHIMF(F5) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3),                    \
+	             BALAU_HIPF(F4), BALAU_HIPF(F5))                                                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3)                            \
+		, BALAU_HIMF(F4), BALAU_HIMF(F5) {}
 
-#define _BalauInjectHeaderConstruct__8(TYPE, F0, F1, F2, F3, F4, F5, F6)                            \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__8(TYPE, F0, F1, F2, F3, F4, F5, F6)                            \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3),                    \
-	             _BalauHIPF(F4), _BalauHIPF(F5), _BalauHIPF(F6))                                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3)                            \
-	 	, _BalauHIMF(F4), _BalauHIMF(F5), _BalauHIMF(F6) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3),                    \
+	             BALAU_HIPF(F4), BALAU_HIPF(F5), BALAU_HIPF(F6))                                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3)                            \
+	 	, BALAU_HIMF(F4), BALAU_HIMF(F5), BALAU_HIMF(F6) {}
 
-#define _BalauInjectHeaderConstruct__9(TYPE, F0, F1, F2, F3, F4, F5, F6, F7)                        \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__9(TYPE, F0, F1, F2, F3, F4, F5, F6, F7)                        \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3),                    \
-	             _BalauHIPF(F4), _BalauHIPF(F5), _BalauHIPF(F6), _BalauHIPF(F7))                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3)                            \
-		, _BalauHIMF(F4), _BalauHIMF(F5), _BalauHIMF(F6), _BalauHIMF(F7) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3),                    \
+	             BALAU_HIPF(F4), BALAU_HIPF(F5), BALAU_HIPF(F6), BALAU_HIPF(F7))                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3)                            \
+		, BALAU_HIMF(F4), BALAU_HIMF(F5), BALAU_HIMF(F6), BALAU_HIMF(F7) {}
 
-#define _BalauInjectHeaderConstruct__10(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8)                   \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__10(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8)                   \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3),                    \
-	             _BalauHIPF(F4), _BalauHIPF(F5), _BalauHIPF(F6), _BalauHIPF(F7),                    \
-	             _BalauHIPF(F8))                                                                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3)                            \
-		, _BalauHIMF(F4), _BalauHIMF(F5), _BalauHIMF(F6), _BalauHIMF(F7)                            \
-		, _BalauHIMF(F8) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3),                    \
+	             BALAU_HIPF(F4), BALAU_HIPF(F5), BALAU_HIPF(F6), BALAU_HIPF(F7),                    \
+	             BALAU_HIPF(F8))                                                                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3)                            \
+		, BALAU_HIMF(F4), BALAU_HIMF(F5), BALAU_HIMF(F6), BALAU_HIMF(F7)                            \
+		, BALAU_HIMF(F8) {}
 
-#define _BalauInjectHeaderConstruct__11(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9)               \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__11(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9)               \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3),                    \
-	             _BalauHIPF(F4), _BalauHIPF(F5), _BalauHIPF(F6), _BalauHIPF(F7),                    \
-	             _BalauHIPF(F8), _BalauHIPF(F9))                                                    \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3)                            \
-		, _BalauHIMF(F4), _BalauHIMF(F5), _BalauHIMF(F6), _BalauHIMF(F7)                            \
-		, _BalauHIMF(F8), _BalauHIMF(F9) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3),                    \
+	             BALAU_HIPF(F4), BALAU_HIPF(F5), BALAU_HIPF(F6), BALAU_HIPF(F7),                    \
+	             BALAU_HIPF(F8), BALAU_HIPF(F9))                                                    \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3)                            \
+		, BALAU_HIMF(F4), BALAU_HIMF(F5), BALAU_HIMF(F6), BALAU_HIMF(F7)                            \
+		, BALAU_HIMF(F8), BALAU_HIMF(F9) {}
 
-#define _BalauInjectHeaderConstruct__12(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10)          \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__12(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10)          \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0), _BalauHIPF(F1), _BalauHIPF(F2), _BalauHIPF(F3),                    \
-	             _BalauHIPF(F4), _BalauHIPF(F5), _BalauHIPF(F6), _BalauHIPF(F7),                    \
-	             _BalauHIPF(F8), _BalauHIPF(F9), _BalauHIPF(F10))                                   \
-		: _BalauHIMF(F0), _BalauHIMF(F1), _BalauHIMF(F2), _BalauHIMF(F3)                            \
-		, _BalauHIMF(F4), _BalauHIMF(F5), _BalauHIMF(F6), _BalauHIMF(F7)                            \
-		, _BalauHIMF(F8), _BalauHIMF(F9), _BalauHIMF(F10) {}
+	public: TYPE(BALAU_HIPF(F0), BALAU_HIPF(F1), BALAU_HIPF(F2), BALAU_HIPF(F3),                    \
+	             BALAU_HIPF(F4), BALAU_HIPF(F5), BALAU_HIPF(F6), BALAU_HIPF(F7),                    \
+	             BALAU_HIPF(F8), BALAU_HIPF(F9), BALAU_HIPF(F10))                                   \
+		: BALAU_HIMF(F0), BALAU_HIMF(F1), BALAU_HIMF(F2), BALAU_HIMF(F3)                            \
+		, BALAU_HIMF(F4), BALAU_HIMF(F5), BALAU_HIMF(F6), BALAU_HIMF(F7)                            \
+		, BALAU_HIMF(F8), BALAU_HIMF(F9), BALAU_HIMF(F10) {}
 
-#define _BalauInjectHeaderConstruct__13(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11)     \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__13(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11)     \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0),  _BalauHIPF(F1),  _BalauHIPF(F2),  _BalauHIPF(F3),                 \
-	             _BalauHIPF(F4),  _BalauHIPF(F5),  _BalauHIPF(F6),  _BalauHIPF(F7),                 \
-	             _BalauHIPF(F8),  _BalauHIPF(F9),  _BalauHIPF(F10), _BalauHIPF(F11))                \
-		: _BalauHIMF(F0),  _BalauHIMF(F1),  _BalauHIMF(F2),  _BalauHIMF(F3)                         \
-		, _BalauHIMF(F4),  _BalauHIMF(F5),  _BalauHIMF(F6),  _BalauHIMF(F7)                         \
-		, _BalauHIMF(F8),  _BalauHIMF(F9),  _BalauHIMF(F10), _BalauHIMF(F11)                        \
+	public: TYPE(BALAU_HIPF(F0),  BALAU_HIPF(F1),  BALAU_HIPF(F2),  BALAU_HIPF(F3),                 \
+	             BALAU_HIPF(F4),  BALAU_HIPF(F5),  BALAU_HIPF(F6),  BALAU_HIPF(F7),                 \
+	             BALAU_HIPF(F8),  BALAU_HIPF(F9),  BALAU_HIPF(F10), BALAU_HIPF(F11))                \
+		: BALAU_HIMF(F0),  BALAU_HIMF(F1),  BALAU_HIMF(F2),  BALAU_HIMF(F3)                         \
+		, BALAU_HIMF(F4),  BALAU_HIMF(F5),  BALAU_HIMF(F6),  BALAU_HIMF(F7)                         \
+		, BALAU_HIMF(F8),  BALAU_HIMF(F9),  BALAU_HIMF(F10), BALAU_HIMF(F11)                        \
 	{}
 
-#define _BalauInjectHeaderConstruct__14(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12) \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__14(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12) \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0),  _BalauHIPF(F1),  _BalauHIPF(F2),  _BalauHIPF(F3),                 \
-	             _BalauHIPF(F4),  _BalauHIPF(F5),  _BalauHIPF(F6),  _BalauHIPF(F7),                 \
-	             _BalauHIPF(F8),  _BalauHIPF(F9),  _BalauHIPF(F10), _BalauHIPF(F11),                \
-	             _BalauHIPF(F12))                                                                   \
-		: _BalauHIMF(F0),  _BalauHIMF(F1),  _BalauHIMF(F2),  _BalauHIMF(F3)                         \
-		, _BalauHIMF(F4),  _BalauHIMF(F5),  _BalauHIMF(F6),  _BalauHIMF(F7)                         \
-		, _BalauHIMF(F8),  _BalauHIMF(F9),  _BalauHIMF(F10), _BalauHIMF(F11)                        \
-		, _BalauHIMF(F12) {}
+	public: TYPE(BALAU_HIPF(F0),  BALAU_HIPF(F1),  BALAU_HIPF(F2),  BALAU_HIPF(F3),                 \
+	             BALAU_HIPF(F4),  BALAU_HIPF(F5),  BALAU_HIPF(F6),  BALAU_HIPF(F7),                 \
+	             BALAU_HIPF(F8),  BALAU_HIPF(F9),  BALAU_HIPF(F10), BALAU_HIPF(F11),                \
+	             BALAU_HIPF(F12))                                                                   \
+		: BALAU_HIMF(F0),  BALAU_HIMF(F1),  BALAU_HIMF(F2),  BALAU_HIMF(F3)                         \
+		, BALAU_HIMF(F4),  BALAU_HIMF(F5),  BALAU_HIMF(F6),  BALAU_HIMF(F7)                         \
+		, BALAU_HIMF(F8),  BALAU_HIMF(F9),  BALAU_HIMF(F10), BALAU_HIMF(F11)                        \
+		, BALAU_HIMF(F12) {}
 
-#define _BalauInjectHeaderConstruct__15(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13) \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__15(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13) \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0),  _BalauHIPF(F1),  _BalauHIPF(F2),  _BalauHIPF(F3),                 \
-	             _BalauHIPF(F4),  _BalauHIPF(F5),  _BalauHIPF(F6),  _BalauHIPF(F7),                 \
-	             _BalauHIPF(F8),  _BalauHIPF(F9),  _BalauHIPF(F10), _BalauHIPF(F11),                \
-	             _BalauHIPF(F12), _BalauHIPF(F13))                                                  \
-		: _BalauHIMF(F0),  _BalauHIMF(F1),  _BalauHIMF(F2),  _BalauHIMF(F3)                         \
-		, _BalauHIMF(F4),  _BalauHIMF(F5),  _BalauHIMF(F6),  _BalauHIMF(F7)                         \
-		, _BalauHIMF(F8),  _BalauHIMF(F9),  _BalauHIMF(F10), _BalauHIMF(F11)                        \
-		, _BalauHIMF(F12), _BalauHIMF(F13) {}
+	public: TYPE(BALAU_HIPF(F0),  BALAU_HIPF(F1),  BALAU_HIPF(F2),  BALAU_HIPF(F3),                 \
+	             BALAU_HIPF(F4),  BALAU_HIPF(F5),  BALAU_HIPF(F6),  BALAU_HIPF(F7),                 \
+	             BALAU_HIPF(F8),  BALAU_HIPF(F9),  BALAU_HIPF(F10), BALAU_HIPF(F11),                \
+	             BALAU_HIPF(F12), BALAU_HIPF(F13))                                                  \
+		: BALAU_HIMF(F0),  BALAU_HIMF(F1),  BALAU_HIMF(F2),  BALAU_HIMF(F3)                         \
+		, BALAU_HIMF(F4),  BALAU_HIMF(F5),  BALAU_HIMF(F6),  BALAU_HIMF(F7)                         \
+		, BALAU_HIMF(F8),  BALAU_HIMF(F9),  BALAU_HIMF(F10), BALAU_HIMF(F11)                        \
+		, BALAU_HIMF(F12), BALAU_HIMF(F13) {}
 
-#define _BalauInjectHeaderConstruct__16(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14) \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__16(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14) \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0),  _BalauHIPF(F1),  _BalauHIPF(F2),  _BalauHIPF(F3),                 \
-	             _BalauHIPF(F4),  _BalauHIPF(F5),  _BalauHIPF(F6),  _BalauHIPF(F7),                 \
-	             _BalauHIPF(F8),  _BalauHIPF(F9),  _BalauHIPF(F10), _BalauHIPF(F11),                \
-	             _BalauHIPF(F12), _BalauHIPF(F13), _BalauHIPF(F14))                                 \
-		: _BalauHIMF(F0),  _BalauHIMF(F1),  _BalauHIMF(F2),  _BalauHIMF(F3)                         \
-		, _BalauHIMF(F4),  _BalauHIMF(F5),  _BalauHIMF(F6),  _BalauHIMF(F7)                         \
-		, _BalauHIMF(F8),  _BalauHIMF(F9),  _BalauHIMF(F10), _BalauHIMF(F11)                        \
-		, _BalauHIMF(F12), _BalauHIMF(F13), _BalauHIMF(F14) {}
+	public: TYPE(BALAU_HIPF(F0),  BALAU_HIPF(F1),  BALAU_HIPF(F2),  BALAU_HIPF(F3),                 \
+	             BALAU_HIPF(F4),  BALAU_HIPF(F5),  BALAU_HIPF(F6),  BALAU_HIPF(F7),                 \
+	             BALAU_HIPF(F8),  BALAU_HIPF(F9),  BALAU_HIPF(F10), BALAU_HIPF(F11),                \
+	             BALAU_HIPF(F12), BALAU_HIPF(F13), BALAU_HIPF(F14))                                 \
+		: BALAU_HIMF(F0),  BALAU_HIMF(F1),  BALAU_HIMF(F2),  BALAU_HIMF(F3)                         \
+		, BALAU_HIMF(F4),  BALAU_HIMF(F5),  BALAU_HIMF(F6),  BALAU_HIMF(F7)                         \
+		, BALAU_HIMF(F8),  BALAU_HIMF(F9),  BALAU_HIMF(F10), BALAU_HIMF(F11)                        \
+		, BALAU_HIMF(F12), BALAU_HIMF(F13), BALAU_HIMF(F14) {}
 
-#define _BalauInjectHeaderConstruct__17(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15) \
-	_BalauInjectHeader(TYPE);                                                                       \
+#define BALAU_InjectHeaderConstruct__17(TYPE, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15) \
+	BALAU_InjectHeader(TYPE);                                                                       \
 	                                                                                                \
-	public: TYPE(_BalauHIPF(F0),  _BalauHIPF(F1),  _BalauHIPF(F2),  _BalauHIPF(F3)                  \
-	             _BalauHIPF(F4),  _BalauHIPF(F5),  _BalauHIPF(F6),  _BalauHIPF(F7)                  \
-	             _BalauHIPF(F8),  _BalauHIPF(F9),  _BalauHIPF(F10), _BalauHIPF(F11)                 \
-	             _BalauHIPF(F12), _BalauHIPF(F13), _BalauHIPF(F14), _BalauHIPF(F15))                \
-		: _BalauHIMF(F0),  _BalauHIMF(F1),  _BalauHIMF(F2),  _BalauHIMF(F3)                         \
-		, _BalauHIMF(F4),  _BalauHIMF(F5),  _BalauHIMF(F6),  _BalauHIMF(F7)                         \
-		, _BalauHIMF(F8),  _BalauHIMF(F9),  _BalauHIMF(F10), _BalauHIMF(F11)                        \
-		, _BalauHIMF(F12), _BalauHIMF(F13), _BalauHIMF(F14), _BalauHIMF(F15) {}
+	public: TYPE(BALAU_HIPF(F0),  BALAU_HIPF(F1),  BALAU_HIPF(F2),  BALAU_HIPF(F3)                  \
+	             BALAU_HIPF(F4),  BALAU_HIPF(F5),  BALAU_HIPF(F6),  BALAU_HIPF(F7)                  \
+	             BALAU_HIPF(F8),  BALAU_HIPF(F9),  BALAU_HIPF(F10), BALAU_HIPF(F11)                 \
+	             BALAU_HIPF(F12), BALAU_HIPF(F13), BALAU_HIPF(F14), BALAU_HIPF(F15))                \
+		: BALAU_HIMF(F0),  BALAU_HIMF(F1),  BALAU_HIMF(F2),  BALAU_HIMF(F3)                         \
+		, BALAU_HIMF(F4),  BALAU_HIMF(F5),  BALAU_HIMF(F6),  BALAU_HIMF(F7)                         \
+		, BALAU_HIMF(F8),  BALAU_HIMF(F9),  BALAU_HIMF(F10), BALAU_HIMF(F11)                        \
+		, BALAU_HIMF(F12), BALAU_HIMF(F13), BALAU_HIMF(F14), BALAU_HIMF(F15) {}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define _BalauInjectHeaderConstruct__(N)          _BalauInjectHeaderConstruct__##N
-#define _BalauInjectHeaderConstruct__Eval(N)      _BalauInjectHeaderConstruct__(N)
+#define BALAU_InjectHeaderConstruct__(N)          BALAU_InjectHeaderConstruct__##N
+#define BALAU_InjectHeaderConstruct__Eval(N)      BALAU_InjectHeaderConstruct__(N)
 
-#define _BalauInjectHeaderConstruct(...)          _BalauInjectHeaderConstruct__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
+#define BALAU_InjectHeaderConstruct(...)          BALAU_InjectHeaderConstruct__Eval(BalauVariadicNArg(__VA_ARGS__))(__VA_ARGS__)
 
 #pragma clang diagnostic pop
 

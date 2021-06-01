@@ -4,15 +4,23 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
-#include <Balau/Logging/Logger.hpp>
+#include <Balau/Logging/LoggerMacros.hpp>
 #include <TestResources.hpp>
 
 #include <Balau/Exception/LoggingExceptions.hpp>
-#include <Balau/Exception/ParsingExceptions.hpp>
 #include <Balau/Util/Files.hpp>
 #include <Balau/Type/OnScopeExit.hpp>
 
@@ -50,7 +58,7 @@ com.borasoftware.misc {
 }
 )RR";
 
-const std::string STREAM_ENTRY = "_STREAM_ENTRY_";
+const std::string STREAM_ENTRY = "STREAM_ENTRY";
 
 std::ostringstream customLoggingStreamStream;
 
@@ -71,16 +79,21 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		RegisterTestCase(functionBasedLogging);
 		RegisterTestCase(flushing);
 		RegisterTestCase(customLoggingStream);
+		RegisterTestCase(fileStream);
 		RegisterTestCase(resetLoggingSystem);
 	}
 
-	static void assertLines(const std::string & actual, const std::vector<std::string> & expected) {
+	void assertLines(const std::string & actual, const std::vector<std::string> & expected) {
 		const auto lines = Strings::split(actual, "\n");
 
-		AssertThat(lines.size(), is(expected.size()));
+		if (lines.size() != expected.size()) {
+			logLine("Line count does not match (actual=", lines.size(), ", expected=", expected.size() ,")");
+			renderResult(lines, expected);
+			assertFail();
+		}
 
 		for (size_t m = 0; m < lines.size(); m++) {
-			AssertThat(std::string(lines[m]), endsWith(expected[m]));
+			AssertThat(::toString("Line ", m, ": "), std::string(lines[m]), endsWith(expected[m]));
 		}
 	}
 
@@ -103,7 +116,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		return logFile;
 	}
 
-	// The string configurationText contains a placeholder _STREAM_ENTRY_
+	// The string configurationText contains a placeholder STREAM_ENTRY
 	// which is replace with the file stream string.
 	static Resource::File configureLoggerForTest(const std::string & testName, const std::string & configurationText) {
 		const std::string filename = std::string("LoggerTest-") + testName + ".log";
@@ -178,12 +191,12 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 
 	void parameterisedMessages() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level = info
-		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-		stream = _STREAM_ENTRY_
-	}
-	)RR";
+			. {
+				level = info
+				format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
+				stream = STREAM_ENTRY
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("parameterisedMessages", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -211,12 +224,12 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 
 	void loggerMacros() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level = trace
+			. {
+				level = trace
 		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-		stream = _STREAM_ENTRY_
-	}
-	)RR";
+				stream = STREAM_ENTRY
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("loggerMacros", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -238,18 +251,21 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 		BalauLogInfo(log, "Test log info macro");
 		BalauLogWarn(log, "Test log warn macro");
 		BalauLogError(log, "Test log error macro");
+		BalauLogLog(log, INFO, "Test log log (info) macro");
 
 		BalauLogTrace(log, "Test log trace macro with {} parameter", 1);
 		BalauLogDebug(log, "Test log debug macro with {} parameter", 2);
 		BalauLogInfo(log, "Test log info macro with {} parameter", 3);
 		BalauLogWarn(log, "Test log warn macro with {} parameter", 4);
 		BalauLogError(log, "Test log error macro with {} parameter", 5);
+		BalauLogLog(log, INFO, "Test log log (info) macro with {} parameter", 5);
 
 		BalauLogTrace(log, "Test log trace macro with {}, {} parameters", 0, 5);
 		BalauLogDebug(log, "Test log debug macro with {}, {} parameters", 1, 6);
 		BalauLogInfo(log, "Test log info macro with {}, {} parameters", 2, 7);
 		BalauLogWarn(log, "Test log warn macro with {}, {} parameters", 3, 8);
 		BalauLogError(log, "Test log error macro with {}, {} parameters", 4, 9);
+		BalauLogLog(log, INFO, "Test log log (info) macro with {}, {} parameters", 4, 9);
 
 		Logger::flushAll();
 		const std::string actual = Files::readToString(logFile);
@@ -264,16 +280,19 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 			, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log info macro"
 			, " - [LoggerTest::loggerMacros] WARN - com.borasoftware - Test log warn macro"
 			, " - [LoggerTest::loggerMacros] ERROR - com.borasoftware - Test log error macro"
+			, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log log (info) macro"
 			, " - [LoggerTest::loggerMacros] TRACE - com.borasoftware - Test log trace macro with 1 parameter"
 			, " - [LoggerTest::loggerMacros] DEBUG - com.borasoftware - Test log debug macro with 2 parameter"
 			, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log info macro with 3 parameter"
 			, " - [LoggerTest::loggerMacros] WARN - com.borasoftware - Test log warn macro with 4 parameter"
 			, " - [LoggerTest::loggerMacros] ERROR - com.borasoftware - Test log error macro with 5 parameter"
+			, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log log (info) macro with 5 parameter"
 			, " - [LoggerTest::loggerMacros] TRACE - com.borasoftware - Test log trace macro with 0, 5 parameters"
 			, " - [LoggerTest::loggerMacros] DEBUG - com.borasoftware - Test log debug macro with 1, 6 parameters"
 			, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log info macro with 2, 7 parameters"
 			, " - [LoggerTest::loggerMacros] WARN - com.borasoftware - Test log warn macro with 3, 8 parameters"
 			, " - [LoggerTest::loggerMacros] ERROR - com.borasoftware - Test log error macro with 4, 9 parameters"
+			, " - [LoggerTest::loggerMacros] INFO - com.borasoftware - Test log log (info) macro with 4, 9 parameters"
 		};
 
 		assertLines(actual, expectedContains);
@@ -284,7 +303,7 @@ struct LoggerTest : public Testing::TestGroup<LoggerTest> {
 . {
 	level  = trace
 	format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-	stream = _STREAM_ENTRY_
+	stream = STREAM_ENTRY
 }
 )RR";
 
@@ -306,12 +325,12 @@ com.borasoftware {
 
 	void globalNamespace() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level  = info
+			. {
+				level  = info
 		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-		stream = _STREAM_ENTRY_
-	}
-	)RR";
+				stream = STREAM_ENTRY
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("globalNamespace", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -327,10 +346,10 @@ com.borasoftware {
 
 	void unconfiguredRootNamespace() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		stream = _STREAM_ENTRY_
-	}
-	)RR";
+			. {
+				stream = STREAM_ENTRY
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("unconfiguredRootNamespace", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -354,14 +373,14 @@ com.borasoftware {
 
 	void configuredNamespaceWithoutFormat() {
 		const std::string configurationText = 1 + R"RR(
-	.    {
-		stream = _STREAM_ENTRY_
-	}
+			.    {
+				stream = STREAM_ENTRY
+			}
 
-	abcd {
-		level = debug
-	}
-	)RR";
+			abcd {
+				level = debug
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("configuredNamespaceWithoutFormat", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -379,12 +398,12 @@ com.borasoftware {
 
 	void loggingWithLineAndFileName() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level = info
+			. {
+				level = info
 		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-		stream = _STREAM_ENTRY_
-	}
-	)RR";
+				stream = STREAM_ENTRY
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("loggingWithLineAndFileName", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -412,12 +431,12 @@ com.borasoftware {
 
 	void functionBasedLogging() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level  = info
+			. {
+				level  = info
 		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-		stream = _STREAM_ENTRY_
-	}
-	)RR";
+				stream = STREAM_ENTRY
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("functionBasedLogging", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -452,11 +471,11 @@ com.borasoftware {
 
 	void flushing() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level = info
-		flush = false
-	}
-	)RR";
+			. {
+				level = info
+				flush = false
+			}
+		)RR";
 
 		Resource::File logFile = configureLoggerForTest("flushing", configurationText);
 		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
@@ -486,12 +505,12 @@ com.borasoftware {
 
 	void customLoggingStream() {
 		const std::string configurationText = 1 + R"RR(
-	. {
-		level  = info
+			. {
+				level  = info
 		format = %Y-%m-%d %H:%M:%S %filename - [%thread] %LEVEL - %namespace - %message
-		stream = custom
-	}
-	)RR";
+				stream = custom
+			}
+		)RR";
 
 		Logger::registerLoggingStreamFactory("custom", customLoggingStreamNewInstance);
 
@@ -513,6 +532,216 @@ com.borasoftware {
 		};
 
 		assertLines(actual, expectedContains);
+	}
+
+	void fileStream() {
+		const std::string configurationText = R"RR(
+			. {
+				level = info
+				format = %LEVEL - %namespace - %message
+				stream = STREAM_ENTRY
+			}
+
+			abc {
+				level = trace
+				format = %namespace - %message
+				stream = STREAM_ENTRY
+			}
+		)RR";
+
+		Resource::File logFile = configureLoggerForTest("fileStream", configurationText);
+		OnScopeExit removeLogFile([=] () mutable { logFile.removeFile(); });
+
+		Logger & logger = Logger::getLogger("abc");
+
+		logger.trace("trace - const char *");
+		logger.trace(std::string_view("trace - string_view"));
+		logger.trace(std::string("trace - string"));
+		logger.trace("trace - const char * - {}, {}", "obj1", "obj2");
+		logger.trace(std::string_view("trace - string_view - {}, {}"), "obj1", "obj2");
+		logger.trace(std::string("trace - string - {}, {}"), "obj1", "obj2");
+		logger.trace([] () { return "trace - function"; });
+
+		LogTrace(logger, "trace - const char *");
+		LogTrace(logger, std::string_view("trace - string_view"));
+		LogTrace(logger, std::string("trace - string"));
+		LogTrace(logger, "trace - const char * - {}, {}", "obj1", "obj2");
+		LogTrace(logger, std::string_view("trace - string_view - {}, {}"), "obj1", "obj2");
+		LogTrace(logger, std::string("trace - string - {}, {}"), "obj1", "obj2");
+		LogTrace(logger, [] () { return "trace - function"; });
+
+		logger.debug("debug - const char *");
+		logger.debug(std::string_view("debug - string_view"));
+		logger.debug(std::string("debug - string"));
+		logger.debug("debug - const char * - {}, {}", "obj1", "obj2");
+		logger.debug(std::string_view("debug - string_view - {}, {}"), "obj1", "obj2");
+		logger.debug(std::string("debug - string - {}, {}"), "obj1", "obj2");
+		logger.debug([] () { return "debug - function"; });
+
+		LogDebug(logger, "debug - const char *");
+		LogDebug(logger, std::string_view("debug - string_view"));
+		LogDebug(logger, std::string("debug - string"));
+		LogDebug(logger, "debug - const char * - {}, {}", "obj1", "obj2");
+		LogDebug(logger, std::string_view("debug - string_view - {}, {}"), "obj1", "obj2");
+		LogDebug(logger, std::string("debug - string - {}, {}"), "obj1", "obj2");
+		LogDebug(logger, [] () { return "debug - function"; });
+
+		logger.info("info - const char *");
+		logger.info(std::string_view("info - string_view"));
+		logger.info(std::string("info - string"));
+		logger.info("info - const char * - {}, {}", "obj1", "obj2");
+		logger.info(std::string_view("info - string_view - {}, {}"), "obj1", "obj2");
+		logger.info(std::string("info - string - {}, {}"), "obj1", "obj2");
+		logger.info([] () { return "info - function"; });
+
+		LogInfo(logger, "info - const char *");
+		LogInfo(logger, std::string_view("info - string_view"));
+		LogInfo(logger, std::string("info - string"));
+		LogInfo(logger, "info - const char * - {}, {}", "obj1", "obj2");
+		LogInfo(logger, std::string_view("info - string_view - {}, {}"), "obj1", "obj2");
+		LogInfo(logger, std::string("info - string - {}, {}"), "obj1", "obj2");
+		LogInfo(logger, [] () { return "info - function"; });
+
+		logger.warn("warn - const char *");
+		logger.warn(std::string_view("warn - string_view"));
+		logger.warn(std::string("warn - string"));
+		logger.warn("warn - const char * - {}, {}", "obj1", "obj2");
+		logger.warn(std::string_view("warn - string_view - {}, {}"), "obj1", "obj2");
+		logger.warn(std::string("warn - string - {}, {}"), "obj1", "obj2");
+		logger.warn([] () { return "warn - function"; });
+
+		LogWarn(logger, "warn - const char *");
+		LogWarn(logger, std::string_view("warn - string_view"));
+		LogWarn(logger, std::string("warn - string"));
+		LogWarn(logger, "warn - const char * - {}, {}", "obj1", "obj2");
+		LogWarn(logger, std::string_view("warn - string_view - {}, {}"), "obj1", "obj2");
+		LogWarn(logger, std::string("warn - string - {}, {}"), "obj1", "obj2");
+		LogWarn(logger, [] () { return "warn - function"; });
+
+		logger.error("error - const char *");
+		logger.error(std::string_view("error - string_view"));
+		logger.error(std::string("error - string"));
+		logger.error("error - const char * - {}, {}", "obj1", "obj2");
+		logger.error(std::string_view("error - string_view - {}, {}"), "obj1", "obj2");
+		logger.error(std::string("error - string - {}, {}"), "obj1", "obj2");
+		logger.error([] () { return "error - function"; });
+
+		LogError(logger, "error - const char *");
+		LogError(logger, std::string_view("error - string_view"));
+		LogError(logger, std::string("error - string"));
+		LogError(logger, "error - const char * - {}, {}", "obj1", "obj2");
+		LogError(logger, std::string_view("error - string_view - {}, {}"), "obj1", "obj2");
+		LogError(logger, std::string("error - string - {}, {}"), "obj1", "obj2");
+		LogError(logger, [] () { return "error - function"; });
+
+		logger.log(LoggingLevel::INFO, "log (info) - const char *");
+		logger.log(LoggingLevel::INFO, std::string_view("log (info) - string_view"));
+		logger.log(LoggingLevel::INFO, std::string("log (info) - string"));
+		logger.log(LoggingLevel::INFO, "log (info) - const char * - {}, {}", "obj1", "obj2");
+		logger.log(LoggingLevel::INFO, std::string_view("log (info) - string_view - {}, {}"), "obj1", "obj2");
+		logger.log(LoggingLevel::INFO, std::string("log (info) - string - {}, {}"), "obj1", "obj2");
+		logger.log(LoggingLevel::INFO, [] () { return "log (info) - function"; });
+
+		LogLog(logger, INFO, "log (info) - const char *");
+		LogLog(logger, INFO, std::string_view("log (info) - string_view"));
+		LogLog(logger, INFO, std::string("log (info) - string"));
+		LogLog(logger, INFO, "log (info) - const char * - {}, {}", "obj1", "obj2");
+		LogLog(logger, INFO, std::string_view("log (info) - string_view - {}, {}"), "obj1", "obj2");
+		LogLog(logger, INFO, std::string("log (info) - string - {}, {}"), "obj1", "obj2");
+		LogLog(logger, INFO, [] () { return "log (info) - function"; });
+
+		Logger::flushAll();
+
+		const std::string actual = Util::Files::readToString(logFile);
+
+		const std::vector<std::string> expected = {
+			  "trace - const char *"
+			, "trace - string_view"
+			, "trace - string"
+			, "trace - const char * - obj1, obj2"
+			, "trace - string_view - obj1, obj2"
+			, "trace - string - obj1, obj2"
+			, "trace - function"
+			, "trace - const char *"
+			, "trace - string_view"
+			, "trace - string"
+			, "trace - const char * - obj1, obj2"
+			, "trace - string_view - obj1, obj2"
+			, "trace - string - obj1, obj2"
+			, "trace - function"
+			, "debug - const char *"
+			, "debug - string_view"
+			, "debug - string"
+			, "debug - const char * - obj1, obj2"
+			, "debug - string_view - obj1, obj2"
+			, "debug - string - obj1, obj2"
+			, "debug - function"
+			, "debug - const char *"
+			, "debug - string_view"
+			, "debug - string"
+			, "debug - const char * - obj1, obj2"
+			, "debug - string_view - obj1, obj2"
+			, "debug - string - obj1, obj2"
+			, "debug - function"
+			, "info - const char *"
+			, "info - string_view"
+			, "info - string"
+			, "info - const char * - obj1, obj2"
+			, "info - string_view - obj1, obj2"
+			, "info - string - obj1, obj2"
+			, "info - function"
+			, "info - const char *"
+			, "info - string_view"
+			, "info - string"
+			, "info - const char * - obj1, obj2"
+			, "info - string_view - obj1, obj2"
+			, "info - string - obj1, obj2"
+			, "info - function"
+			, "warn - const char *"
+			, "warn - string_view"
+			, "warn - string"
+			, "warn - const char * - obj1, obj2"
+			, "warn - string_view - obj1, obj2"
+			, "warn - string - obj1, obj2"
+			, "warn - function"
+			, "warn - const char *"
+			, "warn - string_view"
+			, "warn - string"
+			, "warn - const char * - obj1, obj2"
+			, "warn - string_view - obj1, obj2"
+			, "warn - string - obj1, obj2"
+			, "warn - function"
+			, "error - const char *"
+			, "error - string_view"
+			, "error - string"
+			, "error - const char * - obj1, obj2"
+			, "error - string_view - obj1, obj2"
+			, "error - string - obj1, obj2"
+			, "error - function"
+			, "error - const char *"
+			, "error - string_view"
+			, "error - string"
+			, "error - const char * - obj1, obj2"
+			, "error - string_view - obj1, obj2"
+			, "error - string - obj1, obj2"
+			, "error - function"
+			, "log (info) - const char *"
+			, "log (info) - string_view"
+			, "log (info) - string"
+			, "log (info) - const char * - obj1, obj2"
+			, "log (info) - string_view - obj1, obj2"
+			, "log (info) - string - obj1, obj2"
+			, "log (info) - function"
+			, "log (info) - const char *"
+			, "log (info) - string_view"
+			, "log (info) - string"
+			, "log (info) - const char * - obj1, obj2"
+			, "log (info) - string_view - obj1, obj2"
+			, "log (info) - string - obj1, obj2"
+			, "log (info) - function"
+		};
+
+		assertLines(actual, expected);
 	}
 
 	void resetLoggingSystem() {

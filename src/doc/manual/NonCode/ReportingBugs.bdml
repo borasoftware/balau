@@ -40,8 +40,6 @@
 			<entry>Either: report the defect on the main repository issue page <ref type="raw" new="true" url="https://github.com/borasoftware/balau/issues">here</ref>;</entry>
 
 			<entry>Or: fix the defect in your own fork and submit a pull request to merge it to the main repository.</entry>
-
 		</list>
-
 	</chapter>
 </document>

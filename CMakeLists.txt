@@ -16,8 +16,8 @@ cmake_minimum_required(VERSION 3.10.2)
 
 ################################ Balau version ################################
 
-set(BALAU_VERSION_YEAR 2020)
-set(BALAU_VERSION_MONTH 5)
+set(BALAU_VERSION_YEAR 2021)
+set(BALAU_VERSION_MONTH 6)
 set(BALAU_VERSION_PATCH 1)
 set(BALAU_VERSION "${BALAU_VERSION_YEAR}.${BALAU_VERSION_MONTH}.${BALAU_VERSION_PATCH}")
 
@@ -34,6 +34,8 @@ include(${CMAKE_SOURCE_DIR}/src/main/cmake/CMakeListsDefaultConfiguration.cmake)
 
 configure_file(src/main/cmake/BalauConfigVersion.cmake.in src/main/cmake/BalauConfigVersion.cmake @ONLY)
 configure_file(src/main/cmake/BalauConfig.cmake.in src/main/cmake/BalauConfig.cmake @ONLY)
+configure_file(src/main/cmake/BalauFakeConfigVersion.cmake.in src/main/cmake/BalauFakeConfigVersion.cmake @ONLY)
+configure_file(src/main/cmake/BalauFakeConfig.cmake.in src/main/cmake/BalauFakeConfig.cmake @ONLY)
 configure_file(src/doc/single-page/pdf/title-page.bdml.in src/doc/single-page/pdf/title-page.bdml @ONLY)
 configure_file(src/doc/api/Doxyfile.in src/doc/api/Doxyfile)
 
@@ -97,41 +99,56 @@ message(STATUS "BALAU_CXX_FLAGS: ${BALAU_CXX_FLAGS}")
 ############################### Generated files ###############################
 
 configure_file(src/main/cpp/Balau/BalauConfig.hpp.in src/main/cpp/Balau/BalauConfig.hpp @ONLY)
-configure_file(src/main/cpp/Balau/Type/StdTypes.cpp.in src/main/cpp/Balau/Type/StdTypes.cpp)
+configure_file(src/main/cpp/Balau/Type/BalauVersion.hpp.in src/main/cpp/Balau/Type/BalauVersion.hpp)
 configure_file(src/test/cpp/TestResources.cpp.in src/test/cpp/TestResources.cpp @ONLY)
 configure_file(src/test/cpp/TestResources.hpp.in src/test/cpp/TestResources.hpp @ONLY)
 
-################################# balau library ###############################
+############################ Balau libraries sources ##########################
 
 set(THIRD_PARTY_SOURCE_FILES
 	src/main/cpp/Balau/ThirdParty/Date/date.hpp
-	src/main/cpp/Balau/ThirdParty/Date/tz.cpp
-	src/main/cpp/Balau/ThirdParty/Date/tz.hpp
-	src/main/cpp/Balau/ThirdParty/Date/tz_private.hpp
 
-	src/main/cpp/Balau/ThirdParty/HashLibrary/crc32.cpp
+	src/main/cpp/Balau/ThirdParty/CppHttpLib/HttpLib.hpp
+
 	src/main/cpp/Balau/ThirdParty/HashLibrary/crc32.h
 	src/main/cpp/Balau/ThirdParty/HashLibrary/hash.h
 	src/main/cpp/Balau/ThirdParty/HashLibrary/hmac.h
-	src/main/cpp/Balau/ThirdParty/HashLibrary/keccak.cpp
 	src/main/cpp/Balau/ThirdParty/HashLibrary/keccak.h
-	src/main/cpp/Balau/ThirdParty/HashLibrary/md5.cpp
 	src/main/cpp/Balau/ThirdParty/HashLibrary/md5.h
-	src/main/cpp/Balau/ThirdParty/HashLibrary/sha1.cpp
 	src/main/cpp/Balau/ThirdParty/HashLibrary/sha1.h
-	src/main/cpp/Balau/ThirdParty/HashLibrary/sha256.cpp
 	src/main/cpp/Balau/ThirdParty/HashLibrary/sha256.h
-	src/main/cpp/Balau/ThirdParty/HashLibrary/sha3.cpp
 	src/main/cpp/Balau/ThirdParty/HashLibrary/sha3.h
 )
 
-set(BALAU_SOURCE_FILES
+if (BALAU_ENABLE_ZLIB)
+	set(BALAU_CORE_ZLIB_HEADER_FILES
+		src/main/cpp/Balau/Util/Compression.hpp
+	)
+else ()
+	set(BALAU_CORE_ZLIB_HEADER_FILES)
+endif ()
+
+if (BALAU_ENABLE_ZIP)
+	set(BALAU_CORE_ZIP_HEADER_FILES
+		src/main/cpp/Balau/Resource/ZipEntry.hpp
+		src/main/cpp/Balau/Resource/ZipFile.hpp
+		src/main/cpp/Balau/Util/Zip.hpp
+	)
+else ()
+	set(BALAU_CORE_ZIP_HEADER_FILES)
+endif ()
+
+set(BALAU_CORE_HEADER_FILES
 
 	${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfig.cmake
 	${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfigVersion.cmake
 
 	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp
-	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/Type/StdTypes.cpp
+	${CMAKE_BINARY_DIR}/src/main/cpp/Balau/Type/BalauVersion.hpp
+
+	${THIRD_PARTY_SOURCE_FILES}
+	${BALAU_CORE_ZLIB_HEADER_FILES}
+	${BALAU_CORE_ZIP_HEADER_FILES}
 
 	src/main/cpp/Balau/Application/BindingBuilder.hpp
 	src/main/cpp/Balau/Application/CommandLine.hpp
@@ -152,19 +169,14 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Application/Impl/BindingMap.hpp
 	src/main/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilder.hpp
 	src/main/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderUtils.hpp
-	src/main/cpp/Balau/Application/Impl/InjectorLogger.cpp
-	src/main/cpp/Balau/Application/Impl/InjectorLogger.hpp
 	src/main/cpp/Balau/Application/Impl/InjectorBodyMacros.hpp
 	src/main/cpp/Balau/Application/Impl/InjectorHeaderMacros.hpp
 	src/main/cpp/Balau/Application/Impl/InjectorMacros.hpp
-	src/main/cpp/Balau/Application/Impl/PropertyBindingBuilderFactory.cpp
 	src/main/cpp/Balau/Application/Impl/PropertyBindingBuilderFactory.hpp
 	src/main/cpp/Balau/Application/Impl/PropertyString.hpp
-	src/main/cpp/Balau/Application/Impl/PropertyTypeSpecificationVisitor.cpp
 	src/main/cpp/Balau/Application/Impl/PropertyTypeSpecificationVisitor.hpp
 	src/main/cpp/Balau/Application/Impl/StaticSingletonBuilder.hpp
 
-	src/main/cpp/Balau/Concurrent/CyclicBarrier.cpp
 	src/main/cpp/Balau/Concurrent/CyclicBarrier.hpp
 	src/main/cpp/Balau/Concurrent/Fork.hpp
 	src/main/cpp/Balau/Concurrent/LazyValue.hpp
@@ -178,8 +190,6 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Container/ObjectTrie.hpp
 	src/main/cpp/Balau/Container/SynchronizedQueue.hpp
 	src/main/cpp/Balau/Container/Queue.hpp
-	src/main/cpp/Balau/Container/Impl/ContainerLogger.cpp
-	src/main/cpp/Balau/Container/Impl/ContainerLogger.hpp
 
 	src/main/cpp/Balau/Dev/Assert.hpp
 
@@ -198,9 +208,7 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Interprocess/MSharedMemoryObject.hpp
 	src/main/cpp/Balau/Interprocess/USharedMemoryObject.hpp
 	src/main/cpp/Balau/Interprocess/SharedMemoryQueue.hpp
-	src/main/cpp/Balau/Interprocess/SharedMemoryUtils.cpp
 	src/main/cpp/Balau/Interprocess/SharedMemoryUtils.hpp
-	src/main/cpp/Balau/Interprocess/Impl/SharedMemoryQueueImpl.cpp
 	src/main/cpp/Balau/Interprocess/Impl/SharedMemoryQueueImpl.hpp
 
 	src/main/cpp/Balau/Lang/Common/AbstractScanner.hpp
@@ -208,20 +216,74 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Lang/Common/ScannedTokens.hpp
 	src/main/cpp/Balau/Lang/Property/PropertyParserService.hpp
 	src/main/cpp/Balau/Lang/Property/Lang/PropertyAst.hpp
-	src/main/cpp/Balau/Lang/Property/Lang/PropertyToken.cpp
 	src/main/cpp/Balau/Lang/Property/Lang/PropertyToken.hpp
-	src/main/cpp/Balau/Lang/Property/Parser/PropertyParser.cpp
 	src/main/cpp/Balau/Lang/Property/Parser/PropertyParser.hpp
-	src/main/cpp/Balau/Lang/Property/Parser/PropertyScanner.cpp
 	src/main/cpp/Balau/Lang/Property/Parser/PropertyScanner.hpp
 	src/main/cpp/Balau/Lang/Property/Util/PropertyAstToString.hpp
 	src/main/cpp/Balau/Lang/Property/Util/PropertyVisitor.hpp
 
+	src/main/cpp/Balau/Resource/ByteReadResource.hpp
+	src/main/cpp/Balau/Resource/ByteWriteResource.hpp
+	src/main/cpp/Balau/Resource/File.hpp
+	src/main/cpp/Balau/Resource/Http.hpp
+	src/main/cpp/Balau/Resource/Resource.hpp
+	src/main/cpp/Balau/Resource/StringUri.hpp
+	src/main/cpp/Balau/Resource/Uri.hpp
+	src/main/cpp/Balau/Resource/Url.hpp
+	src/main/cpp/Balau/Resource/UriComponents.hpp
+	src/main/cpp/Balau/Resource/UriDispatcher.hpp
+	src/main/cpp/Balau/Resource/UriFromString.hpp
+	src/main/cpp/Balau/Resource/UriResolve.hpp
+	src/main/cpp/Balau/Resource/Utf32To8WriteResource.hpp
+	src/main/cpp/Balau/Resource/Utf8To32ReadResource.hpp
+
+	src/main/cpp/Balau/Serialization/SerializationMacros.hpp
+
+	src/main/cpp/Balau/System/Clock.hpp
+	src/main/cpp/Balau/System/SystemClock.hpp
+	src/main/cpp/Balau/System/Sleep.hpp
+	src/main/cpp/Balau/System/ThreadName.hpp
+
+	src/main/cpp/Balau/Type/Character.hpp
+	src/main/cpp/Balau/Type/FromString.hpp
+	src/main/cpp/Balau/Type/MovableOnScopeExit.hpp
+	src/main/cpp/Balau/Type/OnScopeExit.hpp
+	src/main/cpp/Balau/Type/StdTypes.hpp
+	src/main/cpp/Balau/Type/ToString.hpp
+	src/main/cpp/Balau/Type/ToStringA.hpp
+	src/main/cpp/Balau/Type/ToStringS.hpp
+	src/main/cpp/Balau/Type/UUID.hpp
+	src/main/cpp/Balau/Type/Impl/FromStringImpl.hpp
+	src/main/cpp/Balau/Type/Impl/ToStringImpl.hpp
+
+	src/main/cpp/Balau/Util/App.hpp
+	src/main/cpp/Balau/Util/Containers.hpp
+	src/main/cpp/Balau/Util/DateTime.hpp
+	src/main/cpp/Balau/Util/Enums.hpp
+	src/main/cpp/Balau/Util/Files.hpp
+	src/main/cpp/Balau/Util/Hashing.hpp
+	src/main/cpp/Balau/Application/Macros.hpp
+	src/main/cpp/Balau/Util/Memory.hpp
+	src/main/cpp/Balau/Util/PrettyPrint.hpp
+	src/main/cpp/Balau/Util/Random.hpp
+	src/main/cpp/Balau/Util/Streams.hpp
+	src/main/cpp/Balau/Util/Strings.hpp
+	src/main/cpp/Balau/Util/User.hpp
+	src/main/cpp/Balau/Util/Vectors.hpp
+	src/main/cpp/Balau/Util/Impl/AppImpl.hpp
+	src/main/cpp/Balau/Application/Impl/MacrosImpl.hpp
+	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
+	src/main/cpp/Balau/Util/Impl/StringsImpl.hpp
+
+	src/doc
+)
+
+set(BALAU_LOGGING_SOURCE_FILES
+
 	src/main/cpp/Balau/Logging/Logger.cpp
 	src/main/cpp/Balau/Logging/Logger.hpp
+	src/main/cpp/Balau/Logging/LoggerMacros.hpp
 	src/main/cpp/Balau/Logging/LoggingLevel.hpp
-	src/main/cpp/Balau/Logging/Impl/BalauLogger.cpp
-	src/main/cpp/Balau/Logging/Impl/BalauLogger.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggerAllocator.cpp
 	src/main/cpp/Balau/Logging/Impl/LoggerAllocator.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggerConfigurationVisitor.hpp
@@ -237,43 +299,9 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Logging/Impl/LoggingState.hpp
 	src/main/cpp/Balau/Logging/Impl/LoggingStreams.cpp
 	src/main/cpp/Balau/Logging/Impl/LoggingStreams.hpp
+)
 
-	src/main/cpp/Balau/Resource/ByteReadResource.hpp
-	src/main/cpp/Balau/Resource/ByteWriteResource.hpp
-	src/main/cpp/Balau/Resource/File.hpp
-	src/main/cpp/Balau/Resource/FileByteReadResource.cpp
-	src/main/cpp/Balau/Resource/FileByteReadResource.hpp
-	src/main/cpp/Balau/Resource/FileByteWriteResource.cpp
-	src/main/cpp/Balau/Resource/FileByteWriteResource.hpp
-	src/main/cpp/Balau/Resource/FileUtf32To8WriteResource.cpp
-	src/main/cpp/Balau/Resource/FileUtf32To8WriteResource.hpp
-	src/main/cpp/Balau/Resource/FileUtf8To32ReadResource.cpp
-	src/main/cpp/Balau/Resource/FileUtf8To32ReadResource.hpp
-	src/main/cpp/Balau/Resource/Resource.hpp
-	src/main/cpp/Balau/Resource/StringUri.hpp
-	src/main/cpp/Balau/Resource/StringUriByteReadResource.cpp
-	src/main/cpp/Balau/Resource/StringUriByteReadResource.hpp
-	src/main/cpp/Balau/Resource/StringUriByteWriteResource.cpp
-	src/main/cpp/Balau/Resource/StringUriByteWriteResource.hpp
-	src/main/cpp/Balau/Resource/StringUriUtf8To32ReadResource.cpp
-	src/main/cpp/Balau/Resource/StringUriUtf8To32ReadResource.hpp
-	src/main/cpp/Balau/Resource/StringUriUtf32To8WriteResource.cpp
-	src/main/cpp/Balau/Resource/StringUriUtf32To8WriteResource.hpp
-	src/main/cpp/Balau/Resource/Uri.cpp
-	src/main/cpp/Balau/Resource/Uri.hpp
-	src/main/cpp/Balau/Resource/UriComponents.cpp
-	src/main/cpp/Balau/Resource/UriComponents.hpp
-	src/main/cpp/Balau/Resource/UriDispatcher.hpp
-	src/main/cpp/Balau/Resource/Utf32To8WriteResource.hpp
-	src/main/cpp/Balau/Resource/Utf8To32ReadResource.hpp
-
-	src/main/cpp/Balau/Serialization/SerializationMacros.hpp
-
-	src/main/cpp/Balau/System/Clock.hpp
-	src/main/cpp/Balau/System/SystemClock.hpp
-	src/main/cpp/Balau/System/Sleep.hpp
-	src/main/cpp/Balau/System/ThreadName.cpp
-	src/main/cpp/Balau/System/ThreadName.hpp
+set(BALAU_TESTING_SOURCE_FILES
 
 	src/main/cpp/Balau/Testing/Assertions.hpp
 	src/main/cpp/Balau/Testing/Matchers.hpp
@@ -311,44 +339,10 @@ set(BALAU_SOURCE_FILES
 	src/main/cpp/Balau/Testing/Renderers/HexSignedLongLongRenderer.hpp
 	src/main/cpp/Balau/Testing/Reporters/SurefireTestReportGenerator.cpp
 	src/main/cpp/Balau/Testing/Reporters/SurefireTestReportGenerator.hpp
+	src/main/cpp/Balau/Testing/Util/NetworkTesting.hpp
 	src/main/cpp/Balau/Testing/Writers/TestWriter.hpp
 	src/main/cpp/Balau/Testing/Writers/StdWriters.hpp
-	src/main/cpp/Balau/Testing/Writers/LogWriter.cpp
 	src/main/cpp/Balau/Testing/Writers/LogWriter.hpp
-
-	src/main/cpp/Balau/Type/Character.hpp
-	src/main/cpp/Balau/Type/FromString.hpp
-	src/main/cpp/Balau/Type/MovableOnScopeExit.hpp
-	src/main/cpp/Balau/Type/OnScopeExit.hpp
-	src/main/cpp/Balau/Type/StdTypes.hpp
-	src/main/cpp/Balau/Type/ToString.hpp
-	src/main/cpp/Balau/Type/ToStringA.hpp
-	src/main/cpp/Balau/Type/ToStringS.hpp
-	src/main/cpp/Balau/Type/UUID.hpp
-	src/main/cpp/Balau/Type/Impl/FromStringImpl.hpp
-	src/main/cpp/Balau/Type/Impl/ToStringImpl.hpp
-
-	src/main/cpp/Balau/Util/App.hpp
-	src/main/cpp/Balau/Util/Containers.hpp
-	src/main/cpp/Balau/Util/DateTime.hpp
-	src/main/cpp/Balau/Util/Enums.hpp
-	src/main/cpp/Balau/Util/Files.hpp
-	src/main/cpp/Balau/Util/Hashing.hpp
-	src/main/cpp/Balau/Util/Macros.hpp
-	src/main/cpp/Balau/Util/Memory.hpp
-	src/main/cpp/Balau/Util/PrettyPrint.cpp
-	src/main/cpp/Balau/Util/PrettyPrint.hpp
-	src/main/cpp/Balau/Util/Random.hpp
-	src/main/cpp/Balau/Util/Streams.hpp
-	src/main/cpp/Balau/Util/Strings.hpp
-	src/main/cpp/Balau/Util/User.hpp
-	src/main/cpp/Balau/Util/Vectors.hpp
-	src/main/cpp/Balau/Util/Impl/AppImpl.hpp
-	src/main/cpp/Balau/Util/Impl/MacrosImpl.hpp
-	src/main/cpp/Balau/Util/Impl/RandomImpl.hpp
-	src/main/cpp/Balau/Util/Impl/StringsImpl.hpp
-
-	src/doc
 )
 
 set_source_files_properties(${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp PROPERTIES GENERATED TRUE)
@@ -356,8 +350,6 @@ set_source_files_properties(${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.h
 if (BALAU_ENABLE_HTTP)
 	set(BALAU_HTTP_SOURCE_FILES
 		src/main/cpp/Balau/ThirdParty/Boost/Beast/Http/BasicFileBody.hpp
-		src/main/cpp/Balau/Documentation/ConfigurationWebApp.cpp
-		src/main/cpp/Balau/Documentation/ConfigurationWebApp.hpp
 		src/main/cpp/Balau/Network/Http/Client/HttpClient.cpp
 		src/main/cpp/Balau/Network/Http/Client/HttpClient.hpp
 		src/main/cpp/Balau/Network/Http/Client/HttpsClient.hpp
@@ -399,27 +391,12 @@ if (BALAU_ENABLE_HTTP)
 		src/main/cpp/Balau/Network/Http/Server/WsWebApps/EchoingWsWebApp.hpp
 		src/main/cpp/Balau/Network/Http/Server/WsWebApps/RoutingWsWebApp.cpp
 		src/main/cpp/Balau/Network/Http/Server/WsWebApps/RoutingWsWebApp.hpp
+		src/main/cpp/Balau/Network/Utilities/BalauLogger.cpp
+		src/main/cpp/Balau/Network/Utilities/BalauLogger.hpp
 		src/main/cpp/Balau/Network/Utilities/MimeTypes.cpp
 		src/main/cpp/Balau/Network/Utilities/MimeTypes.hpp
-		src/main/cpp/Balau/Network/Utilities/root_certificates.hpp
+			src/main/cpp/Balau/ThirdParty/Boost/Beast/Http/root_certificates.hpp
 		src/main/cpp/Balau/Network/Utilities/UrlDecode.hpp
-		src/main/cpp/Balau/Resource/Http.hpp
-		src/main/cpp/Balau/Resource/HttpByteReadResource.cpp
-		src/main/cpp/Balau/Resource/HttpByteReadResource.hpp
-		src/main/cpp/Balau/Resource/Https.hpp
-		src/main/cpp/Balau/Resource/HttpsByteReadResource.cpp
-		src/main/cpp/Balau/Resource/HttpsByteReadResource.hpp
-		src/main/cpp/Balau/Resource/HttpsUtf8To32ReadResource.cpp
-		src/main/cpp/Balau/Resource/HttpsUtf8To32ReadResource.hpp
-		src/main/cpp/Balau/Resource/HttpUtf8To32ReadResource.cpp
-		src/main/cpp/Balau/Resource/HttpUtf8To32ReadResource.hpp
-		src/main/cpp/Balau/Resource/Url.hpp
-		src/main/cpp/Balau/Resource/Impl/HttpSource.cpp
-		src/main/cpp/Balau/Resource/Impl/HttpSource.hpp
-		src/main/cpp/Balau/Resource/Impl/HttpsSource.cpp
-		src/main/cpp/Balau/Resource/Impl/HttpsSource.hpp
-		src/main/cpp/Balau/Testing/Util/NetworkTesting.cpp
-		src/main/cpp/Balau/Testing/Util/NetworkTesting.hpp
 	)
 else ()
 	set(BALAU_HTTP_SOURCE_FILES)
@@ -438,42 +415,30 @@ else ()
 	set(BALAU_CURL_SOURCE_FILES)
 endif ()
 
-if (BALAU_ENABLE_ZLIB)
-	set(BALAU_ZLIB_SOURCE_FILES
-		src/main/cpp/Balau/Util/Compression.hpp
-	)
-else ()
-	set(BALAU_ZLIB_SOURCE_FILES)
+################################ Balau libraries ##############################
+
+add_library(BalauLogging_objects OBJECT ${BALAU_LOGGING_SOURCE_FILES} ${BALAU_CORE_HEADER_FILES})
+set_property(TARGET BalauLogging_objects PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(BalauLogging STATIC $<TARGET_OBJECTS:BalauLogging_objects>)
+add_library(BalauLoggingShared SHARED $<TARGET_OBJECTS:BalauLogging_objects>)
+target_link_libraries(BalauLogging ${ALL_LIBS})
+target_link_libraries(BalauLoggingShared ${ALL_LIBS})
+
+if (BALAU_ENABLE_HTTP)
+	add_library(BalauNetwork_objects OBJECT ${BALAU_HTTP_SOURCE_FILES} ${BALAU_CURL_SOURCE_FILES} ${BALAU_CORE_HEADER_FILES})
+	set_property(TARGET BalauNetwork_objects PROPERTY POSITION_INDEPENDENT_CODE 1)
+	add_library(BalauNetwork STATIC $<TARGET_OBJECTS:BalauNetwork_objects>)
+	add_library(BalauNetworkShared SHARED $<TARGET_OBJECTS:BalauNetwork_objects>)
+	target_link_libraries(BalauNetwork BalauLogging ${ALL_LIBS})
+	target_link_libraries(BalauNetworkShared BalauLoggingShared ${ALL_LIBS})
 endif ()
 
-if (BALAU_ENABLE_ZIP)
-	set(BALAU_ZIP_SOURCE_FILES
-		src/main/cpp/Balau/Resource/ZipEntry.cpp
-		src/main/cpp/Balau/Resource/ZipEntry.hpp
-		src/main/cpp/Balau/Resource/ZipEntryByteReadResource.cpp
-		src/main/cpp/Balau/Resource/ZipEntryByteReadResource.hpp
-		src/main/cpp/Balau/Resource/ZipEntryUtf8To32ReadResource.cpp
-		src/main/cpp/Balau/Resource/ZipEntryUtf8To32ReadResource.hpp
-		src/main/cpp/Balau/Resource/ZipFile.hpp
-		src/main/cpp/Balau/Resource/Impl/ZipEntrySource.cpp
-		src/main/cpp/Balau/Resource/Impl/ZipEntrySource.hpp
-		src/main/cpp/Balau/Util/Zip.cpp
-		src/main/cpp/Balau/Util/Zip.hpp
-	)
-else ()
-	set(BALAU_ZIP_SOURCE_FILES)
-endif ()
-
-add_library(
-	Balau
-	STATIC
-	${THIRD_PARTY_SOURCE_FILES}
-	${BALAU_SOURCE_FILES}
-	${BALAU_HTTP_SOURCE_FILES}
-	${BALAU_CURL_SOURCE_FILES}
-	${BALAU_ZLIB_SOURCE_FILES}
-	${BALAU_ZIP_SOURCE_FILES}
-)
+add_library(BalauTesting_objects OBJECT ${BALAU_TESTING_SOURCE_FILES} ${BALAU_CORE_HEADER_FILES})
+set_property(TARGET BalauTesting_objects PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(BalauTesting STATIC $<TARGET_OBJECTS:BalauTesting_objects>)
+add_library(BalauTestingShared SHARED $<TARGET_OBJECTS:BalauTesting_objects>)
+target_link_libraries(BalauTesting BalauLogging ${ALL_LIBS})
+target_link_libraries(BalauTestingShared BalauLoggingShared ${ALL_LIBS})
 
 ############################# BALAU DOCUMENTATION #############################
 
@@ -501,16 +466,39 @@ add_custom_target(
 	COMMAND sh ../src/doc/scripts/makeHtml.sh ${PROJECT_VERSION}
 )
 
+#
+# This target requires bdml.
+#
+add_custom_target(
+		BalauManualPdf
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		COMMAND sh ../src/doc/scripts/makePdf.sh ${PROJECT_VERSION}
+)
+
 ############################ Installable file lists ###########################
 
 install(DIRECTORY src/main/cpp/Balau/ DESTINATION "include/Balau-${PROJECT_VERSION}/Balau" FILES_MATCHING PATTERN "*.hpp")
-install(TARGETS Balau DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${PROJECT_VERSION}/BalauConfig" FILES_MATCHING PATTERN "*.thconf")
 install(FILES ${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfig.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES ${CMAKE_BINARY_DIR}/src/main/cmake/BalauConfigVersion.cmake DESTINATION "lib/Balau-${PROJECT_VERSION}")
 install(FILES src/main/cmake/CMakeListsDefaultPaths.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(FILES src/main/cmake/CMakeListsDefaultConfiguration.cmake DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
 install(FILES ${CMAKE_BINARY_DIR}/src/main/cpp/Balau/BalauConfig.hpp DESTINATION "include/Balau-${PROJECT_VERSION}/Balau")
-install(DIRECTORY src/main/resources/BalauConfig/ DESTINATION "include/Balau-${PROJECT_VERSION}/BalauConfig" FILES_MATCHING PATTERN "*.thconf")
+
+install(DIRECTORY src/main/cpp/BalauFake/ DESTINATION "include/BalauFake-${PROJECT_VERSION}/Balau" FILES_MATCHING PATTERN "*.hpp")
+install(FILES ${CMAKE_BINARY_DIR}/src/main/cmake/BalauFakeConfig.cmake DESTINATION "lib/BalauFake-${PROJECT_VERSION}")
+install(FILES ${CMAKE_BINARY_DIR}/src/main/cmake/BalauFakeConfigVersion.cmake DESTINATION "lib/BalauFake-${PROJECT_VERSION}")
+
+install(TARGETS BalauLogging DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(TARGETS BalauLoggingShared DESTINATION "lib/Balau-${PROJECT_VERSION}")
+
+if (BALAU_ENABLE_HTTP)
+	install(TARGETS BalauNetwork DESTINATION "lib/Balau-${PROJECT_VERSION}")
+	install(TARGETS BalauNetworkShared DESTINATION "lib/Balau-${PROJECT_VERSION}")
+endif ()
+
+install(TARGETS BalauTesting DESTINATION "lib/Balau-${PROJECT_VERSION}")
+install(TARGETS BalauTestingShared DESTINATION "lib/Balau-${PROJECT_VERSION}")
 
 ################################# Balau tests #################################
 
@@ -519,6 +507,7 @@ set(BALAU_TESTS_SOURCE_FILES
 
 	${CMAKE_BINARY_DIR}/src/test/cpp/TestResources.cpp
 	${CMAKE_BINARY_DIR}/src/test/cpp/TestResources.hpp
+
 	src/test/cpp/TestMain.cpp
 
 	src/test/cpp/Balau/Application/CommandLineTest.cpp
@@ -561,7 +550,6 @@ if (BALAU_ENABLE_HTTP)
 	set(BALAU_TESTS_HTTP_SOURCE_FILES
 		src/test/cpp/Balau/Application/EnvironmentConfigurationTest.cpp
 		src/test/cpp/Balau/Application/Impl/EnvironmentConfigurationBuilderTest.cpp
-		src/test/cpp/Balau/Documentation/ConfigurationWebAppTest.cpp
 		src/test/cpp/Balau/Network/Http/Client/HttpClientTest.cpp
 		src/test/cpp/Balau/Network/Http/Client/HttpsClientTest.cpp
 		src/test/cpp/Balau/Network/Http/Server/HttpServerTest.cpp
@@ -602,6 +590,14 @@ else ()
 	set(BALAU_TESTS_ZIP_SOURCE_FILES)
 endif ()
 
+set(ALL_TEST_LIBS BalauLogging BalauTesting)
+
+if (BALAU_ENABLE_HTTP)
+	set(ALL_TEST_LIBS ${ALL_TEST_LIBS} BalauNetwork)
+endif ()
+
+set(ALL_TEST_LIBS ${ALL_TEST_LIBS} ${ALL_LIBS})
+
 add_executable(
 	BalauTests
 	${BALAU_TESTS_SOURCE_FILES}
@@ -610,7 +606,7 @@ add_executable(
 	${BALAU_TESTS_ZIP_SOURCE_FILES}
 )
 
-target_link_libraries(BalauTests Balau ${ALL_LIBS})
+target_link_libraries(BalauTests ${ALL_TEST_LIBS})
 target_include_directories(BalauTests PUBLIC ${CMAKE_BINARY_DIR}/src/test/cpp)
 target_compile_options(BalauTests PUBLIC "-Wno-string-plus-int")
 
@@ -706,10 +702,10 @@ add_dependencies(RunCppCheck BalauTests)
 
 ################################# Example apps ################################
 
+add_executable(ExampleSkeletonApp src/examples/SkeletonApp/SkeletonApp.cpp)
+target_link_libraries(ExampleSkeletonApp BalauLogging ${ALL_TEST_LIBS})
+
 if (BALAU_ENABLE_HTTP)
 	add_executable(ExampleWebServer src/examples/WebServer/WebServer.cpp)
-	target_link_libraries(ExampleWebServer Balau ${ALL_LIBS})
+	target_link_libraries(ExampleWebServer BalauLogging BalauNetwork ${ALL_TEST_LIBS})
 endif ()
-
-add_executable(ExampleSkeletonApp src/examples/SkeletonApp/SkeletonApp.cpp)
-target_link_libraries(ExampleSkeletonApp Balau ${ALL_LIBS})

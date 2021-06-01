@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 // See the Boost Graph dependency example for inspiration and background information.
 // https://www.boost.org/doc/libs/1_68_0/libs/graph/doc/file_dependency_example.html
@@ -27,7 +36,6 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH
 #define COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH
 
-#include <Balau/Container/Impl/ContainerLogger.hpp>
 #include <Balau/Exception/ContainerExceptions.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
@@ -383,7 +391,7 @@ class DependencyGraph {
 		auto e = boost::edge(independentVertex, dependentVertex, graph);
 
 		if (!e.second) {
-			_ThrowBalauException_generateStackTrace
+			BALAU_ThrowBalauException_generateStackTrace
 			throw Exception::RelationshipDoesNotExistException<VertexT, VertexT>(
 				BalauSourceCodeLocation(__FILE__, __LINE__), st, independent, dependent, ""
 			);
@@ -548,14 +556,9 @@ class DependencyGraph {
 	}
 
 	///
-	/// Log the dependency tree to the "balau.container" logger if the logger
-	/// is enabled for the supplied logging level.
+	/// Print the dependency tree.
 	///
-	public: void logGraph(LoggingLevel level, const char * title) {
-		if (!Impl::ContainerLogger::log().enabled(level)) {
-			return;
-		}
-
+	public: std::string logGraph(const char * title) {
 		std::ostringstream builder;
 
 		builder << title << "\n";
@@ -585,7 +588,7 @@ class DependencyGraph {
 			}
 		}
 
-		Impl::ContainerLogger::log().log(level, builder.str().c_str());
+		return builder.str();
 	}
 
 	////////////////////////// Private implementation /////////////////////////
@@ -624,4 +627,4 @@ class DependencyGraph {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER_DEPENDENCY_GRAPH
+#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH

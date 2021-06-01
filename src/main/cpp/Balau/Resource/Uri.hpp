@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -19,7 +28,7 @@
 
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Resource/UriDispatcher.hpp>
-#include <Balau/Type/StdTypes.hpp>
+#include <Balau/Resource/UriVisitor.hpp>
 
 #include <memory>
 
@@ -153,23 +162,9 @@ class Uri {
 	public: virtual std::unique_ptr<Uri> append(const std::string & pathComponent) const = 0;
 
 	///
-	/// Resolve the relative or absolute path, in reference to the current URI.
+	/// Visit the URI.
 	///
-	/// If the supplied path contains a scheme prefix, the URI fromString function will be
-	/// called to create a new unrelated URI instance.
-	///
-	/// This method will determine the base path to use by applying the following rules.
-	///
-	///  - If the URI path ends with a forward slash (or is a directory for file URIs), the
-	///    base path is the URI path.
-	///
-	///  - Otherwise, the rightmost path element is stripped from the URI path to form
-	///    the base path.
-	///
-	/// @param path a relative or absolute path, or a full URI
-	/// @return a new URI
-	///
-	public: virtual std::unique_ptr<Uri> resolve(std::string_view path) const = 0;
+	public: virtual void visit(UriVisitor & visitor) const = 0;
 
 	///
 	/// Returns true if the URI points to a file directory.
@@ -311,38 +306,6 @@ inline std::unique_ptr<Uri> operator / (const std::unique_ptr<Uri> & uri, const 
 ///
 inline std::string toString(const Uri & uri) {
 	return uri.toRawString();
-}
-
-///
-/// Create a unique pointer URI from the supplied string.
-///
-/// @param uri the unique pointer container to place the new URI instance into
-/// @param value the input string
-///
-void fromString(std::unique_ptr<Uri> & uri, std::string_view value);
-
-///
-/// Create a shared pointer URI from the supplied string.
-///
-/// @param uri the shared pointer container to place the new URI instance into
-/// @param value the input string
-///
-inline void fromString(std::shared_ptr<Uri> & uri, std::string_view value) {
-	std::unique_ptr<Uri> ptr;
-	fromString(ptr, value);
-	uri = std::shared_ptr<Uri>(std::move(ptr));
-}
-
-///
-/// Create a shared const pointer URI from the supplied string.
-///
-/// @param uri the shared pointer container to place the new URI instance into
-/// @param value the input string
-///
-inline void fromString(std::shared_ptr<const Uri> & uri, std::string_view value) {
-	std::unique_ptr<Uri> ptr;
-	fromString(ptr, value);
-	uri = std::shared_ptr<const Uri>(std::move(ptr));
 }
 
 } // namespace Balau::Resource

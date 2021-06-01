@@ -1,0 +1,70 @@
+/**
+ * Bora-Doc help file
+ *
+ * Copyright 2009 Nicholas Smethurst (contact@borasoftware.com)
+ *
+ * Use of this file is subject to the Bora End User License Agreement, a copy
+ * of which can be seen at https://borasoftware.com/eula.html.
+ *
+**/
+
+/* File: bdml-mobi.css */
+
+@import url("bdml.css");
+
+.bdml-toc-part, .bdml-toc-chapter, .bdml-toc-h1, .bdml-toc-h2, .bdml-toc-h3, .bdml-toc-h4, .bdml-toc-h5 {
+	padding: 0;
+	margin: 0;
+}
+
+.bdml-toc-part    { margin: 1.0em 3.0em 1.0em 3.0em; }
+.bdml-toc-chapter { margin: 0.5em 0.0em 0.0em 0.0em; }
+.bdml-toc-h1      { margin: 0.0em 0.0em 0.0em 1.5em; }
+.bdml-toc-h2      { margin: 0.0em 0.0em 0.0em 1.5em; }
+.bdml-toc-h3      { margin: 0.0em 0.0em 0.0em 1.5em; }
+.bdml-toc-h4      { margin: 0.0em 0.0em 0.0em 1.5em; }
+.bdml-toc-h5      { margin: 0.0em 0.0em 0.0em 1.5em; }
+
+body {
+	font-size: 17pt;
+}
+
+.bdml-toc-part-title {
+	font-size: 1.2em;
+}
+
+.bdml-part-title {
+	margin-top: 10em;
+	border-top: solid 1px #194f91;
+	margin-left: 3em;
+	font-size: 2.5em;
+	text-align: left;
+	padding-top: 0;
+	border-bottom: none;
+}
+
+.bdml-part {
+	page-break-before: always;
+	page-break-after: left;
+}
+
+.bdml-chapter {
+	page-break-before: always;
+	page-break-after: left;
+}
+
+pre, .bdml-code, .bdml-grammar {
+	font-size: 0.85em;
+}
+
+/********** FRONT MATTER ************/
+
+div.bdml-front-matter {
+	page-break-after:always;
+}
+
+/********** BACK MATTER MATTER ************/
+
+div.bdml-back-matter {
+	page-break-after:always;
+}

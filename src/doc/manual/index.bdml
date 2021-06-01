@@ -206,38 +206,6 @@
 
 		<para>Pull requests with additional components and utilities are welcome. Some guidelines are included on the <ref url="NonCode/Contributing">contributing</ref> page. A current list of planned development is available on the <ref url="NonCode/PlannedFeatures">planned features</ref> page.</para>
 
-		<h1>Pending development</h1>
-
-		<para>The following items are currently works in progress.</para>
-
-		<table class="bdml-table30L70">
-			<head> <cell>Item</cell> <cell>Work required</cell> </head>
-
-			<body>
-				<row>
-					<cell>Documentation</cell>
-					<cell>Write the WebSocket webapp framework chapter.</cell>
-				</row>
-
-				<row>
-					<cell>HttpClient/HttpsClient</cell>
-					<cell>Extend to use keep-alive connections.</cell>
-				</row>
-
-				<row>
-					<cell>WsWebApp</cell>
-					<cell>Complete design, coding, and unit test.</cell>
-				</row>
-
-				<row>
-					<cell>Log rotation</cell>
-					<cell>Complete design, coding, and unit testing.</cell>
-				</row>
-			</body>
-		</table>
-
-		<para>It is anticipated that these items will be completed by July 2019.</para>
-
 		<section class="notices">
 			<para class="notice-body">* Configuration of the browser's security settings may be required. See the documentation on <ref type="raw" new="true" url="https://borasoftware.com/doc/boradoc/latest/manual/direct-loading.html">direct loading</ref> for more information.</para>
 		</section>

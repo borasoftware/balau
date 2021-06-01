@@ -4,11 +4,22 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #include <TestResources.hpp>
+
+#include "../../../../main/cpp/Balau/Resource/UriResolve.hpp"
 
 #ifdef BALAU_ENABLE_HTTP
 	#include "../../../../main/cpp/Balau/Resource/Http.hpp"
@@ -91,91 +102,91 @@ struct FileTest : public Testing::TestGroup<FileTest> {
 		fileTestDirectory.createDirectories();
 
 		// Prefixed with file schema - absolute base folder, relative path
-		AssertThat(*target.resolve("file:../d/e.html"), is(File(target.getParentDirectory() / "d" / "e.html")));
+		AssertThat(*UriResolve::resolve(target, "file:../d/e.html"), is(File(target.getParentDirectory() / "d" / "e.html")));
 
 		// Prefixed with file schema - relative base folder, relative path
-		AssertThat(*File("../fileTestDirectory").resolve("file:../d/e.html"), is(File("..") / "d" / "e.html"));
+		AssertThat(*UriResolve::resolve(File("../fileTestDirectory"), "file:../d/e.html"), is(File("..") / "d" / "e.html"));
 
 		// Prefixed with file schema - absolute base folder, absolute path
-		AssertThat(*target.resolve("file://" + source), is(File(source)));
+		AssertThat(*UriResolve::resolve(target, "file://" + source), is(File(source)));
 
 		// Prefixed with file schema - relative base folder, absolute path
-		AssertThat(*File("../fileTestDirectory").resolve("file://" + source), is(File(source)));
+		AssertThat(*UriResolve::resolve(File("../fileTestDirectory"), "file://" + source), is(File(source)));
 
 		// Prefixed with file schema - absolute base folder, empty path
-		AssertThat(*target.resolve("file://"), is(target));
+		AssertThat(*UriResolve::resolve(target, "file://"), is(target));
 
 		// Prefixed with file schema - relative base folder, empty path
-		AssertThat(*File("../fileTestDirectory").resolve("file://"), is(File("../fileTestDirectory")));
+		AssertThat(*UriResolve::resolve(File("../fileTestDirectory"), "file://"), is(File("../fileTestDirectory")));
 
 		/////////////////////////
 
 		// Prefixed with file schema - absolute base file, relative path
-		AssertThat(*File("/a/b/c.html").resolve("file:../d/e.html"), is(File("/a/d/e.html")));
-		AssertThat(*File("/a/b/c.html").resolve("file:d/e.html"), is(File("/a/b/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "file:../d/e.html"), is(File("/a/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "file:d/e.html"), is(File("/a/b/d/e.html")));
 
 		// Prefixed with file schema - relative base file, relative path
-		AssertThat(*File("a/b/c.html").resolve("file:../d/e.html"), is(File("a/d/e.html")));
-		AssertThat(*File("a/b/c.html").resolve("file:d/e.html"), is(File("a/b/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "file:../d/e.html"), is(File("a/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "file:d/e.html"), is(File("a/b/d/e.html")));
 
 		// Prefixed with file schema - absolute base file, absolute path
-		AssertThat(*File("/a/b/c.html").resolve("file:///d/e.html"), is(File("/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "file:///d/e.html"), is(File("/d/e.html")));
 
 		// Prefixed with file schema - relative base file, absolute path
-		AssertThat(*File("a/b/c.html").resolve("file:///d/e.html"), is(File("/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "file:///d/e.html"), is(File("/d/e.html")));
 
 		// Prefixed with file schema - absolute base file, empty path
-		AssertThat(*File("/a/b/c.html").resolve("file://"), is(File("/a/b")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "file://"), is(File("/a/b")));
 
 		// Prefixed with file schema - relative base file, empty path
-		AssertThat(*File("a/b/c.html").resolve("file://"), is(File("a/b")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "file://"), is(File("a/b")));
 
 		#ifdef BALAU_ENABLE_HTTP
 			// Starts with non-file schema.
-			AssertThat(*File("a/b/c.html").resolve("http://d/e/f"), is(Http("http://d/e/f")));
+			AssertThat(*UriResolve::resolve(File("a/b/c.html"), "http://d/e/f"), is(Http("http://d/e/f")));
 		#endif
 
 		/////////////////////////
 
 		// No scheme prefix - absolute base folder, relative path
-		AssertThat(*target.resolve("../d/e.html"), is(File(target.getParentDirectory() / "d" / "e.html")));
+		AssertThat(*UriResolve::resolve(target, "../d/e.html"), is(File(target.getParentDirectory() / "d" / "e.html")));
 
 		// No scheme prefix - relative base folder, relative path
-		AssertThat(*File("../bin").resolve("../d/e.html"), is(File("..") / "d" / "e.html"));
+		AssertThat(*UriResolve::resolve(File("../bin"), "../d/e.html"), is(File("..") / "d" / "e.html"));
 
 		// No scheme prefix - absolute base folder, absolute path
-		AssertThat(*target.resolve(source), is(File(source)));
+		AssertThat(*UriResolve::resolve(target, source), is(File(source)));
 
 		// No scheme prefix - relative base folder, absolute path
-		AssertThat(*File("../bin").resolve(source), is(File(source)));
+		AssertThat(*UriResolve::resolve(File("../bin"), source), is(File(source)));
 
 		// No scheme prefix - absolute base folder, empty path
-		AssertThat(*target.resolve(""), is(File(target)));
+		AssertThat(*UriResolve::resolve(target, ""), is(File(target)));
 
 		// No scheme prefix - relative base folder, empty path
-		AssertThat(*File("../bin").resolve(""), is(File("../bin")));
+		AssertThat(*UriResolve::resolve(File("../bin"), ""), is(File("../bin")));
 
 		/////////////////////////
 
 		// No scheme prefix - absolute base file, relative path
-		AssertThat(*File("/a/b/c.html").resolve("../d/e.html"), is(File("/a/d/e.html")));
-		AssertThat(*File("/a/b/c.html").resolve("d/e.html"), is(File("/a/b/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "../d/e.html"), is(File("/a/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "d/e.html"), is(File("/a/b/d/e.html")));
 
 		// No scheme prefix - relative base file, relative path
-		AssertThat(*File("a/b/c.html").resolve("../d/e.html"), is(File("a/d/e.html")));
-		AssertThat(*File("a/b/c.html").resolve("d/e.html"), is(File("a/b/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "../d/e.html"), is(File("a/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "d/e.html"), is(File("a/b/d/e.html")));
 
 		// No scheme prefix - absolute base file, absolute path
-		AssertThat(*File("/a/b/c.html").resolve("///d/e.html"), is(File("/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), "///d/e.html"), is(File("/d/e.html")));
 
 		// No scheme prefix - relative base file, absolute path
-		AssertThat(*File("a/b/c.html").resolve("/d/e.html"), is(File("/d/e.html")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), "/d/e.html"), is(File("/d/e.html")));
 
 		// No scheme prefix - absolute base file, empty path
-		AssertThat(*File("/a/b/c.html").resolve(""), is(File("/a/b")));
+		AssertThat(*UriResolve::resolve(File("/a/b/c.html"), ""), is(File("/a/b")));
 
 		// No scheme prefix - relative base file, empty path
-		AssertThat(*File("a/b/c.html").resolve(""), is(File("a/b")));
+		AssertThat(*UriResolve::resolve(File("a/b/c.html"), ""), is(File("a/b")));
 	}
 
 	void fileAppend() {

@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #include <Balau/Util/Zip.hpp>
@@ -408,10 +417,9 @@ struct CompressionTest : public Testing::TestGroup<CompressionTest> {
 	}
 
 	static void unzipperTestImpl3() {
-		const Resource::File zipFile = resDir / "Zips" / "ZipFile.zip";
-		const auto path = zipFile.toRawString();
+		const auto thisZipFile = resDir / "Zips" / "ZipFile.zip";
 		int error = 0;
-		zip_t * archive = zip_open(path.c_str(), ZIP_RDONLY | ZIP_CHECKCONS, &error);
+		zip_t * archive = zip_open(thisZipFile.toRawString().c_str(), ZIP_RDONLY | ZIP_CHECKCONS, &error);
 		if (error) { throw std::exception(); }
 		struct zip_stat sb {};
 		zip_stat_init(&sb);

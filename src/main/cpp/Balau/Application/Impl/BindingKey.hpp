@@ -4,17 +4,27 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 #ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING_KEY
 #define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING_KEY
 
-#include <Balau/Exception/BalauException.hpp>
-#include <Balau/Util/Enums.hpp>
-#include <Balau/Util/Strings.hpp>
+#include <boost/core/demangle.hpp>
+#include <Balau/Type/ToString.hpp>
 
+#include <memory>
+#include <string>
 #include <typeindex>
 #include <utility>
 
@@ -45,8 +55,18 @@ enum class BindingMetaType : unsigned int {
 	, Unset = 5
 };
 
+struct InjectorBugException : public std::exception {
+	explicit InjectorBugException(const char * e_) noexcept : e(e_) {}
+
+	[[nodiscard]] const char * what() const noexcept final {
+		return e;
+	}
+
+	const char * e;
+};
+
 template <typename AllocatorT>
-inline U8String<AllocatorT> toString(const BindingMetaType metaType) {
+inline std::basic_string<char, std::char_traits<char>, AllocatorT> toString(const BindingMetaType metaType) {
 	switch (metaType) {
 		case BindingMetaType::Value:         return "Value";
 		case BindingMetaType::Unique:        return "Unique";
@@ -54,8 +74,7 @@ inline U8String<AllocatorT> toString(const BindingMetaType metaType) {
 		case BindingMetaType::Shared:        return "Shared";
 		case BindingMetaType::WeakPromotion: return "WeakPromotion";
 		case BindingMetaType::Unset:         return "Unset";
-
-		default: ThrowBalauException(Exception::BugException, "Unhandled BindingMetaType token in switch statement.");
+		default: throw InjectorBugException("BUG: unhandled BindingMetaType token in switch statement.");
 	}
 }
 
@@ -101,9 +120,9 @@ const bool BindingKeyType<metaType, const T,  DeleterT>::isConst = true;
 // This function will need to be reimplemented for different platforms/compilers.
 //
 inline std::string demangleBindingKeyTypeString(const std::string & s) {
-	if (!Util::Strings::startsWith(s, "Balau::Impl::BindingKeyType<(Balau::Impl::BindingMetaType)")
+	if (s.find("Balau::Impl::BindingKeyType<(Balau::Impl::BindingMetaType)") != 0
 	    || s.length() < 58 + 5 // min valid length for this platform/compiler
-	    || !Util::Strings::endsWith(s, ">")) {
+	    || !(s.length() >= 1 && s[s.length() - 1] == '>')) {
 		return s; // failed
 	}
 
@@ -120,11 +139,11 @@ inline std::string demangleBindingKeyTypeString(const std::string & s) {
 		return s; // failed
 	}
 
-	const BindingMetaType metaType = static_cast<BindingMetaType>(metaTypeOrdinal);
+	const auto metaType = static_cast<BindingMetaType>(metaTypeOrdinal);
 
 	str = str.substr(pos);
 
-	if (!Util::Strings::startsWith(str, ", ")) {
+	if (str.find(", ") != 0) {
 		return s; // failed
 	}
 
@@ -153,35 +172,35 @@ class BindingKey final {
 
 	public: BindingKey(std::type_index type_, const std::string & name_)
 		: type(type_)
-		, name(name_)
+		  , name(name_)
 		#ifdef BALAU_DEBUG
 		, typeStr(demangleBindingKeyTypeString(boost::core::demangle(type.name())))
 		#endif
-		{}
+	{}
 
 	public: BindingKey(std::type_index type_, std::string && name_)
 		: type(type_)
-		, name(std::move(name_))
+		  , name(std::move(name_))
 		#ifdef BALAU_DEBUG
 		, typeStr(demangleBindingKeyTypeString(boost::core::demangle(type.name())))
 		#endif
-		{}
+	{}
 
 	public: explicit BindingKey(std::string && name_)
 		: type(typeid(BindingKey)) // Not set.
-		, name(std::move(name_))
+		  , name(std::move(name_))
 		#ifdef BALAU_DEBUG
 		, typeStr(demangleBindingKeyTypeString(boost::core::demangle(type.name())))
 		#endif
-		{}
+	{}
 
 	public: BindingKey()
 		: type(typeid(BindingKey)) // Not set.
-		, name()
+		  , name()
 		#ifdef BALAU_DEBUG
 		, typeStr(demangleBindingKeyTypeString(boost::core::demangle(type.name())))
 		#endif
-		{}
+	{}
 
 	public: BindingKey(const BindingKey & rhs) = default;
 	public: BindingKey(BindingKey && rhs) = default;
@@ -220,7 +239,7 @@ class BindingKey final {
 };
 
 template <typename AllocatorT>
-inline U8String<AllocatorT> toString(const BindingKey & bindingKey) {
+inline std::basic_string<char, std::char_traits<char>, AllocatorT> toString(const BindingKey & bindingKey) {
 	using ::toString;
 
 	return toString<AllocatorT>(
@@ -366,11 +385,11 @@ template <typename T> struct CreateBindingKey<const std::weak_ptr<const T>> {
 struct BindingKeyView {
 	BindingKeyView(std::type_index type_, std::string_view name_)
 		: type(type_)
-		, name(name_) {}
+		  , name(name_) {}
 
 	explicit BindingKeyView(const BindingKey & key)
 		: type(key.getType())
-		, name(key.getName()) {}
+		  , name(key.getName()) {}
 
 	//
 	// ////// C++ specification: std::string and std::string_view hashes //////

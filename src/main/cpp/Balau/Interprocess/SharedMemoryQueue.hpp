@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -142,9 +151,9 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	                          std::string name_,
 	                          bool throwOnOversize_ = false)
 		: name(std::move(prepQueue(name_, bufferSize_)))
-		, queue(CreateOnly, name.c_str(), capacity, bufferSize_)
+		, queue(CreateOnlySelector(), name.c_str(), capacity, bufferSize_)
 		, chunkSize(bufferSize_)
-		, queueState(CreateOnly, name + "_queueState")
+		, queueState(CreateOnlySelector(), name + "_queueState")
 		, throwOnOversize(throwOnOversize_) {}
 
 	///
@@ -163,7 +172,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	                          std::string name_,
 	                          bool throwOnOversize_ = false)
 		: SharedMemoryQueue(
-			  OpenOrCreate
+			  OpenOrCreateSelector()
 			, capacity
 			, calculateDefaultBufferSize()
 			, true
@@ -192,7 +201,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		: name(std::move(name_))
 		, queue(openOrCreateQueue(capacity, bufferSize_))
 		, chunkSize(bufferSize_)
-		, queueState(OpenOrCreate, name + "_queueState")
+		, queueState(OpenOrCreateSelector(), name + "_queueState")
 		, throwOnOversize(throwOnOversize_) {}
 
 	///
@@ -205,7 +214,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		: name(std::move(name_))
 		, queue(openQueue())
 		, chunkSize((unsigned int) queue.get_max_msg_size())
-		, queueState(OpenOnly, name + "_queueState")
+		, queueState(OpenOnlySelector(), name + "_queueState")
 		, throwOnOversize(throwOnOversize_) {}
 
 	///
@@ -231,7 +240,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	public: void enqueue(const T & object, unsigned int priority) {
 		const Impl::QueueHeader messageHeader { queueState->sequenceNumber++, 1, 0, 0 };
-		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage.marshalBuffer;
+		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage().marshalBuffer;
 		marshalBuffer.clear();
 
 		marshal(marshalBuffer, object, messageHeader);
@@ -346,7 +355,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	///
 	public: bool tryEnqueue(T object, std::chrono::milliseconds waitTime, unsigned int priority) {
 		const Impl::QueueHeader messageHeader { queueState->sequenceNumber++, 1, 0, 0 };
-		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage.marshalBuffer;
+		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage().marshalBuffer;
 		marshalBuffer.clear();
 
 		marshal(marshalBuffer, object, messageHeader);
@@ -380,7 +389,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	/// @return the dequeued object
 	///
 	public: T dequeue() override {
-		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage.queueBuffer;
+		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage().queueBuffer;
 		unsigned long receivedSize;
 		unsigned int priority;
 
@@ -477,7 +486,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 	/// @return the dequeued object or a default constructed object if no object was dequeued
 	///
 	public: T tryDequeue(std::chrono::milliseconds waitTime, bool & success) override {
-		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage.queueBuffer;
+		CharVector & queueBuffer = Impl::SharedMemoryQueueTLS::storage().queueBuffer;
 
 		unsigned long receivedSize;
 		unsigned int priority;
@@ -567,7 +576,7 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 		const auto * queueHeader = (const Impl::QueueHeader *) queueBuffer.data();
 		const unsigned int totalBytes = queueHeader->totalBytes;
 
-		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage.marshalBuffer;
+		CharVector & marshalBuffer = Impl::SharedMemoryQueueTLS::storage().marshalBuffer;
 		marshalBuffer.clear();
 		marshalBuffer.resize(HeaderSize + totalBytes);
 
@@ -781,11 +790,11 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 			);
 		}
 
-		return boost::interprocess::message_queue(OpenOrCreate, name.c_str(), queueSize, bufferSize);
+		return boost::interprocess::message_queue(OpenOrCreateSelector(), name.c_str(), queueSize, bufferSize);
 	}
 
 	private: boost::interprocess::message_queue openQueue() {
-		return boost::interprocess::message_queue(OpenOnly, name.c_str());
+		return boost::interprocess::message_queue(OpenOnlySelector(), name.c_str());
 	}
 
 	friend struct SharedMemoryQueueTest;

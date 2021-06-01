@@ -19,12 +19,9 @@
  *
 **/
 
-/* This file contains a range of tables with defined widths. */
+/* File: bdml-tables.css */
 
-table p {
-	margin-top: 0.2em;
-	margin-bottom: 0.2em;
-}
+/* This file contains a range of tables with defined widths. */
 
 .bdml-table {
 	margin: 1em auto;
@@ -32,12 +29,16 @@ table p {
 	width: 100%;
 	text-align: center;
 	border-collapse: collapse;
-	line-height: 1.5em;
 }
 
-.bdml-table th, .bdml-table td {
-	border: solid 1px #bbb;
-	padding: 0.2em 0.4em;
+table, tr, th, td {
+	border-collapse: collapse;
+}
+
+.bdml-table tr, .bdml-table th, .bdml-table td {
+	border: solid 1px #ddd;
+	padding: 0 0.2em;
+	border-collapse: collapse;
 }
 
 .bdml-table th {
@@ -84,6 +85,10 @@ table p {
 	width: 60%;
 }
 
+.bdml-table5050w60 {
+	width: 60%;
+}
+
 .bdml-table5050w60 .bdml-col1 {
 	width: 50%;
 }
@@ -118,6 +123,22 @@ table p {
 
 .bdml-table25L75w60 td:first-child + td {
 	text-align: left;
+}
+
+.bdml-table333333w60 {
+	width: 60%;
+}
+
+.bdml-table333333w60 .bdml-col1 {
+	width: 33.33%;
+}
+
+.bdml-table333333w60 .bdml-col2 {
+	width: 33.33%;
+}
+
+.bdml-table333333w60 .bdml-col3 {
+	width: 33.33%;
 }
 
 .bdml-table20L4535 .bdml-col1 {
@@ -180,6 +201,22 @@ table p {
 	text-align: left;
 }
 
+.bdml-table102070 .bdml-col1 {
+	width: 10%;
+}
+
+.bdml-table102070 .bdml-col2 {
+	width: 20%;
+}
+
+.bdml-table102070 .bdml-col3 {
+	width: 70%;
+}
+
+.bdml-table102070 td:first-child + td + td {
+	text-align: left;
+}
+
 .bdml-table2020c60 .bdml-col1 {
 	width: 20%;
 }
@@ -205,6 +242,22 @@ table p {
 }
 
 .bdml-table333333 .bdml-col3 {
+	width: 33%;
+}
+
+.bdml-table333333w60 {
+	width: 60%;
+}
+
+.bdml-table333333w60 .bdml-col1 {
+	width: 33%;
+}
+
+.bdml-table333333w60 .bdml-col2 {
+	width: 33%;
+}
+
+.bdml-table333333w60 .bdml-col3 {
 	width: 33%;
 }
 

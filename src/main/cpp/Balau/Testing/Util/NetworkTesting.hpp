@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -16,6 +25,10 @@
 
 #ifndef COM_BORA_SOFTWARE__BALAU_TESTING_UTIL__NETWORK_TESTING
 #define COM_BORA_SOFTWARE__BALAU_TESTING_UTIL__NETWORK_TESTING
+
+#include <Balau/Exception/NetworkExceptions.hpp>
+#include <Balau/Network/Http/Server/NetworkTypes.hpp>
+#include <Balau/Util/Strings.hpp>
 
 #include <functional>
 
@@ -39,7 +52,34 @@ struct NetworkTesting final {
 	/// @return the TCP port number that was used in the supplied code
 	/// @throw NetworkException if all the attempts to get a free port failed
 	///
-	static unsigned short initialiseWithFreeTcpPort(std::function<unsigned short ()> code, size_t attempts = 10);
+	static unsigned short initialiseWithFreeTcpPort(std::function<unsigned short ()> code, size_t attempts = 10) {
+		size_t attemptsLeft = attempts;
+		unsigned short port {};
+
+		while (attemptsLeft > 0) {
+			try {
+				port = code();
+			} catch (const Exception::NetworkException & e) {
+				if (Util::Strings::contains(e.what(), "address in use")) {
+					--attemptsLeft;
+					continue;
+				} else {
+					throw;
+				}
+			}
+
+			break; // Success.
+		}
+
+		if (attemptsLeft == 0) {
+			ThrowBalauException(
+				Exception::NetworkException
+			, ::toString("Failed to obtain free port within ", attempts, " attempts.")
+			);
+		}
+
+		return port;
+	}
 
 	///
 	/// Get a TCP port number that is free at the time of the call.
@@ -54,7 +94,47 @@ struct NetworkTesting final {
 	/// @return a TCP port number that was free at the time of the call
 	/// @throw NetworkException if the attempts to get a free port failed
 	///
-	static unsigned short getFreeTcpPort(unsigned short start = 1025, unsigned short count = 65535);
+	static unsigned short getFreeTcpPort(unsigned short start = 1025, unsigned short count = 65535) {
+		boost::system::error_code errorCode;
+		boost::asio::io_context context;
+		Network::TCP::acceptor acceptor(context);
+		unsigned short port = start;
+
+		while (port < USHRT_MAX && port < start + count) {
+			Network::TCP::endpoint endpoint { boost::asio::ip::tcp::v4(), port };
+
+			acceptor.open(endpoint.protocol(), errorCode);
+
+			if (errorCode) {
+				ThrowBalauException(Exception::NetworkException, errorCode.message());
+			}
+
+			acceptor.set_option(boost::asio::socket_base::reuse_address(true), errorCode);
+
+			if (errorCode) {
+				ThrowBalauException(Exception::NetworkException, errorCode.message());
+			}
+
+			acceptor.bind(endpoint, errorCode);
+
+			if (errorCode) {
+				if (errorCode != boost::system::errc::address_in_use) {
+					ThrowBalauException(Exception::NetworkException, errorCode.message());
+				}
+
+				acceptor.close();
+				++port;
+			} else {
+				acceptor.close();
+				return port;
+			}
+		}
+
+		ThrowBalauException(Exception::NetworkException, "Could not find a free port.");
+
+		// Prevent compiler warning.
+		return 0;
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 

@@ -1,4 +1,13 @@
 
 get_filename_component(Balau_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+
 set(Balau_INCLUDE_DIRS ${Balau_INSTALL_PREFIX}/include/Balau-@BALAU_VERSION@)
-set(Balau_LIBRARY ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalau.a)
+
+set(BalauLogging_LIBRARY ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalauLogging.a)
+set(BalauLogging_LIBRARY_SHARED ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalauLoggingShared.so)
+
+set(BalauNetwork_LIBRARY ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalauNetwork.a)
+set(BalauNetwork_LIBRARY_SHARED ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalauNetworkShared.so)
+
+set(BalauTesting_LIBRARY ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalauTesting.a)
+set(BalauTesting_LIBRARY_SHARED ${Balau_INSTALL_PREFIX}/lib/Balau-@BALAU_VERSION@/libBalauTestingShared.so)

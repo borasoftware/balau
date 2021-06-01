@@ -19,6 +19,8 @@
  *
 **/
 
+/* File: bdml.css */
+
 /* Base CSS definitions (inherited by bdml-html.css. */
 
 @import url("c.css");
@@ -48,11 +50,6 @@ body {
 p {
 	margin-top: 0.75em;
 	margin-bottom: 0.75em;
-}
-
-table p {
-	margin-top: 0.2em;
-	margin-bottom: 0.2em;
 }
 
 h1, h2, h3, h4, h5 {
@@ -111,6 +108,7 @@ a:hover {
 
 sup {
 	font-size: 0.7em;
+	line-height: 0;
 }
 
 img {
@@ -124,24 +122,17 @@ img {
 pre, .bdml-code, .bdml-grammar {
 	margin-top: 1em;
 	margin-bottom: 1em;
-	font-family: "Courier New", monospace;
+	font-family: "Source Code Pro", "Courier New", monospace;
 	font-size: 0.95em;
-	padding: 1em;
-	line-height: 1.3em;
-	border: 1px solid #d9d9d9;
+	padding: 0.6em;
+	line-height: 1.2em;
+	border: 1px solid #ddd;
 	white-space: pre;
 	overflow: auto;
 }
 
 .bdml-code .line {
 	white-space: pre;
-	height: 18px;
-}
-
-.bdml-comment {
-	position: relative;
-	margin-left: 1em;
-	margin-right: 0;
 }
 
 .bdml-comment-arrow {

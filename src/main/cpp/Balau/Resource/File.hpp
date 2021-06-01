@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -18,16 +27,23 @@
 #define COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE
 
 #include <Balau/Exception/IOExceptions.hpp>
-#include <Balau/Resource/FileByteReadResource.hpp>
-#include <Balau/Resource/FileByteWriteResource.hpp>
-#include <Balau/Resource/FileUtf32To8WriteResource.hpp>
-#include <Balau/Resource/FileUtf8To32ReadResource.hpp>
-
+#include <Balau/Exception/ResourceExceptions.hpp>
+#include <Balau/Resource/ByteReadResource.hpp>
+#include <Balau/Resource/ByteWriteResource.hpp>
+#include <Balau/Resource/Utf8To32ReadResource.hpp>
+#include <Balau/Resource/Utf32To8WriteResource.hpp>
 #include <Balau/Util/Strings.hpp>
 
+#include <boost/filesystem.hpp>
 #include <chrono>
 
 namespace Balau::Resource {
+
+class FileByteReadResource;
+class FileUtf8To32ReadResource;
+class FileByteWriteResource;
+class FileUtf32To8WriteResource;
+class UriResolver;
 
 ///
 /// A file on the local file system.
@@ -222,70 +238,8 @@ class File : public Uri {
 		return std::unique_ptr<Uri>(new File(*this / pathComponent));
 	}
 
-	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
-		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
-
-		auto cleanPath = Util::Strings::trim(path);
-		auto str = std::string(cleanPath);
-		std::string sPath;
-		bool hasFileScheme = false;
-
-		if (Util::Strings::startsWith(str, "file:")) {
-			// Prefixed with file schema.
-			// Relative or absolute?
-			sPath = str.substr(5);
-			hasFileScheme = true;
-		} else if (Util::Strings::startsWithRegex(str, scheme)) {
-			std::unique_ptr<Uri> uri;
-			fromString(uri, str);
-			return uri;
-		} else {
-			// No scheme prefix.
-			// Absolute or relative file path.
-			sPath = str;
-		}
-
-		if ((!hasFileScheme && sPath.empty()) || (hasFileScheme && sPath == "//")) {
-			// Empty.. return the path if it is a folder,
-			// otherwise return the parent path of the file.
-
-			if (isRegularDirectory()) {
-				return std::unique_ptr<Uri>(new File(*this));
-			} else {
-				return std::unique_ptr<Uri>(new File(getParentDirectory()));
-			}
-		} else if (sPath[0] == '/') {
-			// Absolute.
-
-			if (hasFileScheme) {
-				// Invalid?
-				if (sPath.length() < 3 || sPath.substr(0, 3) != "///") {
-					using ::toString;
-
-					ThrowBalauException(
-						Exception::IllegalArgumentException, toString("Illegal path string in file URI: ", path)
-					);
-				}
-
-				// Strip the leading double slash "//".
-				sPath = sPath.substr(2);
-			}
-
-			return std::unique_ptr<Uri>(new File(sPath));
-		} else {
-			// Relative.. resolve according to the current path
-			// (current file if folder or parent otherwise).
-
-			auto bPath = boost::filesystem::path(sPath);
-
-			if (isRegularDirectory()) {
-				auto newPath = (getEntry() / bPath).lexically_normal();
-				return std::unique_ptr<Uri>(new File(newPath));
-			} else {
-				auto newPath = (getParentDirectory().getEntry() / bPath).lexically_normal();
-				return std::unique_ptr<Uri>(new File(newPath));
-			}
-		}
+	public: void visit(UriVisitor & visitor) const override {
+		visitor.visit(*this);
 	}
 
 	public: bool canReadFrom() const override {
@@ -296,57 +250,41 @@ class File : public Uri {
 		return true;
 	}
 
-	public: std::unique_ptr<ByteReadResource> byteReadResource() const override {
-		return std::unique_ptr<ByteReadResource>(new FileByteReadResource(*this));
-	}
+	public: std::unique_ptr<ByteReadResource> byteReadResource() const override;
 
-	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override {
-		return std::unique_ptr<Utf8To32ReadResource>(new FileUtf8To32ReadResource(*this));
-	}
+	public: std::unique_ptr<Utf8To32ReadResource> utf8To32ReadResource() const override;
 
-	public: std::unique_ptr<ByteWriteResource> byteWriteResource() override {
-		return std::unique_ptr<ByteWriteResource>(new FileByteWriteResource(*this));
-	}
+	public: std::unique_ptr<ByteWriteResource> byteWriteResource() override;
 
-	public: std::unique_ptr<Utf32To8WriteResource> utf32To8WriteResource() override {
-		return std::unique_ptr<Utf32To8WriteResource>(new FileUtf32To8WriteResource(*this));
-	}
+	public: std::unique_ptr<Utf32To8WriteResource> utf32To8WriteResource() override;
 
 	///
 	/// Get a file byte read resource for this file URI.
 	///
 	/// @return a file byte read resource
 	///
-	public: FileByteReadResource getByteReadResource() const {
-		return FileByteReadResource(*this);
-	}
+	public: FileByteReadResource getByteReadResource() const;
 
 	///
 	/// Get a file UTF-8 to UTF-32 read resource for this file URI.
 	///
 	/// @return a file UTF-8 to UTF-32 read resource
 	///
-	public: FileUtf8To32ReadResource getUtf8To32ReadResource() const {
-		return FileUtf8To32ReadResource(*this);
-	}
+	public: FileUtf8To32ReadResource getUtf8To32ReadResource() const;
 
 	///
 	/// Get a file byte write resource for this file URI.
 	///
 	/// @return a file byte write resource
 	///
-	public: FileByteWriteResource getByteWriteResource() const {
-		return FileByteWriteResource(*this);
-	}
+	public: FileByteWriteResource getByteWriteResource() const;
 
 	///
 	/// Get a file UTF-8 to UTF-32 write resource for this file URI.
 	///
 	/// @return a file UTF-8 to UTF-32 write resource
 	///
-	public: FileUtf32To8WriteResource getUtf32To8WriteResource() const {
-		return FileUtf32To8WriteResource(*this);
-	}
+	public: FileUtf32To8WriteResource getUtf32To8WriteResource() const;
 
 	public: bool isRecursivelyIterable() const override {
 		return isRegularDirectory();
@@ -701,6 +639,8 @@ class File : public Uri {
 
 	protected: boost::filesystem::directory_entry entry;
 
+	friend class UriResolve;
+
 	private: static boost::filesystem::directory_entry create(const std::string & path,
 	                                                          const std::string & name) {
 		boost::filesystem::directory_entry ret(path);
@@ -732,6 +672,279 @@ inline Balau::U8String<AllocatorT> toString(const File & file) {
 ///
 inline void fromString(File & destination, std::string_view value) {
 	destination = File(value);
+}
+
+} // namespace Balau::Resource
+
+namespace Balau::Exception {
+
+///
+/// Thrown when a resource is not found.
+///
+class FileNotFoundException : public Exception::NotFoundException {
+	public: FileNotFoundException(SourceCodeLocation location, const std::string & st, const Resource::File & file_)
+		: Exception::NotFoundException(file_.clone(), location, st, "FileNotFound", false) {}
+
+	public: FileNotFoundException(const std::string & st, const Resource::File & file_)
+		: Exception::NotFoundException(file_.clone(), st, "FileNotFound", false) {}
+};
+
+inline bool operator == (const FileNotFoundException & lhs, const FileNotFoundException & rhs) {
+	return lhs.message == rhs.message && *lhs.uri == *rhs.uri;
+}
+
+} // namespace Balau::Exception
+
+namespace Balau::Resource {
+
+///
+/// A read-only standard file on a file system which is read as bytes.
+///
+class FileByteReadResource : public ByteReadResource {
+	///
+	/// Create a new file byte read resource from the supplied file URI.
+	///
+	/// @throw NotFoundException if the file does not exist
+	///
+	public: explicit FileByteReadResource(const File & file_)
+		: file(std::make_unique<File>(file_))
+		, stream(new boost::filesystem::ifstream(file_.getEntry())) {
+
+		if (!stream->is_open()) {
+			ThrowBalauException(Exception::FileNotFoundException, file_);
+		}
+	}
+
+	public: FileByteReadResource(FileByteReadResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileByteReadResource() override {
+		close();
+	}
+
+	public: std::istream & readStream() override {
+		return *stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *file;
+	}
+
+	///
+	/// Get the file URI.
+	///
+	/// @return the file URI
+	///
+	public: const File & getFile() const {
+		return *file;
+	}
+
+	public: void close() override {
+		stream->close();
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<File> file;
+	private: std::unique_ptr<boost::filesystem::ifstream> stream;
+};
+
+///
+/// A write only standard file on a file system which is written as bytes.
+///
+class FileByteWriteResource : public ByteWriteResource {
+	///
+	/// Create a new file byte write resource from the supplied file URI.
+	///
+	public: explicit FileByteWriteResource(const File & file_)
+		: file(std::make_unique<File>(file_))
+		, stream(new boost::filesystem::ofstream(file_.getEntry())) {
+
+		if (!stream->is_open()) {
+			ThrowBalauException(Exception::FileNotFoundException, file_);
+		}
+	}
+
+	public: FileByteWriteResource(FileByteWriteResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileByteWriteResource() override {
+		close();
+	}
+
+	public: std::ostream & writeStream() override {
+		return *stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *file;
+	}
+
+	///
+	/// Get the file URI.
+	///
+	/// @return the file URI
+	///
+	public: const File & getFile() const {
+		return *file;
+	}
+
+	public: void close() override {
+		stream->close();
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<File> file;
+	private: std::unique_ptr<boost::filesystem::ofstream> stream;
+};
+
+///
+/// A read-only file based UTF-8 resource which is read as UTF-32 characters.
+///
+class FileUtf8To32ReadResource : public Utf8To32ReadResource {
+	///
+	/// Create a new file UTF-8 to UTF-32 read resource from the supplied file URI.
+	///
+	/// @throw NotFoundException if the file does not exist
+	///
+	public: explicit FileUtf8To32ReadResource(const File & file_)
+		: file(std::make_unique<File>(file_))
+		, stream(new std::u32ifstream(file_.getEntry().path().native())) {
+		// Overload 7 is typically called with its second argument, f, obtained
+		// directly from a new-expression: the locale is responsible for calling
+		// the matching delete from its own destructor.
+		stream->imbue(std::locale(std::locale(), new std::codecvt<char32_t, char, std::mbstate_t>));
+
+		if (!stream->is_open()) {
+			ThrowBalauException(Exception::FileNotFoundException, file_);
+		}
+	}
+
+	public: FileUtf8To32ReadResource(FileUtf8To32ReadResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileUtf8To32ReadResource() override {
+		close();
+	}
+
+	public: std::u32istream & readStream() override {
+		return *stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *file;
+	}
+
+	///
+	/// Get the file URI.
+	///
+	/// @return the file URI
+	///
+	public: const File & getFile() const {
+		return *file;
+	}
+
+	public: void close() override {
+		stream->close();
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<File> file;
+	private: std::unique_ptr<std::u32ifstream> stream;
+};
+
+///
+/// A write-only UTF-8 resource in a standard file on a file system, which is written with UTF-32 characters.
+///
+class FileUtf32To8WriteResource : public Utf32To8WriteResource {
+	///
+	/// Create a new file UTF-32 to UTF-8 write resource from the supplied file URI.
+	///
+	/// @throw NotFoundException if the file does not exist
+	///
+	public: explicit FileUtf32To8WriteResource(const File & file_)
+		: file(std::make_unique<File>(file_))
+		, stream(new std::u32ofstream(file_.getEntry().path().native())) {
+		// Overload 7 is typically called with its second argument, f, obtained
+		// directly from a new-expression: the locale is responsible for calling
+		// the matching delete from its own destructor.
+		stream->imbue(std::locale(std::locale(), new std::codecvt<char32_t, char, std::mbstate_t>));
+
+		if (!stream->is_open()) {
+			ThrowBalauException(Exception::FileNotFoundException, file_);
+		}
+	}
+
+	public: FileUtf32To8WriteResource(FileUtf32To8WriteResource && rhs) noexcept
+		: file(std::move(rhs.file))
+		, stream(std::move(rhs.stream)) {}
+
+	public: ~FileUtf32To8WriteResource() override {
+		close();
+	}
+
+	public: std::u32ostream & writeStream() override {
+		return *stream;
+	}
+
+	public: const Uri & uri() const override {
+		return *file;
+	}
+
+	///
+	/// Get the file URI.
+	///
+	/// @return the file URI
+	///
+	public: const File & getFile() const {
+		return *file;
+	}
+
+	public: void close() override {
+		stream->close();
+	}
+
+	////////////////////////// Private implementation /////////////////////////
+
+	private: std::unique_ptr<File> file;
+	private: std::unique_ptr<std::u32ofstream> stream;
+};
+
+inline std::unique_ptr<ByteReadResource> File::byteReadResource() const {
+	return std::unique_ptr<ByteReadResource>(new FileByteReadResource(*this));
+}
+
+inline std::unique_ptr<Utf8To32ReadResource> File::utf8To32ReadResource() const {
+	return std::unique_ptr<Utf8To32ReadResource>(new FileUtf8To32ReadResource(*this));
+}
+
+inline std::unique_ptr<ByteWriteResource> File::byteWriteResource() {
+	return std::unique_ptr<ByteWriteResource>(new FileByteWriteResource(*this));
+}
+
+inline std::unique_ptr<Utf32To8WriteResource> File::utf32To8WriteResource() {
+	return std::unique_ptr<Utf32To8WriteResource>(new FileUtf32To8WriteResource(*this));
+}
+
+inline FileByteReadResource File::getByteReadResource() const {
+	return FileByteReadResource(*this);
+}
+
+inline FileUtf8To32ReadResource File::getUtf8To32ReadResource() const {
+	return FileUtf8To32ReadResource(*this);
+}
+
+inline FileByteWriteResource File::getByteWriteResource() const {
+	return FileByteWriteResource(*this);
+}
+
+inline FileUtf32To8WriteResource File::getUtf32To8WriteResource() const {
+	return FileUtf32To8WriteResource(*this);
 }
 
 } // namespace Balau::Resource

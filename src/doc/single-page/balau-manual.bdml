@@ -22,29 +22,18 @@
 
 		<cover url="images/SingleCover.png" target="epub" />
 		<cover url="images/SingleCover.png" target="mobi" />
-		<cover url="images/SingleCoverA4.png" target="pdf" variant="A4" width="210mm" />
+<!--		<cover url="images/SingleCoverA4.png" target="pdf" variant="A4Page" width="210mm" />-->
 
 		<!-- front matter -->
 		<front-matter url="../single-page/pdf/title-page.bdml" target="pdf"/>
 		<front-matter url="../single-page/pdf/legal-notices.bdml" target="pdf"/>
-		<toc />
-
-		<!-- back matter -->
-		<index-page/>
-
-		<!-- header/footer -->
-		<header url="../single-page/pdf/header-pdf.bdml"  target="pdf" />
-		<footer url="../single-page/pdf/footer-right-pdf.bdml" page="right" target="pdf" />
-		<footer url="../single-page/pdf/footer-left-pdf.bdml" page="left" target="pdf" />
-
-		<header url="../single-page/html/header-html.bdml" target="html" />
-		<footer url="../single-page/html/footer-html.bdml" target="html" />
+		<toc finish="3" />
 
 		<!-- style -->
-		<stylesheet url="../bdml/css/bora-doc-pdf.css"    target="pdf" />
-		<stylesheet url="../bdml/css/bora-doc-epub.css"   target="epub" />
-		<stylesheet url="../bdml/css/bora-doc-pdf-A4.css" target="pdf" variant="A4" />
-		<stylesheet url="../resources/css/balau.css"      target="html" />
+		<stylesheet url="../resources/css/balau-pdf.css"    target="pdf" />
+		<stylesheet url="../resources/css/balau-epub.css"   target="epub" />
+		<stylesheet url="../resources/css/balau-pdf-A4.css" target="pdf" variant="A4Page" />
+		<stylesheet url="../resources/css/balau.css"        target="html" />
 
 		<!-- HTML scripts -->
 		<script src="../bdml/js/Comments.js" type="text/javascript" />

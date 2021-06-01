@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -17,12 +26,27 @@
 #ifndef COM_BORA_SOFTWARE__BALAU_INTERPROCESS__MANAGED_SHARED_MEMORY_OBJECT
 #define COM_BORA_SOFTWARE__BALAU_INTERPROCESS__MANAGED_SHARED_MEMORY_OBJECT
 
-#include <Balau/Exception/ResourceExceptions.hpp>
+#include <Balau/Exception/BalauException.hpp>
 #include <Balau/Interprocess/SharedMemoryUtils.hpp>
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Type/UUID.hpp>
 
 #include <boost/interprocess/managed_shared_memory.hpp>
+
+namespace Balau::Exception {
+
+///
+/// Thrown when an illegal argument is passed to a function or method.
+///
+class SharedMemoryObjectException : public BalauException {
+	public: SharedMemoryObjectException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: BalauException(location, st, "SharedMemoryObject", text) {}
+
+	public: SharedMemoryObjectException(const std::string & st, const std::string & text)
+		: BalauException(st, "SharedMemoryObject", text) {}
+};
+
+} // namespace Balau::Exception
 
 namespace Balau::Interprocess {
 
@@ -53,7 +77,7 @@ template <typename T> class MSharedMemoryObject {
 	/// The name prefix is automatically generated.
 	///
 	public: template <typename ... P> explicit MSharedMemoryObject(const P & ... params)
-		: MSharedMemoryObject(CreateOnly, "SMO_" + UUID().asString(), params ...) {}
+		: MSharedMemoryObject(CreateOnlySelector(), "SMO_" + UUID().asString(), params ...) {}
 
 	///
 	/// Create a shared memory object of type T with the supplied input arguments.
@@ -67,7 +91,7 @@ template <typename T> class MSharedMemoryObject {
 		boost::interprocess::shared_memory_object::remove(memoryName.c_str());
 
 		segment = boost::interprocess::managed_shared_memory(
-			CreateOnly, memoryName.c_str(), metadataOverhead + sizeof(T)
+			CreateOnlySelector(), memoryName.c_str(), metadataOverhead + sizeof(T)
 		);
 
 		object = segment.construct<T>((name + "_object").c_str())(params ...);
@@ -107,7 +131,7 @@ template <typename T> class MSharedMemoryObject {
 
 		if (item.first == nullptr) {
 			ThrowBalauException(
-				Exception::NotFoundException, "The shared memory object with name prefix " + name + " was not found."
+				Exception::SharedMemoryObjectException, "The shared memory object with name prefix " + name + " was not found."
 			);
 		}
 
@@ -128,7 +152,7 @@ template <typename T> class MSharedMemoryObject {
 
 		if (item.first == nullptr) {
 			ThrowBalauException(
-				Exception::NotFoundException, "The shared memory object with name prefix " + name + " was not found."
+				Exception::SharedMemoryObjectException, "The shared memory object with name prefix " + name + " was not found."
 			);
 		}
 

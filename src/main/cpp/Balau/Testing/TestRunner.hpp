@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -22,7 +31,6 @@
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Exception/SystemExceptions.hpp>
 #include <Balau/Exception/TestExceptions.hpp>
-#include <Balau/Resource/FileByteWriteResource.hpp>
 #include <Balau/System/ThreadName.hpp>
 #include <Balau/Testing/ExecutionModel.hpp>
 #include <Balau/Testing/Impl/SingleThreadedTestRunnerExecutor.hpp>
@@ -34,6 +42,7 @@
 #include <Balau/Testing/Reporters/SurefireTestReportGenerator.hpp>
 #include <Balau/Testing/Writers/StdWriters.hpp>
 #include <Balau/Util/DateTime.hpp>
+#include <Balau/Util/Enums.hpp>
 
 #include <termios.h>
 #include <thread>
@@ -625,7 +634,7 @@ inline void TestGroup<TestClassT>::ignore() {
 
 template <typename TestClassT>
 inline void TestGroup<TestClassT>::log(const std::string & string) {
-	return Testing::TestRunner::runner().log(string);
+	Testing::TestRunner::runner().log(string);
 }
 
 template <typename TestClassT>
@@ -637,7 +646,7 @@ inline void TestGroup<TestClassT>::log(const S & p, const SR & ... pRest) {
 
 template <typename TestClassT>
 inline void TestGroup<TestClassT>::logLine(const std::string & string) {
-	return Testing::TestRunner::runner().logLine(string);
+	Testing::TestRunner::runner().logLine(string);
 }
 
 template <typename TestClassT>
@@ -645,6 +654,12 @@ template <typename S, typename ... SR>
 inline void TestGroup<TestClassT>::logLine(const S & p, const SR & ... pRest) {
 	using ::toString;
 	logLine(toString(p, pRest ...));
+}
+
+template <typename TestClassT>
+template <typename A, typename E>
+inline void TestGroup<TestClassT>::renderResult(const A & actual, const E & expected) {
+	Testing::TestRunner::runner().logLine(TestRenderers::render(actual, expected));
 }
 
 template <typename TestClassT>

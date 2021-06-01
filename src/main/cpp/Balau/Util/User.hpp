@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -21,6 +30,21 @@
 #include <Balau/Resource/File.hpp>
 
 #include <pwd.h>
+
+namespace Balau::Exception {
+
+///
+/// Thrown when there is an issue locating the user in the system.
+///
+class UserNotFoundException : public BalauException {
+	public: UserNotFoundException(SourceCodeLocation location, const std::string & st, const std::string & text)
+		: BalauException(location, st, "UserNotFound", text) {}
+
+	public: UserNotFoundException(const std::string & st, const std::string & text)
+		: BalauException(st, "UserNotFound", text) {}
+};
+
+} // namespace Balau::Exception
 
 namespace Balau::Util {
 
@@ -41,7 +65,7 @@ struct User final {
 				return std::string(pw->pw_name);
 			} else {
 				ThrowBalauException(
-					  Exception::NotFoundException
+					  Exception::UserNotFoundException
 					, "Failed to obtain the user name: user entry not found in passwd."
 				);
 			}
@@ -79,14 +103,14 @@ struct User final {
 				if (result == nullptr) {
 					if (s == 0) {
 						ThrowBalauException(
-							  Exception::NotFoundException
+							  Exception::UserNotFoundException
 							, "Failed to locate the user home directory: user entry not found in passwd."
 						);
 					} else if (errno == ERANGE) {
 						// Give up at 1MB buffer size.
 						if (bufferSize >= 1048576) {
 							ThrowBalauException(
-								  Exception::NotFoundException
+								  Exception::UserNotFoundException
 								, "Failed to locate the user home directory with buffer size of 1MB."
 							);
 						}
@@ -96,7 +120,7 @@ struct User final {
 						repeat = true;
 					} else {
 						ThrowBalauException(
-							  Exception::NotFoundException
+							  Exception::UserNotFoundException
 							, "Failed to locate the user home directory: getpwnam_r raised an error, errno = " +
 							  ::toString(errno)
 						);
@@ -106,7 +130,7 @@ struct User final {
 
 			if (result == nullptr || result->pw_dir == nullptr) {
 				ThrowBalauException(
-					  Exception::NotFoundException
+					  Exception::UserNotFoundException
 					, ::toString("Failed to locate the user home directory: getpwnam_r raised an error, errno = ", errno)
 				);
 			}

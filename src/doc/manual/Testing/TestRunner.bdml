@@ -100,6 +100,8 @@
 			}
 		</code>
 
+		<para>The test groups are automatically added to the test runner's test set via forced instantiation within the test group base class. Thus it is sufficient to add each test group class body file to the test application, and each test group class will instantiate itself and add its test case methods to the test runner.</para>
+
 		<para>The test runner uses the command line parser to parse a space separated command line which can also contain globbed test name patterns to run.</para>
 
 		<para>The following command line options are available.</para>
@@ -293,7 +295,7 @@
 
 		<para>The test runner contains <ref type="raw" new="true" url="http://hamcrest.org/">Hamcrest</ref> inspired assertion utilities that are available for use in test methods and setup/teardown methods.</para>
 
-		<para>In order to use the assertions, suitable <emph><strong>operator ==</strong></emph> functions/methods will need to exist for the types of the objects specified in the assertion statements. In addition, each type will require a <emph>toString</emph> function to be defined. These are used by the assertion render functions. Refer to the documentation on the <ref url="Application/ToString">universal to-string function</ref> for more information.</para>
+		<para>In order to use the assertions, suitable <emph><strong>operator ==</strong></emph> functions/methods will need to exist for the types of the objects specified in the assertion statements. In addition, each type will require a <emph>toString</emph> function to be defined. These are used by the assertion renderResult functions. Refer to the documentation on the <ref url="Application/ToString">universal to-string function</ref> for more information.</para>
 
 		<para><strong>In order for the compiler to pick up the correct <emph>toString</emph> and <emph>operator ==</emph> functions, the header file(s) containing the functions must be included before the <emph>TestRunner.hpp</emph> header is included.</strong></para>
 
@@ -392,7 +394,7 @@
 			namespace Renderers {
 
 			template &lt;typename A, typename E&gt;
-			std::string render(const A &amp; actual, const E &amp; expected);
+			std::string renderResult(const A &amp; actual, const E &amp; expected);
 
 			} // namespace Renderers
 
@@ -455,6 +457,15 @@
 		</code>
 
 		<para>These methods can be used anywhere in a test class to log additional test messages.</para>
+
+		<para>The test runner renderers can also be used to explicitly log actual and expected results, by calling the <emph>TestGroup</emph> base class <emph>renderResults</emph> method:</para>
+
+		<code lang="C++">
+			///
+			/// Log the actual and expected results via a test runner renderer.
+			///
+			public: template &lt;typename A, typename E&gt; void renderResult(const A &amp; actual, const E &amp; expected);
+		</code>
 
 		<para>An alternative technique of logging test messages is to use the Balau <ref url="Logging/Logger">logging framework</ref> and construct the test runner to log test results to a Balau logger. This allows the full parameter parsing of the logging framework to be used within the test class log messages. There are two ways of configuring the logging system for the test application.</para>
 
@@ -721,7 +732,7 @@
 
 		<para>This section only discusses continuous integration via a CMake target.</para>
 
-		<para>In order to create CI jobs in tools such as <ref type="raw" new="true" url="https://jenkins.io/">Jenkins</ref>, the test application will require a CMake target to run. This can be achieved with the following configuration in the CMakeLists.txt file.</para>
+		<para>In order to create CI jobs in tools such as <ref type="raw" new="true" url="https://jenkins.io/">Jenkins</ref>, the test application may require a CMake target to run. This can be achieved with the following configuration in the CMakeLists.txt file.</para>
 
 		<code lang="C++">
 			##################### TEST RUNNER #####################
@@ -741,5 +752,7 @@
 		<para>In the CMake custom target definition, <emph>RunTests</emph> is the name of the target that will be specified in the CI jobs, and <emph>TestApp</emph> is the test application executable target. After adding the dependency declaration, running the <emph>RunTests</emph> target will first build the test application, then will execute it.</para>
 
 		<para>The test application will return 0 on success and 1 on failure. This will be picked up by the CI job runner in order to determine test run success.</para>
+
+		<para>An alternative approach to integrating Balau test runs into a CI job is to use the Balau Maven plugins and run the build as a Maven project. For more information on this, refer to the <ref url="NonCode/Maven">Maven integration</ref> chapter.</para>
 	</chapter>
 </document>

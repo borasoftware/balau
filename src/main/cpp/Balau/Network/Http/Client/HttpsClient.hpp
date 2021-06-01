@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2017 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -18,7 +27,7 @@
 #define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTPS_CLIENT
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
-#include <Balau/Network/Utilities/root_certificates.hpp>
+#include <Balau/ThirdParty/Boost/Beast/Http/root_certificates.hpp>
 
 namespace Balau::Network::Http {
 
@@ -40,10 +49,22 @@ class HttpsClient : public HttpClient {
 	/// @param userAgent_ the user agent string to send
 	///
 	public: explicit HttpsClient(std::string host_,
+	                             std::string userAgent_,
 	                             unsigned short port_ = 443,
-	                             std::string userAgent_ = "Balau " + BalauVersion,
 	                             const char * version_ = "1.1")
-		: HttpClient(std::move(host_), port_, std::move(userAgent_), version_) {}
+		: HttpClient(std::move(host_), std::move(userAgent_), port_, version_) {}
+
+	///
+	/// Create an HTTPS client instance, using the default user agent.
+	///
+	/// @param host_ the host name to connect to
+	/// @param port_ the port number to connect to
+	/// @param version_ either "1.0" or "1.1" (the default)
+	///
+	public: explicit HttpsClient(std::string host_,
+	                             unsigned short port_ = 443,
+	                             const char * version_ = "1.1")
+		: HttpClient(std::move(host_), "Balau " + balauVersion(), port_, version_) {}
 
 	///
 	/// Create an HTTPS client by copying the supplied instance.

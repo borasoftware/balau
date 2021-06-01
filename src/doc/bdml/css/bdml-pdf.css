@@ -1,0 +1,400 @@
+/**
+ * Bora-Doc CSS file
+ *
+ * Copyright 2008 Nicholas Smethurst (contact@borasoftware.com)
+ *
+ * Use of this file is subject to the Bora End User License Agreement, a copy
+ * of which can be seen at https://borasoftware.com/eula.html.
+ *
+**/
+
+/* File: bdml-pdf.css */
+
+@import url("bdml.css");
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+#bdml-toc {
+	margin: 1em;
+}
+
+.bdml-toc-part, .bdml-toc-chapter, .bdml-toc-h1, .bdml-toc-h2, .bdml-toc-h3, .bdml-toc-h4, .bdml-toc-h5 {
+	padding: 0;
+	margin: 0;
+}
+
+.bdml-toc-chapter {
+	margin: 0.5em 0.0em 0.0em 0.0em;
+}
+
+.bdml-toc-part, #bdml-toc > #bdml-toc-ul > .bdml-toc-chapter {
+	margin: 1.0em 2.0em 1.0em 2.0em;
+}
+
+.bdml-toc-h1 {
+	margin: 0.0em 0.0em 0.0em 1.5em;
+}
+
+.bdml-toc-h2 {
+	margin: 0.0em 0.0em 0.0em 1.5em;
+}
+
+.bdml-toc-h3 {
+	margin: 0.0em 0.0em 0.0em 1.5em;
+}
+
+.bdml-toc-h4 {
+	margin: 0.0em 0.0em 0.0em 1.5em;
+}
+
+.bdml-toc-h5 {
+	margin: 0.0em 0.0em 0.0em 1.5em;
+}
+
+#bdml-toc li a:after {
+	content: leader('. ') target-counter(attr(href), page);
+}
+
+#bdml-toc li.bdml-after-toc-front-matter a:after {
+	content: leader('.  .  .  ') target-counter(attr(href), page, lower-roman);
+}
+
+#bdml-pagination-number-start {
+	-fs-page-sequence: start;
+}
+
+.bdml-toc-part-title, #bdml-toc > #bdml-toc-ul > .bdml-toc-chapter > a {
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+h1, h2, h3, h4, h5 {
+	page-break-after: avoid;
+}
+
+.bdml-comment-arrow {
+	height: 10px;
+}
+
+.bdml-graphic-center, .bdml-graphic-right, .bdml-graphic-left, table, th {
+	page-break-inside: avoid;
+}
+
+.bdml-part-title, #bdml-index-title {
+	margin-top: 10em;
+	border-top: solid 1px #194f91;
+	margin-left: 3em;
+	font-size: 2.5em;
+	text-align: left;
+	padding-top: 0;
+	border-bottom: none;
+}
+
+.bdml-part > h1:first-child {
+	page-break-before: left;
+	page-break-after: left;
+}
+
+.bdml-index-title {
+	page-break-before: left;
+	page-break-after: left;
+}
+
+.bdml-chapter {
+	page-break-before: left;
+	page-break-after: right;
+}
+
+.bdml-chapter-title {
+	margin-top: 0;
+}
+
+/********** FRONT MATTER ************/
+
+.bdml-front-matter {
+	page-break-before: left;
+	page-break-after: always;
+}
+
+.bdml-front-matter .bdml-chapter-title {
+	color: black;
+}
+
+#bdml-title-page {
+	margin-top: 14em;
+	margin-right: 3em;
+	font-size: 1.2em;
+	text-align: right;
+}
+
+#bdml-title-page .bdml-chapter-title {
+	text-align: right;
+	border-top: none;
+}
+
+#bdml-legal-notices {
+	page-break-before: avoid;
+}
+
+/********** BACK MATTER ************/
+
+.bdml-back-matter {
+	page-break-before: left;
+	page-break-after: always;
+}
+
+.bdml-back-matter .bdml-chapter-title {
+	color: black;
+}
+
+/********** INDEX PAGE ************/
+
+#bdml-index-page {
+	page-break-before: left;
+}
+
+.bdml-next-page {
+	page-break-before: always;
+}
+
+.bdml-index-column {
+	display: inline-block;
+	width: 49.5%;
+	vertical-align: top;
+}
+
+/*#bdml-index-title {
+
+}
+
+.bdml-first-level-index-entry{
+
+}*/
+
+.bdml-first-level-index-entry a:before {
+	content: target-counter(attr(href), page);
+}
+
+.bdml-second-level-index-entry {
+	padding-left: 1em;
+}
+
+.bdml-second-level-index-entry a:before {
+	content: target-counter(attr(href), page);
+}
+
+.bdml-href-wrapper {
+	display: inline-block;
+	white-space: nowrap;
+}
+
+pre, .bdml-code, .bdml-grammar {
+}
+
+#bdml-page {
+	margin: 0;
+	padding: 0;
+}
+
+.bdml-part {
+	margin: 0;
+	padding: 0;
+}
+
+/**** BORADOC PAGE PLACEHOLDERS ****/
+
+.bdml-page-number:after {
+	padding: 0 3em;
+}
+
+.bdml-page-number[type="decimal"][href]:after {
+	content: target-counter(attr(href), page, decimal);
+}
+
+.bdml-page-number[type="lower-roman"][href]:after {
+	content: target-counter(attr(href), page, lower-roman);
+}
+
+.bdml-page-number[type="upper-roman"][href]:after {
+	content: target-counter(attr(href), page, upper-roman);
+}
+
+.bdml-page-number[type="decimal"]:after {
+	content: counter(page, decimal);
+}
+
+.bdml-page-number[type="lower-roman"]:after {
+	content: counter(page, lower-roman);
+}
+
+.bdml-page-number[type="upper-roman"]:after {
+	content: counter(page, upper-roman);
+}
+
+.bdml-page-count[type="decimal"]:after {
+	content: counter(pages, decimal);
+}
+
+.bdml-page-count[type="lower-roman"]:after {
+	content: counter(pages, lower-roman);
+}
+
+.bdml-page-count[type="upper-roman"]:after {
+	content: counter(pages, upper-roman);
+}
+
+/**** PAGINATION ****/
+
+.bdml-pagination-number-start {
+	page-break-before: left;
+	-fs-page-sequence: start;
+}
+
+/**** HEADERS & FOOTERS ****/
+
+/*
+.bdml-right-front-matter-footer {
+	display: block;
+	text-align: center;
+	font-weight: normal;
+	font-size: 10pt;
+	position: running(bdml-right-front-matter-footer);
+}
+
+.bdml-left-front-matter-footer {
+	text-align: center;
+	font-weight: normal;
+	font-size: 10pt;
+	position: running(bdml-left-front-matter-footer);
+}
+
+.bdml-right-front-matter-footer:after {
+	content: counter(page, lower-roman)
+}
+
+.bdml-left-front-matter-footer:after {
+	content: counter(page, lower-roman)
+}
+
+.bdml-right-page-header {
+	display: block;
+	text-align: center;
+	font-weight: normal;
+	font-size: 10pt;
+	position: running(bdml-right-page-header);
+}
+
+.bdml-left-page-header {
+	text-align: center;
+	font-weight: normal;
+	font-size: 10pt;
+	position: running(bdml-left-page-header);
+}
+
+.bdml-right-page-footer {
+	display: block;
+	text-align: center;
+	font-weight: normal;
+	font-size: 10pt;
+	position: running(bdml-right-page-footer);
+}
+
+.bdml-left-page-footer {
+	text-align: center;
+	font-weight: normal;
+	font-size: 10pt;
+	position: running(bdml-left-page-footer);
+}
+
+.bdml-header .bdml-right-page-header {
+	display: block;
+	position: running(bdml-right-page-header);
+	text-align: center;
+}
+
+.bdml-header .bdml-left-page-header {
+	display: block;
+	position: running(bdml-left-page-header);
+	text-align: center;
+}
+
+.bdml-footer .bdml-right-page-footer {
+	display: block;
+	position: running(bdml-right-page-footer);
+	text-align: center;
+}
+
+.bdml-footer .bdml-left-page-footer {
+	display: block;
+	position: running(bdml-left-page-footer);
+	text-align: center;
+}
+*/
+
+/*
+@page main:left {
+	@top-center {
+		content: element(bdml-left-page-header);
+	}
+
+	@bottom-left {
+		content: element(bdml-left-page-footer);
+	}
+}
+
+@page main:right {
+	@top-center {
+		content: element(bdml-right-page-header);
+	}
+
+	@bottom-right {
+		content: element(bdml-right-page-footer);
+	}
+}
+
+@page front-matter:left {
+	margin: 15mm 15mm 25mm 15mm;
+
+	@bottom-left {
+		content: element(bdml-left-front-matter-footer);
+	}
+}
+
+@page front-matter:right {
+	margin: 15mm 15mm 25mm 15mm;
+
+	@bottom-right {
+		content: element(bdml-right-front-matter-footer);
+	}
+}
+
+@page {
+	margin: 15mm 15mm 25mm 15mm;
+	padding: 0;
+}
+
+@page cover {
+	margin: 0;
+}
+
+@page main {
+	margin-top: 20mm;
+}
+*/
+
+#bdml-cover {
+	page: cover;
+	margin: -0.01mm 0 0 0;
+	padding: 0;
+}
+
+#bdml-page {
+	page: main;
+}
+
+.bdml-front-matter {
+	page: front-matter;
+}

@@ -4,8 +4,17 @@
 //
 // Copyright (C) 2008 Bora Software (contact@borasoftware.com)
 //
-// Licensed under the Boost Software License - Version 1.0 - August 17th, 2003.
-// See the LICENSE file for the full license text.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 //
 
 ///
@@ -58,9 +67,7 @@ class ZipFile : public File {
 			archive.open(zipFile, verify, pw);
 
 			if (!archive.isOpen()) {
-				ThrowBalauException(
-					Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry)
-				);
+				ThrowBalauException(Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry));
 			}
 
 			entryCount = archive.entryCount();
@@ -93,9 +100,7 @@ class ZipFile : public File {
 			archive.open(zipFile, verify, pw);
 
 			if (!archive.isOpen()) {
-				ThrowBalauException(
-					Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry)
-				);
+				ThrowBalauException(Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry));
 			}
 
 			entryCount = archive.entryCount();
@@ -135,9 +140,7 @@ class ZipFile : public File {
 			archive.open(zipFile, verify, pw);
 
 			if (!archive.isOpen()) {
-				ThrowBalauException(
-					Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry)
-				);
+				ThrowBalauException(Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry));
 			}
 
 			entryCount = archive.entryCount();
@@ -173,9 +176,7 @@ class ZipFile : public File {
 			archive.open(zipFile, verify, pw);
 
 			if (!archive.isOpen()) {
-				ThrowBalauException(
-					Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry)
-				);
+				ThrowBalauException(Exception::ZipException, "Could not open zip file for reading.", File(zipFile.entry));
 			}
 
 			entryCount = archive.entryCount();
@@ -228,26 +229,8 @@ class ZipFile : public File {
 		ThrowBalauException(Exception::UnsupportedOperationException, "ZipFile does not support path appending.");
 	}
 
-	public: std::unique_ptr<Uri> resolve(std::string_view path) const override {
-		static const std::regex scheme { "[a-zA-Z][a-zA-Z0-9+-\\.]*:" };
-
-		auto cleanPath = Util::Strings::trim(path);
-		auto str = std::string(cleanPath);
-
-		if (Util::Strings::startsWithRegex(str, scheme)) {
-			std::unique_ptr<Uri> uri;
-			fromString(uri, str);
-			return uri;
-		}
-
-		boost::filesystem::path p(str);
-
-		if (p.is_relative()) {
-			auto p2 = boost::filesystem::relative(p, entry.path());
-			return std::unique_ptr<Uri>(new ZipFile(File(p2)));
-		} else { // absolute
-			return std::unique_ptr<Uri>(new ZipFile(File(p)));
-		}
+	public: void visit(UriVisitor & visitor) const override {
+		visitor.visit(*this);
 	}
 
 	public: bool canReadFrom() const override {
