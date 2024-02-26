@@ -100,7 +100,7 @@
 		@extra-sites/special.site
 	</code>
 
-	<para>When an absolute or relative path is specified as in the second and third examples above, the URI type resolved should be the same as the URI of the property file that contains the include directive (this is performed by the implementation consuming the parsed file contents). For example, if the above example property file was supplied as a file URI, the absolute and relative path include directives would resolve to file URIs.</para>
+	<para>When an absolute or relative path is specified as in the second and third examples above, the URI type resolved should be the same as the URI of the property file that contains the <emph>include</emph> directive (this is performed by the implementation consuming the parsed file contents). For example, if the above example property file was supplied as a file URI, the absolute and relative path include directives would resolve to file URIs.</para>
 
 	<para>Include directives may also contain glob patterns.</para>
 
@@ -216,7 +216,7 @@
 
 		<entry>In between the '{' and '}' property block delimiters, zero or more child properties may be defined, including more hierarchical properties.</entry>
 
-		<entry>A non-escaped '@' character at the start of a line denotes the start of an include directive. The URI (full, partial absolute path, or partial relative path) following the '@' character represents the include URI.</entry>
+		<entry>A non-escaped '@' character at the start of a line denotes the start of an include directive. The URI (full, partial absolute path, or partial relative path) following the '@' character represents the <emph>include</emph> URI.</entry>
 
 		<entry>Indentation of block closing '}' characters and include directive '@' characters is not relevant and is stripped during parsing.</entry>
 	</bullets>

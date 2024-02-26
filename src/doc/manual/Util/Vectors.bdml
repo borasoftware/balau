@@ -42,7 +42,7 @@
 	<chapter title="Vector utilities">
 		<h1>Overview</h1>
 
-		<para>This header provides user friendly utility functions, defined within the <emph>Balau::Util::Vectors</emph> namespace.</para>
+		<para>This header provides user-friendly utility functions, defined within the <emph>Balau::Util::Vectors</emph> namespace.</para>
 
 		<h1>Quick start</h1>
 

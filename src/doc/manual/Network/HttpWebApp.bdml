@@ -80,7 +80,7 @@
 
 		<h2>Client session</h2>
 
-		<para>The client session referenced within the HTTP session is a long lived session that is obtained on each request by examining the session cookie sent by the client. The name of this session cookie may be specified in the HTTP server's global configuration. By default, the name of the session cookie is <emph>session</emph>.</para>
+		<para>The client session referenced within the HTTP session is a long-lived session that is obtained on each request by examining the session cookie sent by the client. The name of this session cookie may be specified in the HTTP server's global configuration. By default, the name of the session cookie is <emph>session</emph>.</para>
 
 		<para>The client session Id is present for web applications to use in order to allow stateful sessions such as logins and carts.</para>
 

@@ -64,11 +64,11 @@
 		<para>There are three ways to use the environment configuration class:</para>
 
 		<bullets>
-			<entry>derive from the <emph>EnvironmentConfiguration</emph> class and hard wire hierarchical property type specifications inside the configure() method of the derived class;</entry>
+			<entry>derive from the <emph>EnvironmentConfiguration</emph> class and hard-wire hierarchical property type specifications inside the configure() method of the derived class;</entry>
 
 			<entry>instantiate an <emph>EnvironmentConfiguration</emph> instance directly, by specifying one or more hierarchical property type specification sources in addition to the input environment properties sources.</entry>
 
-			<entry>derive from the <emph>EnvironmentConfiguration</emph> class, hard wire hierarchical property type specification declarations inside the configure() method of the derived class, and specify one or more hierarchical property type specification sources in addition to the input environment properties source.</entry>
+			<entry>derive from the <emph>EnvironmentConfiguration</emph> class, hard-wire hierarchical property type specification declarations inside the configure() method of the derived class, and specify one or more hierarchical property type specification sources in addition to the input environment properties source.</entry>
 		</bullets>
 
 		<para>The first approach places the hierarchical property type specifications directly within the C++ code. An advantage of this approach is that any type that has a corresponding <emph>fromString</emph> function can be used for value property types parsed by the environment configuration, without the need for explicit registration before injector creation.</para>
@@ -120,7 +120,7 @@
 			<entry>share their environment configuration with other C++ applications via a shared C++ library.</entry>
 		</bullets>
 
-		<para>The creation of an environment configuration class with hard wired type specifications consists of deriving from the <emph>EnvironmentConfiguration</emph> base class, and implementing the <emph>configure</emph> method. Environment configuration type specifications that correspond to the properties in the referenced property file are placed within the <emph>configure</emph> method.</para>
+		<para>The creation of an environment configuration class with hard-wired type specifications consists of deriving from the <emph>EnvironmentConfiguration</emph> base class, and implementing the <emph>configure</emph> method. Environment configuration type specifications that correspond to the properties in the referenced property file are placed within the <emph>configure</emph> method.</para>
 
 		<para>The following is an example environment configuration class implementation for the above example property file.</para>
 
@@ -192,13 +192,13 @@
 
 		<para>Hard wired and IDL based environment configuration type specifications can be mixed in an environment configuration derived class.</para>
 
-		<para>If a mixed type specification is used in an environment configuration, it is possible that duplicate type specifications are provided for a property (one in the hard wired configuration and another in the type specification file). When this occurs, the hard wired type specification / default value takes precedence over the file based one. It is thus possible to override a file base type specification by adding a hard wired type specification with an identical name and hierarchy position in the derived class configuration method.</para>
+		<para>If a mixed type specification is used in an environment configuration, it is possible that duplicate type specifications are provided for a property (one in the hard-wired configuration and another in the type specification file). When this occurs, the hard-wired type specification / default value takes precedence over the file based one. It is thus possible to override a file base type specification by adding a hard-wired type specification with an identical name and hierarchy position in the derived class configuration method.</para>
 
 		<h2>Default values</h2>
 
-		<para>Both hard wired and IDL environment configuration type specifications may have default values attached to them. This allows concise environment configuration data files to be created, by specifying only the differences between the defaults and the required values for that environment.</para>
+		<para>Both hard-wired and IDL environment configuration type specifications may have default values attached to them. This allows concise environment configuration data files to be created, by specifying only the differences between the defaults and the required values for that environment.</para>
 
-		<para>The following example is a copy of the previous hard wired example environment configuration class, with default values attached to the properties that can have sensible defaults.</para>
+		<para>The following example is a copy of the previous hard-wired example environment configuration class, with default values attached to the properties that can have sensible defaults.</para>
 
 		<code lang="C++">
 			// Example environment configuration with sensible defaults.
@@ -284,7 +284,7 @@
 			<entry>passing an environment identifier via a command line argument and resolving the environment's home directory via a simple mapping.</entry>
 		</bullets>
 
-		<para>The <emph>EnvironmentConfiguration</emph> class is designed to fail immediately if an environment configuration property file is not well formed, thereby preventing the application from starting up with an invalid configuration.</para>
+		<para>The <emph>EnvironmentConfiguration</emph> class is designed to fail immediately if an environment configuration property file is not well-formed, thereby preventing the application from starting up with an invalid configuration.</para>
 
 		<h3>Credentials</h3>
 
@@ -496,7 +496,7 @@
 
 		<h1>Example configuration</h1>
 
-		<para>A full example is presented here (taken from the Balau tests). The example has a single type specification file, a single derived environment configuration class with hard wired type specifications, and a property value file.</para>
+		<para>A full example is presented here (taken from the Balau tests). The example has a single type specification file, a single derived environment configuration class with hard-wired type specifications, and a property value file.</para>
 
 		<para>The specification file contents is as follows.</para>
 
@@ -516,7 +516,7 @@
 			}
 		</code>
 
-		<para>The hard wired type specification class is as follows.</para>
+		<para>The hard-wired type specification class is as follows.</para>
 
 		<code lang="C++">
 			struct EnvConfig : public EnvironmentConfiguration {

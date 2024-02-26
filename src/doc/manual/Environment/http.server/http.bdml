@@ -44,7 +44,7 @@
 
 		<para class="short-desc">The HTTP web application specifications that the server will construct.</para>
 
-		<para>The configuration of each specified HTTP web application must have a <emph>location</emph> property (of type string). The <emph>location</emph> property corresponds to the path or set of paths which will will be handled by the specified HTTP web application.</para>
+		<para>The configuration of each specified HTTP web application must have a <emph>location</emph> property (of type string). The <emph>location</emph> property corresponds to the path or set of paths which will be handled by the specified HTTP web application.</para>
 
 		<h1 toc='false'>Simple configuration</h1>
 

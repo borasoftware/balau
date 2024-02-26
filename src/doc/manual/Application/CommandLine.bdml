@@ -48,7 +48,7 @@
 
 		<para>The second supported style is <emph>switch - equals - value</emph> (SEV). In this style, the switches supplied on the command line do not have a prefix. For arguments with values, the value is separated from the switch with an equals character "=".</para>
 
-		<para>The command line parser can be configured to use one or the other style. Alternative, it can be default constructed whereapon it will detect the style from the first switch's leading character.</para>
+		<para>The command line parser can be configured to use one or the other style. Alternative, it can be default constructed whereupon it will detect the style from the first switch's leading character.</para>
 
 		<h1>Quick start</h1>
 

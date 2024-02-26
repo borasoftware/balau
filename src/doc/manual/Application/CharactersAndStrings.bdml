@@ -336,7 +336,7 @@
 
 		<para>Note that <emph>toString</emph>, <emph>toString16</emph>, or <emph>toString32</emph> function overloads should not be defined for type aliases, as this prevents the compiler from resolving the correct overload for a particular type. Instead, use the original type within its namespace.</para>
 
-		<para>When calling the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> functions from a namespace that contains to-string function definitions in the namespace or a intermediate parent namespace, it may be necessary to import the the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
+		<para>When calling the <emph>toString</emph>, <emph>toString16</emph>, and <emph>toString32</emph> functions from a namespace that contains to-string function definitions in the namespace or an intermediate parent namespace, it may be necessary to import the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
 
 		<code lang="C++">
 			// Example of using the toString function with a using directive.
@@ -460,7 +460,7 @@
 
 		<para>In order to provide universal from-string function overloads to Balau classes and functions for your custom types, it is sufficient to define a <emph>fromString</emph>, <emph>fromString16</emph>, or <emph>fromString32</emph> function overload in the same namespace as your custom type. C++ argument-dependent lookup will resolve the function overload via the parameter type in the call.</para>
 
-		<para>When calling the <emph>fromString</emph>, <emph>fromString16</emph>, and <emph>fromString32</emph> functions from a namespace that contains from-string function definitions in the namespace or a intermediate parent namespace, it may be necessary to import the the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
+		<para>When calling the <emph>fromString</emph>, <emph>fromString16</emph>, and <emph>fromString32</emph> functions from a namespace that contains from-string function definitions in the namespace or an intermediate parent namespace, it may be necessary to import the functions in the global namespace via a using directive, in order to ensure the correct overload is picked up from the local context.</para>
 
 		<h2>From-string template class</h2>
 

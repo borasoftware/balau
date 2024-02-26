@@ -52,9 +52,9 @@
 
 		<h2>Dependency injection</h2>
 
-		<para>Using a dependency injection approach for the structural wiring of a software application is useful when the complexity of the application reaches a certain threshold. As an application's source code becomes larger and more complex, manual management of dependencies becomes overly complicated and error prone.</para>
+		<para>Using a dependency injection approach for the structural wiring of a software application is useful when the complexity of the application reaches a certain threshold. As an application's source code becomes larger and more complex, manual management of dependencies becomes overly complicated and error-prone.</para>
 
-		<para>In this respect, using one or more injectors in the design of a software application reduces complexity, concentrates structural wiring into a concise set of declarations, and delegates object lifetime management of long lived objects to the injection framework. The dependency injection paradigm also facilitates isolating a class for unit testing, by allowing mocked or stubbed dependencies to be supplied to an instance of the class being tested.</para>
+		<para>In this respect, using one or more injectors in the design of a software application reduces complexity, concentrates structural wiring into a concise set of declarations, and delegates object lifetime management of long-lived objects to the injection framework. The dependency injection paradigm also facilitates isolating a class for unit testing, by allowing mocked or stubbed dependencies to be supplied to an instance of the class being tested.</para>
 
 		<h2>Balau injector</h2>
 
@@ -502,7 +502,7 @@
 				<row>
 					<cell>toValue()</cell>
 
-					<cell><para>Bind a concrete class. A new instance of the class will be stack created each time an instance is requested, and returned via copy elision. The object will be supplied as <emph>ValueT</emph>.</para></cell>
+					<cell><para>Bind a concrete class. A new instance of the class will be created on the stack each time an instance is requested, and returned via copy elision. The object will be supplied as <emph>ValueT</emph>.</para></cell>
 				</row>
 
 				<row>
@@ -514,25 +514,25 @@
 				<row>
 					<cell>toValueProvider(std::function&lt;ValueT ()>)</cell>
 
-					<cell><para>Bind a concrete class to a provider function. A new instance of the class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>.</para></cell>
+					<cell><para>Bind a concrete class to a provider function. A new instance of the class will be constructed on the stack by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>.</para></cell>
 				</row>
 
 				<row>
 					<cell>toValueProvider&lt;ProviderT>()</cell>
 
-					<cell><para>Bind a concrete class to an injectable provider class. A new instance of the value class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+					<cell><para>Bind a concrete class to an injectable provider class. A new instance of the value class will be constructed on the stack by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
 				</row>
 
 				<row>
 					<cell>toValueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
 
-					<cell><para>Bind a concrete class to an injectable provider instance. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance of the value class will be stack constructed by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+					<cell><para>Bind a concrete class to an injectable provider instance. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance of the value class will be constructed on the stack by the provider each time an instance is requested. The object will be supplied as <emph>ValueT</emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
 				</row>
 
 				<row>
 					<cell>toUnique&lt;DerivedT>()</cell>
 
-					<cell><para>Bind an interface to an implementing class. A new instance of the class will be heap constructed each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>.</para></cell>
+					<cell><para>Bind an interface to an implementing class. A new instance of the class will be constructed on the heap each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>.</para></cell>
 				</row>
 
 				<row>
@@ -540,19 +540,19 @@
 						std::function&lt;std::unique_ptr&lt;BaseT> ()><newline />
 					)</cell>
 
-					<cell><para>Bind an interface to a provider function. A new instance deriving from the base type will be heap constructed by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>.</para></cell>
+					<cell><para>Bind an interface to a provider function. A new instance deriving from the base type will be constructed on the heap by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>.</para></cell>
 				</row>
 
 				<row>
 					<cell>toUniqueProvider&lt;ProviderT>()</cell>
 
-					<cell><para>Bind an interface to an injectable provider class. A new instance deriving from the base type will be heap constructed by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+					<cell><para>Bind an interface to an injectable provider class. A new instance deriving from the base type will be constructed on the heap by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
 				</row>
 
 				<row>
 					<cell>toUniqueProvider&lt;ProviderT>(std::shared_ptr&lt;ProviderT>)</cell>
 
-					<cell><para>Bind an interface to an injectable provider class. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance deriving from the base type will be heap constructed by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
+					<cell><para>Bind an interface to an injectable provider class. The provider instance is supplied in a shared pointer container, allowing the caller to retain shared ownership if required. A new instance deriving from the base type will be constructed on the heap by the provider each time an instance is requested. The object will be supplied as <emph>std::unique_ptr&lt;BaseT></emph>. The provider will be constructed via standard injection of the provider's dependencies.</para></cell>
 				</row>
 
 				<row>
@@ -564,25 +564,25 @@
 				<row>
 					<cell>toThreadLocal&lt;DerivedT>()</cell>
 
-					<cell><para>Bind an interface to an implementing class with thread-local singleton semantics. The thread-local singleton will be heap constructed lazily for each new calling thread. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+					<cell><para>Bind an interface to an implementing class with thread-local singleton semantics. The thread-local singleton will be constructed on the heap lazily for each new calling thread. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
 				</row>
 
 				<row>
 					<cell>toThreadLocal()</cell>
 
-					<cell><para>Bind a concrete class with thread-local singleton semantics. The thread-local singleton will be heap constructed lazily for each new calling thread. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+					<cell><para>Bind a concrete class with thread-local singleton semantics. The thread-local singleton will be constructed on the heap lazily for each new calling thread. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
 				</row>
 
 				<row>
 					<cell>toSingleton&lt;DerivedT>()</cell>
 
-					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be heap constructed lazily. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be constructed on the heap lazily. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
 				</row>
 
 				<row>
 					<cell>toSingleton()</cell>
 
-					<cell><para>Bind a concrete class with singleton semantics. The singleton will be heap constructed lazily. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+					<cell><para>Bind a concrete class with singleton semantics. The singleton will be constructed on the heap lazily. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
 				</row>
 
 				<row>
@@ -612,13 +612,13 @@
 				<row>
 					<cell>toEagerSingleton&lt;DerivedT>()</cell>
 
-					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be heap constructed eagerly. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
+					<cell><para>Bind an interface to an implementing class with singleton semantics. The singleton will be constructed on the heap eagerly. The object will be supplied as <emph>std::shared_ptr&lt;BaseT></emph>.</para></cell>
 				</row>
 
 				<row>
 					<cell>toEagerSingleton()</cell>
 
-					<cell><para>Bind a concrete singleton class. The singleton will be heap constructed eagerly. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
+					<cell><para>Bind a concrete singleton class. The singleton will be constructed on the heap eagerly. The object will be supplied as <emph>std::shared_ptr&lt;T></emph>.</para></cell>
 				</row>
 			</body>
 		</table>
@@ -657,7 +657,7 @@
 
 		<para>As referenced objects are not instantiated inside the injector nor does the injector take ownership of the object, the injector has no control on the lifetime of the supplied objects. Consequently, it is important to take into account that the lifecycle management of referenced objects is the responsibility of the application and not of the injector.</para>
 
-		<para>The policy for referenced object lifetimes must therefore be to ensure that all objects passed to the injector's configuration for referencing remain alive past the end of the injector's lifetime and the lifetimes of other objects that have obtained references to these objects from the injector.</para>
+		<para>The policy for referenced object lifetimes must therefore be to ensure that all objects passed to the injector's configuration remain alive past the end of the injector's lifetime and the lifetimes of other objects that have obtained references to these objects from the injector.</para>
 
 		<para>Due to the potential complexity of managing this, it is best to limit the use of reference bindings to that of objects that are easily known to have sufficiently long lives.</para>
 
@@ -889,7 +889,7 @@
 
 			<entry><emph>getUnique</emph> calls may obtain polymorphic instance objects created on the heap;</entry>
 
-			<entry><emph>getReference</emph> calls may access long lived objects referenced from within the configuration used to construct the injector;</entry>
+			<entry><emph>getReference</emph> calls may access long-lived objects referenced from within the configuration used to construct the injector;</entry>
 
 			<entry><emph>getShared</emph> calls may access singletons or thread-local singletons created on the heap.</entry>
 		</bullets>
@@ -954,7 +954,7 @@
 
 		<para>The injector calls return a const reference and a shared pointer containing a const pointer. Note that the reference call requires an ampersand after the <emph>auto</emph> type keyword in order for the code to compile.</para>
 
-		<para>Care should be take with regard to getting references from the injector. If the copy constructor of class <emph>A</emph> were not deleted, the code would compile if the ampersand were removed.</para>
+		<para>Care should be taken with regard to getting references from the injector. If the copy constructor of class <emph>A</emph> were not deleted, the code would compile if the ampersand were removed.</para>
 
 		<code lang="C++">
 			// Class A2 has a copy constructor..
@@ -973,7 +973,7 @@
 
 		<para>When the injector is part of a hierarchy, const promotion applies to the whole hierarchy. The whole hierarchy will thus first be checked for a const binding, then the whole hierarchy will be checked again for a non-const binding.</para>
 
-		<para>The promotion rules are listed in the following table. The left hand column lists the requested const types. The middle column lists the default binding type supplied by the injector if a binding of that type is available. If such a binding is not available, the injector will lookup a binding of the type listed in the third column.</para>
+		<para>The promotion rules are listed in the following table. The left hand column lists the requested const types. The middle column lists the default binding type supplied by the injector if a binding of that type is available. If such a binding is not available, the injector will look up a binding of the type listed in the third column.</para>
 
 		<table>
 			<head>
@@ -1137,7 +1137,7 @@
 			};
 		</code>
 
-		<para>As the custom deleter type is not part of the binding key for shared bindings, it must not be specified in order to obtain a polymorphic shared instance of the specified type, regardless of whether or not the shared instance has a custom deletion policy.</para>
+		<para>As the custom deleter type is not part of the binding key for shared bindings, it must not be specified in order to obtain a polymorphic shared instance of the specified type, regardless of whether the shared instance has a custom deletion policy or not.</para>
 
 		<code lang="C++">
 			// Create an injector with the above configuration.
@@ -1246,7 +1246,7 @@
 
 		<h2>Explicitly managed cycles</h2>
 
-		<para>If a cyclic relationship between two instances is required, this must be managed explicitly by the application. If an explicitly constructed cyclic relationship approach is used using shared pointer containers, the normal rules in C++ regarding <emph>std::shared_ptr</emph> cycles apply and must be managed accordingly.</para>
+		<para>If a cyclic relationship between two instances is required, this must be managed explicitly by the application. If an explicitly constructed cyclic relationship approach using shared pointer containers is used, the normal rules in C++ regarding <emph>std::shared_ptr</emph> cycles apply and must be managed accordingly.</para>
 
 		<para>The best way to achieve an explicitly managed cyclic dependency is by creating a weak or shared pointer in one of the cyclically dependent classes, then registering a post-construction callback with the injector from within the constructor of the class. This callback can then set the pointer container to point to the other instance, by obtaining the instance from the injector supplied in the callback.</para>
 
@@ -1498,7 +1498,7 @@
 
 		<para>It rapidly became clear that the technical implications of these questions and requirements were tightly coupled. Allowing a lot of technical freedom in the technical solution to one of the questions often resulted in unacceptable limitations for the technical solutions to one or more of the other questions and requirements.</para>
 
-		<para>The final chosen design aims to reflect the common needs of enterprise software development with a simple API, whilst maintaining safety, testability, and minimising feature shrinkage. Good performance was a requirement, but not to the point of detriment to other requirements. Enterprise dependency injection is not a replacement for fine grained object lifetime management. The design thus reflects real world requirements for wiring enterprise C++ applications.</para>
+		<para>The final chosen design aims to reflect the common needs of enterprise software development with a simple API, whilst maintaining safety, testability, and minimising feature shrinkage. Good performance was a requirement, but not to the point of detriment to other requirements. Enterprise dependency injection is not a replacement for fine-grained object lifetime management. The design thus reflects real world requirements for wiring enterprise C++ applications.</para>
 
 		<h2>Design</h2>
 
@@ -1610,11 +1610,11 @@
 
 		<para>The use of <emph>T</emph>, <emph>std::unique_ptr&lt;T></emph>, and <emph>std::shared_ptr&lt;T></emph> meta-types for non-polymorphic values, polymorphic instances, and singletons respectively was natural from the outset.</para>
 
-		<para>A decision that was taken during the design of the injector was to raise the severity of using raw pointer bindings to a compile time error, via static assertions. Thus any bindings defined with raw pointers result in a compile time error, along with an error message that proposes using <emph>Unique</emph> or <emph>Shared</emph> bindings instead.</para>
+		<para>A decision that was taken during the design of the injector was to raise the severity of using raw pointer bindings to a compile time error, via static assertions. Thus, any bindings defined with raw pointers result in a compile time error, along with an error message that proposes using <emph>Unique</emph> or <emph>Shared</emph> bindings instead.</para>
 
 		<para>One consideration was whether reference bindings should be allowed, or whether the lifetime management of this would open up the risk of dangling references. The conclusion was that references should be provided, but the implications of providing references from the injector should be clearly discussed in the documentation.</para>
 
-		<para>Another consideration was how to implement const versions of long lived objects (i.e. <emph>const BaseT &amp;</emph> and <emph>std::shared_ptr&lt;const BaseT></emph>, including provision for promoting a non-const binding to a const binding when no suitable const binding has been registered.</para>
+		<para>Another consideration was how to implement const versions of long-lived objects (i.e. <emph>const BaseT &amp;</emph> and <emph>std::shared_ptr&lt;const BaseT></emph>, including provision for promoting a non-const binding to a const binding when no suitable const binding has been registered.</para>
 
 		<para>The final design thus provides the following types of non-const object.</para>
 
@@ -1752,9 +1752,9 @@
 
 		<h3>Planned C++20 features</h3>
 
-		<para>One feature that has not been implemented in the current version of the Balau injector is compile time binding keys. The idea of building the binding keys at compile time via the get-instance typename and string literal is not achievable in a simple way in C++17.</para>
+		<para>One feature that has not been implemented in the current version of the Balau injector is compile-time binding keys. The idea of building the binding keys at compile time via the get-instance typename and string literal is not achievable in a simple way in C++17.</para>
 
-		<para>In a get-instance call, the type argument encapsulates all the information required for the key apart from the name, i.e. binding meta-type, const qualifier, and typeid. In order to provide compile time binding keys, the compile time name would also need to be specified as a template argument.</para>
+		<para>In a get-instance call, the type argument encapsulates all the information required for the key apart from the name, i.e. binding meta-type, const qualifier, and typeid. In order to provide compile time binding keys, the compile-time name would also need to be specified as a template argument.</para>
 
 		<code lang="C++">
 			// This is not possible in C++17.

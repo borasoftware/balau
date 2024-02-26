@@ -245,7 +245,7 @@ std::shared_ptr<HttpServerConfiguration> HttpServer::createState(std::shared_ptr
 	auto accessLog = configuration->getValue<std::string>("access.log", "stream: stdout");
 	auto errorLog = configuration->getValue<std::string>("error.log", "stream: stderr");
 
-	// TODO configure logging namespace.. this requires the fine grained reconfiguration implementation to be created.
+	// TODO configure logging namespace.. this requires the fine-grained reconfiguration implementation to be created.
 	BalauLogger logger(loggingNamespace);
 
 	auto serverId = configuration->getValue<std::string>("server.id", "Balau server");

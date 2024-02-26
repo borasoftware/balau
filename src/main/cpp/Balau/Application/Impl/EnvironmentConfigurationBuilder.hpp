@@ -57,7 +57,7 @@ class EnvironmentConfigurationBuilder {
 			}
 		}
 
-		// Transfer the factories from hard wired type specifications.
+		// Transfer the factories from hard-wired type specifications.
 		for (auto & factory : derivedBindingBuilderFactoryVector) {
 			appendFactories(bindingBuilderFactoryVector, factory);
 		}
@@ -70,7 +70,7 @@ class EnvironmentConfigurationBuilder {
 		// The property string trie represents the environment's value property values.
 		//
 		// The binding builder factory vector represents the root type specifications
-		// supplied either via type specification files or hard wired in the configure
+		// supplied either via type specification files or hard-wired in the configure
 		// methods of the derived class.
 		//
 		// Each of the entries from the property strings hierarchy will be converted

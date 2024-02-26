@@ -341,7 +341,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// If no suitable binding is found, NoBindingException is thrown.
 	///
-	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	/// A value may be instance sourced (constructed on the stack or copied from a prototype).
 	///
 	/// @tparam ValueT the type of the value binding
 	/// @param name the name of the binding
@@ -358,7 +358,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// If no suitable binding is found, the supplied default value is copied into the return value.
 	///
-	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	/// A value may be instance sourced (constructed on the stack or copied from a prototype).
 	///
 	/// @tparam ValueT the type of the value binding
 	/// @param defaultValue a default value to copy if no suitable binding was found
@@ -374,7 +374,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// If no suitable binding is found, the supplied default value is copied into the return value.
 	///
-	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	/// A value may be instance sourced (constructed on the stack or copied from a prototype).
 	///
 	/// @tparam ValueT the type of the value binding
 	/// @param name the name of the binding
@@ -391,7 +391,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// If no suitable binding is found, a default value is obtained by the supplied function.
 	///
-	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	/// A value may be instance sourced (constructed on the stack or copied from a prototype).
 	///
 	/// @tparam ValueT the type of the value binding
 	/// @param defaultValueSupplier a function that supplies a default value if no suitable binding is found
@@ -407,7 +407,7 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 	///
 	/// If no suitable binding is found, a default value is obtained by the supplied function.
 	///
-	/// A value may be instance sourced (stack constructed or copied from a prototype).
+	/// A value may be instance sourced (constructed on the stack or copied from a prototype).
 	///
 	/// @tparam ValueT the type of the value binding
 	/// @param name the name of the binding

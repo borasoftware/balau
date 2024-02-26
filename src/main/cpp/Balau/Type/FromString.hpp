@@ -500,7 +500,7 @@ inline void fromString(long double & destination, std::string_view value) {
 /// Converts the supplied string to a boolean value.
 ///
 /// A ConversionException will be thrown under the following circumstances:
-///  - the string does not contain one of the case insensitive strings "false" or "true".
+///  - the string does not contain one of the case-insensitive strings "false" or "true".
 ///
 /// @param destination the destination value that is set via assignment
 /// @param value the string view input
@@ -810,7 +810,7 @@ inline void fromString16(long double & destination, std::u16string_view value) {
 /// Converts the supplied string to a boolean value.
 ///
 /// A ConversionException will be thrown under the following circumstances:
-///  - the string does not contain one of the case insensitive strings "false" or "true".
+///  - the string does not contain one of the case-insensitive strings "false" or "true".
 ///
 /// @param destination the destination value that is set via assignment
 /// @param value the string view input
@@ -1109,7 +1109,7 @@ inline void fromString32(long double & destination, std::u32string_view value) {
 /// Converts the supplied string to a boolean value.
 ///
 /// A ConversionException will be thrown under the following circumstances:
-///  - the string does not contain one of the case insensitive strings "false" or "true".
+///  - the string does not contain one of the case-insensitive strings "false" or "true".
 ///
 /// @param destination the destination value that is set via assignment
 /// @param value the string view input

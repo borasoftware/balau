@@ -230,7 +230,7 @@
 			<entry>Unified resource identification and resource access;</entry>
 			<entry>data structures (ObjectTrie, DependencyGraph, BlockingArrayQueue);</entry>
 			<entry>shared memory data structures (SharedMemoryQueue, SharedMemoryObject);</entry>
-			<entry>hand written language parser utilities;</entry>
+			<entry>handwritten language parser utilities;</entry>
 			<entry>HTTP clients and server;</entry>
 			<entry>utilities (system, compression, files, hashing, streams, strings, etc.).</entry>
 		</bullets>

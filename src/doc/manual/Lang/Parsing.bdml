@@ -42,35 +42,35 @@
 <chapter title="Parsing utilities">
 	<h1>Overview</h1>
 
-	<para>Balau includes a set of classes which can help in the construction of language scanners and parsers. The aim of these classes is to facilitate the creation of hand written language scanners and recursive descent parsers written in pure C++.</para>
+	<para>Balau includes a set of classes which can help in the construction of language scanners and parsers. The aim of these classes is to facilitate the creation of handwritten language scanners and recursive descent parsers written in pure C++.</para>
 
 	<para>Given that there are many mature scanner/parser generator tools available, one pertinent question to ask may be: why write a scanner and parser in pure C++?</para>
 
-	<para>Firstly, there is no right or wrong approach to writing a scanner/parser pair. If a generator tool works well for a particular use case, then such an approach is admirable. However, given that the parsers of prominent mainstream compilers are hand written (<ref type="raw" new="true" url="http://clang.llvm.org/features.html#unifiedparser">Clang - unified parser</ref>, <ref type="raw" new="true" url="https://gcc.gnu.org/wiki/New_C_Parser">GCC - new C parser</ref>), perhaps there are valid reasons for doing so.</para>
+	<para>Firstly, there is no right or wrong approach to writing a scanner/parser pair. If a generator tool works well for a particular use case, then such an approach is admirable. However, given that the parsers of prominent mainstream compilers are handwritten (<ref type="raw" new="true" url="http://clang.llvm.org/features.html#unifiedparser">Clang - unified parser</ref>, <ref type="raw" new="true" url="https://gcc.gnu.org/wiki/New_C_Parser">GCC - new C parser</ref>), perhaps there are valid reasons for doing so.</para>
 
-	<para>One anecdotal reason often quoted is performance, that is to say that a hand written parser will supposedly be much faster than a generated one. The evidence does not appear to back this up (the GCC <ref type="raw" new="true" url="https://gcc.gnu.org/wiki/New_C_Parser">wiki</ref> indicates a negligible 1.5% speed increase). There may thus be a small percentage speed up, but it is unlikely that a speed up measured in orders of magnitude will occur.</para>
+	<para>One anecdotal reason often quoted is performance, that is to say that a handwritten parser will supposedly be much faster than a generated one. The evidence does not appear to back this up (the GCC <ref type="raw" new="true" url="https://gcc.gnu.org/wiki/New_C_Parser">wiki</ref> indicates a negligible 1.5% speed increase). There may thus be a small percentage speed up, but it is unlikely that a speed-up measured in orders of magnitude will occur.</para>
 
 	<para>So removing performance from the argument, some benefits are proposed below.</para>
 
 	<bullets>
 		<entry><strong>Fine tuning of semantics</strong> - Language definitions of any complexity will often require additional semantic rules that are expressed separately from the language's grammar specification. These additional semantic rules may not fit naturally into the language definition processed by a parser generator tool.</entry>
 
-		<entry><strong>Debuggability</strong> - The code is hand written pure C++ and thus can be structured for readability and easy debugging.</entry>
+		<entry><strong>Debuggability</strong> - The code is handwritten pure C++ and thus can be structured for readability and easy debugging.</entry>
 
 		<entry><strong>Error reporting, diagnostics, recovery</strong> - Precise error reporting, diagnostics, and recovery are easier to achieve when the complete and final scanner/parser source code is available to edit directly.</entry>
 
-		<entry><strong>Elegance</strong> - A hand written recursive descent parser is an elegant solution to a complex requirement.</entry>
+		<entry><strong>Elegance</strong> - A handwritten recursive descent parser is an elegant solution to a complex requirement.</entry>
 
 		<entry><strong>Simple toolchain</strong> - No additional tools are required for parser source code generation.</entry>
 	</bullets>
 
-	<para>The overriding reason to use scanner/parser generator tools is that the amount of code you need to write is much less than the code required for a hand written scanner and parser. This is most likely true. However, a language specification is typically created once and then subsequently modified over time with only small incremental improvements. The overhead of creating the larger code base of a hand written scanner and parser is thus likely to be less than the benefits reaped during fine tuning of the initial implementation and the ease of adding incremental improvements later on.</para>
+	<para>The overriding reason to use scanner/parser generator tools is that the amount of code you need to write is much less than the code required for a handwritten scanner and parser. This is most likely true. However, a language specification is typically created once and then subsequently modified over time with only small incremental improvements. The overhead of creating the larger code base of a handwritten scanner and parser is thus likely to be less than the benefits reaped during fine-tuning of the initial implementation and the ease of adding incremental improvements later on.</para>
 
 	<h1>Approach</h1>
 
 	<para>Having read the introductory words in the overview section of this page, it could be natural to imagine that the parsing utilities in the Balau library are large and complex. This is actually not the case. The parsing utilities total less than 1000 lines of code and a handful of classes.</para>
 
-	<para>As the aim is to hand write a scanner and parser implementation pair, the value of the utilities lies in the approach rather than the amount of code provided. The parser tools do not actually provide any classes for parsing at all. The code only provides an abstract scanner base class and a common contract between the scanner and the to be written parser.</para>
+	<para>As the aim is to handwrite a scanner and parser implementation pair, the value of the utilities lies in the approach rather than the amount of code provided. The parser tools do not actually provide any classes for parsing at all. The code only provides an abstract scanner base class and a common contract between the scanner and the to be written parser.</para>
 
 	<para>The overall approach to the creation of a new pure C++ based language parser using the Balau parsing utilities classes is to:</para>
 

@@ -109,7 +109,7 @@
 			}
 		</code>
 
-		<para>The test groups are automatically added to the test runner's test set via forced instantiation within the test group base class. Thus it is sufficient to add each test group class body file to the test application, and each test group class will instantiate itself and add its test case methods to the test runner.</para>
+		<para>The test groups are automatically added to the test runner's test set via forced instantiation within the test group base class. Thus, it is sufficient to add each test group class body file to the test application, and each test group class will instantiate itself and add its test case methods to the test runner.</para>
 
 		<para>The test runner uses the command line parser to parse a space separated command line which can also contain globbed test name patterns to run.</para>
 
@@ -128,7 +128,7 @@
 			</body>
 		</table>
 
-		<para>The test runner will interpret the first element of <emph>argv</emph> as the execution model (case insensitive) if it is a valid execution model, and the remainder of the command line arguments as a space/comma delimited list of globbed test names to run. If the first element of <emph>argv</emph> is not a valid execution model, it will form the head of the globbed test name list and the <emph>SingleThreaded</emph> execution model will be used by default.</para>
+		<para>The test runner will interpret the first element of <emph>argv</emph> as the execution model (case-insensitive) if it is a valid execution model, and the remainder of the command line arguments as a space/comma delimited list of globbed test names to run. If the first element of <emph>argv</emph> is not a valid execution model, it will form the head of the globbed test name list and the <emph>SingleThreaded</emph> execution model will be used by default.</para>
 
 		<para>In both cases, the zeroth element of <emph>argv</emph> is assumed to be the test application path and is ignored. If this is not the case, then the starting element can be specified as an optional argument of the <emph>run</emph> call.</para>
 
@@ -697,7 +697,7 @@
 
 		<para>The best result of 10 runs was taken for each execution model. The timing values indicate clock time, thus they do not take into account context switches where a CPU core is executing other application's background code. The total duration (test run clock time) is the sum of all the test's execution times. For concurrent execution models, this is spread across the allocated cores. The average duration is the test run clock time total duration divided by the number of tests run. The total duration (application clock time) is the duration of the test application's main process.</para>
 
-		<para>In the Balau test suite, the logger tests are automatically disabled during multi-threaded and worker process runs. Consequently, these test groups were manually disabled for all the the runs in this performance evaluation. In addition, all test groups that involve network functionality were also disabled in order to avoid network latency issues skewing results.</para>
+		<para>In the Balau test suite, the logger tests are automatically disabled during multi-threaded and worker process runs. Consequently, these test groups were manually disabled for all the runs in this performance evaluation. In addition, all test groups that involve network functionality were also disabled in order to avoid network latency issues skewing results.</para>
 
 		<code>
 			----------------- SINGLE THREADED ------------------
@@ -733,9 +733,9 @@
 			***** ALL TESTS PASSED - 262 tests executed *****
 		</code>
 
-		<para>It can be seen that the single threaded executor has the lower overhead per test, but the other executors nevertheless reduce the execution time significantly when run on a multi-core CPU. If an appreciable amount of tests with significant I/O waits were present, the speed up would approach the number of allocated cores.</para>
+		<para>It can be seen that the single threaded executor has the lower overhead per test, but the other executors nevertheless reduce the execution time significantly when run on a multi-core CPU. If an appreciable amount of tests with significant I/O waits were present, the speed-up would approach the number of allocated cores.</para>
 
-		<para>The Balau unit test execution times range from microseconds to tens of milliseconds, and there were 262 tests run in the above timing runs. A complex C++ application could have one or two orders of magnitude more tests than this, and it is likely that the average execution time of the tests would be greater on average. Thus the overall execution times presented above could thus be multiplied by a factor of several orders of magnitude in order to represent a real world scenario.</para>
+		<para>The Balau unit test execution times range from microseconds to tens of milliseconds, and there were 262 tests run in the above timing runs. A complex C++ application could have one or two orders of magnitude more tests than this, and it is likely that the average execution time of the tests would be greater on average. Thus, the overall execution times presented above could thus be multiplied by a factor of several orders of magnitude in order to represent a real world scenario.</para>
 
 		<h2>CI configuration</h2>
 

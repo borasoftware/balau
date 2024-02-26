@@ -734,7 +734,7 @@
 
 			/**
 			 * Adds support for all Unicode blocks. Block names use the prefix 'In'. E.g.,
-			 * `\p{InBasicLatin}`. Token names are case insensitive, and any spaces, hyphens, and
+			 * `\p{InBasicLatin}`. Token names are case-insensitive, and any spaces, hyphens, and
 			 * underscores are ignored.
 			 *
 			 * Uses Unicode 10.0.0.
@@ -773,7 +773,7 @@
 			/**
 			 * Adds support for Unicode's general categories. E.g., `\p{Lu}` or `\p{Uppercase Letter}`. See
 			 * category descriptions in UAX #44 <http://unicode.org/reports/tr44/#GC_Values_Table>. Token
-			 * names are case insensitive, and any spaces, hyphens, and underscores are ignored.
+			 * names are case-insensitive, and any spaces, hyphens, and underscores are ignored.
 			 *
 			 * Uses Unicode 10.0.0.
 			 *
@@ -840,7 +840,7 @@
 			 * #18 RL1.2 additionally requires support for Unicode scripts and general categories. These are
 			 * included in BdmlXRegExp's Unicode Categories and Unicode Scripts addons.
 			 *
-			 * Token names are case insensitive, and any spaces, hyphens, and underscores are ignored.
+			 * Token names are case-insensitive, and any spaces, hyphens, and underscores are ignored.
 			 *
 			 * Uses Unicode 10.0.0.
 			 *
@@ -886,7 +886,7 @@
 		exports.default = function (BdmlXRegExp) {
 
 			/**
-			 * Adds support for all Unicode scripts. E.g., `\p{Latin}`. Token names are case insensitive,
+			 * Adds support for all Unicode scripts. E.g., `\p{Latin}`. Token names are case-insensitive,
 			 * and any spaces, hyphens, and underscores are ignored.
 			 *
 			 * Uses Unicode 10.0.0.

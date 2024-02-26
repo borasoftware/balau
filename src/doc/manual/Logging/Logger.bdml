@@ -197,7 +197,7 @@
 
 		<para>If no <emph>balau-logging.hconf</emph> file is found and no call to configure is made, the logging system will log INFO and WARN level messages to stdout and ERROR messages to stderr.</para>
 
-		<para>If the parsed logging configuration from <emph>balau-logging.hconf</emph> is invalid, an error message will be written to stderr and loggers associated with the affected namespaces will be configured to write to stdout for all invalidly configured logging levels. If the format specification for a namespace contains an invalid format specifier, an error message will be written to stderr and the the invalid specifier will be output verbatim in subsequent log messages to affected loggers.</para>
+		<para>If the parsed logging configuration from <emph>balau-logging.hconf</emph> is invalid, an error message will be written to stderr and loggers associated with the affected namespaces will be configured to write to stdout for all invalidly configured logging levels. If the format specification for a namespace contains an invalid format specifier, an error message will be written to stderr and the invalid specifier will be output verbatim in subsequent log messages to affected loggers.</para>
 
 		<h2>Logger instances</h2>
 
@@ -427,7 +427,7 @@
 
 		<para>As this functionality is implemented in the <emph>FileLoggingStream</emph> class, custom logging stream classes are responsible for implementing this functionality if required. If a custom logging stream implementation is specified in the logging configuration, the associated custom logging stream class will need to be programmed with the necessary logic to recognise and expand the <emph>${date}</emph> placeholder, and close/open the relevant output streams each day.</para>
 
-		<para>The previous configuration example with with the <emph>${date}</emph> placeholder added to the file logging stream is:</para>
+		<para>The previous configuration example with the <emph>${date}</emph> placeholder added to the file logging stream is:</para>
 
 		<code lang="Properties">
 			. {
@@ -481,7 +481,7 @@
 
 		<h2>Logging level</h2>
 
-		<para>The logging level option value is just the level (trace, debug, info, warn, error, none). The value text is case insensitive.</para>
+		<para>The logging level option value is just the level (trace, debug, info, warn, error, none). The value text is case-insensitive.</para>
 
 		<h2>Format specification</h2>
 

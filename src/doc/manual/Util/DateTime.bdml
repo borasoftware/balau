@@ -42,7 +42,7 @@
 	<chapter title="Date-time utilities">
 		<h1>Overview</h1>
 
-		<para>This header provides user friendly date/time utility functions, defined within the <emph>Balau::Util::DateTime</emph> namespace.</para>
+		<para>This header provides user-friendly date/time utility functions, defined within the <emph>Balau::Util::DateTime</emph> namespace.</para>
 
 		<para>Balau includes a copy of the <ref type="raw" new="true" url="https://github.com/HowardHinnant/date">Hinnant date</ref> library in the <emph>ThirdParty</emph> folder. The library is used by Balau and can be used directly in applications that use Balau. Documentary references to this library refer to the library as the <emph>HH date library</emph>.</para>
 

@@ -61,17 +61,17 @@
 
 				<row>
 					<cell>milliSleep</cell>
-					<cell>Sleep for the indicated number of milli-seconds.</cell>
+					<cell>Sleep for the indicated number of milliseconds.</cell>
 				</row>
 
 				<row>
 					<cell>microSleep</cell>
-					<cell>Sleep for the indicated number of micro-seconds.</cell>
+					<cell>Sleep for the indicated number of microseconds.</cell>
 				</row>
 
 				<row>
 					<cell>nanoSleep</cell>
-					<cell>Sleep for the indicated number of nano-seconds.</cell>
+					<cell>Sleep for the indicated number of nanoseconds.</cell>
 				</row>
 			</body>
 		</table>

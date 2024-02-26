@@ -76,7 +76,7 @@
 
 			<entry>Does the development team wish to use a type safe, class based, in process / out of process test framework?</entry>
 
-			<entry>Does the development team prefer user friendly canned utilities and utility APIs?</entry>
+			<entry>Does the development team prefer user-friendly canned utilities and utility APIs?</entry>
 
 			<entry>Do you require HTTP/WebSocket connectivity and an integrated web application framework?</entry>
 
@@ -85,7 +85,7 @@
 
 		<h1>Themes</h1>
 
-		<para>The main themes currently covered by the Balau library are as follows. Documentation for each component / utility may be accessed from the drop down menu at the top of this page.</para>
+		<para>The main themes currently covered by the Balau library are as follows. Documentation for each component / utility may be accessed from the drop-down menu at the top of this page.</para>
 
 		<bullets>
 			<entry>dependency injection with application and environment configuration</entry>
@@ -112,7 +112,7 @@
 
 			<entry>Hand written language parser utilities</entry>
 
-			<entry>Hierarchical property file format and corresponding hand written parser</entry>
+			<entry>Hierarchical property file format and corresponding handwritten parser</entry>
 
 			<entry>HTTP/WebSocket clients and server</entry>
 
@@ -180,7 +180,7 @@
 
 		<h2>Operating systems</h2>
 
-		<para>Balau has been developed and tested on 64 bit Linux with the GCC and Clang compilers. A port to Windows 7/10 is planned.</para>
+		<para>Balau has been developed and tested on 64-bit Linux with the GCC and Clang compilers. A port to Windows 7/10 is planned.</para>
 
 		<para>Other Posix compliant platforms that are supported by Boost and ICU may work if they comply with the primitive type size assertion checks in the <emph>StdTypes.hpp</emph> header:</para>
 
@@ -207,7 +207,7 @@
 
 		<h1>Contributing</h1>
 
-		<para>The core principal of the Balau core C++ library is to provide a user friendly C++ application framework on top of Boost and ICU, on which complex Unicode based C++ software applications may be created. To achieve this aim, the library contains a set of core application components (injector, environment configuration framework, logger, test runner) that form the basis of a complex C++ software application, and a set of utilities with straightforward APIs.</para>
+		<para>The core principal of the Balau core C++ library is to provide a user-friendly C++ application framework on top of Boost and ICU, on which complex Unicode based C++ software applications may be created. To achieve this aim, the library contains a set of core application components (injector, environment configuration framework, logger, test runner) that form the basis of a complex C++ software application, and a set of utilities with straightforward APIs.</para>
 
 		<para>The library is in active development. Many of the themes can be expanded to cover a greater breadth of features and utilities.</para>
 

@@ -146,7 +146,7 @@
 				host       = smtp.example.com
 				port       = 465
 				user       = email-sender
-				# The password is normally supplied via separate credentials config.
+				# The password is normally supplied via a separate credential config file.
 				password   = qwertyuiop
 				subject    = MESSAGE RECEIVED
 				from       = enquiry@example.com

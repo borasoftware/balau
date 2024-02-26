@@ -58,13 +58,13 @@
 
 		<para>The general aim of the library's development is reactive rather than proactive. If a useful feature for enterprise quality C++ application development is missing, convoluted, or lacking in features in the C++ standard library, then the feature is a good candidate for development and inclusion in Balau.</para>
 
-		<para>If an existing feature in the standard library exists and is designed as low level, fine grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library.</para>
+		<para>If an existing feature in the standard library exists and is designed as low level, fine-grained, or does not have a straight forward API, then it would be useful to develop a corresponding Balau feature with a simple and intuitive API, as a high level facade of the standard library.</para>
 
 		<para>Consequently, there is no complex plan of planned features to be added to the library. The current list of planned features can be seen on the <ref url="NonCode/PlannedFeatures">planned features</ref> page.</para>
 
 		<h1>License</h1>
 
-		<para>Balau is licensed under the <emph>Apache License version 2.0</emph>. All contributions will need to be licensed under the same license or under a license that allows relicensing under the Apache license.</para>
+		<para>Balau is licensed under the <emph>Apache License version 2.0</emph>. All contributions will need to be licensed under the same license or under a license that allows re-licensing under the Apache license.</para>
 
 		<h1>Repository</h1>
 
@@ -170,7 +170,7 @@
 
 		<h1>Code style</h1>
 
-		<para>The aim of the code style used in the Balau library is maximum readability. The following sub-sections discuss aspects of the code style.</para>
+		<para>The aim of the code style used in the Balau library is maximum readability. The following subsections discuss aspects of the code style.</para>
 
 		<h2>Indentation</h2>
 
@@ -188,7 +188,7 @@
 
 		<para>Headers should use include barriers, the names of which exactly follow the names in the folder hierarchy in which the file is situated. The <emph>#pragma once</emph> definition should not be used. This will be revised when C++20 modules are standardized.</para>
 
-		<para>Includes in header files should be avoided when possible (use incomplete declarations). Otherwise, the full include path of non test header files should be used between &lt; and &gt; tokens.</para>
+		<para>Includes in header files should be avoided when possible (use incomplete declarations). Otherwise, the full include path of non-test header files should be used between &lt; and &gt; tokens.</para>
 
 		<code lang="C++">
 			// Example include in header file.

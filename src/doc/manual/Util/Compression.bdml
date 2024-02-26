@@ -42,7 +42,7 @@
 	<chapter title="Compression utilities">
 		<h1>Overview</h1>
 
-		<para>This header provides user friendly compression utility functions defined within the <emph>Balau::Util::Compression</emph> namespace, and the <emph>Unzipper</emph> / <emph>Zipper</emph> class pair for zip file access and mutation.</para>
+		<para>This header provides user-friendly compression utility functions defined within the <emph>Balau::Util::Compression</emph> namespace, and the <emph>Unzipper</emph> / <emph>Zipper</emph> class pair for zip file access and mutation.</para>
 
 		<h1>Quick start</h1>
 
