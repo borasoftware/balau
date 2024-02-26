@@ -23,8 +23,8 @@
 /// Utilities for unicode characters and code points.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__CHARACTER
-#define COM_BORA_SOFTWARE__BALAU_TYPE__CHARACTER
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_CHARACTER
+#define COM_BORA_SOFTWARE_BALAU_TYPE_CHARACTER
 
 #include <Balau/Type/StdTypes.hpp>
 
@@ -343,4 +343,4 @@ struct Character {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__CHARACTER
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_CHARACTER

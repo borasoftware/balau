@@ -23,8 +23,8 @@
 /// Date and time utilities.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__DATE_TIME
-#define COM_BORA_SOFTWARE__BALAU_UTIL__DATE_TIME
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_DATE_TIME
+#define COM_BORA_SOFTWARE_BALAU_UTIL_DATE_TIME
 
 #include <Balau/Type/ToString.hpp>
 #include <Balau/System/Clock.hpp>
@@ -180,4 +180,4 @@ inline std::string toString(const std::chrono::time_point<Clock, Dur> & tp) {
 	return s.str();
 }
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__DATE_TIME
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_DATE_TIME

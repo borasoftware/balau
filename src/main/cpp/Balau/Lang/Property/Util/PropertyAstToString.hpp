@@ -23,8 +23,8 @@
 /// Visitor based property AST to-string function.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG_CSS_UTIL__PROPERTY_AST_TO_STRING
-#define COM_BORA_SOFTWARE__BALAU_LANG_CSS_UTIL__PROPERTY_AST_TO_STRING
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_CSS_UTIL_PROPERTY_AST_TO_STRING
+#define COM_BORA_SOFTWARE_BALAU_LANG_CSS_UTIL_PROPERTY_AST_TO_STRING
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Lang/Property/Lang/PropertyAst.hpp>
@@ -157,4 +157,4 @@ inline Balau::U8String<AllocatorT> toString(const PropertyNode & object) {
 
 } // namespace Balau::Lang::Property::AST
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG_CSS_UTIL__PROPERTY_AST_TO_STRING
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_CSS_UTIL_PROPERTY_AST_TO_STRING

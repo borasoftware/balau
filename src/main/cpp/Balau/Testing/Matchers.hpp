@@ -23,8 +23,8 @@
 /// Matcher functions for test assertions.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__MATCHERS
-#define COM_BORA_SOFTWARE__BALAU_TESTING__MATCHERS
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_MATCHERS
+#define COM_BORA_SOFTWARE_BALAU_TESTING_MATCHERS
 
 #include <Balau/Testing/Impl/MatcherClasses.hpp>
 
@@ -168,4 +168,4 @@ inline const ThrowExpectationWithFunction<E, C> throws(const E & expected, C com
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__MATCHERS
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_MATCHERS

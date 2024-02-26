@@ -23,8 +23,8 @@
 /// %Sleep utilities.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_SYSTEM__SLEEP
-#define COM_BORA_SOFTWARE__BALAU_SYSTEM__SLEEP
+#ifndef COM_BORA_SOFTWARE_BALAU_SYSTEM_SLEEP
+#define COM_BORA_SOFTWARE_BALAU_SYSTEM_SLEEP
 
 #include <chrono>
 #include <thread>
@@ -72,4 +72,4 @@ class Sleep final {
 
 } // namespace Balau::System
 
-#endif // COM_BORA_SOFTWARE__BALAU_SYSTEM__SLEEP
+#endif // COM_BORA_SOFTWARE_BALAU_SYSTEM_SLEEP

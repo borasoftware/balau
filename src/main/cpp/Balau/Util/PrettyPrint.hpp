@@ -23,8 +23,8 @@
 /// Utilities for printing numeric values in different formats.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__PRETTY_PRINT
-#define COM_BORA_SOFTWARE__BALAU_UTIL__PRETTY_PRINT
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_PRETTY_PRINT
+#define COM_BORA_SOFTWARE_BALAU_UTIL_PRETTY_PRINT
 
 #include <Balau/Exception/ContainerExceptions.hpp>
 #include <Balau/Util/DateTime.hpp>
@@ -323,4 +323,4 @@ struct PrettyPrint final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__PRETTY_PRINT
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_PRETTY_PRINT

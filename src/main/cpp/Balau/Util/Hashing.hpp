@@ -23,8 +23,8 @@
 /// %Hashing functions.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__HASHING
-#define COM_BORA_SOFTWARE__BALAU_UTIL__HASHING
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_HASHING
+#define COM_BORA_SOFTWARE_BALAU_UTIL_HASHING
 
 #include <Balau/ThirdParty/HashLibrary/crc32.h>
 #include <Balau/ThirdParty/HashLibrary/md5.h>
@@ -252,4 +252,4 @@ struct Hashing final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__HASHING
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_HASHING

@@ -33,8 +33,8 @@
 /// A graph that models the dependencies between a set of objects of type T.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH
-#define COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH
+#ifndef COM_BORA_SOFTWARE_BALAU_CONTAINER_DEPENDENCY_GRAPH
+#define COM_BORA_SOFTWARE_BALAU_CONTAINER_DEPENDENCY_GRAPH
 
 #include <Balau/Exception/ContainerExceptions.hpp>
 
@@ -627,4 +627,4 @@ class DependencyGraph {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__DEPENDENCY_GRAPH
+#endif // COM_BORA_SOFTWARE_BALAU_CONTAINER_DEPENDENCY_GRAPH

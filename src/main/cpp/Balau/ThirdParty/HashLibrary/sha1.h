@@ -4,8 +4,8 @@
 // see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#ifndef BALAU_TP__HASH_LIBRARY__SHA1_H
-#define BALAU_TP__HASH_LIBRARY__SHA1_H
+#ifndef BALAU_TP_HASH_LIBRARY_SHA1
+#define BALAU_TP_HASH_LIBRARY_SHA1
 
 #include <string>
 
@@ -383,4 +383,4 @@ class SHA1 //: public Hash
 
 } // namespace Balau::HashLibrary
 
-#endif // BALAU_TP__HASH_LIBRARY__SHA1_H
+#endif // BALAU_TP_HASH_LIBRARY_SHA1

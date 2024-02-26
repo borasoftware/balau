@@ -4,14 +4,12 @@
 // see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#ifndef BALAU_TP__HASH_LIBRARY__HASH_H
-#define BALAU_TP__HASH_LIBRARY__HASH_H
+#ifndef BALAU_TP_HASH_LIBRARY_HASH
+#define BALAU_TP_HASH_LIBRARY_HASH
 
 #include <string>
 
-namespace Balau {
-
-namespace HashLibrary {
+namespace Balau::HashLibrary {
 
 /// abstract base class
 class Hash {
@@ -32,8 +30,6 @@ class Hash {
 	virtual void reset() = 0;
 };
 
-} // namespace HashLibrary
+} // namespace Balau::HashLibrary
 
-} // namespace Balau
-
-#endif // BALAU_TP__HASH_LIBRARY__HASH_H
+#endif // BALAU_TP_HASH_LIBRARY_HASH

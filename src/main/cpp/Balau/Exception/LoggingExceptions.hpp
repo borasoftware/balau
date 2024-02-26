@@ -23,8 +23,8 @@
 /// %Balau exceptions for the logging framework.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__LOGGING_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__LOGGING_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_LOGGING_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_LOGGING_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -46,4 +46,4 @@ class LoggingConfigurationException : public BalauException {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__LOGGING_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_LOGGING_EXCEPTIONS

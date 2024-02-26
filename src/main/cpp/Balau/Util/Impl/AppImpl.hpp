@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__APP_IMPL
-#define COM_BORA_SOFTWARE__BALAU_UTIL__APP_IMPL
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_APP_IMPL
+#define COM_BORA_SOFTWARE_BALAU_UTIL_APP_IMPL
 
 #include <Balau/Util/User.hpp>
 #include <boost/dll/runtime_symbol_info.hpp>
@@ -166,4 +166,4 @@ struct AppImpl final {
 
 } // namespace Balau::Util::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__APP_IMPL
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_APP_IMPL

@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SESSION
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SESSION
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_SESSION
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_SESSION
 
 ///
 /// @file HttpSession.hpp
@@ -227,4 +227,4 @@ class HttpSession final : public std::enable_shared_from_this<HttpSession> {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SESSION
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_SESSION

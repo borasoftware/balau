@@ -23,8 +23,8 @@
 /// A simple HTTPS client.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTPS_CLIENT
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTPS_CLIENT
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_HTTPS_CLIENT
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_HTTPS_CLIENT
 
 #include <Balau/Network/Http/Client/HttpClient.hpp>
 #include <Balau/ThirdParty/Boost/Beast/Http/root_certificates.hpp>
@@ -166,4 +166,4 @@ class HttpsClient : public HttpClient {
 
 } // namespace Balau::Network::Http
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTPS_CLIENT
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_HTTPS_CLIENT

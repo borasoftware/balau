@@ -30,8 +30,8 @@
 /// semantics when switching to the fake macros.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTABLE
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTABLE
 
 #include <Balau/Application/Injector.hpp>
 #include <Balau/Application/Impl/InjectorMacros.hpp>
@@ -70,4 +70,4 @@
 ///
 #define BalauInjectNamedTypes(...) BALAU_InjectNamedTypes(__VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTABLE

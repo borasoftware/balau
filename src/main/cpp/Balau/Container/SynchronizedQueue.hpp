@@ -23,8 +23,8 @@
 /// A queue that uses a mutex to synchronise enqueue and dequeue calls.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__SYNCHRONISED_QUEUE
-#define COM_BORA_SOFTWARE__BALAU_CONTAINER__SYNCHRONISED_QUEUE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONTAINER_SYNCHRONISED_QUEUE
+#define COM_BORA_SOFTWARE_BALAU_CONTAINER_SYNCHRONISED_QUEUE
 
 #include <Balau/Exception/ContainerExceptions.hpp>
 #include <Balau/Container/Queue.hpp>
@@ -79,4 +79,4 @@ template <typename T> class SynchronizedQueue : public Queue<T> {
 
 } // namespace Balau::Container
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__SYNCHRONISED_QUEUE
+#endif // COM_BORA_SOFTWARE_BALAU_CONTAINER_SYNCHRONISED_QUEUE

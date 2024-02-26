@@ -23,8 +23,8 @@
 /// A read-only resource which is read as bytes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__BYTE_READ_RESOURCE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__BYTE_READ_RESOURCE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_BYTE_READ_RESOURCE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_BYTE_READ_RESOURCE
 
 #include <Balau/Resource/Resource.hpp>
 
@@ -44,4 +44,4 @@ class ByteReadResource : public Resource {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__BYTE_READ_RESOURCE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_BYTE_READ_RESOURCE

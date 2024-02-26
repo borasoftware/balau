@@ -22,8 +22,8 @@
 /// Pre-defined universal from-string functions.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__FROM_STRING
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__FROM_STRING
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_FROM_STRING
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_FROM_STRING
 
 #include <Balau/Type/Impl/FromStringImpl.hpp>
 #include <Balau/Util/Strings.hpp>
@@ -1175,4 +1175,4 @@ template <> struct FromString<char32_t> {
 	}
 };
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__FROM_STRING
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_FROM_STRING

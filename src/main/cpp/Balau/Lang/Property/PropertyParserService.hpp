@@ -23,8 +23,8 @@
 /// Parser service for property file parsing.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY__PROPERTY_PARSER_SERVICE
-#define COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY__PROPERTY_PARSER_SERVICE
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PROPERTY_PARSER_SERVICE
+#define COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PROPERTY_PARSER_SERVICE
 
 #include <Balau/Lang/Property/Parser/PropertyParser.hpp>
 #include <Balau/Lang/Property/Lang/PropertyAst.hpp>
@@ -64,4 +64,4 @@ class PropertyParserService final {
 
 } // namespace Balau::Lang::Property
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY__PROPERTY_PARSER_SERVICE
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PROPERTY_PARSER_SERVICE

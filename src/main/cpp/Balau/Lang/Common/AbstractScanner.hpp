@@ -23,8 +23,8 @@
 /// Base class for scanners.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG__ABSTRACT_SCANNER
-#define COM_BORA_SOFTWARE__BALAU_LANG__ABSTRACT_SCANNER
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_ABSTRACT_SCANNER
+#define COM_BORA_SOFTWARE_BALAU_LANG_ABSTRACT_SCANNER
 
 #include <Balau/Lang/Common/CodeSpan.hpp>
 #include <Balau/Lang/Common/ScannedTokens.hpp>
@@ -272,4 +272,4 @@ template <typename TokenT> class AbstractScanner {
 
 } // namespace Balau::Lang
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG__ABSTRACT_SCANNER
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_ABSTRACT_SCANNER

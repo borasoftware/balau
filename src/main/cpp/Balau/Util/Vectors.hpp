@@ -23,8 +23,8 @@
 /// Utilities for vectors.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__VECTORS
-#define COM_BORA_SOFTWARE__BALAU_UTIL__VECTORS
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_VECTORS
+#define COM_BORA_SOFTWARE_BALAU_UTIL_VECTORS
 
 #include <Balau/Type/ToString.hpp>
 
@@ -225,4 +225,4 @@ struct Vectors final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__VECTORS
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_VECTORS

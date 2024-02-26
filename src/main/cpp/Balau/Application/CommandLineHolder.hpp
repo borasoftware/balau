@@ -23,8 +23,8 @@
 /// Integration with the injector of command line argument processing.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE_HOLDER
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE_HOLDER
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_COMMAND_LINE_HOLDER
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_COMMAND_LINE_HOLDER
 
 #include <Balau/Application/CommandLine.hpp>
 #include <Balau/Application/Injectable.hpp>
@@ -96,4 +96,4 @@ CommandLineHolder<KeyT>::CommandLineHolder(std::shared_ptr<CommandLine<KeyT>> co
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE_HOLDER
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_COMMAND_LINE_HOLDER

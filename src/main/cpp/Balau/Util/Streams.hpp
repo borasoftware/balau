@@ -23,8 +23,8 @@
 /// Utilities for streams.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__STREAMS
-#define COM_BORA_SOFTWARE__BALAU_UTIL__STREAMS
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_STREAMS
+#define COM_BORA_SOFTWARE_BALAU_UTIL_STREAMS
 
 #include <Balau/Type/StdTypes.hpp>
 
@@ -104,4 +104,4 @@ class Streams final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__STREAMS
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_STREAMS

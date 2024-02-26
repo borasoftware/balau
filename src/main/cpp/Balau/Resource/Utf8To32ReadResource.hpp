@@ -23,8 +23,8 @@
 /// A read-only UTF-8 resource which is read as UTF-32 characters.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__UTF8_TO_32_READ_RESOURCE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__UTF8_TO_32_READ_RESOURCE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_UTF8_TO_32_READ_RESOURCE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_UTF8_TO_32_READ_RESOURCE
 
 #include <Balau/Resource/Resource.hpp>
 #include <Balau/Type/StdTypes.hpp>
@@ -43,4 +43,4 @@ class Utf8To32ReadResource : public Resource {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__UTF8_TO_32_READ_RESOURCE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_UTF8_TO_32_READ_RESOURCE

@@ -23,8 +23,8 @@
 /// The abstract base class for all Injector configuration classes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR_CONFIGURATION
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR_CONFIGURATION
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTOR_CONFIGURATION
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTOR_CONFIGURATION
 
 #include <Balau/Application/Impl/Binding.hpp>
 #include <Balau/Application/Impl/StaticSingletonBuilder.hpp>
@@ -66,4 +66,4 @@ class InjectorConfiguration {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR_CONFIGURATION
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTOR_CONFIGURATION

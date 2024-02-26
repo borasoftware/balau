@@ -23,8 +23,8 @@
 /// A write-only resource which is written as bytes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__BYTE_WRITE_RESOURCE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__BYTE_WRITE_RESOURCE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_BYTE_WRITE_RESOURCE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_BYTE_WRITE_RESOURCE
 
 #include <Balau/Resource/Resource.hpp>
 
@@ -44,4 +44,4 @@ class ByteWriteResource : public Resource {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__BYTE_WRITE_RESOURCE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_BYTE_WRITE_RESOURCE

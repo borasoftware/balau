@@ -23,8 +23,8 @@
 /// Base class of writer classes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_WRITER
-#define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_WRITER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_WRITER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_WRITER
 
 #include <Balau/Resource/File.hpp>
 #include <Balau/Resource/Uri.hpp>
@@ -72,4 +72,4 @@ class TestWriter {
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_WRITER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_WRITER

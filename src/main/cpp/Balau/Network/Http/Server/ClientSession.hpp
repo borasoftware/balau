@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP__CLIENT_SESSION
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP__CLIENT_SESSION
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_SESSION
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_SESSION
 
 #include <Balau/Type/UUID.hpp>
 #include <Balau/Util/DateTime.hpp>
@@ -51,4 +51,4 @@ class ClientSession final {
 
 } // namespace Balau::Network::Http
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP__CLIENT_SESSION
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_SESSION

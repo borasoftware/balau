@@ -22,8 +22,8 @@
 /// Pre-defined universal to-string functions for strings with custom allocators.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_A
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_A
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_TO_STRING_A
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_TO_STRING_A
 
 #include <Balau/Type/StdTypes.hpp>
 #include <Balau/Type/Impl/ToStringImpl.hpp>
@@ -1319,4 +1319,4 @@ template <typename AllocatorT> struct ToString<char32_t, AllocatorT> {
 	}
 };
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__TO_STRING_A
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_TO_STRING_A

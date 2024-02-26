@@ -23,8 +23,8 @@
 /// Test assertion functions.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS
-#define COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_ASSERTIONS
+#define COM_BORA_SOFTWARE_BALAU_TESTING_ASSERTIONS
 
 #include <Balau/Testing/Matchers.hpp>
 
@@ -644,4 +644,4 @@ inline void assertThat(F function, const ThrowTypeExpectation<E> & expectedExcep
 ///
 #define AssertThatNP(...) ::Balau::Testing::assertThatNP(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_ASSERTIONS

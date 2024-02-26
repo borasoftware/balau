@@ -23,8 +23,8 @@
 /// An injector binding candidate created via the injector configuration.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__BINDING_BUILDER
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__BINDING_BUILDER
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_BINDING_BUILDER
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_BINDING_BUILDER
 
 #include <Balau/Application/Impl/Binding.hpp>
 
@@ -568,4 +568,4 @@ class BindingBuilder final : public Impl::BindingBuilderBase {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__BINDING_BUILDER
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_BINDING_BUILDER

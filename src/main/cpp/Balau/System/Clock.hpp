@@ -23,8 +23,8 @@
 /// Base interface of clocks.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_SYSTEM__CLOCK
-#define COM_BORA_SOFTWARE__BALAU_SYSTEM__CLOCK
+#ifndef COM_BORA_SOFTWARE_BALAU_SYSTEM_CLOCK
+#define COM_BORA_SOFTWARE_BALAU_SYSTEM_CLOCK
 
 #include <Balau/ThirdParty/Date/date.hpp>
 
@@ -96,4 +96,4 @@ class Clock {
 
 } // namespace Balau::System
 
-#endif // COM_BORA_SOFTWARE__BALAU_SYSTEM__CLOCK
+#endif // COM_BORA_SOFTWARE_BALAU_SYSTEM_CLOCK

@@ -23,8 +23,8 @@
 /// Utilities for files.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__FILES
-#define COM_BORA_SOFTWARE__BALAU_UTIL__FILES
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_FILES
+#define COM_BORA_SOFTWARE_BALAU_UTIL_FILES
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Resource/File.hpp>
@@ -152,4 +152,4 @@ struct Files final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__FILES
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_FILES

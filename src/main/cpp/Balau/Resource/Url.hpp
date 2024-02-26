@@ -23,8 +23,8 @@
 /// An abstract %Url (either http or https).
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__URL
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__URL
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_URL
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_URL
 
 #include <Balau/Resource/Uri.hpp>
 #include <Balau/Resource/UriComponents.hpp>
@@ -96,4 +96,4 @@ class Url : public Uri {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URL
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_URL

@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_BINDING
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_BINDING
 
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Container/DependencyGraph.hpp>
@@ -771,4 +771,4 @@ class BindingBuilderBase {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_BINDING

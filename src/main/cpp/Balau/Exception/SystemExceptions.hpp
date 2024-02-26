@@ -23,8 +23,8 @@
 /// %Balau exceptions for system utilities.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__SYSTEM_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__SYSTEM_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_SYSTEM_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_SYSTEM_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -112,4 +112,4 @@ class WaitException : public ErrNoException {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__SYSTEM_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_SYSTEM_EXCEPTIONS

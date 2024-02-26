@@ -23,8 +23,8 @@
 /// A class representing the parsed components of a URI.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_COMPONENTS
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_COMPONENTS
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_COMPONENTS
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_COMPONENTS
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Type/ToString.hpp>
@@ -609,4 +609,4 @@ inline std::string toString(const UriComponents & uriComponents) {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_COMPONENTS
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_COMPONENTS

@@ -27,10 +27,10 @@
 // Defines for logging system development logging.
 
 // Set to 1 to print out the loggers between each stage.
-#define BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES 0
+#define BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES 0
 
 // Set to 1 to print out logging configuration messages to stdout.
-#define BALAU_LOGGING__PRINT_CONFIGURATION_MESSAGES 0
+#define BALAU_LOGGING_PRINT_CONFIGURATION_MESSAGES 0
 
 namespace Balau {
 
@@ -121,7 +121,7 @@ std::map<std::string, LoggingStreamFactory> LoggingState::createDefaultStreamFac
 }
 
 // Logging system logging (for development of the logging system).
-#if BALAU_LOGGING__PRINT_CONFIGURATION_MESSAGES
+#if BALAU_LOGGING_PRINT_CONFIGURATION_MESSAGES
 
 bool LoggingState::printStartupDebugMessageAndReturnFalse() {
 	std::cout << "LoggingSystem: starting up\n" << std::flush;
@@ -591,7 +591,7 @@ LoggerTree LoggingState::createDefaultConfiguration() {
 void LoggingState::cascadeAndConfigureLoggers(LoggerTree & theLoggers, LoggerTree & newLoggers) {
 	printLoggingDebugMessage("cascadeAndConfigureLoggers called");
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "\n\n---------------------------------------------------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 		std::cout << "newLoggers: \n" << newLoggers << std::endl;
@@ -599,7 +599,7 @@ void LoggingState::cascadeAndConfigureLoggers(LoggerTree & theLoggers, LoggerTre
 
 	theLoggers.cascade(newLoggers);
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "------------------ after cascade ------------------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 	#endif
@@ -612,35 +612,35 @@ void LoggingState::configureLoggers(LoggerTree & theLoggers) {
 
 	propagateConfiguration(theLoggers);
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "----------- after propagateConfiguration ----------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 	#endif
 
 	setLevels(theLoggers);
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "----------------- after setLevels -----------------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 	#endif
 
 	setShouldFlush(theLoggers);
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "----------------- after setShouldFlush -----------------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 	#endif
 
 	setStreams(theLoggers);
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "----------------- after setStreams ----------------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 	#endif
 
 	setFormats(theLoggers);
 
-	#if BALAU_LOGGING__PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
+	#if BALAU_LOGGING_PRINT_LOGGERS_IN_BETWEEN_CONFIGURE_STAGES
 	std::cout << "----------------- after setFormats ----------------" << std::endl;
 		std::cout << "theLoggers: \n" << theLoggers << std::endl;
 		std::cout << "---------------------------------------------------\n\n" << std::endl;

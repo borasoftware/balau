@@ -23,8 +23,8 @@
 /// Overload for rendering signed short containers as hex values.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_SIGNED_SHORT_RENDERER
-#define COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_SIGNED_SHORT_RENDERER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_SIGNED_SHORT_RENDERER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_SIGNED_SHORT_RENDERER
 
 #include <Balau/Testing/Impl/HexContainerRendererImpl.hpp>
 
@@ -40,4 +40,4 @@ std::string render(const ContainerA<signed short> & actual, const ContainerE<sig
 
 } // namespace Balau::Testing::TestRenderers
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_SIGNED_SHORT_RENDERER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_SIGNED_SHORT_RENDERER

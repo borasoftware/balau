@@ -28,8 +28,8 @@
 /// will be in the body file.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE_BODY
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE_BODY
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTABLE_BODY
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTABLE_BODY
 
 #include <Balau/Application/Injector.hpp>
 #include <Balau/Application/Impl/InjectorBodyMacros.hpp>
@@ -54,4 +54,4 @@
 ///
 #define BalauInjectBodyNamedTypes(...) BALAU_InjectBodyNamedTypes(__VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTABLE_BODY
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTABLE_BODY

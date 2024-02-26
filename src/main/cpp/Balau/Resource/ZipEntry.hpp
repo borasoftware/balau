@@ -23,8 +23,8 @@
 /// An entry in a zip archive on the local file system.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_ZIP_ENTRY
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_ZIP_ENTRY
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Resource/ByteReadResource.hpp>
@@ -430,4 +430,4 @@ inline std::unique_ptr<Utf8To32ReadResource> ZipEntry::utf8To32ReadResource() co
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_ENTRY
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_ZIP_ENTRY

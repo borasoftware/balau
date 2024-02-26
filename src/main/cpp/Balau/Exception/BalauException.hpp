@@ -23,8 +23,8 @@
 /// Base %Balau exception classes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_BALAU_EXCEPTION
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_BALAU_EXCEPTION
 
 #include <Balau/Type/SourceCodeLocation.hpp>
 #include <Balau/Application/Macros.hpp>
@@ -235,4 +235,4 @@ inline Balau::U8String<AllocatorT> toString(const std::exception & e) {
 	return toString<AllocatorT>(e.what());
 }
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__BALAU_EXCEPTION
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_BALAU_EXCEPTION

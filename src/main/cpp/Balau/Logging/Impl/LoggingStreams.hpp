@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STREAMS
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STREAMS
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGING_STREAMS
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGING_STREAMS
 
 #include <Balau/Logging/Logger.hpp>
 #include <Balau/System/Clock.hpp>
@@ -147,4 +147,4 @@ class FileLoggingStream : public LoggingStream {
 
 } // namespace Balau::LoggingSystem
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STREAMS
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGING_STREAMS

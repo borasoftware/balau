@@ -23,8 +23,8 @@
 /// The abstract URI base class.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__URI
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__URI
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_URI
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_URI
 
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Resource/UriDispatcher.hpp>
@@ -310,4 +310,4 @@ inline std::string toString(const Uri & uri) {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_URI

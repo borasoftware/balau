@@ -4,8 +4,8 @@
 // see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#ifndef BALAU_TP__HASH_LIBRARY__KECCAK_H
-#define BALAU_TP__HASH_LIBRARY__KECCAK_H
+#ifndef BALAU_TP_HASH_LIBRARY_KECCAK
+#define BALAU_TP_HASH_LIBRARY_KECCAK
 
 //#include "hash.h"
 #include <string>
@@ -395,4 +395,4 @@ class Keccak //: public Hash
 
 } // namespace Balau::HashLibrary
 
-#endif // BALAU_TP__HASH_LIBRARY__KECCAK_H
+#endif // BALAU_TP_HASH_LIBRARY_KECCAK

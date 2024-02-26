@@ -23,8 +23,8 @@
 /// A blocking queue that uses wait/notify and an array to hold the elements.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__ARRAY_BLOCKING_QUEUE
-#define COM_BORA_SOFTWARE__BALAU_CONTAINER__ARRAY_BLOCKING_QUEUE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONTAINER_ARRAY_BLOCKING_QUEUE
+#define COM_BORA_SOFTWARE_BALAU_CONTAINER_ARRAY_BLOCKING_QUEUE
 
 #include <Balau/Container/BlockingQueue.hpp>
 #include <Balau/Type/StdTypes.hpp>
@@ -245,4 +245,4 @@ template <typename T> class ArrayBlockingQueue : public BlockingQueue<T> {
 
 } // namespace Balau::Container
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__ARRAY_BLOCKING_QUEUE
+#endif // COM_BORA_SOFTWARE_BALAU_CONTAINER_ARRAY_BLOCKING_QUEUE

@@ -23,8 +23,8 @@
 /// A hierarchical environment properties holder created from a composite property.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_PROPERTIES
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_PROPERTIES
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_ENVIRONMENT_PROPERTIES
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_ENVIRONMENT_PROPERTIES
 
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Application/BindingBuilder.hpp>
@@ -569,4 +569,4 @@ class EnvironmentProperties {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_PROPERTIES
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_ENVIRONMENT_PROPERTIES

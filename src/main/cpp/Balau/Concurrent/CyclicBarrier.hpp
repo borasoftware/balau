@@ -23,8 +23,8 @@
 /// A synchronising barrier that can be configured for an arbitrary number of threads.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONCURRENT__CYCLIC_BARRIER
-#define COM_BORA_SOFTWARE__BALAU_CONCURRENT__CYCLIC_BARRIER
+#ifndef COM_BORA_SOFTWARE_BALAU_CONCURRENT_CYCLIC_BARRIER
+#define COM_BORA_SOFTWARE_BALAU_CONCURRENT_CYCLIC_BARRIER
 
 #include <Balau/Concurrent/Semaphore.hpp>
 
@@ -103,4 +103,4 @@ class CyclicBarrier {
 
 } // namespace Balau::Concurrent
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONCURRENT__CYCLIC_BARRIER
+#endif // COM_BORA_SOFTWARE_BALAU_CONCURRENT_CYCLIC_BARRIER

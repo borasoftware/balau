@@ -23,8 +23,8 @@
 /// Test utilities for tests involving the network.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_UTIL__NETWORK_TESTING
-#define COM_BORA_SOFTWARE__BALAU_TESTING_UTIL__NETWORK_TESTING
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_UTIL_NETWORK_TESTING
+#define COM_BORA_SOFTWARE_BALAU_TESTING_UTIL_NETWORK_TESTING
 
 #include <Balau/Exception/NetworkExceptions.hpp>
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
@@ -145,4 +145,4 @@ struct NetworkTesting final {
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_UTIL__NETWORK_TESTING
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_UTIL_NETWORK_TESTING

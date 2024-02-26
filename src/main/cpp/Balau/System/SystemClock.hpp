@@ -23,8 +23,8 @@
 /// The default implementation of the clock API.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_SYSTEM__SYSTEM_CLOCK
-#define COM_BORA_SOFTWARE__BALAU_SYSTEM__SYSTEM_CLOCK
+#ifndef COM_BORA_SOFTWARE_BALAU_SYSTEM_SYSTEM_CLOCK
+#define COM_BORA_SOFTWARE_BALAU_SYSTEM_SYSTEM_CLOCK
 
 #include <Balau/Application/Injectable.hpp>
 #include <Balau/System/Clock.hpp>
@@ -82,4 +82,4 @@ class SystemClock : public Clock {
 
 } // namespace Balau::System
 
-#endif // COM_BORA_SOFTWARE__BALAU_SYSTEM__SYSTEM_CLOCK
+#endif // COM_BORA_SOFTWARE_BALAU_SYSTEM_SYSTEM_CLOCK

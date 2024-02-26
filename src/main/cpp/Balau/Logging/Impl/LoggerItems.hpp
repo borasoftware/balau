@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEMS
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEMS
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_ITEMS
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_ITEMS
 
 // Avoid false positivies.
 #pragma clang diagnostic push
@@ -232,4 +232,4 @@ class DoubleQuotationLoggerItem : public LogItem {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_ITEMS
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_ITEMS

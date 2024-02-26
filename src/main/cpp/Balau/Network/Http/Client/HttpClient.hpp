@@ -23,8 +23,8 @@
 /// A simple HTTP client.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTP_CLIENT
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTP_CLIENT
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_HTTP_CLIENT
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_HTTP_CLIENT
 
 #include <Balau/Type/ToString.hpp>
 #include <Balau/Exception/NetworkExceptions.hpp>
@@ -241,4 +241,4 @@ ResponseT HttpClient::sendRequest(Method verb, const std::string_view & path, co
 
 } // namespace Balau::Network::Http
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_CLIENT__HTTP_CLIENT
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_CLIENT_HTTP_CLIENT

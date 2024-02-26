@@ -23,8 +23,8 @@
 /// Abstract base class of HTTP web application handlers.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_SERVER__HTTP_WEB_APPLICATION
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_SERVER__HTTP_WEB_APPLICATION
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_SERVER_HTTP_WEB_APPLICATION
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_SERVER_HTTP_WEB_APPLICATION
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Network/Http/Server/Impl/HttpWebAppFactory.hpp>
@@ -167,4 +167,4 @@ class HttpWebApp {
 
 } // namespace Balau::Network::Http
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_SERVER__HTTP_WEB_APPLICATION
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_SERVER_HTTP_WEB_APPLICATION

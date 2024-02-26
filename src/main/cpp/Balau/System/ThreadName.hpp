@@ -23,8 +23,8 @@
 /// A thread-local name (used by the logging system).
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_SYSTEM__THREAD_NAME
-#define COM_BORA_SOFTWARE__BALAU_SYSTEM__THREAD_NAME
+#ifndef COM_BORA_SOFTWARE_BALAU_SYSTEM_THREAD_NAME
+#define COM_BORA_SOFTWARE_BALAU_SYSTEM_THREAD_NAME
 
 #include <Balau/Util/Strings.hpp>
 
@@ -66,4 +66,4 @@ class ThreadName {
 
 } // namespace Balau::System
 
-#endif // COM_BORA_SOFTWARE__BALAU_SYSTEM__THREAD_NAME
+#endif // COM_BORA_SOFTWARE_BALAU_SYSTEM_THREAD_NAME

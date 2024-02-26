@@ -4,8 +4,8 @@
 // see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#ifndef BALAU_TP__HASH_LIBRARY__HMAC_H
-#define BALAU_TP__HASH_LIBRARY__HMAC_H
+#ifndef BALAU_TP_HASH_LIBRARY_HMAC
+#define BALAU_TP_HASH_LIBRARY_HMAC
 
 // based on http://tools.ietf.org/html/rfc2104
 // see also http://en.wikipedia.org/wiki/Hash-based_message_authentication_code
@@ -88,4 +88,4 @@ std::string hmac(const std::string & data, const std::string & key) {
 
 } // namespace Balau
 
-#endif // BALAU_TP__HASH_LIBRARY__HMAC_H
+#endif // BALAU_TP_HASH_LIBRARY_HMAC

@@ -23,8 +23,8 @@
 /// Utilities for accessing user information.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__USER
-#define COM_BORA_SOFTWARE__BALAU_UTIL__USER
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_USER
+#define COM_BORA_SOFTWARE_BALAU_UTIL_USER
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Resource/File.hpp>
@@ -167,4 +167,4 @@ struct User final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__USER
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_USER

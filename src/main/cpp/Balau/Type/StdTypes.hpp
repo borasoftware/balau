@@ -23,8 +23,8 @@
 /// Core includes, typedefs and functions.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
-#define COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_STD_TYPES
+#define COM_BORA_SOFTWARE_BALAU_TYPE_STD_TYPES
 
 // Switches for optional features.
 #include <Balau/BalauConfig.hpp>
@@ -248,4 +248,4 @@ template <typename T> struct equal_to<vector<T>> {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__STD_TYPES
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_STD_TYPES

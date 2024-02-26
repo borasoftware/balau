@@ -23,8 +23,8 @@
 /// An immediate string pseudo-URI.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__STRING_URI
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__STRING_URI
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_STRING_URI
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_STRING_URI
 
 #include <Balau/Resource/Uri.hpp>
 #include <Balau/Util/Strings.hpp>
@@ -401,4 +401,4 @@ inline std::unique_ptr<Utf32To8WriteResource> StringUri::utf32To8WriteResource()
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__STRING_URI
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_STRING_URI

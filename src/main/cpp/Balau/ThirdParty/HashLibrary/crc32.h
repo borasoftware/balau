@@ -4,8 +4,8 @@
 // see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#ifndef BALAU_TP__HASH_LIBRARY__CRC32_H
-#define BALAU_TP__HASH_LIBRARY__CRC32_H
+#ifndef BALAU_TP_HASH_LIBRARY_CRC32_H
+#define BALAU_TP_HASH_LIBRARY_CRC32_H
 
 #include <string>
 
@@ -482,4 +482,4 @@ class CRC32 {
 
 } // namespace Balau
 
-#endif // BALAU_TP__HASH_LIBRARY__CRC32_H
+#endif // BALAU_TP_HASH_LIBRARY_CRC32_H

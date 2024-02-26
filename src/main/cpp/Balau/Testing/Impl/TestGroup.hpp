@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_GROUP
-#define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_GROUP
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_GROUP
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_GROUP
 
 #include <Balau/Testing/Impl/TestGroupBase.hpp>
 
@@ -166,4 +166,4 @@ template <typename TestGroupT> TestGroupT TestGroup<TestGroupT>::instance;
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_GROUP
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_GROUP

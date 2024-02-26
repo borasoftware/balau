@@ -23,8 +23,8 @@
 /// %UUID class, using the Boost uuid implementation.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__UUID
-#define COM_BORA_SOFTWARE__BALAU_TYPE__UUID
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_UUID
+#define COM_BORA_SOFTWARE_BALAU_TYPE_UUID
 
 #include <Balau/Type/ToString.hpp>
 
@@ -169,4 +169,4 @@ inline std::string toString(const UUID & uuid) {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__UUID
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_UUID

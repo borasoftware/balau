@@ -23,8 +23,8 @@
 /// Resolve URIs from an existing URI.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_RESOLVE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_RESOLVE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_RESOLVE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_RESOLVE
 
 #include <Balau/Resource/UriFromString.hpp>
 
@@ -291,4 +291,4 @@ inline std::unique_ptr<Uri> UriResolve::resolve(const ZipFile & zipFile, std::st
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_RESOLVE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_RESOLVE

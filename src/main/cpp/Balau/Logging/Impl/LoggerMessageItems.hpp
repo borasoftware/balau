@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__MESSAGE_ITEMS
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__MESSAGE_ITEMS
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_MESSAGE_ITEMS
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_MESSAGE_ITEMS
 
 #include <Balau/Logging/Impl/LoggerAllocator.hpp>
 
@@ -63,4 +63,4 @@ class ParameterMessageItem : public MessageItem {
 
 } // namespace Balau::LoggingSystem
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__MESSAGE_ITEMS
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_MESSAGE_ITEMS

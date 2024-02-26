@@ -23,8 +23,8 @@
 /// An HTTP web application handler that routes to other handlers.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__ROUTING_HTTP_WEB_APP
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__ROUTING_HTTP_WEB_APP
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS_ROUTING_HTTP_WEB_APP
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS_ROUTING_HTTP_WEB_APP
 
 #include <Balau/Container/ObjectTrie.hpp>
 #include <Balau/Network/Http/Server/HttpWebApp.hpp>
@@ -218,4 +218,4 @@ inline RoutingHttpWebApp::Value routingNode(const std::string & key) {
 
 } // namespace Balau::Network::Http::HttpWebApps
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS__ROUTING_HTTP_WEB_APP
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_WEB_APPS_ROUTING_HTTP_WEB_APP

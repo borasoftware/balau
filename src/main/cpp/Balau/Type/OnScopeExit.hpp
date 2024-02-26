@@ -23,8 +23,8 @@
 /// Run a function on scope exit.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__ON_SCOPE_EXIT
-#define COM_BORA_SOFTWARE__BALAU_TYPE__ON_SCOPE_EXIT
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_ON_SCOPE_EXIT
+#define COM_BORA_SOFTWARE_BALAU_TYPE_ON_SCOPE_EXIT
 
 #include <functional>
 
@@ -87,4 +87,4 @@ class OnScopeExit final {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__ON_SCOPE_EXIT
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_ON_SCOPE_EXIT

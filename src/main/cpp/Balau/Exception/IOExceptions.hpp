@@ -23,8 +23,8 @@
 /// %Balau exceptions for I/O.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__IO_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__IO_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_IO_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_IO_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Resource/Uri.hpp>
@@ -44,4 +44,4 @@ class IOException : public BalauException {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__IO_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_IO_EXCEPTIONS

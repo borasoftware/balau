@@ -23,8 +23,8 @@
 /// Convenience wrapper for forking processes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONCURRENT__FORK
-#define COM_BORA_SOFTWARE__BALAU_CONCURRENT__FORK
+#ifndef COM_BORA_SOFTWARE_BALAU_CONCURRENT_FORK
+#define COM_BORA_SOFTWARE_BALAU_CONCURRENT_FORK
 
 #include <Balau/Exception/SystemExceptions.hpp>
 #include <Balau/Dev/Assert.hpp>
@@ -302,4 +302,4 @@ class Fork {
 
 } // namespace Balau::Concurrent
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONCURRENT__FORK
+#endif // COM_BORA_SOFTWARE_BALAU_CONCURRENT_FORK

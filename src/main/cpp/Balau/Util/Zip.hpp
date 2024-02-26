@@ -23,8 +23,8 @@
 /// Zipper and Unzipper classes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__ZIP
-#define COM_BORA_SOFTWARE__BALAU_UTIL__ZIP
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_ZIP
+#define COM_BORA_SOFTWARE_BALAU_UTIL_ZIP
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Resource/File.hpp>
@@ -1153,4 +1153,4 @@ void ZipUtilities<Unused>::checkOpen(const Zipper & instance) {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__ZIP
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_ZIP

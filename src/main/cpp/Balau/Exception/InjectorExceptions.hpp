@@ -23,8 +23,8 @@
 /// %Balau exceptions for the injector framework.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__INJECTOR_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__INJECTOR_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_INJECTOR_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_INJECTOR_EXCEPTIONS
 
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Exception/BalauException.hpp>
@@ -154,4 +154,4 @@ class EnvironmentConfigurationException : public BalauException {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__INJECTOR_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_INJECTOR_EXCEPTIONS

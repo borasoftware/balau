@@ -23,8 +23,8 @@
 /// Convenience wrappers around the C++ 11 random number generator library.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__RANDOM
-#define COM_BORA_SOFTWARE__BALAU_UTIL__RANDOM
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_RANDOM
+#define COM_BORA_SOFTWARE_BALAU_UTIL_RANDOM
 
 #include <Balau/Util/Impl/RandomImpl.hpp>
 
@@ -248,4 +248,4 @@ template <typename T> using PiecewiseLinear = RandomNumberGenerator<T, std::piec
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__RANDOM
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_RANDOM

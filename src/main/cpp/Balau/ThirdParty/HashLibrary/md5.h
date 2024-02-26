@@ -4,8 +4,8 @@
 // see http://create.stephan-brumme.com/disclaimer.html
 //
 
-#ifndef BALAU_TP__HASH_LIBRARY__MD5_H
-#define BALAU_TP__HASH_LIBRARY__MD5_H
+#ifndef BALAU_TP_HASH_LIBRARY_MD5
+#define BALAU_TP_HASH_LIBRARY_MD5
 
 #include <string>
 
@@ -416,4 +416,4 @@ class MD5 //: public Hash
 
 } // namespace Balau::HashLibrary
 
-#endif // BALAU_TP__HASH_LIBRARY__MD5_H
+#endif // BALAU_TP_HASH_LIBRARY_MD5

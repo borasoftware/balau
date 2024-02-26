@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_PROPERTY_VISITOR
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_PROPERTY_VISITOR
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_PROPERTY_VISITOR
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_PROPERTY_VISITOR
 
 #include <Balau/Lang/Property/Lang/PropertyAst.hpp>
 #include <Balau/Lang/Property/PropertyParserService.hpp>
@@ -108,4 +108,4 @@ class LoggerPropertyVisitor : private Lang::Property::PropertyVisitor {
 
 } // namespace Balau::LoggingSystem
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_PROPERTY_VISITOR
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_PROPERTY_VISITOR

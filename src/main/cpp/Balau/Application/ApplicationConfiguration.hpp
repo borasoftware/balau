@@ -23,8 +23,8 @@
 /// %Application configurations specify application injector bindings.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__APPLICATION_CONFIGURATION
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__APPLICATION_CONFIGURATION
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_APPLICATION_CONFIGURATION
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_APPLICATION_CONFIGURATION
 
 #include <Balau/Application/BindingBuilder.hpp>
 #include <Balau/Application/InjectorConfiguration.hpp>
@@ -173,4 +173,4 @@ class ApplicationConfiguration : public InjectorConfiguration {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__APPLICATION_CONFIGURATION
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_APPLICATION_CONFIGURATION

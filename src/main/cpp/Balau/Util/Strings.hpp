@@ -23,8 +23,8 @@
 /// Utilities for strings.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__STRINGS
-#define COM_BORA_SOFTWARE__BALAU_UTIL__STRINGS
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_STRINGS
+#define COM_BORA_SOFTWARE_BALAU_UTIL_STRINGS
 
 #include <Balau/Type/Character.hpp>
 #include <Balau/Type/ToString.hpp>
@@ -1488,4 +1488,4 @@ template <int Unused> const std::regex Strings::Impl<Unused>::defaultLineBreakRe
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__STRINGS
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_STRINGS

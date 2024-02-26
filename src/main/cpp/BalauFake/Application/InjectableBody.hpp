@@ -27,12 +27,12 @@
 /// will require a rebuild, as part of the boilerplate code will be in the body file.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_FAKE_APPLICATION__INJECTABLE_BODY
-#define COM_BORA_SOFTWARE__BALAU_FAKE_APPLICATION__INJECTABLE_BODY
+#ifndef COM_BORA_SOFTWARE_BALAU_FAKE_APPLICATION_INJECTABLE_BODY
+#define COM_BORA_SOFTWARE_BALAU_FAKE_APPLICATION_INJECTABLE_BODY
 
 #define BalauInjectBody(...)
 #define BalauInjectBodyNamed(...)
 #define BalauInjectBodyTypes(...)
 #define BalauInjectBodyNamedTypes(...)
 
-#endif // COM_BORA_SOFTWARE__BALAU_FAKE_APPLICATION__INJECTABLE_BODY
+#endif // COM_BORA_SOFTWARE_BALAU_FAKE_APPLICATION_INJECTABLE_BODY

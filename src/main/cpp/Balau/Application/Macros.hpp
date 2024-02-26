@@ -23,8 +23,8 @@
 /// Utilities for macros.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__MACROS
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__MACROS
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_MACROS
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_MACROS
 
 #include <Balau/Application/Impl/MacrosImpl.hpp>
 
@@ -38,4 +38,4 @@
 ///
 #define BalauVariadicNArg(...)  BALAU_Expand(BALAU_VariadicNArg_(__VA_ARGS__, BALAU_VariadicRSeqN()))
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__MACROS
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_MACROS

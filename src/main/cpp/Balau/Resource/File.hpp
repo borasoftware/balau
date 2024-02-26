@@ -23,8 +23,8 @@
 /// A file on the local file system.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_FILE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_FILE
 
 #include <Balau/Exception/IOExceptions.hpp>
 #include <Balau/Exception/ResourceExceptions.hpp>
@@ -965,4 +965,4 @@ template <> struct equal_to<Balau::Resource::File> {
 
 } // namespace std
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__FILE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_FILE

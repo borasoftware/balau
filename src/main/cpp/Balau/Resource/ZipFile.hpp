@@ -23,8 +23,8 @@
 /// A zip file on the local file system.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_ZIP_FILE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_ZIP_FILE
 
 #include <Balau/Resource/File.hpp>
 #include <Balau/Resource/ZipEntry.hpp>
@@ -362,4 +362,4 @@ template <> struct equal_to<Balau::Resource::ZipFile> {
 
 } // namespace std
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__ZIP_FILE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_ZIP_FILE

@@ -23,8 +23,8 @@
 /// InjectableBody.hpp macros without Balau prefix.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_BODY
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_BODY
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT_BODY
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT_BODY
 
 #include <Balau/Application/InjectableBody.hpp>
 
@@ -48,4 +48,4 @@
 ///
 #define InjectBodyNamedTypes(...) BalauInjectBodyNamedTypes(__VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_BODY
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT_BODY

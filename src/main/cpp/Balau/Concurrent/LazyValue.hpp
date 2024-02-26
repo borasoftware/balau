@@ -23,8 +23,8 @@
 /// Lazy setting of a value.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONCURRENT__LAZY_VALUE
-#define COM_BORA_SOFTWARE__BALAU_CONCURRENT__LAZY_VALUE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONCURRENT_LAZY_VALUE
+#define COM_BORA_SOFTWARE_BALAU_CONCURRENT_LAZY_VALUE
 
 #include <atomic>
 #include <functional>
@@ -117,4 +117,4 @@ template <typename T> class LazyValue {
 
 } // namespace Balau::Concurrent
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONCURRENT__LAZY_VALUE
+#endif // COM_BORA_SOFTWARE_BALAU_CONCURRENT_LAZY_VALUE

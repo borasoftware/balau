@@ -23,8 +23,8 @@
 /// Test runner execution model enum.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_EXECUTION_MODEL
-#define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_EXECUTION_MODEL
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER_EXECUTION_MODEL
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER_EXECUTION_MODEL
 
 #include <Balau/Exception/CommandLineExceptions.hpp>
 #include <Balau/Util/Strings.hpp>
@@ -155,4 +155,4 @@ inline bool isExecutionModel(std::string_view value) {
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_EXECUTION_MODEL
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER_EXECUTION_MODEL

@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__NETWORK_TYPES
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__NETWORK_TYPES
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_NETWORK_TYPES
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_NETWORK_TYPES
 
 ///
 /// @file NetworkTypes.hpp
@@ -396,4 +396,4 @@ inline std::shared_ptr<Endpoint> newEndpoint(const char * address, unsigned shor
 
 } // namespace Balau::Network
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__NETWORK_TYPES
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_NETWORK_TYPES

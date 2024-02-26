@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_BASE
-#define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER_BASE
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER_BASE
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER_BASE
 
 namespace Balau::Testing::Impl {
 
@@ -32,4 +32,4 @@ class TestRunnerBase {
 
 } // namespace Balau::Testing:::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER

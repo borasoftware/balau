@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__BALAU_LOGGER
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__BALAU_LOGGER
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_BALAU_LOGGER
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_BALAU_LOGGER
 
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Logging/LoggingLevel.hpp>
@@ -807,7 +807,7 @@ class BalauLogger {
 //
 // Log a trace message with the source code location of the logging statement.
 //
-#define BalauBalauLogTrace(LOGGER, ...) LOGGER.trace(BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
+#define BalauBalauLogTrace(LOGGER, ...) LOGGER.trace(BalauSourceCodeLocation(_FILE__, __LINE__), __VA_ARGS__)
 
 //
 // Log a debug message with the source code location of the logging statement.
@@ -831,4 +831,4 @@ class BalauLogger {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__BALAU_LOGGER
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_BALAU_LOGGER

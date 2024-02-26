@@ -23,8 +23,8 @@
 /// Utility for splitting and decoding URL encoded data.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_UTILITIES__URL_DECODE
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_UTILITIES__URL_DECODE
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_UTILITIES_URL_DECODE
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_UTILITIES_URL_DECODE
 
 #include <Balau/Exception/NetworkExceptions.hpp>
 #include <Balau/Util/Strings.hpp>
@@ -206,4 +206,4 @@ struct UrlDecode {
 
 } // namespace Balau::Network
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_UTILITIES__URL_DECODE
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_UTILITIES_URL_DECODE

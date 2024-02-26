@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__MATCHER_COMPARE_PLACEHOLDERS
-#define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__MATCHER_COMPARE_PLACEHOLDERS
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_MATCHER_COMPARE_PLACEHOLDERS
+#define COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_MATCHER_COMPARE_PLACEHOLDERS
 
 #include <Balau/Exception/TestExceptions.hpp>
 #include <Balau/Testing/Impl/StandardRenderers.hpp>
@@ -301,4 +301,4 @@ template <typename A, typename E> class MatcherFunction<A, E, EvNotUsed, Matcher
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__MATCHER_COMPARE_PLACEHOLDERS
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_MATCHER_COMPARE_PLACEHOLDERS

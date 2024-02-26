@@ -23,8 +23,8 @@
 /// A WebSocket web application handler that routes to other handlers.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WS_WEB_APPS__ROUTING_WS_WEB_APP
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WS_WEB_APPS__ROUTING_WS_WEB_APP
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_WS_WEB_APPS_ROUTING_WS_WEB_APP
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_WS_WEB_APPS_ROUTING_WS_WEB_APP
 
 #include <Balau/Container/ObjectTrie.hpp>
 #include <Balau/Network/Http/Server/WsWebApp.hpp>
@@ -138,4 +138,4 @@ inline RoutingWsWebApp::Value routingNode(const std::string & key) {
 
 } // namespace Balau::Network::Http::WsWebApps
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_WS_WEB_APPS__ROUTING_WS_WEB_APP
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_WS_WEB_APPS_ROUTING_WS_WEB_APP

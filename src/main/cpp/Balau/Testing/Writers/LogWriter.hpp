@@ -23,8 +23,8 @@
 /// Test writer that writes to the specified %Balau logger.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__LOG_WRITER
-#define COM_BORA_SOFTWARE__BALAU_TESTING__LOG_WRITER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_LOG_WRITER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_LOG_WRITER
 
 #include <Balau/Testing/Writers/TestWriter.hpp>
 #include <Balau/Logging/Logger.hpp>
@@ -62,4 +62,4 @@ class LogWriter : public TestWriter {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__LOG_WRITER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_LOG_WRITER

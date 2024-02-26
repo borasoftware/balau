@@ -23,8 +23,8 @@
 /// An object based trie used for parent-child hierarchies.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__BALAU_TRIE
-#define COM_BORA_SOFTWARE__BALAU_CONTAINER__BALAU_TRIE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONTAINER_BALAU_TRIE
+#define COM_BORA_SOFTWARE_BALAU_CONTAINER_BALAU_TRIE
 
 #include <Balau/Util/Vectors.hpp>
 
@@ -2366,4 +2366,4 @@ std::ostream & operator << (std::ostream & stream, const ObjectTrie<T> & trie) {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__BALAU_TRIE
+#endif // COM_BORA_SOFTWARE_BALAU_CONTAINER_BALAU_TRIE

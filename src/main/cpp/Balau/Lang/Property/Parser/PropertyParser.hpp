@@ -23,8 +23,8 @@
 /// A recursive descent property language parser.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_PARSER
-#define COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_PARSER
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PARSER_PROPERTY_PARSER
+#define COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PARSER_PROPERTY_PARSER
 
 #include <Balau/Lang/Property/Parser/PropertyScanner.hpp>
 #include <Balau/Lang/Property/Lang/PropertyAst.hpp>
@@ -419,4 +419,4 @@ class PropertyParser {
 
 } // namespace Balau::Lang::Property
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_PARSER
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PARSER_PROPERTY_PARSER

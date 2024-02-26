@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU__TEST_RESOURCES
-#define COM_BORA_SOFTWARE__BALAU__TEST_RESOURCES
+#ifndef COM_BORA_SOFTWARE_BALAU_TEST_RESOURCES
+#define COM_BORA_SOFTWARE_BALAU_TEST_RESOURCES
 
 #include <Balau/Testing/TestRunner.hpp>
 
@@ -57,4 +57,4 @@ struct TestResources final {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU__TEST_RESOURCES
+#endif // COM_BORA_SOFTWARE_BALAU_TEST_RESOURCES

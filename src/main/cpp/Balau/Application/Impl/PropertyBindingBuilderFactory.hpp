@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__PROPERTY_FACTORY
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__PROPERTY_FACTORY
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_PROPERTY_FACTORY
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_PROPERTY_FACTORY
 
 #include <Balau/Dev/Assert.hpp>
 #include <Balau/Application/BindingBuilder.hpp>
@@ -607,4 +607,4 @@ PropertyBindingBuilderFactoryUtilities<Unused>::getBindingBuilderFactoryPrivate(
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__PROPERTY_FACTORY
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_PROPERTY_FACTORY

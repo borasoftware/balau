@@ -23,8 +23,8 @@
 /// The Property parser AST node classes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_LANG__PROPERTY_AST
-#define COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_LANG__PROPERTY_AST
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_LANG_PROPERTY_AST
+#define COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_LANG_PROPERTY_AST
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Lang/Property/Lang/PropertyToken.hpp>
@@ -510,4 +510,4 @@ class EmptyLinePropertyNode final : public PropertyNode {
 
 } // namespace Balau::Lang::Property::AST
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_LANG__PROPERTY_AST
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_LANG_PROPERTY_AST

@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__PROPERTY_STRINGS
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__PROPERTY_STRINGS
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_PROPERTY_STRINGS
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_PROPERTY_STRINGS
 
 #include <Balau/Container/ObjectTrie.hpp>
 #include <Balau/Lang/Property/Util/PropertyVisitor.hpp>
@@ -67,4 +67,4 @@ inline bool operator == (const PropertyString & lhs, const PropertyString & rhs)
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__PROPERTY_STRINGS
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_PROPERTY_STRINGS

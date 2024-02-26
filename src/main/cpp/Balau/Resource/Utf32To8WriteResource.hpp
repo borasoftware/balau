@@ -23,8 +23,8 @@
 /// A write-only UTF-8 resource, which is written as UTF-32 characters.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__UTF32_TO_8_WRITE_RESOURCE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__UTF32_TO_8_WRITE_RESOURCE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_UTF32_TO_8_WRITE_RESOURCE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_UTF32_TO_8_WRITE_RESOURCE
 
 #include <Balau/Resource/Resource.hpp>
 #include <Balau/Type/StdTypes.hpp>
@@ -43,4 +43,4 @@ class Utf32To8WriteResource : public Resource {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__UTF32_TO_8_WRITE_RESOURCE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_UTF32_TO_8_WRITE_RESOURCE

@@ -23,8 +23,8 @@
 /// Encapsulation of a set of tokens, text, and offsets plus various API wrappers.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG__SCANNED_TOKENS
-#define COM_BORA_SOFTWARE__BALAU_LANG__SCANNED_TOKENS
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_SCANNED_TOKENS
+#define COM_BORA_SOFTWARE_BALAU_LANG_SCANNED_TOKENS
 
 #include <Balau/Exception/ContainerExceptions.hpp>
 #include <Balau/Exception/ParsingExceptions.hpp>
@@ -1237,4 +1237,4 @@ template <typename TokenT> class IterativeScannedTokens final {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG__SCANNED_TOKENS
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_SCANNED_TOKENS

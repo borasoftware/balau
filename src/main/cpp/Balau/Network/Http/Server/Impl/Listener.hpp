@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__LISTENER
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__LISTENER
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_IMPL_LISTENER
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_IMPL_LISTENER
 
 #include <Balau/Network/Http/Server/NetworkTypes.hpp>
 #include <Balau/Network/Http/Server/Impl/ClientSessions.hpp>
@@ -126,4 +126,4 @@ class Listener final : public std::enable_shared_from_this<Listener> {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER_IMPL__LISTENER
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_IMPL_LISTENER

@@ -23,8 +23,8 @@
 /// Abstract base class of resource classes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__RESOURCE
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__RESOURCE
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_RESOURCE
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_RESOURCE
 
 namespace Balau::Resource {
 
@@ -55,4 +55,4 @@ class Resource {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__RESOURCE
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_RESOURCE

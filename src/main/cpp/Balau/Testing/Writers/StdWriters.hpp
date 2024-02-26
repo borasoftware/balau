@@ -23,8 +23,8 @@
 /// Pre-defined test writer classes for stdout, stderr, and files.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__STD_WRITERS
-#define COM_BORA_SOFTWARE__BALAU_TESTING__STD_WRITERS
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_STD_WRITERS
+#define COM_BORA_SOFTWARE_BALAU_TESTING_STD_WRITERS
 
 #include <Balau/Resource/File.hpp>
 #include <Balau/Resource/Uri.hpp>
@@ -91,4 +91,4 @@ class OStreamTestWriter : public TestWriter {
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__STD_WRITERS
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_STD_WRITERS

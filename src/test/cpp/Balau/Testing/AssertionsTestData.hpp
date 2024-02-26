@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS_TEST_DATA
-#define COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS_TEST_DATA
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_ASSERTIONS_TEST_DATA
+#define COM_BORA_SOFTWARE_BALAU_TESTING_ASSERTIONS_TEST_DATA
 
 #include <Balau/Exception/ContainerExceptions.hpp>
 #include <Balau/Util/Strings.hpp>
@@ -241,4 +241,4 @@ inline void foo() {
 	ThrowBalauException(Balau::Exception::SizeException, "testing");
 }
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__ASSERTIONS_TEST_DATA
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_ASSERTIONS_TEST_DATA

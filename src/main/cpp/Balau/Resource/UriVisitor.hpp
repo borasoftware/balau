@@ -23,8 +23,8 @@
 /// Resolve Visit URIs.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_VISITOR
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_VISITOR
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_VISITOR
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_VISITOR
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -56,4 +56,4 @@ class UriVisitor {
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_VISITOR
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_VISITOR

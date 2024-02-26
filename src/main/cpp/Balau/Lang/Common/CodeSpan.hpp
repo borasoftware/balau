@@ -23,8 +23,8 @@
 /// A position in a piece of multi-line text.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG__CODE_SPAN
-#define COM_BORA_SOFTWARE__BALAU_LANG__CODE_SPAN
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_CODE_SPAN
+#define COM_BORA_SOFTWARE_BALAU_LANG_CODE_SPAN
 
 #include <Balau/Type/ToString.hpp>
 #include <Balau/Resource/Uri.hpp>
@@ -266,4 +266,4 @@ inline std::string toString(const CodeSpan & codeSpan) {
 
 } // namespace Balau::Lang
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG__CODE_SPAN
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_CODE_SPAN

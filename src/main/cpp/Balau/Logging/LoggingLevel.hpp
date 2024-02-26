@@ -23,8 +23,8 @@
 /// The logging system's logging level.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGING_LEVEL
-#define COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGING_LEVEL
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_LOGGING_LEVEL
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_LOGGING_LEVEL
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -110,4 +110,4 @@ inline std::string toString(LoggingLevel level) {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGING_LEVEL
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_LOGGING_LEVEL

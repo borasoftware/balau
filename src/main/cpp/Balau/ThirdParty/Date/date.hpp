@@ -27,8 +27,8 @@
 // been invented (that would involve another several millennia of evolution).
 // We did not mean to shout.
 
-#ifndef BALAU_TP__DATE__DATE
-#define BALAU_TP__DATE__DATE
+#ifndef BALAU_TP_DATE_DATE
+#define BALAU_TP_DATE_DATE
 
 #ifndef HAS_STRING_VIEW
 	#if __cplusplus >= 201703
@@ -6479,4 +6479,4 @@ operator <<(std::basic_ostream<CharT, Traits> & os, const std::chrono::duration<
 	#pragma GCC diagnostic pop
 #endif
 
-#endif // BALAU_TP__DATE__DATE
+#endif // BALAU_TP_DATE_DATE

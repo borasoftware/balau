@@ -23,8 +23,8 @@
 /// An asynchronous HTTP/WebSocket server.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SERVER
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SERVER
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_SERVER
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_SERVER
 
 #include <Balau/Network/Http/Server/HttpServerConfiguration.hpp>
 #include <Balau/Network/Http/Server/HttpWebApps/RoutingHttpWebApp.hpp>
@@ -310,4 +310,4 @@ class HttpServer {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__HTTP_SERVER
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_HTTP_SERVER

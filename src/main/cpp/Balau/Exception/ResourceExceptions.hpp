@@ -23,8 +23,8 @@
 /// %Balau exceptions for resources.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__RESOURCE_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__RESOURCE_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_RESOURCE_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_RESOURCE_EXCEPTIONS
 
 #include <Balau/Resource/Resource.hpp>
 #include <Balau/Resource/Uri.hpp>
@@ -166,4 +166,4 @@ inline bool operator == (const CouldNotCreateException & lhs, const CouldNotCrea
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__RESOURCE_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_RESOURCE_EXCEPTIONS

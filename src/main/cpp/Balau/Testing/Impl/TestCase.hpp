@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_CASE
-#define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_CASE
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_TEST_CASE
+#define COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_TEST_CASE
 
 #include <memory>
 
@@ -53,4 +53,4 @@ class TestCase {
 
 } // namespace Balau::Testing::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_CASE
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_TEST_CASE

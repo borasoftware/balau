@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__WS_SESSION
-#define COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__WS_SESSION
+#ifndef COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_WS_SESSION
+#define COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_WS_SESSION
 
 ///
 /// @file WsSession.hpp
@@ -195,4 +195,4 @@ class WsSession final : public std::enable_shared_from_this<WsSession> {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_NETWORK_HTTP_SERVER__WS_SESSION
+#endif // COM_BORA_SOFTWARE_BALAU_NETWORK_HTTP_SERVER_WS_SESSION

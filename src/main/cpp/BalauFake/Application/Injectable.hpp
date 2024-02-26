@@ -29,12 +29,12 @@
 /// when switching to the fake macros. For this reason, those macros are not included here.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_FAKE_APPLICATION__INJECTABLE
-#define COM_BORA_SOFTWARE__BALAU_FAKE_APPLICATION__INJECTABLE
+#ifndef COM_BORA_SOFTWARE_BALAU_FAKE_APPLICATION_INJECTABLE
+#define COM_BORA_SOFTWARE_BALAU_FAKE_APPLICATION_INJECTABLE
 
 #define BalauInject(...)
 #define BalauInjectNamed(...)
 #define BalauInjectTypes(...)
 #define BalauInjectNamedTypes(...)
 
-#endif // COM_BORA_SOFTWARE__BALAU_FAKE_APPLICATION__INJECTABLE
+#endif // COM_BORA_SOFTWARE_BALAU_FAKE_APPLICATION_INJECTABLE

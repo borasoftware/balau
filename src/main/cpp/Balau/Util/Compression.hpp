@@ -23,8 +23,8 @@
 /// Compression utilities: gzip and zip reading/writing.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION
-#define COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_COMPRESSION
+#define COM_BORA_SOFTWARE_BALAU_UTIL_COMPRESSION
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Resource/File.hpp>
@@ -149,4 +149,4 @@ struct GZip final {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__COMPRESSION
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_COMPRESSION

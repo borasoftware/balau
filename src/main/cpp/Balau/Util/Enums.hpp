@@ -23,8 +23,8 @@
 /// Utilities for enums.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__ENUMS
-#define COM_BORA_SOFTWARE__BALAU_UTIL__ENUMS
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_ENUMS
+#define COM_BORA_SOFTWARE_BALAU_UTIL_ENUMS
 
 #include <type_traits>
 
@@ -50,4 +50,4 @@ struct Enums final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__ENUMS
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_ENUMS

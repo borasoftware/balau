@@ -23,8 +23,8 @@
 /// Assertion utilities for development purposes.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_DEV__ASSERT
-#define COM_BORA_SOFTWARE__BALAU_DEV__ASSERT
+#ifndef COM_BORA_SOFTWARE_BALAU_DEV_ASSERT
+#define COM_BORA_SOFTWARE_BALAU_DEV_ASSERT
 
 #include <boost/core/ignore_unused.hpp>
 #include <string>
@@ -173,4 +173,4 @@ class Assert {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_DEV__ASSERT
+#endif // COM_BORA_SOFTWARE_BALAU_DEV_ASSERT

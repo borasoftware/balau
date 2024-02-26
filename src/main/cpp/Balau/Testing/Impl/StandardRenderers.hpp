@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__STANDARD_RENDERERS
-#define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__STANDARD_RENDERERS
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_STANDARD_RENDERERS
+#define COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_STANDARD_RENDERERS
 
 #include <Balau/Type/ToString.hpp>
 #include <Balau/Util/Strings.hpp>
@@ -360,4 +360,4 @@ template <typename A, typename E> std::string render(const std::set<A> & actual,
 
 } // namespace Balau::Testing::TestRenderers
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__STANDARD_RENDERERS
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_STANDARD_RENDERERS

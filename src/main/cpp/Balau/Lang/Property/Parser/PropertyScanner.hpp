@@ -23,8 +23,8 @@
 /// A scanner for the property parser.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_SCANNER
-#define COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_SCANNER
+#ifndef COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PARSER_PROPERTY_SCANNER
+#define COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PARSER_PROPERTY_SCANNER
 
 #include <Balau/Lang/Common/AbstractScanner.hpp>
 #include <Balau/Lang/Property/Lang/PropertyToken.hpp>
@@ -174,4 +174,4 @@ class PropertyScanner : public AbstractScanner<PropertyToken> {
 
 } // namespace Balau::Lang::Property
 
-#endif // COM_BORA_SOFTWARE__BALAU_LANG_PROPERTY_PARSER__PROPERTY_SCANNER
+#endif // COM_BORA_SOFTWARE_BALAU_LANG_PROPERTY_PARSER_PROPERTY_SCANNER

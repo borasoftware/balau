@@ -23,8 +23,8 @@
 /// %Balau exceptions for the parser tools.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__PARSING_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__PARSING_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_PARSING_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_PARSING_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Lang/Common/CodeSpan.hpp>
@@ -66,4 +66,4 @@ inline std::string toString(const SyntaxErrorException & e) {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__PARSING_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_PARSING_EXCEPTIONS

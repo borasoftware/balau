@@ -23,8 +23,8 @@
 /// Run a function on scope exit (movable version).
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__MOVEABLE_ON_SCOPE_EXIT
-#define COM_BORA_SOFTWARE__BALAU_TYPE__MOVEABLE_ON_SCOPE_EXIT
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_MOVEABLE_ON_SCOPE_EXIT
+#define COM_BORA_SOFTWARE_BALAU_TYPE_MOVEABLE_ON_SCOPE_EXIT
 
 #include <functional>
 #include <memory>
@@ -110,4 +110,4 @@ class MovableOnScopeExit final {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__MOVEABLE_ON_SCOPE_EXIT
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_MOVEABLE_ON_SCOPE_EXIT

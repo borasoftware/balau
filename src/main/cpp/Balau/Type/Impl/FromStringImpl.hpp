@@ -16,8 +16,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__FROM_STRING_IMPL
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__FROM_STRING_IMPL
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_FROM_STRING_IMPL
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_FROM_STRING_IMPL
 
 #include <Balau/Exception/BalauException.hpp>
 #include <Balau/Type/Character.hpp>
@@ -221,4 +221,4 @@ inline long double stringToLongDouble(std::string_view value) {
 
 } // namespace Balau::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__FROM_STRING_IMPL
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_FROM_STRING_IMPL

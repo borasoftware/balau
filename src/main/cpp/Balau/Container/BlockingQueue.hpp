@@ -23,8 +23,8 @@
 /// Base interface for blocking queues.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__BLOCKING_QUEUE
-#define COM_BORA_SOFTWARE__BALAU_CONTAINER__BLOCKING_QUEUE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONTAINER_BLOCKING_QUEUE
+#define COM_BORA_SOFTWARE_BALAU_CONTAINER_BLOCKING_QUEUE
 
 #include <Balau/Container/Queue.hpp>
 
@@ -130,4 +130,4 @@ template <typename T> class BlockingQueue : public Queue<T> {
 
 } // namespace Balau::Container
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__BLOCKING_QUEUE
+#endif // COM_BORA_SOFTWARE_BALAU_CONTAINER_BLOCKING_QUEUE

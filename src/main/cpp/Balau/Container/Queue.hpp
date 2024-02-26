@@ -23,8 +23,8 @@
 /// Base interface for queues.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONTAINER__QUEUE
-#define COM_BORA_SOFTWARE__BALAU_CONTAINER__QUEUE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONTAINER_QUEUE
+#define COM_BORA_SOFTWARE_BALAU_CONTAINER_QUEUE
 
 namespace Balau::Container {
 
@@ -55,4 +55,4 @@ template <typename T> class Queue {
 
 } // namespace Balau::Container
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONTAINER__QUEUE
+#endif // COM_BORA_SOFTWARE_BALAU_CONTAINER_QUEUE

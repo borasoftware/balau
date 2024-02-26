@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_HOLDER
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_HOLDER
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_HOLDER
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_HOLDER
 
 #include <Balau/Container/ObjectTrie.hpp>
 #include <Balau/Logging/Logger.hpp>
@@ -80,4 +80,4 @@ using LoggerTreeNode = Container::ObjectTrieNode<LoggerHolder>;
 
 } // namespace Balau::LoggingSystem
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGER_HOLDER
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGER_HOLDER

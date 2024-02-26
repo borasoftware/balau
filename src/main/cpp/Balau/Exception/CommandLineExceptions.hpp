@@ -23,8 +23,8 @@
 /// %Balau exceptions for the command line parser.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__COMMAND_LINE_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__COMMAND_LINE_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_COMMAND_LINE_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_COMMAND_LINE_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -93,4 +93,4 @@ class OptionValueException : public CommandlineException {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__COMMAND_LINE_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_COMMAND_LINE_EXCEPTIONS

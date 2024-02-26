@@ -16,8 +16,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__STRING_VIEW
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__STRING_VIEW
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_STRING_VIEW
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_STRING_VIEW
 
 #include <string>
 #include <boost/utility/string_view.hpp>
@@ -46,4 +46,4 @@ struct hash<basic_string_view<CharT, Traits>> {
 
 } // namespace std
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__STRING_VIEW
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_STRING_VIEW

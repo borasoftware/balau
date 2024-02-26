@@ -23,8 +23,8 @@
 /// A thread local instance that can be used as a class member instance variable.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONCURRENT__THREAD_LOCAL_INSTANCE
-#define COM_BORA_SOFTWARE__BALAU_CONCURRENT__THREAD_LOCAL_INSTANCE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONCURRENT_THREAD_LOCAL_INSTANCE
+#define COM_BORA_SOFTWARE_BALAU_CONCURRENT_THREAD_LOCAL_INSTANCE
 
 #include <boost/thread/tss.hpp>
 
@@ -84,4 +84,4 @@ class ThreadLocalInstance<T, std::negation<typename std::enable_if<std::is_defau
 
 } // namespace Balau::Concurrent
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONCURRENT__THREAD_LOCAL_INSTANCE
+#endif // COM_BORA_SOFTWARE_BALAU_CONCURRENT_THREAD_LOCAL_INSTANCE

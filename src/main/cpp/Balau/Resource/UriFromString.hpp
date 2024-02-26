@@ -23,8 +23,8 @@
 /// FromString functions for URIs.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_FROM_STRING
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_FROM_STRING
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_FROM_STRING
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_FROM_STRING
 
 #include <Balau/Resource/Uri.hpp>
 
@@ -105,4 +105,4 @@ inline void fromString(std::shared_ptr<const Uri> & uri, std::string_view value)
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__URI_FROM_STRING
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_URI_FROM_STRING

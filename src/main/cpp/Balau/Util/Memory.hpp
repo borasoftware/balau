@@ -23,8 +23,8 @@
 /// Utilities for memory.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__MEMORY
-#define COM_BORA_SOFTWARE__BALAU_UTIL__MEMORY
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_MEMORY
+#define COM_BORA_SOFTWARE_BALAU_UTIL_MEMORY
 
 #include <Balau/Type/ToString.hpp>
 
@@ -200,4 +200,4 @@ struct Memory final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__MEMORY
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_MEMORY

@@ -23,8 +23,8 @@
 /// A compact command line argument parser.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_COMMAND_LINE
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_COMMAND_LINE
 
 #include <Balau/Exception/CommandLineExceptions.hpp>
 #include <Balau/Type/StdTypes.hpp>
@@ -907,4 +907,4 @@ template <typename KeyT> class CommandLine {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__COMMAND_LINE
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_COMMAND_LINE

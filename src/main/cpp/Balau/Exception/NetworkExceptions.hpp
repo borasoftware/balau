@@ -23,8 +23,8 @@
 /// %Balau exceptions for network operations.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__NETWORK_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__NETWORK_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_NETWORK_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_NETWORK_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -43,4 +43,4 @@ class NetworkException : public BalauException {
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__NETWORK_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_NETWORK_EXCEPTIONS

@@ -23,8 +23,8 @@
 /// InjectableHeader.hpp macros without Balau prefix.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_HEADER
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_HEADER
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT_HEADER
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT_HEADER
 
 #include <Balau/Application/InjectableHeader.hpp>
 
@@ -40,4 +40,4 @@
 ///
 #define InjectHeaderConstruct(...) BalauInjectHeaderConstruct(__VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT_HEADER
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT_HEADER

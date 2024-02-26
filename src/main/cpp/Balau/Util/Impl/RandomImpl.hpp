@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__RANDOM_IMPL
-#define COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__RANDOM_IMPL
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_IMPL_RANDOM_IMPL
+#define COM_BORA_SOFTWARE_BALAU_UTIL_IMPL_RANDOM_IMPL
 
 #include <random>
 
@@ -38,4 +38,4 @@ template <typename IntegerT> inline IntegerT inclusivise(IntegerT upper) {
 
 } // namespace Balau::Util::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__RANDOM_IMPL
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_IMPL_RANDOM_IMPL

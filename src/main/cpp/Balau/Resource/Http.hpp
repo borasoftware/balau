@@ -23,8 +23,8 @@
 /// An HTTP URL.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_RESOURCE__HTTP
-#define COM_BORA_SOFTWARE__BALAU_RESOURCE__HTTP
+#ifndef COM_BORA_SOFTWARE_BALAU_RESOURCE_HTTP
+#define COM_BORA_SOFTWARE_BALAU_RESOURCE_HTTP
 
 #include <Balau/Resource/ByteReadResource.hpp>
 #include <Balau/Resource/UriComponents.hpp>
@@ -625,4 +625,4 @@ inline std::unique_ptr<Utf8To32ReadResource> Https::utf8To32ReadResource() const
 
 } // namespace Balau::Resource
 
-#endif // COM_BORA_SOFTWARE__BALAU_RESOURCE__HTTP
+#endif // COM_BORA_SOFTWARE_BALAU_RESOURCE_HTTP

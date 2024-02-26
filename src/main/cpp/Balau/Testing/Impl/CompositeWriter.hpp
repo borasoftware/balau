@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__COMPOSITE_WRITER
-#define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__COMPOSITE_WRITER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_COMPOSITE_WRITER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_COMPOSITE_WRITER
 
 #include <Balau/Testing/Writers/TestWriter.hpp>
 #include <Balau/Util/Memory.hpp>
@@ -45,4 +45,4 @@ class CompositeWriter {
 
 } // namespace Balau::Testing::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__COMPOSITE_WRITER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_COMPOSITE_WRITER

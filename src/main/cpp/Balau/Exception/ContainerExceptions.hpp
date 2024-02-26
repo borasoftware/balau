@@ -23,8 +23,8 @@
 /// %Balau exceptions for containers.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS
-#define COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS
+#ifndef COM_BORA_SOFTWARE_BALAU_EXCEPTION_CONTAINER_EXCEPTIONS
+#define COM_BORA_SOFTWARE_BALAU_EXCEPTION_CONTAINER_EXCEPTIONS
 
 #include <Balau/Exception/BalauException.hpp>
 
@@ -129,4 +129,4 @@ template <typename T, typename U> class RelationshipDoesNotExistException : publ
 
 } // namespace Balau::Exception
 
-#endif // COM_BORA_SOFTWARE__BALAU_EXCEPTION__CONTAINER_EXCEPTIONS
+#endif // COM_BORA_SOFTWARE_BALAU_EXCEPTION_CONTAINER_EXCEPTIONS

@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STATE
-#define COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STATE
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGING_STATE
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGING_STATE
 
 #include <Balau/Exception/LoggingExceptions.hpp>
 #include <Balau/Logging/Impl/LoggerHolder.hpp>
@@ -235,4 +235,4 @@ class LoggingState final {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING_IMPL__LOGGING_STATE
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_IMPL_LOGGING_STATE

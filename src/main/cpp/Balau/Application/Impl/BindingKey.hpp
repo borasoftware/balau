@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING_KEY
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING_KEY
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_BINDING_KEY
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_BINDING_KEY
 
 #include <boost/core/demangle.hpp>
 #include <Balau/Type/ToString.hpp>
@@ -440,4 +440,4 @@ template <> struct equal_to<Balau::Impl::BindingKey> {
 
 } // namespace std
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION_IMPL__BINDING_KEY
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_IMPL_BINDING_KEY

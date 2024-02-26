@@ -23,8 +23,8 @@
 /// Utilities for containers.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__CONTAINERS
-#define COM_BORA_SOFTWARE__BALAU_UTIL__CONTAINERS
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_CONTAINERS
+#define COM_BORA_SOFTWARE_BALAU_UTIL_CONTAINERS
 
 #include <Balau/Type/ToString.hpp>
 
@@ -108,4 +108,4 @@ struct Containers final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__CONTAINERS
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_CONTAINERS

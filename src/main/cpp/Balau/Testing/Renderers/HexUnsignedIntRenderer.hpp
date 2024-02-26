@@ -23,8 +23,8 @@
 /// Overload for rendering unsigned int containers as hex values.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_UNSIGNED_INT_RENDERER
-#define COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_UNSIGNED_INT_RENDERER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_UNSIGNED_INT_RENDERER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_UNSIGNED_INT_RENDERER
 
 #include <Balau/Testing/Impl/HexContainerRendererImpl.hpp>
 
@@ -40,4 +40,4 @@ std::string render(const ContainerA<unsigned int> & actual, const ContainerE<uns
 
 } // namespace Balau::Testing::TestRenderers
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_UNSIGNED_INT_RENDERER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_UNSIGNED_INT_RENDERER

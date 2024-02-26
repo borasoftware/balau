@@ -23,8 +23,8 @@
 /// The main test runner singleton class and test group base class.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
-#define COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER
 
 #include <Balau/Application/CommandLine.hpp>
 #include <Balau/Dev/Assert.hpp>
@@ -687,4 +687,4 @@ inline void TestGroup<TestClassT>::registerTestCase(Method method, const std::st
 
 } // namespace Balau::Testing
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING__TEST_RUNNER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RUNNER

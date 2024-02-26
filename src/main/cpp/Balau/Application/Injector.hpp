@@ -23,8 +23,8 @@
 /// The main Injector class.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTOR
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTOR
 
 #include <Balau/Application/ApplicationConfiguration.hpp>
 #include <Balau/Application/EnvironmentConfiguration.hpp>
@@ -1749,4 +1749,4 @@ class Injector final : public std::enable_shared_from_this<Injector> {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECTOR
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECTOR

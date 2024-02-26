@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__STRINGS_IMPL
-#define COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__STRINGS_IMPL
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_IMPL_STRINGS_IMPL
+#define COM_BORA_SOFTWARE_BALAU_UTIL_IMPL_STRINGS_IMPL
 
 #include <string>
 
@@ -63,4 +63,4 @@ void replaceAllImpl(StringT<CharT, T ...> & input, const MatchT & match, const R
 
 } // namespace Balau::Util::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL_IMPL__STRINGS_IMPL
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_IMPL_STRINGS_IMPL

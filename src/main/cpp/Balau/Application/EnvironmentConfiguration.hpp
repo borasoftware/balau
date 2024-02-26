@@ -23,8 +23,8 @@
 /// Environment configurations specify environment injector bindings via properties files.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_CONFIGURATION
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_CONFIGURATION
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_ENVIRONMENT_CONFIGURATION
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_ENVIRONMENT_CONFIGURATION
 
 #include <Balau/Application/BindingBuilder.hpp>
 #include <Balau/Application/InjectorConfiguration.hpp>
@@ -550,4 +550,4 @@ class EnvironmentConfiguration : public InjectorConfiguration {
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__ENVIRONMENT_CONFIGURATION
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_ENVIRONMENT_CONFIGURATION

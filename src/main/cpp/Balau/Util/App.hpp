@@ -23,8 +23,8 @@
 /// Utilities for accessing application information.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_UTIL__APP
-#define COM_BORA_SOFTWARE__BALAU_UTIL__APP
+#ifndef COM_BORA_SOFTWARE_BALAU_UTIL_APP
+#define COM_BORA_SOFTWARE_BALAU_UTIL_APP
 
 #include <Balau/Util/Impl/AppImpl.hpp>
 
@@ -166,4 +166,4 @@ struct App final {
 
 } // namespace Balau::Util
 
-#endif // COM_BORA_SOFTWARE__BALAU_UTIL__APP
+#endif // COM_BORA_SOFTWARE_BALAU_UTIL_APP

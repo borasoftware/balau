@@ -26,8 +26,8 @@
 /// in order to ensure that all toString functions are included before the logger.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGER
-#define COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGER
+#ifndef COM_BORA_SOFTWARE_BALAU_LOGGING_LOGGER
+#define COM_BORA_SOFTWARE_BALAU_LOGGING_LOGGER
 
 #include <Balau/Application/Impl/BindingKey.hpp>
 #include <Balau/Logging/LoggingLevel.hpp>
@@ -1079,4 +1079,4 @@ class Logger {
 ///
 #define BalauLogLog(LOGGER, LEVEL, ...) LOGGER.log(LoggingLevel::LEVEL, BalauSourceCodeLocation(__FILE__, __LINE__), __VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_LOGGING__LOGGER
+#endif // COM_BORA_SOFTWARE_BALAU_LOGGING_LOGGER

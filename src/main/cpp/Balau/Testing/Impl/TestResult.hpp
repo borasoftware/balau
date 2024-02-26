@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RESULT
-#define COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RESULT
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_TEST_RESULT
+#define COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_TEST_RESULT
 
 #include <Balau/Serialization/SerializationMacros.hpp>
 
@@ -121,4 +121,4 @@ class TestResult {
 
 } // namespace Balau::Testing::Impl
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_IMPL__TEST_RESULT
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_IMPL_TEST_RESULT

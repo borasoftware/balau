@@ -23,8 +23,8 @@
 /// Traditional semaphore synchronisation object.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_CONCURRENT__SEMAPHORE
-#define COM_BORA_SOFTWARE__BALAU_CONCURRENT__SEMAPHORE
+#ifndef COM_BORA_SOFTWARE_BALAU_CONCURRENT_SEMAPHORE
+#define COM_BORA_SOFTWARE_BALAU_CONCURRENT_SEMAPHORE
 
 #include <condition_variable>
 
@@ -70,4 +70,4 @@ class Semaphore {
 
 } // namespace Balau::Concurrent
 
-#endif // COM_BORA_SOFTWARE__BALAU_CONCURRENT__SEMAPHORE
+#endif // COM_BORA_SOFTWARE_BALAU_CONCURRENT_SEMAPHORE

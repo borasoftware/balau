@@ -17,12 +17,12 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_FAKE__LIB1
-#define COM_BORA_SOFTWARE__BALAU_FAKE__LIB1
+#ifndef COM_BORA_SOFTWARE_BALAU_FAKE_LIB1
+#define COM_BORA_SOFTWARE_BALAU_FAKE_LIB1
 
 #include "Lib1.hpp"
 
 struct Lib1Cls {
 };
 
-#endif // COM_BORA_SOFTWARE__BALAU_FAKE__LIB1
+#endif // COM_BORA_SOFTWARE_BALAU_FAKE_LIB1

@@ -17,8 +17,8 @@
 // limitations under the License.
 //
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__BALAU_VERSION
-#define COM_BORA_SOFTWARE__BALAU_TYPE__BALAU_VERSION
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_BALAU_VERSION
+#define COM_BORA_SOFTWARE_BALAU_TYPE_BALAU_VERSION
 
 namespace Balau {
 
@@ -29,4 +29,4 @@ inline const std::string & balauVersion() {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__BALAU_VERSION
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_BALAU_VERSION

@@ -23,8 +23,8 @@
 /// A shared memory object that uses the Boost interprocess library.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_INTERPROCESS__UNMANAGED_SHARED_MEMORY_OBJECT2
-#define COM_BORA_SOFTWARE__BALAU_INTERPROCESS__UNMANAGED_SHARED_MEMORY_OBJECT2
+#ifndef COM_BORA_SOFTWARE_BALAU_INTERPROCESS_UNMANAGED_SHARED_MEMORY_OBJECT2
+#define COM_BORA_SOFTWARE_BALAU_INTERPROCESS_UNMANAGED_SHARED_MEMORY_OBJECT2
 
 #include <Balau/Exception/ResourceExceptions.hpp>
 #include <Balau/Interprocess/SharedMemoryUtils.hpp>
@@ -206,4 +206,4 @@ template <typename T> class USharedMemoryObject {
 
 } // namespace Balau::Interprocess
 
-#endif // COM_BORA_SOFTWARE__BALAU_INTERPROCESS__UNMANAGED_SHARED_MEMORY_OBJECT2
+#endif // COM_BORA_SOFTWARE_BALAU_INTERPROCESS_UNMANAGED_SHARED_MEMORY_OBJECT2

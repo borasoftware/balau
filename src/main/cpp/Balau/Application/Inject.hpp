@@ -23,8 +23,8 @@
 /// Injectable.hpp macros without Balau prefix.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT
-#define COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT
+#ifndef COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT
+#define COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT
 
 #include <Balau/Application/Injectable.hpp>
 
@@ -62,4 +62,4 @@
 ///
 #define InjectNamedTypes(...) BalauInjectNamedTypes(__VA_ARGS__)
 
-#endif // COM_BORA_SOFTWARE__BALAU_APPLICATION__INJECT
+#endif // COM_BORA_SOFTWARE_BALAU_APPLICATION_INJECT

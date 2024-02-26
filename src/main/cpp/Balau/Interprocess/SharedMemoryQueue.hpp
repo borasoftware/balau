@@ -23,8 +23,8 @@
 /// A blocking, shared memory queue that uses the Boost interprocess library.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_INTERPROCESS__SHARED_MEMORY_QUEUE
-#define COM_BORA_SOFTWARE__BALAU_INTERPROCESS__SHARED_MEMORY_QUEUE
+#ifndef COM_BORA_SOFTWARE_BALAU_INTERPROCESS_SHARED_MEMORY_QUEUE
+#define COM_BORA_SOFTWARE_BALAU_INTERPROCESS_SHARED_MEMORY_QUEUE
 
 #include <Balau/Container/BlockingQueue.hpp>
 #include <Balau/Exception/ContainerExceptions.hpp>
@@ -830,4 +830,4 @@ template <typename T> class SharedMemoryQueue : public Container::BlockingQueue<
 
 #pragma clang diagnostic pop
 
-#endif // COM_BORA_SOFTWARE__BALAU_INTERPROCESS__SHARED_MEMORY_QUEUE
+#endif // COM_BORA_SOFTWARE_BALAU_INTERPROCESS_SHARED_MEMORY_QUEUE

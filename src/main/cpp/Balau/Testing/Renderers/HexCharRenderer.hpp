@@ -23,8 +23,8 @@
 /// Overload for rendering char containers as hex values.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_CHAR_RENDERER
-#define COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_CHAR_RENDERER
+#ifndef COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_CHAR_RENDERER
+#define COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_CHAR_RENDERER
 
 #include <Balau/Testing/Impl/HexContainerRendererImpl.hpp>
 
@@ -40,4 +40,4 @@ std::string render(const ContainerA<char> & actual, const ContainerE<char> & exp
 
 } // namespace Balau::Testing::TestRenderers
 
-#endif // COM_BORA_SOFTWARE__BALAU_TESTING_TEST_RENDERERS__HEX_CHAR_RENDERER
+#endif // COM_BORA_SOFTWARE_BALAU_TESTING_TEST_RENDERERS_HEX_CHAR_RENDERER

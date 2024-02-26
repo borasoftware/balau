@@ -23,8 +23,8 @@
 /// %Balau exceptions for the test framework.
 ///
 
-#ifndef COM_BORA_SOFTWARE__BALAU_TYPE__SOURCE_CODE_LOCATION
-#define COM_BORA_SOFTWARE__BALAU_TYPE__SOURCE_CODE_LOCATION
+#ifndef COM_BORA_SOFTWARE_BALAU_TYPE_SOURCE_CODE_LOCATION
+#define COM_BORA_SOFTWARE_BALAU_TYPE_SOURCE_CODE_LOCATION
 
 #include <Balau/Type/ToString.hpp>
 
@@ -49,4 +49,4 @@ inline std::string toString(const SourceCodeLocation & location) {
 
 } // namespace Balau
 
-#endif // COM_BORA_SOFTWARE__BALAU_TYPE__SOURCE_CODE_LOCATION
+#endif // COM_BORA_SOFTWARE_BALAU_TYPE_SOURCE_CODE_LOCATION
